@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "kafkamagic.fullname" . }}
+  labels:
+{{ include "kafkamagic.labels" . | indent 4 }}
+data:
+  appsettings.json: |-
+    {
+      "Kestrel": {
+        "Endpoints": {
+          "Http": {
+            "Url": "http://+:8080"
+          }
+        }
+      }
+    }
