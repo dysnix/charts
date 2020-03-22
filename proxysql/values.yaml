@@ -1,0 +1,162 @@
+# Default values for proxysql.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicas: 1
+
+image:
+  registry: docker.io
+  repository: proxysql/proxysql
+  tag: "2.0.9"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 999
+  runAsUser: 999
+  runAsGroup: 999
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+## ProxySQL service configuration
+service:
+  ## ProxySQL service type
+  type: ClusterIP
+  # clusterIP: None
+  port: 6033
+
+  ## Specify the nodePort value for the LoadBalancer and NodePort service types.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ##
+  # nodePort:
+
+  ## Provide any additional annotations which may be required.
+  ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
+  annotations: {}
+  ## Set the LoadBalancer service type to internal only.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  ##
+  # loadBalancerIP:
+
+  ## Load Balancer sources
+  ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ##
+  # loadBalancerSourceRanges:
+  # - 10.10.10.0/24
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+## Specify pod disruption budget
+## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+##
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  ##
+  ## Default Kubernetes values
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+# Enable SSL communication with the backend MySQL servers
+ssl:
+  ## When a cert and a key or fromSecret are provided use_ssl is be enabled automaticaly (in mysql_servers items)
+  #  if use_ssl is not specified.
+  auto: true
+  ca: ""
+  cert: ""
+  key: ""
+  ## Loads ca.pem, cert.pem, and key.pem from an existingSecret
+  fromSecret: ""
+
+admin_variables:
+  admin_credentials: "admin:admin"
+  debug: false
+  # - refresh_interval=2000
+
+mysql_variables:
+  ## ref: https://github.com/sysown/proxysql/wiki/Global-variables
+  #
+  ## The number of background threads that ProxySQL uses in order to process MySQL traffic
+  threads: 4
+  ## The maximum number of client connections that the proxy can handle.
+  max_connections: 2048
+  default_query_delay: 0
+  ## Mechanism for specifying the maximal duration of queries to the backend MySQL (in ms)
+  default_query_timeout: 3600000
+  ## Enables or disables MySQL Monitor.
+  #  ref: https://github.com/sysown/proxysql/wiki/Monitor-Module
+  monitor_enabled: false
+  # monitor_username: "monitor"
+  # monitor_password: "monitor"
+  # monitor_history: 600000
+
+## Configures ProxySQL mysql users.
+#  For MySQL 8.0 paswords must be mysql_native_password.
+#  ref: https://github.com/sysown/proxysql/wiki/MySQL-8.0
+#
+mysql_users:
+  # - username: "user"
+  #   password: "password"
+  #   default_hostgroup: 0
+  #   max_connections: 200
+  #   default_schema: "information_schema"
+  #   active: 1
+
+## Define MySQL backend servers
+#
+mysql_servers:
+  # - address: "172.17.0.1"
+  #   port: 3306
+  #   hostgroup: 0
+  #   max_connections: 200
+
+## Defines MySQL Query Rules (routing)
+#
+mysql_query_rules:
+  ##  Note that rule_id is not required! Since it's automaticaly set
+  #   based on the array index.
+  #
+  # - active: 1
+  #   match_pattern: "^SELECT .* FOR UPDATE$"
+  #   destination_hostgroup: 0
+  #   apply: 1
