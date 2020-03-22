@@ -133,7 +133,7 @@ mysql_users=
 (
   {{- range $_, $user := .Values.mysql_users }}
   {
-    {{- if hasKey $user "active")) -}}
+    {{- if hasKey $user "active" -}}
     {{- $server := merge $user (dict "active" 1) }}
     {{- end }}
     {{- range $key, $value := $user }}

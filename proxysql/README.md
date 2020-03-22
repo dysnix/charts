@@ -108,11 +108,11 @@ mysql_users:
 $ helm install my-release dysnix/proxysql -f values.yaml
 ```
 
-The configuration is immutable thus the ProxySQL helm chart specifies sets `active` to 1 for `mysql_users` and substitutes the `rule_id` for `mysql_query_rules` automatically.
+The configuration is immutable thus the ProxySQL helm chart sets `active` to *1* for `mysql_users` and substitutes the `rule_id` for `mysql_query_rules` automatically.
 
 ### SSL configuration
 
-ProxySQL can be used to safely route unencrypted MySQL traffic from applications wrapping it into SSL in case these applications do not support SSL configuration. To enable this you need to provide `ssl.*` options. When either `ssl.fromSecret` or `ssl.cert` together with `ssl.key` is provided and the `ssl.auto` is set to true (which is default) `mysql_servers` will get `use_ssl` set to `1` automatically if not specifically provided.
+ProxySQL can be used to safely route unencrypted MySQL traffic from applications wrapping it into SSL in case these applications do not support SSL configuration. To enable this you need to provide `ssl.*` options. When either `ssl.fromSecret` or `ssl.cert` together with `ssl.key` is provided and the `ssl.auto` is set to *true* (which is default) `mysql_servers` will get `use_ssl` set to *1* automatically if not specifically provided.
 
 ### ProxySQL and MySQL 8.0
 
