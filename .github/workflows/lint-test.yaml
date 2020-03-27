@@ -2,10 +2,6 @@ name: Lint and Test Charts
 
 on: pull_request
 
-env:
-  # Maybe a comma separated list
-  CT_CHART_DIRS: "."
-
 jobs:
   lint-test:
     runs-on: ubuntu-latest
@@ -18,9 +14,9 @@ jobs:
 
       - name: Run chart-testing (lint)
         id: lint
-        uses: helm/chart-testing-action@v1.0.0-rc.1
+        uses: dennybaa/chart-testing-action@ct-invocation-fix
         with:
-          command: lint
+          command: lint --config .github/conf/chart-testing.yaml
 
       - name: Create kind cluster
         uses: helm/kind-action@v1.0.0-rc.1
@@ -28,6 +24,6 @@ jobs:
         if: steps.lint.outputs.changed == 'true'
 
       - name: Run chart-testing (install)
-        uses: helm/chart-testing-action@v1.0.0-rc.1
+        uses: dennybaa/chart-testing-action@ct-invocation-fix
         with:
-          command: install
+          command: install --config .github/conf/chart-testing.yaml
