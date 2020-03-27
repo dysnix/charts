@@ -1,0 +1,110 @@
+# Default values for pritunl.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicas: 1
+
+image:
+  repository: dysnix/pritunl
+  tag: v1.29-r6
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+securityContext:
+  privileged: true
+  capabilities:
+    add:
+      - NET_ADMIN
+
+## Pritunl service configuration
+service:
+  ## LoadBalancer is fixed
+  # type: LoadBalancer
+  protocol: TCP
+  port: 1194
+
+  ## Provide any additional annotations which may be required.
+  ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
+  annotations: {}
+  ## Set the LoadBalancer service type to internal only.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  ##
+  # loadBalancerIP:
+
+  ## Load Balancer sources
+  ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ##
+  # loadBalancerSourceRanges:
+  # - 10.10.10.0/24
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 15
+  successThreshold: 1
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+mongodb:
+  enabled: false
+  mongodbUsername: pritunl
+  mongodbDatabase: pritunl
+
+## Custom mongodb URI settings if given
+#
+mongodbUri:
+mongodbUriTemplate:
+
+## /etc/pritunl/conf
+#
+conf:
+  ## Specify host id which preserves settings for the POD in the database
+  #  (no settings a lost on reboot, ex. public_address)
+  host_id: ffd7a38db01042cf806760c211ff4a41
+  log_path: /var/log/pritunl.log
+  static_cache: true
+  temp_path: /tmp/pritunl_%r
+  bind_addr: "0.0.0.0"
+  www_path: /usr/share/pritunl/www
+  local_address_interface: auto
+  port: 443

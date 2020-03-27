@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pritunl.fullname" . }}
+  labels:
+{{ include "pritunl.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "pritunl.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "pritunl.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        checksum/pritunl.conf: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "pritunl.serviceAccountName" . }}
+      initContainers:
+        - name: alpine
+          image: alpine
+          command: ["sh", "-c", "cp /configmap/pritunl.conf /etc/pritunl"]
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/pritunl
+            - name: configmap
+              mountPath: /configmap
+      containers:
+        - name: pritunl
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PRITUNL_OVERRIDE_CONF
+              value: /etc/pritunl/pritunl.conf
+          {{- if .Values.mongodbUri }}
+            - name: PRITUNL_MONGODB_URI
+              value: {{ .Values.mongodbUri }}
+          {{- else if (include "pritunl.mongodbUriTemplate" .) }}
+            - name: PRITUNL_MONGODB_URI_TEMPLATE
+              value: {{ include "pritunl.mongodbUriTemplate" . }}
+            {{- if and .Values.mongodb.enabled .Values.mongodb.mongodbUsername }}
+            - name: PRITUNL_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "pritunl.fullname" . }}-mongodb
+                  key: mongodb-password
+            {{- end }}
+          {{- end }}
+          ports:
+            - name: https
+              containerPort: 443
+            - name: openvpn
+              containerPort: 1194
+              protocol: {{ .Values.service.protocol }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: conf
+              mountPath: /etc/pritunl
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: configmap
+          configMap:
+            name: {{ include "pritunl.fullname" . }}
+        - name: conf
+          emptyDir: {}
