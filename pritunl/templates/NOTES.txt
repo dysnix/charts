@@ -1,0 +1,10 @@
+      Pritunl default access credentials:
+
+export POD_ID=$(kubectl get pod --namespace {{ .Release.Namespace }} -l app={{ include "pritunl.name" . }},release={{ .Release.Name }} -o jsonpath='{.items[0].metadata.name}')
+kubectl exec -t -i --namespace {{ .Release.Namespace }}  $POD_ID pritunl default-password
+
+      It may take a few minutes for the LoadBalancer IP to be available.
+      You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "pritunl.fullname" . }}'
+
+export VPN_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "pritunl.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+echo "VPN access IP address: ${VPN_IP}"
