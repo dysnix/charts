@@ -86,7 +86,7 @@ tolerations: []
 affinity: {}
 
 mongodb:
-  enabled: false
+  enabled: true
   mongodbUsername: pritunl
   mongodbDatabase: pritunl
 
