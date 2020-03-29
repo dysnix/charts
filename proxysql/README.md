@@ -5,7 +5,7 @@
 ## TL;DR;
 
 ```bash
-$ helm repo add dysnix https://charts.dysnix.com/dysnix
+$ helm repo add dysnix https://dysnix.github.io/charts/
 $ helm install my-release dysnix/proxysql
 ```
 
