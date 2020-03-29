@@ -3,9 +3,10 @@ appVersion: "1.29"
 description: A Helm chart for Kubernetes
 name: pritunl
 version: 0.1.4
-home: https://www.sonatype.com/nexus-repository-oss
+home: https://pritunl.com/
 sources:
   - https://github.com/dysnix/charts
+  - https://github.com/pritunl/pritunl
 maintainers:
   - name: dennybaa
     email: dennybaa@gmail.com
