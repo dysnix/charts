@@ -22,6 +22,27 @@ entries:
   pritunl:
   - apiVersion: v1
     appVersion: "1.29"
+    created: "2020-06-02T21:42:32.25163489Z"
+    dependencies:
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: ~7.14.5
+    description: A Helm chart for Kubernetes
+    digest: 0d461fffe27c759400f8c4d3044e0ef78f83eff493f8df1ac871b1217938b80c
+    home: https://pritunl.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: pritunl
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pritunl/pritunl
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pritunl-0.1.8/pritunl-0.1.8.tgz
+    version: 0.1.8
+  - apiVersion: v1
+    appVersion: "1.29"
     created: "2020-03-29T21:06:55.915829665Z"
     dependencies:
     - condition: mongodb.enabled
