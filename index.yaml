@@ -3,6 +3,15 @@ entries:
   kafkamagic:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2020-06-02T21:21:36.334633201Z"
+    description: A Helm chart for Kubernetes
+    digest: 78e06ce17a9421b4d394f8978ad268acb353166873b708e3a117f054a15a10a5
+    name: kafkamagic
+    urls:
+    - https://github.com/dysnix/charts/releases/download/kafkamagic-0.1.4/kafkamagic-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2020-03-29T21:06:55.798170598Z"
     description: A Helm chart for Kubernetes
     digest: fbdcd956ccdce95eaa07544b5ba35691521f6bd1c51bf27aaba237d1731e67b8
@@ -33,6 +42,22 @@ entries:
     - https://github.com/dysnix/charts/releases/download/pritunl-0.1.6/pritunl-0.1.6.tgz
     version: 0.1.6
   proxysql:
+  - apiVersion: v1
+    appVersion: 2.0.9
+    created: "2020-06-02T21:21:36.42399079Z"
+    description: ProxySQL Helm chart for Kubernetes
+    digest: eddba5c83bce0953b356dfe791220b732abed228c97bc8169566e27dbea906a7
+    home: https://www.proxysql.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: proxysql
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/sysown/proxysql
+    urls:
+    - https://github.com/dysnix/charts/releases/download/proxysql-0.1.4/proxysql-0.1.4.tgz
+    version: 0.1.4
   - apiVersion: v1
     appVersion: 2.0.9
     created: "2020-03-29T21:06:56.261337909Z"
