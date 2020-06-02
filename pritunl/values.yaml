@@ -6,7 +6,7 @@ replicas: 1
 
 image:
   repository: dysnix/pritunl
-  tag: v1.29-r6
+  tag: v1.29-r7
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -89,6 +89,12 @@ mongodb:
   enabled: true
   mongodbUsername: pritunl
   mongodbDatabase: pritunl
+  mongodbExtraFlags:
+    - --wiredTigerCacheSizeGB=0.25
+  persistence:
+    size: 1Gi
+  updateStrategy:
+    type: Recreate
 
 ## Custom mongodb URI settings if given
 #
