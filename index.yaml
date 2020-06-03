@@ -19,6 +19,17 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/kafkamagic-0.1.3/kafkamagic-0.1.3.tgz
     version: 0.1.3
+  nifi-registry:
+  - apiVersion: v2
+    appVersion: 0.6.0
+    created: "2020-06-03T15:45:59.957013096Z"
+    description: A subproject of Apache NiFi to store and manage shared resources.
+    digest: 7da7ec29a38632a65a90d053e935f8a87d5c9e7a3e8e8a57a742a65b46cedad2
+    name: nifi-registry
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.0/nifi-registry-0.1.0.tgz
+    version: 0.1.0
   pritunl:
   - apiVersion: v1
     appVersion: "1.29"
