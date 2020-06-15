@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: digitsy/kafka-magic
-  tag: "2.0.2.22"
+  tag: "2.0.3.4"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -20,9 +20,11 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
-podSecurityContext:
-  fsUser: 1000
-  fsGroup: 1000
+podSecurityContext: {}
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 1000
+  # fsGroup: 1000
 
 securityContext:
   capabilities:
@@ -84,7 +86,7 @@ config:
 
 
 persistence:
-  enabled: true
+  enabled: false
   ## A manually managed Persistent Volume and Claim
   ## Requires persistence.enabled: true
   ## If defined, PVC must be created manually before volume will be bound
