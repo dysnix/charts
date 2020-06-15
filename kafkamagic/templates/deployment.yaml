@@ -6,6 +6,8 @@ metadata:
 {{ include "kafkamagic.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    {{- .Values.deploymentStrategy | nindent 4 }}
   selector:
     matchLabels:
       app: {{ include "kafkamagic.name" . }}
