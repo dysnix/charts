@@ -3,6 +3,15 @@ entries:
   kafkamagic:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2020-06-15T18:12:34.681704263Z"
+    description: A Helm chart for Kubernetes
+    digest: 27615ff5645abd5f67ea2c31946457a430935c2f50bc0eb063d9c2df717657d2
+    name: kafkamagic
+    urls:
+    - https://github.com/dysnix/charts/releases/download/kafkamagic-0.2.2/kafkamagic-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2020-06-15T17:39:35.582907624Z"
     description: A Helm chart for Kubernetes
     digest: ee10c98b13115a3b7d23e30063eb6817f25b23e15a6de0f097a72ac8bf98198e
