@@ -6,7 +6,7 @@ replicas: 1
 
 image:
   repository: dysnix/pritunl
-  tag: v1.29-r7
+  tag: v1.29-r8
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
