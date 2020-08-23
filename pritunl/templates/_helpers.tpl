@@ -61,8 +61,8 @@ Pritunl mongodb uri template
 {{- define "pritunl.mongodbUriTemplate" -}}
 {{- if .Values.mongodbUriTemplate -}}
 {{ .Values.mongodbUriTemplate }}
-{{- else if and .Values.mongodb.mongodbUsername .Values.mongodb.mongodbDatabase -}}
+{{- else if and .Values.mongodb.auth.username .Values.mongodb.auth.database -}}
 {{- $fullName := include "pritunl.fullname" . -}}
-{{- printf "mongodb://%s:$PRITUNL_MONGODB_PASSWORD@%s-mongodb/%s" .Values.mongodb.mongodbUsername $fullName .Values.mongodb.mongodbDatabase -}}
+{{- printf "mongodb://%s:$PRITUNL_MONGODB_PASSWORD@%s-mongodb/%s" .Values.mongodb.auth.username $fullName .Values.mongodb.auth.database -}}
 {{- end -}}
 {{- end -}}

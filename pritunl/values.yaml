@@ -99,8 +99,7 @@ mongodb:
     enabled: true
     size: 1Gi
 
-  strategyType:
-    type: Recreate
+  strategyType: Recreate
 
 ## Custom mongodb URI settings if given
 #
