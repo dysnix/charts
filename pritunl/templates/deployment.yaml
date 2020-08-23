@@ -48,7 +48,7 @@ spec:
           {{- else if (include "pritunl.mongodbUriTemplate" .) }}
             - name: PRITUNL_MONGODB_URI_TEMPLATE
               value: {{ include "pritunl.mongodbUriTemplate" . }}
-            {{- if and .Values.mongodb.enabled .Values.mongodb.mongodbUsername }}
+            {{- if and .Values.mongodb.auth.enabled .Values.mongodb.auth.username }}
             - name: PRITUNL_MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
