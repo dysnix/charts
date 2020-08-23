@@ -87,13 +87,19 @@ affinity: {}
 
 mongodb:
   enabled: true
-  mongodbUsername: pritunl
-  mongodbDatabase: pritunl
-  mongodbExtraFlags:
+  auth:
+    enabled: true
+    username: pritunl
+    database: pritunl
+
+  extraFlags:
     - --wiredTigerCacheSizeGB=0.25
+
   persistence:
+    enabled: true
     size: 1Gi
-  updateStrategy:
+
+  strategyType:
     type: Recreate
 
 ## Custom mongodb URI settings if given
