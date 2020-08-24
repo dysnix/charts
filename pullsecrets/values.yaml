@@ -1,0 +1,14 @@
+# Default values for pullsecrets.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+gcr:
+  enabled: false
+  secretName: gcr-pull-default
+  serviceAccountKey: ""
+  keyIsBase64: false
+  locations:
+    - gcr.io
+    - us.gcr.io
+    - eu.gcr.io
+    - asia.gcr.io
