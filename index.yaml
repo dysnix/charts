@@ -238,4 +238,21 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/proxysql-0.1.3/proxysql-0.1.3.tgz
     version: 0.1.3
+  pullsecrets:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-08-24T08:34:00.846816257Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 0.x.x
+    description: A Helm chart for Kubernetes
+    digest: 62acd8ba2808ff62a1895747ca03a1647353fa7593a5dea0a40d0963ab706261
+    name: pullsecrets
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pullsecrets-0.1.0/pullsecrets-0.1.0.tgz
+    version: 0.1.0
 generated: "2020-03-29T21:06:55.68450602Z"
