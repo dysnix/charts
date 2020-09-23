@@ -1,0 +1,10 @@
+{{- if .Values.flowProvider.git.config.enabled -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "flowProvider.git.config.secretName" . }}
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+data:
+  gitconfig: {{ .Values.flowProvider.git.config.data | b64enc }}
+{{- end -}}

@@ -27,21 +27,55 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+        {{- if .Values.flowProvider.git.enabled }}
+        - name: git-clone
+          image: alpine/git:v2.26.2
+          command:
+            - sh
+            - -cex
+            - |
+              git clone $(NIFI_REGISTRY_GIT_URL) "/tmp/flow_storage" || git -C "/tmp/flow_storage" pull
+              cp --dereference /ssh/id_rsa /ssh-dest/
+
+              chown -R 1000:1000 /tmp/flow_storage /ssh-dest
+          env:
+            - name: NIFI_REGISTRY_GIT_URL
+              value: {{ .Values.flowProvider.git.url }}          
+            - name: NIFI_REGISTRY_GIT_USER
+              value: {{ .Values.flowProvider.git.user }}          
+            - name: NIFI_REGISTRY_GIT_PASSWORD
+              value: {{ .Values.flowProvider.git.password }}
+          volumeMounts:
+            - name: "flow-storage"
+              mountPath: /tmp
+            {{- if .Values.ssh.known_hosts }}
+            - name: sshdir
+              mountPath: /root/.ssh
+              readOnly: true
+            {{- end }}
+            - name: git-key
+              mountPath: /ssh
+              readOnly: true
+            - name: git-key-fixed
+              mountPath: /ssh-dest
+        {{- end }}
+        {{- if .Values.persistence.enabled }}
         - name: take-data-dir-ownership
           image: alpine:3.6
+          command:
           command:
             - chown
             - -R
             - 1000:1000
             - /opt/nifi-registry/nifi-registry-current/database
             - /opt/nifi-registry/nifi-registry-current/flow_storage
-          {{- if .Values.persistence.enabled }}
           volumeMounts:
             - name: "database"
               mountPath: /opt/nifi-registry/nifi-registry-current/database
             - name: "flow-storage"
               mountPath: /opt/nifi-registry/nifi-registry-current/flow_storage
-          {{ end }}
+              subPath: flow_storage
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -52,33 +86,82 @@ spec:
             - bash
             - -ce
             - |
-              if ! test -f /opt/nifi-registry/nifi-registry-current/database/nifi-registry-primary.mv.db; then
-                cp /opt/nifi-registry/nifi-registry-current/database/nifi-registry-primary.mv.db.temp /opt/nifi-registry/nifi-registry-current/database/nifi-registry-primary.mv.db
-              fi
               ${NIFI_REGISTRY_BASE_DIR}/scripts/start.sh
           ports:
             - name: http
               containerPort: 18080
               protocol: TCP
+          env:
+          {{- if .Values.flowProvider.git.enabled }}
+            - name: NIFI_REGISTRY_FLOW_PROVIDER
+              value: git
+            - name: NIFI_REGISTRY_GIT_REMOTE
+              value: {{ .Values.flowProvider.git.remote }}
+            - name: NIFI_REGISTRY_GIT_USER
+              value: {{ .Values.flowProvider.git.user }}          
+            - name: NIFI_REGISTRY_GIT_PASSWORD
+              value: {{ .Values.flowProvider.git.password }} 
+          {{- end }}
+          {{- if .Values.extraEnvs }}
+{{ toYaml .Values.extraEnvs | indent 12 }}
+          {{- end }}
           volumeMounts:
             {{ if .Values.persistence.enabled }}
             - name: "database"
               mountPath: /opt/nifi-registry/nifi-registry-current/database
+            {{ end }}
+            {{ if or .Values.persistence.enabled .Values.flowProvider.git.enabled }}
             - name: "flow-storage"
               mountPath: /opt/nifi-registry/nifi-registry-current/flow_storage
+              subPath: flow_storage
             {{ end }}
-            - name: "default-database"
-              mountPath: /opt/nifi-registry/nifi-registry-current/database/nifi-registry-primary.mv.db.temp
-              subPath: "nifi-registry-primary.mv.db.temp"
+            {{- if .Values.ssh.known_hosts }}
+            - name: sshdir
+              mountPath: /home/nifi/.ssh
+              readOnly: true
+            {{- end }}
+            {{- if .Values.flowProvider.git.enabled }}
+            {{- if .Values.flowProvider.git.config.enabled }}
+            - name: git-config
+              mountPath: /home/nifi/.gitconfig
+              subPath: gitconfig
+              readOnly: true
+            {{- end }}
+            - name: git-key-fixed
+              mountPath: /ssh
+              readOnly: true
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        - name: "default-database"
+        {{- if .Values.ssh.known_hosts }}
+        - name: sshdir
+          configMap:
+            name: {{ template "nifi-registry.fullname" . }}-ssh-config
+            defaultMode: 0644
+        {{- end }}
+        {{- if .Values.flowProvider.git.enabled }}
+        {{- if not .Values.persistence.enabled }}
+        - name: flow-storage
+          emptyDir: {}
+        {{- end }}
+        {{- if .Values.flowProvider.git.config.enabled }}
+        - name: git-config
           secret:
-            secretName: {{ include "nifi-registry.fullname" . }}-config
-            items:
-              - key: "default-database"
-                path: "nifi-registry-primary.mv.db.temp"
+            secretName: {{ include "flowProvider.git.config.secretName" . }}
+            defaultMode: 0400
+        {{- end }}
+        - name: git-key
+          secret:
+            {{- if .Values.flowProvider.git.secretName }}
+            secretName: {{ .Values.flowProvider.git.secretName }}
+            {{- else }}
+            secretName: {{ template "nifi-registry.fullname" . }}-git-deploy
+            {{- end }}
+            defaultMode: 0400
+        - name: git-key-fixed
+          emptyDir: {}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
