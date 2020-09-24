@@ -1,0 +1,154 @@
+## Provide a name in place of kube-prometheus-stack for `app:` labels
+##
+nameOverride: ""
+
+## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.16.6
+##
+kubeTargetVersionOverride: ""
+
+## Provide a name to substitute for the full names of resources
+##
+fullnameOverride: ""
+
+## Labels to apply to all resources
+##
+commonLabels: {}
+# scmhash: abc123
+# myLabel: aakkmd
+
+clusterFederation:
+  enabled: false
+
+## Install dashboards
+##
+dashboards:
+  defaultDashboardsEnabled: true
+  enable:
+    kubeApiServer: true
+    coreDns: true
+    kubeEtcd: true
+    kubeApiServer: true
+    kubeControllerManager: true
+    kubelet: true
+    kubeProxy: true
+    kubeScheduler: true
+    nodeExporter: true
+    prometheusRemoteWriteDashboards: false
+
+## Using default values from https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+##
+grafana:
+  adminPassword: prom-operator
+
+  ingress:
+    ## If true, Grafana Ingress will be created
+    ##
+    enabled: false
+
+    ## Annotations for Grafana Ingress
+    ##
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+
+    ## Labels to be added to the Ingress
+    ##
+    labels: {}
+
+    ## Hostnames.
+    ## Must be provided if Ingress is enable.
+    ##
+    # hosts:
+    #   - grafana.domain.com
+    hosts: []
+
+    ## Path for grafana ingress
+    path: /
+
+    ## TLS configuration for grafana Ingress
+    ## Secret must be manually created in the namespace
+    ##
+    tls: []
+    # - secretName: grafana-general-tls
+    #   hosts:
+    #   - grafana.example.com
+
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+
+      ## Annotations for Grafana dashboard configmaps
+      ##
+      annotations: {}
+    datasources:
+      enabled: true
+      defaultDatasource:
+        enabled: false
+        # url: http://prometheus-federation-kube-prometheus:9090
+        extraConf: {}
+
+      ## Annotations for Grafana datasource configmaps
+      ##
+      annotations: {}
+
+      ## Create datasource for each Pod of Prometheus StatefulSet;
+      ## this uses headless service `prometheus-operated` which is
+      ## created by Prometheus Operator
+      ## ref: https://git.io/fjaBS
+      createPrometheusReplicasDatasources: false
+      label: grafana_datasource
+
+  extraConfigmapMounts: []
+  # - name: certs-configmap
+  #   mountPath: /etc/grafana/ssl/
+  #   configMap: certs-configmap
+  #   readOnly: true
+
+  ## Configure additional grafana datasources (passed through tpl)
+  ## ref: http://docs.grafana.org/administration/provisioning/#datasources
+  additionalDataSources: []
+  # - name: prometheus-sample
+  #   access: proxy
+  #   basicAuth: true
+  #   basicAuthPassword: pass
+  #   basicAuthUser: daco
+  #   editable: false
+  #   jsonData:
+  #       tlsSkipVerify: true
+  #   orgId: 1
+  #   type: prometheus
+  #   url: https://{{ printf "%s-prometheus.svc" .Release.Name }}:9090
+  #   version: 1
+
+  ## Passed to grafana subchart and used by servicemonitor below
+  ##
+  service:
+    portName: service
+
+  ## If true, create a serviceMonitor for grafana
+  ##
+
+  serviceMonitor:
+    ## Scrape interval. If not set, the Prometheus default scrape interval is used.
+    ##
+    interval: ""
+    selfMonitor: true
+    #  namespace: monitoring  (defaults to use the namespace this chart is deployed to)
+
+    ## 	metric relabel configs to apply to samples before ingestion.
+    ##
+    metricRelabelings: []
+    # - action: keep
+    #   regex: 'kube_(daemonset|deployment|pod|namespace|node|statefulset).+'
+    #   sourceLabels: [__name__]
+
+    # 	relabel configs to apply to samples before ingestion.
+    ##
+    relabelings: []
+    # - sourceLabels: [__meta_kubernetes_pod_node_name]
+    #   separator: ;
+    #   regex: ^(.*)$
+    #   targetLabel: nodename
+    #   replacement: $1
+    #   action: replace
