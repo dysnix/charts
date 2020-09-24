@@ -23,6 +23,6 @@ version: 0.2.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: 0.6.0
 
-maintainer:
+maintainers:
   - name: Daniel Yavorovich
     email: deniel@dysnix.com
