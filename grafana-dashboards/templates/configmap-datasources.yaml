@@ -1,0 +1,31 @@
+{{- if .Values.grafana.sidecar.datasources.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "grafana-dashboards.fullname" . }}-datasource
+{{- if .Values.grafana.sidecar.datasources.annotations }}
+  annotations:
+{{ toYaml .Values.grafana.sidecar.datasources.annotations | indent 4 }}
+{{- end }}
+  labels:
+    {{ $.Values.grafana.sidecar.datasources.label }}: "1"
+    app: {{ template "grafana-dashboards.name" $ }}
+{{ include "grafana-dashboards.labels" $ | indent 4 }}
+data:
+  datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+{{- if .Values.grafana.sidecar.datasources.defaultDatasource.enabled }}
+    - name: Prometheus
+      type: prometheus
+      url: {{ .Values.grafana.sidecar.datasources.defaultDatasource.url }}
+      access: proxy
+      isDefault: true
+      {{- with .Values.grafana.sidecar.datasources.defaultDatasource.extraConf }}
+      {{- . | toYaml | nindent 6 }}
+      {{- end }}
+{{- end }}
+{{- if .Values.grafana.additionalDataSources }}
+{{ tpl (toYaml .Values.grafana.additionalDataSources | indent 4) . }}
+{{- end }}
+{{- end }}
