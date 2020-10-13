@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "nifi-registry.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "nifi-registry.fullname" . }}:{{ .Values.service.port }}/nifi-registry']
   restartPolicy: Never
