@@ -133,6 +133,14 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: 18080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 2
+            failureThreshold: 3
       volumes:
         {{- if .Values.ssh.known_hosts }}
         - name: sshdir
