@@ -41,16 +41,3 @@ Selector labels
 app.kubernetes.io/name: {{ include "pullsecrets.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Compile all warnings into a single message, and call fail.
-*/}}
-{{- define "pullsecrets.validateValues" -}}
-{{- $messages := list -}}
-{{- $messages := without $messages "" -}}
-{{- $message := join "\n" $messages -}}
-
-{{- if $message -}}
-{{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
-{{- end -}}
-{{- end -}}

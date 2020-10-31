@@ -1,9 +1,0 @@
-{{- include "pullsecrets.validateValues" . }}
-{{- $secretName := include "pullsecrets.fullname" . -}}
-{{- $requiredValidations := list -}}
-
-{{- if .Values.gcr.enabled }}
-{{- end }}
-
-{{- $validationErrors := include "common.validations.values.multiple.empty" (dict "required" $requiredValidations "context" $) -}}
-{{- include "common.errors.upgrade.passwords.empty" (dict "validationErrors" (list $validationErrors) "context" $) -}}
