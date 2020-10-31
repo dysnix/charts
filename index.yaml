@@ -67,6 +67,16 @@ entries:
   nifi-registry:
   - apiVersion: v2
     appVersion: 0.6.0
+    created: "2020-10-31T20:28:20.757219226Z"
+    description: A subproject of Apache NiFi to store and manage shared resources.
+    digest: dfcbaa1135c5625cd4f3db13f24928b10d9e7a7bbfb78ac81b264e91af63829a
+    name: nifi-registry
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.1/nifi-registry-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.6.0
     created: "2020-06-03T15:45:59.957013096Z"
     description: A subproject of Apache NiFi to store and manage shared resources.
     digest: 7da7ec29a38632a65a90d053e935f8a87d5c9e7a3e8e8a57a742a65b46cedad2
@@ -257,6 +267,22 @@ entries:
     - https://github.com/dysnix/charts/releases/download/proxysql-0.1.3/proxysql-0.1.3.tgz
     version: 0.1.3
   pullsecrets:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-10-31T20:28:20.86202142Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 0.10.0
+    description: A Helm chart for Kubernetes
+    digest: f23c1b4dc71d9d0210ef4ccbcabd54a8aa60081b4429dafd7d53fb28595314d2
+    name: pullsecrets
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pullsecrets-0.2.0/pullsecrets-0.2.0.tgz
+    version: 0.2.0
   - apiVersion: v2
     appVersion: 1.16.0
     created: "2020-08-24T08:34:00.846816257Z"
