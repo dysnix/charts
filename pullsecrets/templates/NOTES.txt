@@ -3,7 +3,6 @@
 {{- $requiredValidations := list -}}
 
 {{- if .Values.gcr.enabled }}
-{{- $requiredValidations = append $requiredValidations (dict "valueKey" "gcr.serviceAccountKey" "context" $) -}}
 {{- end }}
 
 {{- $validationErrors := include "common.validations.values.multiple.empty" (dict "required" $requiredValidations "context" $) -}}
