@@ -4,10 +4,12 @@
 
 gcr:
   enabled: false
-  secretName: gcr-pull-default
-  serviceAccountKey: ""
-  keyIsBase64: false
-  locations:
+  secrets:
+    - name: gcr-pull-default
+      serviceAccountKey: gcr-pull-default
+      keyIsBase64: false
+
+  defaultLocations:
     - gcr.io
     - us.gcr.io
     - eu.gcr.io
