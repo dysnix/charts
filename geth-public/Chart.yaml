@@ -13,7 +13,7 @@ sources:
   - https://github.com/ethereum/go-ethereum
 maintainers:
   - name: daniel-yavorovich
-    email: daniel@arilot.com
+    email: daniel@dysnix.com
   - name: voron
-    email: av@arilot.com
+    email: av@dysnix.com
 engine: gotpl
