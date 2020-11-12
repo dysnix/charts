@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "geth.fullname" . }}
+  labels:
+    app: {{ template "geth.name" . }}
+    chart: {{ template "geth.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  serviceName: {{ template "geth.name" . }}
+  selector:
+    matchLabels:
+      app: {{ template "geth.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "geth.name" . }}
+        release: {{ .Release.Name }}
+        {{- include "geth.statefulset.annotations" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - store
+            topologyKey: "failure-domain.beta.kubernetes.io/zone"
+      initContainers:
+      - name: remove-lock
+        command:
+        - rm
+        - -f
+        - /root/.ethereum/geth/LOCK
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: data
+          mountPath: /root
+      - name: remove-nodekey
+        command:
+        - rm
+        - -f
+        - /root/.ethereum/geth/nodekey
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: data
+          mountPath: /root
+      containers:
+      {{- if .Values.proxy.enabled }}
+      - name: {{ template "geth.fullname" . }}-proxy
+        image: "{{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag }}"
+        imagePullPolicy: {{ .Values.proxy.image.pullPolicy | quote }}
+        ports:
+        - name: proxy-rpc
+          containerPort: {{ .Values.proxy.rpcPort }}
+        - name: proxy-ws
+          containerPort: {{ .Values.proxy.wsPort }}
+        env:
+        - name: OTP_SECRET
+          value: {{ .Values.proxy.otpSecret | quote }}
+      {{- end }}
+      - name: {{ template "geth.fullname" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{ if or (.Values.testnet) (.Values.rinkeby) -}}{{/* remove networkId */ -}}
+        command: ["/usr/local/bin/geth",{{ if .Values.testnet }} "--testnet",{{ end }}{{ if .Values.rinkeby }} "--rinkeby",{{ end }} "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprofaddr=0.0.0.0", "--pprofport=6060", "--metrics", "--rpc", "--rpcapi", "{{ .Values.rpcApi }}", "--rpcaddr", "0.0.0.0", "--rpcport", "{{ .Values.rpcPort }}", "--rpcvhosts", "{{ .Values.rpcVhosts }}", "--rpccorsdomain", "'*'", "--ws", "--wsaddr", "0.0.0.0", "--wsport", "{{ .Values.wsPort }}", "--wsapi", "{{ .Values.wsApi }}", "--wsorigins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
+        {{ else -}}
+        command: ["/usr/local/bin/geth", "--networkid", "{{ .Values.networkId }}", "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprofaddr=0.0.0.0", "--pprofport=6060", "--metrics", "--rpc", "--rpcapi", "{{ .Values.rpcApi }}", "--rpcaddr", "0.0.0.0", "--rpcport", "{{ .Values.rpcPort }}", "--rpcvhosts", "{{ .Values.rpcVhosts }}", "--rpccorsdomain='*'", "--ws", "--wsaddr", "0.0.0.0", "--wsport", "{{ .Values.wsPort }}", "--wsapi", "{{ .Values.wsApi }}", "--wsorigins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
+        {{ end -}}
+        ports:
+        - name: rpc
+          containerPort: {{ .Values.rpcPort }}
+        - name: ws
+          containerPort: {{ .Values.wsPort }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "echo -e 'POST / HTTP/1.1\nHost: localhost:8545\nUser-Agent: curl/7.61.1\nAccept: */*\nContent-Type: application/json\nContent-Length: 60\n\n{\"jsonrpc\":\"2.0\",\"method\":\"net_version\",\"params\":[],\"id\":67}' | nc localhost 8545 | grep -q 'HTTP/1.1 200 OK' && echo -e 'GET / HTTP/1.1\nHost: localhost:8546\nUpgrade: websocket\nConnection: Upgrade\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\nSec-WebSocket-Version: 13\n' | nc localhost 8546 | grep -q 'HTTP/1.1 101'"
+          initialDelaySeconds: 120
+          periodSeconds: 60
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 15
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "geth {{ if .Values.testnet }} --testnet {{ end }} {{ if .Values.rinkeby }} --rinkeby {{ end }} attach --exec '!eth.syncing || eth.syncing.highestBlock-eth.syncing.currentBlock < 100' | grep -q true && return 0 || return 1"
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          successThreshold: 1
+          failureThreshold: 30
+          timeoutSeconds: 10
+        volumeMounts:
+        - name: data
+          mountPath: /root
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      annotations:
+        "helm.sh/resource-policy": keep
+      labels:
+        app: {{ template "geth.name" . }}
+        chart: {{ template "geth.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        {{- if .Values.persistence.snapshotValue }}
+        snapshot: {{ .Values.persistence.snapshotValue }}
+        {{- end }}
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      {{- if .Values.persistence.storageClassName }}
+      storageClassName: {{ .Values.persistence.storageClassName | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
