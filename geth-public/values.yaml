@@ -1,0 +1,59 @@
+image:
+  repository: "ethereum/client-go"
+  tag: "v1.8.23"
+  pullPolicy: IfNotPresent
+
+proxy:
+  enabled: false
+  rpcPort: 9545
+  wsPort: 9546
+  otpSecret: "<change-me>"
+  image:
+    pullPolicy: IfNotPresent
+    repository: dysnix/protected-proxy
+    tag: latest
+
+rpcPort: 8545
+wsPort: 8546
+rpcApi: "net,eth,personal,web3"
+rpcVhosts: "*"
+wsApi: "net,eth,personal,web3"
+wsOrigins: "*"
+networkId: 1
+testnet: false
+rinkeby: false
+syncMode: "fast"
+customArgs: {}
+
+service:
+  type: ClusterIP
+
+ingress:
+  certmanagerClusterIssuer: letsencrypt-prod
+  enabled: false
+  rpc:
+    proxyHosts:
+    - rpc.example.com
+    hosts:
+    - secret-rpc.example.com
+  ws:
+    proxyHosts:
+    - ws.example.com
+    hosts:
+    - secret-ws.example.com
+
+persistence:
+  enabled: true
+  size: 1000Gi
+  # Use empty value for dynamic provisioning from snapshot
+  storageClassName: ""
+
+resources:
+  limit:
+    memory: 2000Mi
+    cpu: 1000m
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 300
