@@ -7,19 +7,18 @@ metadata:
     chart: {{ template "geth.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    snapshot: {{ .Values.persistence.snapshotValue }}
 spec:
+  serviceName: {{ template "geth.name" . }}
   selector:
     matchLabels:
       app: {{ template "geth.name" . }}
       release: {{ .Release.Name }}
-      snapshot: {{ .Values.persistence.snapshotValue }}
   template:
     metadata:
       labels:
         app: {{ template "geth.name" . }}
         release: {{ .Release.Name }}
-        snapshot: {{ .Values.persistence.snapshotValue }}
+        {{- include "geth.statefulset.annotations" . | nindent 8 }}
     spec:
       affinity:
         podAntiAffinity:
@@ -105,7 +104,7 @@ spec:
         - name: data
           mountPath: /root
         resources:
-  {{ toYaml .Values.resources | indent 12 }}
+          {{- toYaml .Values.resources | nindent 10 }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -116,7 +115,9 @@ spec:
         chart: {{ template "geth.chart" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
+        {{- if .Values.persistence.snapshotValue }}
         snapshot: {{ .Values.persistence.snapshotValue }}
+        {{- end }}
     spec:
       accessModes:
       - "ReadWriteOnce"

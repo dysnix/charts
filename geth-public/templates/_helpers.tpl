@@ -30,3 +30,12 @@ Create chart name and version as used by the chart label.
 {{- define "geth.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Geth statefullset annotations
+*/}}
+{{- define "geth.statefulset.annotations" -}}
+{{- if .Values.persistence.snapshotValue }}
+snapshot: {{ .Values.persistence.snapshotValue }}
+{{- end }}
+{{- end -}}
