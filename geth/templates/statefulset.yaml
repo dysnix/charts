@@ -78,28 +78,28 @@ spec:
           containerPort: {{ .Values.rpcPort }}
         - name: ws
           containerPort: {{ .Values.wsPort }}
+        {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
+          {{- if and .Values.livenessProbe.exec (kindIs "string" .Values.livenessProbe.exec.command) }}
+          {{- omit .Values.livenessProbe "enabled" "exec" | toYaml | nindent 10 }}
           exec:
             command:
-            - sh
-            - -c
-            - "echo -e 'POST / HTTP/1.1\nHost: localhost:8545\nUser-Agent: curl/7.61.1\nAccept: */*\nContent-Type: application/json\nContent-Length: 60\n\n{\"jsonrpc\":\"2.0\",\"method\":\"net_version\",\"params\":[],\"id\":67}' | nc localhost 8545 | grep -q 'HTTP/1.1 200 OK' && echo -e 'GET / HTTP/1.1\nHost: localhost:8546\nUpgrade: websocket\nConnection: Upgrade\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\nSec-WebSocket-Version: 13\n' | nc localhost 8546 | grep -q 'HTTP/1.1 101'"
-          initialDelaySeconds: 120
-          periodSeconds: 60
-          successThreshold: 1
-          failureThreshold: 3
-          timeoutSeconds: 15
+              {{- tpl .Values.livenessProbe.exec.command . | nindent 14 }}
+          {{- else }}
+          {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 10 }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
+          {{- if and .Values.readinessProbe.exec (kindIs "string" .Values.readinessProbe.exec.command) }}
+          {{- omit .Values.readinessProbe "enabled" "exec" | toYaml | nindent 10 }}
           exec:
             command:
-            - sh
-            - -c
-            - "geth {{ if .Values.testnet }} --testnet {{ end }} {{ if .Values.rinkeby }} --rinkeby {{ end }} attach --exec '!eth.syncing || eth.syncing.highestBlock-eth.syncing.currentBlock < 100' | grep -q true && return 0 || return 1"
-          initialDelaySeconds: 60
-          periodSeconds: 60
-          successThreshold: 1
-          failureThreshold: 30
-          timeoutSeconds: 10
+              {{- tpl .Values.readinessProbe.exec.command . | nindent 14 }}
+          {{- else }}
+          {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 10 }}
+          {{- end }}
+        {{- end }}
         volumeMounts:
         - name: data
           mountPath: /root

@@ -1,6 +1,6 @@
 image:
   repository: "ethereum/client-go"
-  tag: "v1.8.23"
+  tag: "v1.9.23"
   pullPolicy: IfNotPresent
 
 proxy:
@@ -68,3 +68,29 @@ autoscaling:
   # maxReplicas: 10
   # targetCPU: 50
   # targetMemory: 50
+
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 120
+  periodSeconds: 60
+  successThreshold: 1
+  failureThreshold: 3
+  timeoutSeconds: 15
+  exec:
+    command: |
+      - sh
+      - -c
+      - "echo -e 'POST / HTTP/1.1\nHost: localhost:8545\nUser-Agent: curl/7.61.1\nAccept: */*\nContent-Type: application/json\nContent-Length: 60\n\n{\"jsonrpc\":\"2.0\",\"method\":\"net_version\",\"params\":[],\"id\":67}' | nc localhost 8545 | grep -q 'HTTP/1.1 200 OK' && echo -e 'GET / HTTP/1.1\nHost: localhost:8546\nUpgrade: websocket\nConnection: Upgrade\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\nSec-WebSocket-Version: 13\n' | nc localhost 8546 | grep -q 'HTTP/1.1 101'"
+
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 60
+  periodSeconds: 60
+  successThreshold: 1
+  failureThreshold: 30
+  timeoutSeconds: 10
+  exec:
+    command: |
+      - sh
+      - -c
+      - "geth {{ if .Values.testnet }} --testnet {{ end }} {{ if .Values.rinkeby }} --rinkeby {{ end }} attach --exec '!eth.syncing || eth.syncing.highestBlock-eth.syncing.currentBlock < 100' | grep -q true && return 0 || return 1"
