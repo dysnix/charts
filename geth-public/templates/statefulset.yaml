@@ -121,7 +121,9 @@ spec:
     spec:
       accessModes:
       - "ReadWriteOnce"
+      {{- if .Values.persistence.storageClassName }}
       storageClassName: {{ .Values.persistence.storageClassName | quote }}
+      {{- end }}
       resources:
         requests:
           storage: {{ .Values.persistence.size | quote }}

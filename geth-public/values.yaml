@@ -45,10 +45,8 @@ ingress:
     - secret-ws.example.com
 
 persistence:
-  enabled: true
-  size: 250Gi
-  # Use empty value for dynamic provisioning from snapshot
-  storageClassName: ""
+  size: 400Gi
+  # storageClassName:
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -62,7 +60,11 @@ resources: {}
   #   cpu: 1000m
   #   memory: 2000Mi
 
-hpa:
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 300
+## Autoscaling parameters
+##
+autoscaling:
+  enabled: false
+  # minReplicas: 1
+  # maxReplicas: 10
+  # targetCPU: 50
+  # targetMemory: 50
