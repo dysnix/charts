@@ -95,16 +95,7 @@ readinessProbe:
       - -c
       - "geth {{ if .Values.testnet }} --testnet {{ end }} {{ if .Values.rinkeby }} --rinkeby {{ end }} attach --exec '!eth.syncing || eth.syncing.highestBlock-eth.syncing.currentBlock < 100' | grep -q true && return 0 || return 1"
 
-affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - labelSelector:
-        matchExpressions:
-        - key: app
-          operator: In
-          values:
-          - store
-      topologyKey: "failure-domain.beta.kubernetes.io/zone"
+affinity: {}
 
 nodeSelector: {}
 
