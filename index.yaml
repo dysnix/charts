@@ -3,6 +3,29 @@ entries:
   geth:
   - apiVersion: v2
     appVersion: "1.8"
+    created: "2020-12-02T16:19:59.19099932Z"
+    description: Official Go implementation of the Ethereum protocol
+    digest: 93bdd5bf0bf0c0b08cd64fd7868239248f224233b99165d2fcd8af6dc45f83ad
+    home: https://geth.ethereum.org
+    icon: https://geth.ethereum.org/static/images/ethereum.png
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/ethereum/go-ethereum
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-0.2.2/geth-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: "1.8"
     created: "2020-11-12T19:31:04.661556727Z"
     description: Official Go implementation of the Ethereum protocol
     digest: 6a19df24659910865dbe62e378174ff913dfdb5d94521faf35b8b2f8450da249
