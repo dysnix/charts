@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: apache/nifi-registry
   pullPolicy: IfNotPresent
-  tag: "0.6.0"
+  tag: "0.7.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -81,3 +81,53 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+
+flowProvider:
+  git:
+    enabled: false
+    url:
+    remote: origin
+    user:
+    password:
+    # The secret name can be used to supply your own SSH key:
+    # 1. Generate a SSH key named identity:
+    #      ssh-keygen -q -N "" -f ./identity
+    # 2. Create a Kubernetes secret:
+    #      kubectl -n nifi-registry create secret generic nifi-registry-git-deploy --from-file=./identity
+    # 3. Don't check these key files into your Git repository! Once you've created
+    #    the Kubernetes secret, Delete the private key:
+    #      rm ./identity
+    # 4. Add ./identity.pub as a deployment key with write access in your Git repo
+    # 5. Set the secret name (default: nifi-registry-git-deploy) below
+    secretName:
+    # Global Git configuration See https://git-scm.com/docs/git-config for more details.
+    config:
+      enabled: false
+      secretName: ""
+      data: ""
+      # data: |
+      #   [credential "https://github.com"]
+      #           username = foo
+
+
+# Additional environment variables to set
+extraEnvs: []
+# extraEnvs:
+#   - name: FOO
+#     value: bar
+
+ssh:
+  # Overrides for git over SSH. If you use your own git server, you
+  # will likely need to provide a host key for it in this field.
+  known_hosts: ""
+  config: ""
+    # specify the config which would go in /home/nifi/.ssh/config file
+    # for e.g.
+  # config: |
+  #   Host github.com
+  #   ProxyCommand socat STDIO PROXY:<proxyIP>:%h:%p,proxyport=<proxyPort>,proxyauth=<username:password>
+  #   User git
+  #   Hostname ssh.github.com
+  #   Port 443
+  #   IdentityFile /etc/fluxd/ssh/identity
