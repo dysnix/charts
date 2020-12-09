@@ -72,6 +72,24 @@ entries:
     version: 0.1.5
   grafana-dashboards:
   - apiVersion: v2
+    appVersion: 7.3.x
+    created: "2020-12-09T17:53:51.275397605Z"
+    dependencies:
+    - name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: ~> 6.1.14
+    description: A Helm chart for Kubernetes
+    digest: 54ac38964b870708e657906aa446e42c11297a1d1cc39bc6c04f07b2ee581e93
+    home: https://github.com/dysnix/charts
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: grafana-dashboards
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/grafana-dashboards-0.2.0/grafana-dashboards-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: 7.1.x
     created: "2020-09-24T14:13:30.964594597Z"
     dependencies:
