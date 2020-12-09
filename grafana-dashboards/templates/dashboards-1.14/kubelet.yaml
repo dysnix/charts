@@ -537,6 +537,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 8,
                         "legend": {
@@ -617,6 +618,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 9,
                         "legend": {
@@ -710,6 +712,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 10,
                         "legend": {
@@ -803,6 +806,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 11,
                         "legend": {
@@ -890,6 +894,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 12,
                         "legend": {
@@ -990,6 +995,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 13,
                         "legend": {
@@ -1072,6 +1078,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 14,
                         "legend": {
@@ -1167,6 +1174,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 15,
                         "legend": {
@@ -1262,6 +1270,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 16,
                         "legend": {
@@ -1342,6 +1351,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 17,
                         "legend": {
@@ -1436,6 +1446,7 @@ data:
                         "datasource": "$datasource",
                         "description": "Pod lifecycle event generator",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 18,
                         "legend": {
@@ -1516,6 +1527,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 19,
                         "legend": {
@@ -1609,6 +1621,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 20,
                         "legend": {
@@ -1702,6 +1715,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 21,
                         "legend": {
@@ -1816,6 +1830,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 22,
                         "legend": {
@@ -1909,6 +1924,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 23,
                         "legend": {
@@ -1989,6 +2005,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 24,
                         "legend": {
@@ -2069,6 +2086,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 25,
                         "legend": {

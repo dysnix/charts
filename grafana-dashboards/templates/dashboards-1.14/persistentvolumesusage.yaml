@@ -44,6 +44,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 2,
                         "legend": {
@@ -224,6 +225,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 4,
                         "legend": {
