@@ -27,6 +27,7 @@ dependencies:
   version: "~> 6.1.14"
   repository: https://grafana.github.io/helm-charts
 
+home: https://github.com/dysnix/charts
 maintainers:
 - name: dennybaa
   email: dennybaa@gmail.com
