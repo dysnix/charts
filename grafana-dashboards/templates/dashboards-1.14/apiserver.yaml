@@ -144,8 +144,9 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "decimals": 3,
-                        "description": "How much error budget is left looking at our 0.990% availability gurantees?",
+                        "description": "How much error budget is left looking at our 0.990% availability guarantees?",
                         "fill": 10,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 4,
                         "legend": {
@@ -324,6 +325,7 @@ data:
                         "datasource": "$datasource",
                         "description": "How many read requests (LIST,GET) per second do the apiservers get by code?",
                         "fill": 10,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 6,
                         "legend": {
@@ -422,6 +424,7 @@ data:
                         "datasource": "$datasource",
                         "description": "How many percent of read requests (LIST,GET) per second are returned with errors (5xx)?",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 7,
                         "legend": {
@@ -503,6 +506,7 @@ data:
                         "datasource": "$datasource",
                         "description": "How many seconds is the 99th percentile for reading (LIST|GET) a given resource?",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 8,
                         "legend": {
@@ -679,6 +683,7 @@ data:
                         "datasource": "$datasource",
                         "description": "How many write requests (POST|PUT|PATCH|DELETE) per second do the apiservers get by code?",
                         "fill": 10,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 10,
                         "legend": {
@@ -777,6 +782,7 @@ data:
                         "datasource": "$datasource",
                         "description": "How many percent of write requests (POST|PUT|PATCH|DELETE) per second are returned with errors (5xx)?",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 11,
                         "legend": {
@@ -858,6 +864,7 @@ data:
                         "datasource": "$datasource",
                         "description": "How many seconds is the 99th percentile for writing (POST|PUT|PATCH|DELETE) a given resource?",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 12,
                         "legend": {
@@ -951,6 +958,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 13,
                         "legend": {
@@ -1031,6 +1039,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 14,
                         "legend": {
@@ -1111,6 +1120,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 15,
                         "legend": {
@@ -1204,6 +1214,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 16,
                         "legend": {
@@ -1284,6 +1295,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 17,
                         "legend": {
@@ -1364,6 +1376,7 @@ data:
                         "dashes": false,
                         "datasource": "$datasource",
                         "fill": 1,
+                        "fillGradient": 0,
                         "gridPos": {},
                         "id": 18,
                         "legend": {

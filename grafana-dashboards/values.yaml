@@ -24,7 +24,6 @@ clusterFederation:
 dashboards:
   defaultDashboardsEnabled: true
   enable:
-    kubeApiServer: true
     coreDns: true
     kubeEtcd: true
     kubeApiServer: true
