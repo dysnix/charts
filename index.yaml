@@ -70,6 +70,33 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/geth-0.1.5/geth-0.1.5.tgz
     version: 0.1.5
+  github-actions-runner-operator:
+  - apiVersion: v2
+    appVersion: v0.6.0
+    created: "2020-12-22T14:41:54.398597852Z"
+    description: A Helm chart for the github action runner operator.
+    digest: d0752e7ff41f1c47f6de3a0d13d2d79564de122c051f37af21499e300a0599c3
+    home: https://github.com/evryfs/github-actions-runner-operator/
+    icon: https://media-exp1.licdn.com/dms/image/C4D0BAQFZ80eOhCewVw/company-logo_200_200/0?e=2159024400&v=beta&t=XFbeA46Og-bBC5Th2aFMwXfB1FssEqN5lx-hKraJuAg
+    keywords:
+    - github
+    - action runner
+    - operator
+    - ci
+    - agent
+    kubeVersion: '>=1.16'
+    maintainers:
+    - email: david.karlsen@evry.com
+      name: davidkarlsen
+      url: https://github.com/davidkarlsen/
+    name: github-actions-runner-operator
+    sources:
+    - https://github.com/evryfs/github-actions-runner-operator/
+    - https://github.com/evryfs/helm-charts/
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/github-actions-runner-operator-2.3.1/github-actions-runner-operator-2.3.1.tgz
+    version: 2.3.1
   grafana-dashboards:
   - apiVersion: v2
     appVersion: 7.3.x
