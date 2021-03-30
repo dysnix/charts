@@ -28,7 +28,7 @@ data:
         "graphTooltip": 0,
         "hideControls": false,
         "links": [],
-        "refresh": "10s",
+        "refresh": "60s",
         "rows": [
             {
                 "collapse": false,
@@ -183,7 +183,7 @@ data:
                         "timeShift": null,
                         "title": "Prometheus Stats",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -272,7 +272,7 @@ data:
                         "timeShift": null,
                         "title": "Target Sync",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -348,7 +348,7 @@ data:
                         "timeShift": null,
                         "title": "Targets",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -436,7 +436,7 @@ data:
                         "timeShift": null,
                         "title": "Average Scrape Interval Duration",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -536,7 +536,7 @@ data:
                         "timeShift": null,
                         "title": "Scrape failures",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -612,7 +612,7 @@ data:
                         "timeShift": null,
                         "title": "Appended Samples",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -700,7 +700,7 @@ data:
                         "timeShift": null,
                         "title": "Head Series",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -776,7 +776,7 @@ data:
                         "timeShift": null,
                         "title": "Head Chunks",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -864,7 +864,7 @@ data:
                         "timeShift": null,
                         "title": "Query Rate",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -940,7 +940,7 @@ data:
                         "timeShift": null,
                         "title": "Stage Duration",
                         "tooltip": {
-                            "shared": true,
+                            "shared": false,
                             "sort": 0,
                             "value_type": "individual"
                         },
@@ -982,7 +982,9 @@ data:
         ],
         "schemaVersion": 14,
         "style": "dark",
-        "tags": [],
+        "tags": [
+            "prometheus-mixin"
+        ],
         "templating": {
             "list": [
                 {
@@ -1000,7 +1002,7 @@ data:
                     "type": "datasource"
                 },
                 {
-                    "allValue": null,
+                    "allValue": ".+",
                     "current": {
                         "selected": true,
                         "text": "All",
@@ -1024,7 +1026,7 @@ data:
                     "useTags": false
                 },
                 {
-                    "allValue": null,
+                    "allValue": ".+",
                     "current": {
                         "selected": true,
                         "text": "All",
@@ -1079,7 +1081,7 @@ data:
             ]
         },
         "timezone": "utc",
-        "title": "Prometheus Overview",
+        "title": "Prometheus / Overview",
         "uid": "",
         "version": 0
     }
