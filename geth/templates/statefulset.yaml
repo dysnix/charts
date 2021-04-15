@@ -60,9 +60,9 @@ spec:
         imagePullPolicy: {{ .Values.proxy.image.pullPolicy | quote }}
         ports:
         - name: proxy-rpc
-          containerPort: {{ .Values.proxy.rpcPort }}
+          containerPort: {{ .Values.proxy.http.port }}
         - name: proxy-ws
-          containerPort: {{ .Values.proxy.wsPort }}
+          containerPort: {{ .Values.proxy.ws.port }}
         env:
         - name: OTP_SECRET
           value: {{ .Values.proxy.otpSecret | quote }}
@@ -70,16 +70,16 @@ spec:
       - name: {{ template "geth.fullname" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-        {{ if or (.Values.testnet) (.Values.rinkeby) -}}{{/* remove networkId */ -}}
-        command: ["/usr/local/bin/geth",{{ if .Values.testnet }} "--testnet",{{ end }}{{ if .Values.rinkeby }} "--rinkeby",{{ end }} "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprofaddr=0.0.0.0", "--pprofport=6060", "--metrics", "--rpc", "--rpcapi", "{{ .Values.rpcApi }}", "--rpcaddr", "0.0.0.0", "--rpcport", "{{ .Values.rpcPort }}", "--rpcvhosts", "{{ .Values.rpcVhosts }}", "--rpccorsdomain", "'*'", "--ws", "--wsaddr", "0.0.0.0", "--wsport", "{{ .Values.wsPort }}", "--wsapi", "{{ .Values.wsApi }}", "--wsorigins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
+        {{ if or (.Values.ropsten) (.Values.rinkeby) -}}{{/* remove networkId */ -}}
+        command: ["/usr/local/bin/geth", "--maxpeers", "1000", "--cache", "{{ .Values.cache }}", {{ if .Values.snapshot }} "--snapshot",{{ end }}{{ if .Values.ropsten }} "--ropsten",{{ end }}{{ if .Values.rinkeby }} "--rinkeby",{{ end }} "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprof.addr=0.0.0.0", "--pprof.port=6060", "--metrics", "--http", "--http.api", "{{ .Values.http.api }}", "--http.addr", "0.0.0.0", "--http.port", "{{ .Values.http.port }}", "--http.vhosts", "{{ .Values.http.vhosts }}", "--http.corsdomain", "'*'", "--ws", "--ws.addr", "0.0.0.0", "--ws.port", "{{ .Values.ws.port }}", "--ws.api", "{{ .Values.wsApi }}", "--ws.origins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
         {{ else -}}
-        command: ["/usr/local/bin/geth", "--networkid", "{{ .Values.networkId }}", "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprofaddr=0.0.0.0", "--pprofport=6060", "--metrics", "--rpc", "--rpcapi", "{{ .Values.rpcApi }}", "--rpcaddr", "0.0.0.0", "--rpcport", "{{ .Values.rpcPort }}", "--rpcvhosts", "{{ .Values.rpcVhosts }}", "--rpccorsdomain='*'", "--ws", "--wsaddr", "0.0.0.0", "--wsport", "{{ .Values.wsPort }}", "--wsapi", "{{ .Values.wsApi }}", "--wsorigins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
+        command: ["/usr/local/bin/geth", "--maxpeers", "1000", "--cache", "{{ .Values.cache }}", {{ if .Values.snapshot }} "--snapshot",{{ end }} "--networkid", "{{ .Values.networkId }}", "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprof.addr=0.0.0.0", "--pprof.port=6060", "--metrics", "--http", "--http.api", "{{ .Values.http.api }}", "--http.addr", "0.0.0.0", "--http.port", "{{ .Values.http.port }}", "--http.vhosts", "{{ .Values.http.vhosts }}", "--http.corsdomain='*'", "--ws", "--ws.addr", "0.0.0.0", "--ws.port", "{{ .Values.ws.port }}", "--ws.api", "{{ .Values.wsApi }}", "--ws.origins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
         {{ end -}}
         ports:
         - name: rpc
-          containerPort: {{ .Values.rpcPort }}
+          containerPort: {{ .Values.http.port }}
         - name: ws
-          containerPort: {{ .Values.wsPort }}
+          containerPort: {{ .Values.ws.port }}
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
           {{- if and .Values.livenessProbe.exec (kindIs "string" .Values.livenessProbe.exec.command) }}
