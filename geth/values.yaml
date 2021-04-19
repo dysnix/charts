@@ -31,6 +31,7 @@ rinkeby: false
 snapshot: false
 syncMode: "fast"
 
+maxPeers: 50
 cache: 4096
 customArgs: {}
 
