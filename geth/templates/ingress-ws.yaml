@@ -1,7 +1,7 @@
 {{ if .Values.ingress.enabled }}
 {{- $fullName := include "geth.fullname" . -}}
-{{- $svcProxyPort := ternary .Values.proxy.wsPort .Values.wsPort .Values.proxy.enabled -}}
-{{- $svcPort := .Values.wsPort -}}
+{{- $svcProxyPort := ternary .Values.proxy.ws.port .Values.ws.port .Values.proxy.enabled -}}
+{{- $svcPort := .Values.ws.port -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -9,7 +9,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.org/websocket-services: {{ template "geth.fullname" . }}
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.certmanagerClusterIssuer }}
   labels:
     app: {{ template "geth.name" . }}
     chart: {{ template "geth.chart" . }}
@@ -44,5 +44,5 @@ spec:
     {{- range .Values.ingress.ws.hosts }}
     - {{ . | quote }}
     {{- end }}
-    secretName: {{ .Values.ingress.ws.host }}-tls
+    secretName: {{ $fullName }}-ws-tls
 {{ end }}

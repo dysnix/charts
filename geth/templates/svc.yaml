@@ -15,16 +15,16 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - name: rpc
-      port: {{ .Values.rpcPort }}
+      port: {{ .Values.http.port }}
       targetPort: rpc
     - name: ws
-      port: {{ .Values.wsPort }}
+      port: {{ .Values.ws.port }}
       targetPort: ws
     - name: proxy-rpc
-      port: {{ .Values.proxy.rpcPort }}
+      port: {{ .Values.proxy.http.port }}
       targetPort: proxy-rpc
     - name: proxy-ws
-      port: {{ .Values.proxy.wsPort }}
+      port: {{ .Values.proxy.ws.port }}
       targetPort: proxy-ws
   selector:
     app: {{ template "geth.name" . }}
