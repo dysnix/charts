@@ -20,6 +20,6 @@ jobs:
       - name: Run chart-releaser
         uses: ccremer/chart-releaser-action@ignore-dirs
         with:
-          charts_dir: .
+          charts_dir: dysnix/
         env:
           CR_TOKEN: "${{ secrets.CR_TOKEN }}"
