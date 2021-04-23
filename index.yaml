@@ -1,6 +1,49 @@
 apiVersion: v1
 entries:
+  app:
+  - apiVersion: v2
+    created: "2021-04-23T08:36:32.249789645Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Generic application Helm chart
+    digest: 956574bf15bb297563b39c7731688929449ffc7e7a7282145ffa6e720d8015f1
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: app
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/app-0.3.1/app-0.3.1.tgz
+    version: 0.3.1
   geth:
+  - apiVersion: v2
+    appVersion: "1.8"
+    created: "2021-04-23T08:36:32.361918465Z"
+    description: Official Go implementation of the Ethereum protocol
+    digest: 26349822b76fd246cfca6062b9eed2e83e4a9284e8dd6650d3c01c91b29c42ca
+    home: https://geth.ethereum.org
+    icon: https://geth.ethereum.org/static/images/ethereum.png
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/ethereum/go-ethereum
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-0.3.1/geth-0.3.1.tgz
+    version: 0.3.1
   - apiVersion: v2
     appVersion: "1.8"
     created: "2021-04-20T11:56:55.82240277Z"
@@ -96,6 +139,24 @@ entries:
   grafana-dashboards:
   - apiVersion: v2
     appVersion: 7.3.x
+    created: "2021-04-23T08:36:32.557089683Z"
+    dependencies:
+    - name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: ~> 6.6.4
+    description: A Helm chart for Kubernetes
+    digest: 2c2a6a05bd84cfb940de5a0b408fe0cd305fab5e0fe03faa32bafe1b7923e6fd
+    home: https://github.com/dysnix/charts
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: grafana-dashboards
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/grafana-dashboards-0.2.2/grafana-dashboards-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 7.3.x
     created: "2021-03-30T11:48:41.299467765Z"
     dependencies:
     - name: grafana
@@ -150,6 +211,15 @@ entries:
   kafkamagic:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2021-04-23T08:36:32.743747268Z"
+    description: A Helm chart for Kubernetes
+    digest: 820ad70f5d90ce6411e4b18725716e7cf60b50731378e7edb29e75d601d93a99
+    name: kafkamagic
+    urls:
+    - https://github.com/dysnix/charts/releases/download/kafkamagic-0.2.3/kafkamagic-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2020-06-15T18:12:34.681704263Z"
     description: A Helm chart for Kubernetes
     digest: 27615ff5645abd5f67ea2c31946457a430935c2f50bc0eb063d9c2df717657d2
@@ -194,6 +264,37 @@ entries:
     - https://github.com/dysnix/charts/releases/download/kafkamagic-0.1.3/kafkamagic-0.1.3.tgz
     version: 0.1.3
   nginx:
+  - annotations:
+      category: Infrastructure
+    apiVersion: v1
+    appVersion: 1.19.4
+    created: "2021-04-23T08:36:32.864520728Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 0.x.x
+    description: Chart for the nginx server
+    digest: be8c02c154e1899bcb5d1212435e15ce24eb078441bdef6c7f0235ab9a8e3a8f
+    home: https://github.com/bitnami/charts/tree/master/bitnami/nginx
+    icon: https://bitnami.com/assets/stacks/nginx/img/nginx-stack-220x234.png
+    keywords:
+    - nginx
+    - http
+    - web
+    - www
+    - reverse proxy
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: nginx
+    sources:
+    - https://github.com/bitnami/bitnami-docker-nginx
+    - http://www.nginx.org
+    urls:
+    - https://github.com/dysnix/charts/releases/download/nginx-7.1.8/nginx-7.1.8.tgz
+    version: 7.1.8
   - annotations:
       category: Infrastructure
     apiVersion: v1
@@ -261,6 +362,27 @@ entries:
     - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.0/nifi-registry-0.1.0.tgz
     version: 0.1.0
   pritunl:
+  - apiVersion: v1
+    appVersion: "1.29"
+    created: "2021-04-23T08:36:32.981037622Z"
+    dependencies:
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: ~8.3.2
+    description: A Helm chart for Kubernetes
+    digest: ffdf880801d9ea7ecb47d5e727fcc6c5f5acd406336a24b31526d6d28fa42e5f
+    home: https://pritunl.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: pritunl
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pritunl/pritunl
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pritunl-0.1.14/pritunl-0.1.14.tgz
+    version: 0.1.14
   - apiVersion: v1
     appVersion: "1.29"
     created: "2020-08-23T15:17:12.525432789Z"
@@ -411,6 +533,22 @@ entries:
   proxysql:
   - apiVersion: v1
     appVersion: 2.0.9
+    created: "2021-04-23T08:36:33.127273177Z"
+    description: ProxySQL Helm chart for Kubernetes
+    digest: 938aeb084224f015ffe0c2fd5b44a71f64c096c72ff762aaae97e5f0facc00d2
+    home: https://www.proxysql.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: proxysql
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/sysown/proxysql
+    urls:
+    - https://github.com/dysnix/charts/releases/download/proxysql-0.1.5/proxysql-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v1
+    appVersion: 2.0.9
     created: "2020-06-02T21:21:36.42399079Z"
     description: ProxySQL Helm chart for Kubernetes
     digest: eddba5c83bce0953b356dfe791220b732abed228c97bc8169566e27dbea906a7
@@ -442,6 +580,22 @@ entries:
     - https://github.com/dysnix/charts/releases/download/proxysql-0.1.3/proxysql-0.1.3.tgz
     version: 0.1.3
   pullsecrets:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-04-23T08:36:33.245572282Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 0.10.0
+    description: A Helm chart for Kubernetes
+    digest: 0ecd337e6b5b23c7306ef9b1ec07dc472f13a72fa48c8916c344ddc915b7fa26
+    name: pullsecrets
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pullsecrets-0.2.1/pullsecrets-0.2.1.tgz
+    version: 0.2.1
   - apiVersion: v2
     appVersion: 1.16.0
     created: "2020-10-31T20:28:20.86202142Z"
