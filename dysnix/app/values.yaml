@@ -33,6 +33,11 @@ name:
 ##
 kind: Deployment
 
+##
+##
+args: []
+command: []
+
 ## String to partially override common.names.fullname template (will maintain the release name)
 ##
 # nameOverride:
@@ -77,7 +82,7 @@ podLabels: {}
 
 ## Add init containers to the pod
 ##
-initContainers:
+initContainers: []
 ## e.g.
 # - name: your-image-name
 # image: your-image
@@ -355,7 +360,7 @@ affinity: {}
 ##  - name: TEST_VAR
 ##    value: test
 ##
-# env:
+env: {}
 
 ## Array of sources to populate environment variables in the container from
 ## Ref: https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envfromsource-v1-core
@@ -366,16 +371,15 @@ affinity: {}
 ##   - secretRef:
 ##       name: '{{ include "app.fullname" . }}-env'
 ##
+envFrom: []
 
 ## Array to add volumes
 ##
-## volumes: []
-##
+volumes: []
 
 ## Array to add volume mounts (normally used with volumes)
 ##
-## volumeMounts: []
-##
+volumeMounts: []
 
 ## Configure options for liveness and readiness probes
 ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
@@ -452,6 +456,7 @@ secrets: {}
 ## checksums:
 ##   - secrets.yaml
 ##
+checksums: []
 
 tests:
   httpChecks:
