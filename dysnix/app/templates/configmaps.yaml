@@ -1,4 +1,4 @@
-{{- range $nameSuffix, $values := .Values.configs }}
+{{- range $nameSuffix, $values := .Values.configMaps }}
 ---
 apiVersion: v1
 kind: ConfigMap
