@@ -6,6 +6,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "app.validateValues.nameGiven" .) -}}
 {{- $messages := append $messages (include "app.validateValues.imageRepositoryGiven" .) -}}
 {{- $messages := append $messages (include "app.validateValues.noSecretsData" .) -}}
+{{- $messages := append $messages (include "app.validateValues.noConfigMapsData" .) -}}
 {{- $messages := append $messages (include "app.validateValues.ingressHasPortsProvided" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
@@ -48,6 +49,17 @@ app: no-command-or-args
 {{- if not (or $values.data $values.stringData) -}}
 app: no-secrets-data-or-stringdata
     Each item of .secrets must have data or stringData field. Please
+    check the input configuration.
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Validate that configMaps have data given */}}
+{{- define "app.validateValues.noConfigMapsData" -}}
+{{- range $_, $values := .Values.configMaps -}}
+{{- if not $values.data -}}
+app: no-configmaps-data
+    Each item of .configMaps must have data field. Please
     check the input configuration.
 {{- end -}}
 {{- end -}}
