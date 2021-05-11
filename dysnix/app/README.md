@@ -48,7 +48,7 @@ secrets:
     stringData:
       HELLO: world
 
-configs:
+configMaps:
   my.conf:
     data: |
       hello: world
@@ -113,7 +113,7 @@ ingress:
 | command | list | `[]` |  |
 | commonAnnotations | object | `{}` |  |
 | commonLabels | object | `{}` |  |
-| configs | object | `{}` |  |
+| configMaps | object | `{}` |  |
 | containerPorts | list | `[]` |  |
 | containerSecurityContext.enabled | bool | `false` |  |
 | containerSecurityContext.runAsUser | int | `1001` |  |

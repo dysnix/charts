@@ -424,7 +424,7 @@ persistence:
 
 ## Populate сonfigMaps for the application
 ##
-## configs:
+## configMaps:
 ##   app:
 ##     data: |
 ##       dbURL = {{ .Values.dbUser }}@{{ .Values.dbPassword }}:{{ .Values.dbPort }}
@@ -432,7 +432,7 @@ persistence:
 ## The above example will create app configMap
 ## (prefixed with {{ template "app.fullname" $ }}-).
 ##
-configs: {}
+configMaps: {}
 
 ## Populate secrets for the application
 ##
