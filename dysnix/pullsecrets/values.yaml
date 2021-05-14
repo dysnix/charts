@@ -3,14 +3,19 @@
 # Declare variables to be passed into your templates.
 
 gcr:
-  enabled: false
-  secrets:
-    - name: gcr-pull-default
-      serviceAccountKey: gcr-pull-default
-      keyIsBase64: false
-
-  defaultLocations:
+  # Default locations to be used as image registries
+  locations:
     - gcr.io
     - us.gcr.io
     - eu.gcr.io
     - asia.gcr.io
+
+pullsecrets: []
+  # - name: gcr-pull-default
+  #   ## Populate the pull secret from a list if GCR jsonKeys
+  #   gcr: []
+  #     ## Note jsonKey must base64 encoded!
+  #     ## You can override the default locations if explicitly specifed
+  #     # - jsonKey: base64encodedJsonKey
+  #     #   locations:
+  #     #     - gcr.io
