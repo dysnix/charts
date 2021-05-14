@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   app:
   - apiVersion: v2
+    created: "2021-05-14T17:41:07.444310543Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Generic application Helm chart
+    digest: 8a3473e034e88acced4810260f23c510f9a3b1e9fc1adbc38d5c5e487ed69fd7
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: app
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/app-0.3.4/app-0.3.4.tgz
+    version: 0.3.4
+  - apiVersion: v2
     created: "2021-05-11T14:48:03.874034469Z"
     dependencies:
     - name: common
@@ -632,6 +651,27 @@ entries:
     - https://github.com/dysnix/charts/releases/download/proxysql-0.1.3/proxysql-0.1.3.tgz
     version: 0.1.3
   pullsecrets:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2021-05-14T17:41:07.528293203Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: A Helm chart for Kubernetes
+    digest: 75a4fcbc83d82cffbb32bb6fad9b436777a86231d29eb0768c1f9a04f23dd784
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: pullsecrets
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pullsecrets-0.3.0/pullsecrets-0.3.0.tgz
+    version: 0.3.0
   - apiVersion: v2
     appVersion: 1.16.0
     created: "2021-04-23T08:36:33.245572282Z"
