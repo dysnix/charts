@@ -19,3 +19,11 @@ pullsecrets: []
   #     # - jsonKey: base64encodedJsonKey
   #     #   locations:
   #     #     - gcr.io
+  # - name: pull-default
+  #   ## Populate the pull secret from a list if docker config auths
+  #   auths: {}
+  #     "https://index.docker.io/v1/":
+  #       auth: "c3R...zE2"
+  #     "registry.gitlab.com":
+  #       username: hello
+  #       password: world
