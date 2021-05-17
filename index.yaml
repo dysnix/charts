@@ -653,6 +653,21 @@ entries:
   pullsecrets:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2021-05-17T14:08:55.167663108Z"
+    description: A Helm chart for Kubernetes
+    digest: fbfec96ce65c0acc694e20b3ff33b35bc03aaa29650d3450302d17033332c8cd
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: pullsecrets
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pullsecrets-0.3.1/pullsecrets-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2021-05-14T17:41:07.528293203Z"
     dependencies:
     - name: common
