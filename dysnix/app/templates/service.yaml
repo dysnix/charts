@@ -27,7 +27,7 @@ spec:
   {{- end }}
   ports:
     {{- if .Values.service.port }}
-    - name: {{ template "app.service.portName" . }}
+    - name: {{ include "app.service.defaultPortName" (pick .Values.service "port" "targetPort") }}
       port: {{ .Values.service.port }}
       {{- if .Values.service.targetPort }}
       targetPort: {{ .Values.service.targetPort }}
