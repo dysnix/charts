@@ -33,6 +33,5 @@ Session.vim
 
 # Chart dependencies
 **/charts
-**/Chart.lock
 
 .history

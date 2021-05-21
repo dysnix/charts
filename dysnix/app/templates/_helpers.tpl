@@ -39,13 +39,16 @@ Return  the proper Storage Class
 {{- include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) -}}
 {{- end -}}
 
-
 {{/*
-Set the default service port name
+Choose port name based on .port .targetPort. Fallbacks to "app".
+
+Examples:
+  {{- include "app.service.defaultPortName" (dict "port" "80" "targetPort" "8080") }}
+  {{- include "app.service.defaultPortName" (dict "port" "80" "targetPort" "api") }}
 */}}
-{{- define "app.service.portName" -}}
-{{- $targetPort := get .Values.service "targetPort" -}}
-{{- if or (not $targetPort) (regexMatch "^[0-9]+$" ($targetPort | toString)) -}}
+{{- define "app.service.defaultPortName" -}}
+{{- $targetPort := .targetPort | default .port -}}
+{{- if regexMatch "^[0-9]+$" ($targetPort | toString) -}}
 app
 {{- else -}}
 {{ $targetPort }}
