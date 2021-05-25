@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   app:
   - apiVersion: v2
+    created: "2021-05-25T09:59:08.256582633Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Generic application Helm chart
+    digest: e36e3883d0473d68ec34442cf3cfc4b1bc947b71d8d79f0a647a26bf7a440600
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: app
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/app-0.3.7/app-0.3.7.tgz
+    version: 0.3.7
+  - apiVersion: v2
     created: "2021-05-24T10:07:44.779547558Z"
     dependencies:
     - name: common
