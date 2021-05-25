@@ -28,8 +28,8 @@ spec:
             {{- if eq "true" (include "common.ingress.supportsPathType" .) }}
             pathType: {{ .Values.ingress.pathType }}
             {{- end }}
-            {{- $svcName := include "app.service.defaultPortName" (pick .Values.service "port" "targetPort") }}
-            backend: {{- include "common.ingress.backend" (dict "serviceName" $svcName "servicePort" (.Values.service.port) "context" .) | nindent 14 }}
+            {{- $svcPort := include "app.service.defaultPortName" (pick .Values.service "port" "targetPort") }}
+            backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" .) "servicePort" $svcPort "context" .) | nindent 14 }}
     {{- end }}
     {{- range .Values.ingress.extraHosts }}
     - host: {{ .name }}
