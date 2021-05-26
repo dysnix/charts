@@ -9,6 +9,16 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.8.0"
 
+gitImage:
+  repository: alpine/git
+  pullPolicy: IfNotPresent
+  tag: v2.26.2
+
+helperImage:
+  repository: alpine
+  pullPolicy: IfNotPresent
+  tag: "3.6"
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

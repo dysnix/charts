@@ -29,7 +29,8 @@ spec:
       initContainers:
         {{- if .Values.flowProvider.git.enabled }}
         - name: git-clone
-          image: alpine/git:v2.26.2
+          image: {{ .Values.gitImage.repository }}:{{ .Values.gitImage.tag }}
+          imagePullPolicy: {{ .Values.gitImage.pullPolicy }}
           command:
             - sh
             - -cex
@@ -61,8 +62,8 @@ spec:
         {{- end }}
         {{- if .Values.persistence.enabled }}
         - name: take-data-dir-ownership
-          image: alpine:3.6
-          command:
+          image: {{ .Values.helperImage.repository }}:{{ .Values.helperImage.tag }}
+          imagePullPolicy: {{ .Values.helperImage.pullPolicy }}
           command:
             - chown
             - -R

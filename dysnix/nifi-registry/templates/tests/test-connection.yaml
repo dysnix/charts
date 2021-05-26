@@ -9,7 +9,8 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: {{ .Values.helperImage.repository }}:{{ .Values.helperImage.tag }}
+      imagePullPolicy: {{ .Values.helperImage.pullPolicy }}
       command: ['wget']
       args: ['{{ include "nifi-registry.fullname" . }}:{{ .Values.service.port }}/nifi-registry']
   restartPolicy: Never
