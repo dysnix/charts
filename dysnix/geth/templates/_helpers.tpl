@@ -51,7 +51,7 @@ Geth args
 {{- $args = concat $args (list "--pprof.port=6060" "--metrics" "--http" "--http.api" .Values.http.api) -}}
 {{- $args = concat $args (list "--http.addr" "0.0.0.0" "--http.port" .Values.http.port "--http.vhosts" .Values.http.vhosts) -}}
 {{- $args = concat $args (list "--http.corsdomain" "*" "--ws" "--ws.addr" "0.0.0.0" "--ws.port" .Values.ws.port) -}}
-{{- $args = concat $args (list "--ws.api" .Values.wsApi "--ws.origins" .Values.wsOrigins) -}}
+{{- $args = concat $args (list "--ws.api" .Values.ws.api "--ws.origins" .Values.ws.origins) -}}
 
 {{- range $testnet := list "ropsten" "rinkeby" -}}
   {{- if eq ($testnet | get $.Values | toString) "true"  -}}

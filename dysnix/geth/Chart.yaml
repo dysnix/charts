@@ -2,7 +2,7 @@ apiVersion: v2
 name: geth
 description: Official Go implementation of the Ethereum protocol
 
-version: "0.4.0"
+version: "0.4.1"
 appVersion: "1.10.3"
 
 keywords:
