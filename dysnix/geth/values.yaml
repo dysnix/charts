@@ -1,6 +1,6 @@
 image:
   repository: "ethereum/client-go"
-  tag: "v1.10.1"
+  tag: "v1.10.3"
   pullPolicy: IfNotPresent
 
 proxy:
@@ -27,8 +27,9 @@ ws:
 networkId: 1
 ropsten: false
 rinkeby: false
-## To enable snapshot sync set snapshot: true and syncMode: "snap"
-snapshot: false
+## Snapshot database mode (if not set, not passed)
+## true/false
+# snapshot:
 syncMode: "fast"
 
 maxPeers: 50
@@ -55,6 +56,7 @@ ingress:
     - secret-ws.example.com
 
 persistence:
+  # snapshotValue: ""
   size: 400Gi
   # storageClassName:
 

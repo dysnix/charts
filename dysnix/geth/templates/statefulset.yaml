@@ -70,11 +70,8 @@ spec:
       - name: {{ template "geth.fullname" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-        {{ if or (.Values.ropsten) (.Values.rinkeby) -}}{{/* remove networkId */ -}}
-        command: ["/usr/local/bin/geth", "--maxpeers", "{{ .Values.maxPeers }}", "--cache", "{{ .Values.cache }}", {{ if .Values.snapshot }} "--snapshot",{{ end }}{{ if .Values.ropsten }} "--ropsten",{{ end }}{{ if .Values.rinkeby }} "--rinkeby",{{ end }} "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprof.addr=0.0.0.0", "--pprof.port=6060", "--metrics", "--http", "--http.api", "{{ .Values.http.api }}", "--http.addr", "0.0.0.0", "--http.port", "{{ .Values.http.port }}", "--http.vhosts", "{{ .Values.http.vhosts }}", "--http.corsdomain", "'*'", "--ws", "--ws.addr", "0.0.0.0", "--ws.port", "{{ .Values.ws.port }}", "--ws.api", "{{ .Values.wsApi }}", "--ws.origins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
-        {{ else -}}
-        command: ["/usr/local/bin/geth", "--maxpeers", "{{ .Values.maxPeers }}", "--cache", "{{ .Values.cache }}", {{ if .Values.snapshot }} "--snapshot",{{ end }} "--networkid", "{{ .Values.networkId }}", "--syncmode", "{{ .Values.syncMode }}", "--pprof", "--pprof.addr=0.0.0.0", "--pprof.port=6060", "--metrics", "--http", "--http.api", "{{ .Values.http.api }}", "--http.addr", "0.0.0.0", "--http.port", "{{ .Values.http.port }}", "--http.vhosts", "{{ .Values.http.vhosts }}", "--http.corsdomain='*'", "--ws", "--ws.addr", "0.0.0.0", "--ws.port", "{{ .Values.ws.port }}", "--ws.api", "{{ .Values.wsApi }}", "--ws.origins", "{{ .Values.wsOrigins }}"{{ range $key, $val := .Values.customArgs }}, {{ printf "--%s" $key | quote }}{{ if $val }}, {{ $val | quote }}{{ end }}{{ end }}]
-        {{ end -}}
+        command: ["/usr/local/bin/geth"]
+        args: {{- include "geth.args" . | nindent 10 }}
         ports:
         - name: rpc
           containerPort: {{ .Values.http.port }}
