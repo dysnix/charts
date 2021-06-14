@@ -9,6 +9,14 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.8.0"
 
+initContainers:
+  git:
+    image: alpine/git
+    tag: v2.26.2
+  alpine:
+    image: alpine
+    tag: 3.6
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -131,3 +139,9 @@ ssh:
   #   Hostname ssh.github.com
   #   Port 443
   #   IdentityFile /etc/fluxd/ssh/identity
+
+tests:
+  images:
+    busybox:
+      image: busybox
+      tag: 1.33.1
