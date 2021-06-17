@@ -16,6 +16,11 @@ initContainers:
   alpine:
     image: alpine
     tag: 3.6
+  # Additional environment variables to set for the initContainers
+  extraEnvs: []
+  # extraEnvs:
+  #   - name: FOO
+  #     value: bar
 
 imagePullSecrets: []
 nameOverride: ""
