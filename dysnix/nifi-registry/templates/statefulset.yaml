@@ -45,6 +45,9 @@ spec:
               value: {{ .Values.flowProvider.git.user }}          
             - name: NIFI_REGISTRY_GIT_PASSWORD
               value: {{ .Values.flowProvider.git.password }}
+          {{- if .Values.initContainers.extraEnvs }}
+{{ toYaml .Values.initContainers.extraEnvs | indent 12 }}
+          {{- end }}
           volumeMounts:
             - name: "flow-storage"
               mountPath: /tmp
