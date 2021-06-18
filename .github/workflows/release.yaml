@@ -18,7 +18,7 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.2.1
+        uses: ccremer/chart-releaser-action@ignore-dirs
         with:
           charts_dir: dysnix/
         env:
