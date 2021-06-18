@@ -1,0 +1,23 @@
+{{ if .Values.externalLBp2pDiscovery }}
+## use this if you want to expose blockchain p2p (not RPC) to public
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-lb-p2p-discovery
+  labels:
+    chain: eth
+{{ include "bsc.labels" . | indent 4 }}
+spec:
+  type: LoadBalancer
+  {{ if .Values.externalLBp2pDiscoveryIP }}
+  loadBalancerIP: {{ .Values.externalLBp2pDiscoveryIP }}
+  {{ end }}
+  ports:
+    - name: {{ .Values.service.p2pPortName1 }}
+      port: {{ .Values.service.p2pPort1 }}
+      targetPort: {{ .Values.service.p2pPortName1 }}
+      protocol: {{ .Values.service.p2pPortProtocol1 }}
+  selector:
+    app.kubernetes.io/name: {{ include "bsc.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{ end }}
