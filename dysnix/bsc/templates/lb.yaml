@@ -1,0 +1,35 @@
+{{ if .Values.externalLB }}
+## only use this if you want to expose
+## json services to a public ip
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-lb
+  labels:
+    chain: eth
+{{ include "bsc.labels" . | indent 4 }}
+spec:
+  type: LoadBalancer
+  {{ if .Values.externalLBIP }}
+  loadBalancerIP: {{ .Values.externalLBIP }}
+  {{ end }}
+  {{- if .Values.externalLBSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range $val := .Values.externalLBSourceRanges }}
+    - {{ $val -}}
+    {{ end }}
+  {{ end }}
+  ports:
+    - name: {{ .Values.service.rpcPortName }}
+      port: {{ .Values.service.rpcPort }}
+      targetPort: {{ .Values.service.rpcPortName }}
+    - name: {{ .Values.service.wsPortName }}
+      port: {{ .Values.service.wsPort }}
+      targetPort: {{ .Values.service.wsPortName }}
+    - name: {{ .Values.service.graphQlPortName }}
+      port: {{ .Values.service.graphQlPort }}
+      targetPort: {{ .Values.service.graphQlPortName }}
+  selector:
+    app.kubernetes.io/name: {{ include "bsc.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{ end }}
