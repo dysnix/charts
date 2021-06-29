@@ -7,6 +7,7 @@ metadata:
 spec:
   serviceName: "{{ .Release.Name }}-service"
   replicas: {{ .Values.replicaCount }} # by default is 1
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "bsc.name" . }}
