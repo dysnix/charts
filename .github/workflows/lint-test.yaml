@@ -27,6 +27,7 @@ jobs:
         name: Run chart-testing (list-changed)
         id: list-changed
         run: |
+          cp .github/ct.yaml $CT_CONFIG_DIR
           changed=$(ct list-changed)
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
