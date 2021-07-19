@@ -1,0 +1,20 @@
+{{- if .Values.prometheus.rules.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+{{ include "bsc.labels" . | indent 4 }}
+  name: {{ include "bsc.fullname" . }}.rules
+spec:
+  groups:
+  - name: {{ include "bsc.fullname" . }}.rules
+    rules:
+    - alert: BSCNodePeerCount
+      annotations:
+        description: 'BSC Node {{ "{{" }} $labels.pod }} in {{ "{{" }} $labels.namespace }} namespace has no active peers for mo than 5 minutes.'
+        summary: BSC Node has no active peers.
+      expr: count(net_peers == 0) BY (pod, namespace)
+      for: 5m
+      labels:
+        severity: critical
+{{- end }}

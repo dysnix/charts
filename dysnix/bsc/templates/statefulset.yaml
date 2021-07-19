@@ -116,6 +116,14 @@ spec:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
             readOnly: true
+      {{- if .Values.metrics.enabled }}
+      - name: metrics
+        image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
+        imagePullPolicy: {{ .Values.metrics.image.pullPolicy }}
+        args:
+          - -url
+          - http://127.0.0.1:{{ .Values.service.rpcPort }}
+      {{- end }}
       initContainers:
       {{- if .Values.init_genesis }}
       - name: init
