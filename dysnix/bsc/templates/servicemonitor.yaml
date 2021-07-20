@@ -1,0 +1,22 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "bsc.fullname" . }}
+spec:
+  endpoints:
+  - interval: 1m
+    scrapeTimeout: 30s
+    honorLabels: true
+    port: {{ .Values.service.metricsPortName }}
+    path: /metrics
+    scheme: http
+  jobLabel: {{ include "bsc.fullname" . }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bsc.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}

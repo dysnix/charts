@@ -64,6 +64,8 @@ service:
   p2pPort1: &p2pPort1 30311
   p2pPortName1: &p2pPortName1 p2p-discovery
   p2pPortProtocol1: &p2pPortProtocol1 UDP
+  metricsPortName: &metricsPortName metrics
+  metricsPort: &metricsPort 9368
   ports:
     - port: *rpcPort
       name: *rpcPortName
@@ -77,6 +79,15 @@ service:
     - port: *p2pPort1
       name: *p2pPortName1
       protocol: *p2pPortProtocol1
+    - port: *metricsPort
+      name: *metricsPortName
+
+metrics:
+  enabled: false
+  # image:
+  #   repository: 31z4/ethereum-prometheus-exporter
+  #   tag: v1.2.0
+  #   pullPolicy: IfNotPresent
 
 bscCmdOverride: false
 bscCmd: ""
