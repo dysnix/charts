@@ -40,12 +40,22 @@ service:
   ## ProxySQL service type
   type: ClusterIP
   # clusterIP: None
-  port: 6033
 
-  ## Specify the nodePort value for the LoadBalancer and NodePort service types.
+  ## SQL proxying port
+  proxyPort: 6033
+
+  ## Specify the >proxy< NodePort value for the LoadBalancer and NodePort service types.
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
   ##
-  # nodePort:
+  # proxyNodePort:
+
+  ## Admin and clustering port
+  adminPort: 6032
+
+  ## Specify the >admin< NodePort value for the LoadBalancer and NodePort service types.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ##
+  # adminNodePort:
 
   ## Provide any additional annotations which may be required.
   ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
@@ -79,6 +89,8 @@ tolerations: []
 
 affinity: {}
 
+podAnnotations: {}
+
 ## Specify pod disruption budget
 ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
 ##
@@ -108,14 +120,27 @@ ssl:
   ## Loads ca.pem, cert.pem, and key.pem from an existingSecret
   fromSecret: ""
 
+secret:
+  # This are the variables to set `admin_credentials`
+  # WARNING: Set the `admin_credentials` variable to a non-default user other than admin`.
+  #          ProxySQL reserves the default `admin` user for local connection via localhost only.
+  admin_user: "proxysql-admin"
+  admin_password: "proxysql"
+
 admin_variables:
-  admin_credentials: "admin:admin"
   debug: false
-  # - refresh_interval=2000
+
+  # admin/clustering listening interfaces
+  mysql_ifaces: "0.0.0.0:6032"
+
+  #refresh_interval: 2000
 
 mysql_variables:
   ## ref: https://github.com/sysown/proxysql/wiki/Global-variables
   #
+
+  # Listening IP and port for proxy connections
+  interfaces: "0.0.0.0:6033"
   ## The number of background threads that ProxySQL uses in order to process MySQL traffic
   threads: 4
   ## The maximum number of client connections that the proxy can handle.
@@ -160,3 +185,39 @@ mysql_query_rules:
   #   match_pattern: "^SELECT .* FOR UPDATE$"
   #   destination_hostgroup: 0
   #   apply: 1
+
+## Defines an additional list of ProxySQL peers (clustering).
+#   The default list `proxysql_servers` iterates over the number statefullset 'proxysql-core' replicas (default 3).
+#   ref: https://proxysql.com/documentation/proxysql-cluster/
+additional_proxysql_servers:
+  # - hostname : peer’s hostname/IP
+  #   port : peer’s port
+  #   weight : currently unused, but in the roadmap for future enhancements
+  #   comment : free form comment field
+
+proxysql_cluster:
+  enabled: false
+
+  secret:
+    # This are the variables to set `admin_credentials` and corresponding `cluster_` variables
+    cluster_username: "proxysql-cluster"
+    cluster_password: "proxysql"
+
+  core:
+    ## DNS Example:
+    #   headless-svc:                 proxysql-core.<namespace>.svc.cluster.local
+    #   sts-pod:      proxysql-core-0.proxysql-core.<namespace>.svc.cluster.local
+
+    # Number of core/main ProxySQL nodes to listen for changes on AdminPort
+    #   It is recommended to use one of the following number of replicas: 3, 5, 7, or 9.
+    replicas: 3
+
+  satellite:
+    # Select the Kubernetes Resource type for the Satellite nodes,
+    #   either "DaemonSet" or "Deployment"
+    kind:  "DaemonSet"
+
+    # Only applies if kind=Deployment
+    replicas: 3
+
+terminationGracePeriodSeconds: 60

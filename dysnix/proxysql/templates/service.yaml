@@ -24,11 +24,58 @@ spec:
   {{- end }}
   ports:
     - name: proxy
-      port: {{ .Values.service.port }}
+      port: {{ .Values.service.proxyPort }}
       targetPort: proxy
-      {{- if .Values.service.nodePort }}
-      nodePort: {{ .Values.service.nodePort }}
+      {{- if .Values.service.proxyNodePort }}
+      nodePort: {{ .Values.service.proxyNodePort }}
       {{- end }}
+    - name: admin
+      port: {{ .Values.service.adminPort }}
+      targetPort: admin
+      {{- if .Values.service.adminNodePort }}
+      nodePort: {{ .Values.service.adminNodePort }}
+      {{- end }}
+  topologyKeys:
+    {{- /*
+      Service prefers node local, zonal, then regional endpoints but falls back to cluster wide endpoints.
+    */}}
+    - "kubernetes.io/hostname"
+    - "topology.kubernetes.io/zone"
+    - "topology.kubernetes.io/region"
+    - "*"
   selector:
     app: {{ include "proxysql.name" . }}
     release: {{ .Release.Name }}
+---
+{{ if .Values.proxysql_cluster.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "proxysql.fullname" . }}-core
+  labels:
+{{ include "proxysql.labels" . | indent 4 }}
+{{- with .Values.service.annotations }}
+  annotations:
+{{ tpl (toYaml .) $ | indent 4 }}
+{{- end }}
+spec:
+  ports:
+    - name: admin
+      port: {{ .Values.service.adminPort }}
+      targetPort: admin
+      {{- if .Values.service.adminNodePort }}
+      nodePort: {{ .Values.service.adminNodePort }}
+      {{- end }}
+  clusterIP: None
+  topologyKeys:
+    {{- /*
+      Service prefers node local, zonal, then regional endpoints but falls back to cluster wide endpoints.
+    */}}
+    - "kubernetes.io/hostname"
+    - "topology.kubernetes.io/zone"
+    - "topology.kubernetes.io/region"
+    - "*"
+  selector:
+    app: {{ include "proxysql.name" . }}-core
+    release: {{ .Release.Name }}
+{{ end }}

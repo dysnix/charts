@@ -1,12 +1,11 @@
-{{- if (eq .Values.proxysql_cluster.satellite.kind "Deployment") -}}
+{{- if (eq .Values.proxysql_cluster.satellite.kind "DaemonSet") -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: {{ include "proxysql.fullname" . }}
   labels:
 {{ include "proxysql.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
       app: {{ include "proxysql.name" . }}

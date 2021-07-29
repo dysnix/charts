@@ -1,16 +1,18 @@
-{{- if (eq .Values.proxysql_cluster.satellite.kind "Deployment") -}}
+{{ if .Values.proxysql_cluster.enabled }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{ include "proxysql.fullname" . }}
+  name: {{ include "proxysql.fullname" . }}-core
   labels:
-{{ include "proxysql.labels" . | indent 4 }}
+    {{- include "proxysql.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicas }}
+  serviceName: "proxysql"
+  replicas: {{ .Values.proxysql_cluster.core.replicas }}
   selector:
     matchLabels:
-      app: {{ include "proxysql.name" . }}
+      app: {{ include "proxysql.name" . }}-core
       release: {{ .Release.Name }}
+  serviceName: {{ include "proxysql.fullname" . }}-core
   template:
     metadata:
       annotations:
@@ -21,13 +23,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        app: {{ include "proxysql.name" . }}
+        app: {{ include "proxysql.name" . }}-core
         release: {{ .Release.Name }}
     spec:
-    {{- with .Values.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
-    {{- end }}
+      {{- end }}
       serviceAccountName: {{ template "proxysql.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
