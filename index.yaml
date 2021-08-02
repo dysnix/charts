@@ -620,6 +620,21 @@ entries:
   nifi-registry:
   - apiVersion: v2
     appVersion: 0.8.0
+    created: "2021-08-02T20:37:10.516477934Z"
+    description: A subproject of Apache NiFi to store and manage shared resources.
+    digest: cf1146dd542678b0d0ef372eff7d12b896d156845393fb3cd9f72b6ea69ba6ab
+    home: https://github.com/dysnix/charts/tree/master/dysnix/nifi-registry
+    icon: https://svn.apache.org/repos/asf/nifi/site/trunk/images/niFi-logo-horizontal-scaled.png
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    name: nifi-registry
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/nifi-registry-0.3.4/nifi-registry-0.3.4.tgz
+    version: 0.3.4
+  - apiVersion: v2
+    appVersion: 0.8.0
     created: "2021-07-13T20:54:55.287264131Z"
     description: A subproject of Apache NiFi to store and manage shared resources.
     digest: 9bbc197030460929e94b135ae470402893852a1dac05b808ac4b35d1595f7691
