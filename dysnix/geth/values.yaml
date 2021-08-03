@@ -1,6 +1,7 @@
 image:
   repository: "ethereum/client-go"
-  tag: "v1.10.5"
+  ## AppVersion is used when not set
+  # tag: ""
   pullPolicy: IfNotPresent
 
 proxy:
