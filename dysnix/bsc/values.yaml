@@ -88,6 +88,9 @@ metrics:
   #   repository: 31z4/ethereum-prometheus-exporter
   #   tag: v1.2.0
   #   pullPolicy: IfNotPresent
+prometheus:
+  rules:
+    enabled: false
 
 bscCmdOverride: false
 bscCmd: ""
@@ -155,11 +158,11 @@ ingress:
 
 ## Autoscaling parameters
 autoscaling:
-  enabled: true
-  scaleDownDisabled: true
-  targetCPU: 60
-  minReplicas: 1
-  maxReplicas: 10
+  enabled: false
+  # scaleDownDisabled: true
+  # targetCPU: 60
+  # minReplicas: 1
+  # maxReplicas: 10
   # targetMemory: 50
 
 securityContext:
