@@ -22,7 +22,7 @@ init_genesis: true
 # Don't use spaces or special chars
 bsc:
   # we don't have other chains, it's just a pod label for now
-  chain: testnet
+  chain: mainnet
   #  Blockchain sync mode ("fast", "full", or "light") (default: fast)
   syncmode: "full"
   # Blockchain garbage collection mode ("full", "archive") (default: "full")
@@ -179,5 +179,5 @@ affinity:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: "bsc"
-              bsc/chain: "testnet"
+              bsc/chain: "mainnet"
           topologyKey: failure-domain.beta.kubernetes.io/zone
