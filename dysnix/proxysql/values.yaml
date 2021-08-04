@@ -220,4 +220,34 @@ proxysql_cluster:
     # Only applies if kind=Deployment
     replicas: 3
 
+  # Cluster Init job
+  #   Execute SQL operations/transactions to force proxysql
+  #   to update the internal runtime_checksums_values, in order for satellites
+  #   to pick up any changes.
+  #   This is necessary because on each update the cluster config versioning
+  #   starts at version/checksum = 0. As per specification the satellites won't sync the changes
+  #   until the version/checksum is not 0.
+  job:
+
+    image:
+      registry: docker.io
+      repository: mysql
+      tag: "8"
+      pullPolicy: IfNotPresent
+
+    # Retry 3 times until failed
+    backoffLimit: 3
+
+    # delete the job resource after given seconds
+    ttlSecondsAfterFinished: 3600
+
+    resources: {}
+    #  limits:
+    #    cpu: 100m
+    #    memory: 128Mi
+    #  requests:
+    #    cpu: 100m
+    #    memory: 128Mi
+
+
 terminationGracePeriodSeconds: 60

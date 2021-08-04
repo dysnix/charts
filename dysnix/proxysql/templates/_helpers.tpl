@@ -66,6 +66,16 @@ Return the proper ProxySQL image name
 {{- end -}}
 
 {{/*
+Return the proper Cluster Job image name
+*/}}
+{{- define "proxysql.proxysql_cluster.job.image" -}}
+{{- $registryName := .Values.proxysql_cluster.job.image.registry -}}
+{{- $repositoryName := .Values.proxysql_cluster.job.image.repository -}}
+{{- $tag := .Values.proxysql_cluster.job.image.tag | toString -}}
+  {{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- end -}}
+
+{{/*
 ProxySQL SSL directory
 */}}
 {{- define "proxysql.sslDir" -}}
