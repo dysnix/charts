@@ -133,7 +133,7 @@ admin_variables:
   # admin/clustering listening interfaces
   mysql_ifaces: "0.0.0.0:6032"
 
-  #refresh_interval: 2000
+  # refresh_interval: 2000
 
 mysql_variables:
   ## ref: https://github.com/sysown/proxysql/wiki/Global-variables
@@ -215,7 +215,7 @@ proxysql_cluster:
   satellite:
     # Select the Kubernetes Resource type for the Satellite nodes,
     #   either "DaemonSet" or "Deployment"
-    kind:  "DaemonSet"
+    kind: "DaemonSet"
 
     # Only applies if kind=Deployment
     replicas: 3
