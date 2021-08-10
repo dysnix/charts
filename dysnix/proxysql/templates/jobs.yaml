@@ -1,0 +1,82 @@
+{{ if .Values.proxysql_cluster.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "proxysql.fullname" . }}-init-cluster"
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+  annotations:
+    {{/* execute job on install, upgrade and rollback actions */}}
+    "helm.sh/hook": post-install,post-upgrade,post-rollback
+    # Helm hooks by weight (assigning a weight of 0 by default), by resource kind and finally by name in ascending order.
+    # Helm then loads the hook with the lowest weight first (negative to positive)
+    "helm.sh/hook-weight": "-10"
+    # Delete the resource after the hook is successfully executed
+    #"helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: {{ .Values.proxysql_cluster.job.backoffLimit | int }}
+  ttlSecondsAfterFinished: {{ .Values.proxysql_cluster.job.ttlSecondsAfterFinished | int }}
+  template:
+    metadata:
+      name: "{{ include "proxysql.fullname" . }}-init-cluster"
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app: {{ include "proxysql.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ template "proxysql.serviceAccountName" . }}
+      dnsPolicy: ClusterFirst
+      # Set restartPolicy = "Never" for debugging the Job or using a logging system to ensure output from failed Jobs is not lost inadvertently.
+      restartPolicy: "Never"
+      containers:
+        - name: "psql-init-cluster"
+          {{/* Connect to the ProxySQL console and execute the SQL script `/data/update-cluster-checksums.sql` */}}
+          {{- $coreServiceName := printf "%s-core" (include "proxysql.fullname" .) }}
+          command: ["/bin/sh" ]
+          args: [ "-c",
+                  "mysql --user=${PSQL_USER} --password=${PSQL_PASSWORD} --host={{ $coreServiceName }} --port=6032 --wait -vv < /data/update-cluster-checksums.sql" ]
+          image: {{ template "proxysql.proxysql_cluster.job.image" . }}
+          imagePullPolicy: {{ .Values.proxysql_cluster.job.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.proxysql_cluster.job.resources | nindent 12 }}
+          env:
+            - name: PSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "proxysql.fullname" . }}
+                  key: proxysql_admin_user
+            - name: PSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "proxysql.fullname" . }}
+                  key: proxysql_admin_password
+          volumeMounts:
+            - name: update-cluster-checksums-sql
+              mountPath: /data/update-cluster-checksums.sql
+              subPath: update-cluster-checksums.sql
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: update-cluster-checksums-sql
+          configMap:
+            name: {{ include "proxysql.fullname" . }}-sql-files
+{{- end }}

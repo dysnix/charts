@@ -66,6 +66,16 @@ Return the proper ProxySQL image name
 {{- end -}}
 
 {{/*
+Return the proper Cluster Job image name
+*/}}
+{{- define "proxysql.proxysql_cluster.job.image" -}}
+{{- $registryName := .Values.proxysql_cluster.job.image.registry -}}
+{{- $repositoryName := .Values.proxysql_cluster.job.image.repository -}}
+{{- $tag := .Values.proxysql_cluster.job.image.tag | toString -}}
+  {{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- end -}}
+
+{{/*
 ProxySQL SSL directory
 */}}
 {{- define "proxysql.sslDir" -}}
@@ -74,84 +84,4 @@ ProxySQL SSL directory
 {{- else -}}
 /etc/proxysql
 {{- end -}}
-{{- end -}}
-
-{{/*
-ProxySQL SSL config
-*/}}
-{{- define "proxysql.sslConf" -}}
-{{- if .Values.ssl.fromSecret }}
-ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/ca.pem"
-{{- else if .Values.ssl.ca }}
-ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/ca.pem"
-{{- end -}}
-{{- if or (and .Values.ssl.cert .Values.ssl.key) .Values.ssl.fromSecret }}
-ssl_p2s_cert="{{ include "proxysql.sslDir" . }}/cert.pem"
-ssl_p2s_key="{{ include "proxysql.sslDir" . }}/key.pem"
-{{- end -}}
-{{- end -}}
-
-{{/*
-ProxySQL proxysql.cnf
-*/}}
-{{- define "proxysql.conf" -}}
-{{- $sslEnabled := or (and .Values.ssl.cert .Values.ssl.key) .Values.ssl.fromSecret -}}
-datadir="/data/proxysql"
-
-admin_variables=
-{
-  mysql_ifaces="127.0.0.1:6032"
-  {{- range $key, $value := .Values.admin_variables }}
-  {{ $key }}={{ $value | toJson }}
-  {{- end }}
-}
-
-mysql_variables=
-{
-  interfaces="0.0.0.0:6033"
-  {{- include "proxysql.sslConf" . | indent 2 }}
-  {{- range $key, $value := .Values.mysql_variables }}
-  {{ $key }}={{ $value | toJson }}
-  {{- end }}
-}
-
-mysql_servers=
-(
-  {{- range $_, $server := .Values.mysql_servers }}
-  {
-    {{- if and $sslEnabled (not (hasKey $server "use_ssl")) -}}
-    {{- $server := merge $server (dict "use_ssl" 1) }}
-    {{- end }}
-    {{- range $key, $value := $server }}
-    {{ $key }}={{ $value | toJson }}
-    {{- end }}
-  },
-  {{- end }}
-)
-
-mysql_users=
-(
-  {{- range $_, $user := .Values.mysql_users }}
-  {
-    {{- if hasKey $user "active" -}}
-    {{- $server := merge $user (dict "active" 1) }}
-    {{- end }}
-    {{- range $key, $value := $user }}
-    {{ $key }}={{ $value | toJson }}
-    {{- end }}
-  },
-  {{- end }}
-)
-
-mysql_query_rules=
-(
-  {{- range $idx, $rule := .Values.mysql_query_rules }}
-  {
-    rule_id={{ add $idx 1 }}
-    {{- range $key, $value := $rule }}
-    {{ $key }}={{ $value | toJson }}
-    {{- end }}
-  },
-  {{- end }}
-)
 {{- end -}}

@@ -1,0 +1,112 @@
+datadir="/var/lib/proxysql"
+
+admin_variables=
+{
+  @include "/etc/proxysql/admin_credentials.cnf"
+  {{- range $key, $value := .Values.admin_variables }}
+  {{ $key }}={{ $value | toJson }}
+  {{- end }}
+}
+
+mysql_variables=
+{
+  {{/* ProxySQL SSL config */}}
+  {{- if .Values.ssl.fromSecret }}
+  ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/ca.pem"
+  {{- else if .Values.ssl.ca }}
+  ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/ca.pem"
+  {{- end -}}
+  {{- if or (and .Values.ssl.cert .Values.ssl.key) .Values.ssl.fromSecret }}
+  ssl_p2s_cert="{{ include "proxysql.sslDir" . }}/cert.pem"
+  ssl_p2s_key="{{ include "proxysql.sslDir" . }}/key.pem"
+  {{- end -}}
+  {{- range $key, $value := .Values.mysql_variables }}
+  {{ $key }}={{ $value | toJson }}
+  {{- end }}
+}
+
+mysql_servers =
+(
+  {{- $sslEnabled := or (and .Values.ssl.cert .Values.ssl.key) .Values.ssl.fromSecret -}}
+  {{- range $_, $server := .Values.mysql_servers }}
+  {
+    {{- if and $sslEnabled (not (hasKey $server "use_ssl")) -}}
+    {{- $server := merge $server (dict "use_ssl" 1) }}
+    {{- end }}
+    {{- range $key, $value := $server }}
+    {{ $key }}={{ $value | toJson }}
+    {{- end }}
+  },
+  {{- end }}
+)
+
+mysql_users:
+(
+  {{- range $_, $user := .Values.mysql_users }}
+  {
+    {{- if hasKey $user "active" -}}
+    {{- $server := merge $user (dict "active" 1) }}
+    {{- end }}
+    {{- range $key, $value := $user }}
+    {{ $key }}={{ $value | toJson }}
+    {{- end }}
+  },
+  {{- end }}
+)
+
+mysql_query_rules:
+(
+  {{- range $idx, $rule := .Values.mysql_query_rules }}
+  {
+    rule_id={{ add $idx 1 }}
+    {{- range $key, $value := $rule }}
+    {{ $key }}={{ $value | toJson }}
+    {{- end }}
+  },
+  {{- end }}
+)
+
+proxysql_servers=
+(
+  {{- $nodeCount := .Values.proxysql_cluster.core.replicas | int }}
+  {{- $coreServiceName := printf "%s-core" (include "proxysql.fullname" .) }}
+  {{- range $index, $_ := until $nodeCount }}
+  {
+    hostname={{ printf "proxysql-core-%d.%s" $index $coreServiceName | toJson }}
+    port={{ $.Values.service.adminPort | toJson }}
+    weight=100
+  },
+  {{- end }}
+  {{- range $_, $pserver :=  .Values.additional_proxysql_servers }}
+  {
+    hostname={{ $pserver.hostname | toJson }}
+    port={{ default $.Values.service.adminPort $pserver.port | toJson }}
+    weight={{ default 100 $pserver.weight | toJson }}
+    comment={{ default "" $pserver.comment | toJson }}
+  },
+  {{- end }}
+)
+
+scheduler=
+(
+  {{- range $idx, $rule := .Values.schedulers }}
+  {
+    rule_id={{ add $idx 1 }}
+    {{- range $key, $value := $rule }}
+    {{ $key }}={{ $value | toJson }}
+    {{- end }}
+  },
+  {{- end }}
+)
+
+mysql_replication_hostgroups=
+(
+  {{- range $idx, $rule := .Values.mysql_replication_hostgroups }}
+  {
+    rule_id={{ add $idx 1 }}
+    {{- range $key, $value := $rule }}
+    {{ $key }}={{ $value | toJson }}
+    {{- end }}
+  },
+  {{- end }}
+)

@@ -1,0 +1,9 @@
+{{- if .Values.proxysql_cluster.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "proxysql.fullname" . }}-sql-files
+data:
+  update-cluster-checksums.sql: |
+    {{- tpl (.Files.Get "files/update-cluster-checksums.sql") . | nindent 4 }}
+{{- end -}}
