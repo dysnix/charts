@@ -70,6 +70,9 @@ spec:
         ports:
           {{- range $val := .Values.service.ports }}
         - containerPort: {{ $val.port }}
+          {{- if $val.hostPort }}
+          hostPort: {{ $val.hostPort }}
+          {{- end }}
           name: "{{ $val.name }}"
           protocol: {{ $val.protocol | default "TCP" }}
           {{- end }}

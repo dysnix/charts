@@ -7,7 +7,11 @@ metadata:
 spec:
   type:  {{ .Values.service.type }}
   ports:
-  {{- toYaml .Values.service.ports | nindent 4 }}
+  {{- range $val := .Values.service.ports }}
+  - port: {{ $val.port }}
+    name: "{{ $val.name }}"
+    protocol: {{ $val.protocol | default "TCP" }}
+  {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "bsc.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

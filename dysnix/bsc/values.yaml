@@ -74,9 +74,11 @@ service:
     - port: *graphQlPort
       name: *graphQlPortName
     - port: *p2pPort0
+      hostPort: *p2pPort0
       name: *p2pPortName0
       protocol: *p2pPortProtocol0
     - port: *p2pPort1
+      hostPort: *p2pPort1
       name: *p2pPortName1
       protocol: *p2pPortProtocol1
     - port: *metricsPort
