@@ -130,6 +130,26 @@ spec:
           - http://127.0.0.1:{{ .Values.service.rpcPort }}
       {{- end }}
       initContainers:
+      - name: remove-lock
+        command:
+          - rm
+          - -f
+          - {{ .Values.bsc.base_path }}/geth/LOCK
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+      - name: remove-nodekey
+        command:
+          - rm
+          - -f
+          - {{ .Values.bsc.base_path }}/geth/nodekey
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
       {{- if .Values.init_genesis }}
       - name: init
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
