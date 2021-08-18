@@ -1,0 +1,23 @@
+{{- if .Values.multicluster.enabled }}
+apiVersion: networking.gke.io/v1
+kind: MultiClusterService
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{ include "bsc.labels" . | indent 4 }}
+spec:
+  template:
+    spec:
+      selector:
+        app.kubernetes.io/name: {{ include "bsc.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      ports:
+        - name: jsonrpc
+          protocol: TCP
+          port: {{ .Values.multicluster.service.port }}
+          {{- if .Values.failback.enabled }}
+          targetPort: {{ .Values.failback.port }}
+          {{- else }}
+          targetPort: {{ .Values.service.rpcPort }}
+          {{- end }}
+{{- end }}
