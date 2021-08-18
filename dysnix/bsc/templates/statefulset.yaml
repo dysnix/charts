@@ -129,6 +129,18 @@ spec:
           - -url
           - http://127.0.0.1:{{ .Values.service.rpcPort }}
       {{- end }}
+      {{- if .Values.failback.enabled }}
+      - name: nginx
+        image: "{{ .Values.failback.image.repository }}:{{ .Values.failback.image.tag }}"
+        imagePullPolicy: {{ .Values.failback.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.failback.port }}
+            name: nginx
+            protocol: TCP
+        volumeMounts:
+          - mountPath: /etc/nginx/
+            name: nginx-config-volume
+      {{- end }}
       initContainers:
       - name: remove-lock
         command:
@@ -172,6 +184,11 @@ spec:
         {{- if not .Values.persistence.enabled }}
         - name: bsc-pvc
           emptyDir: {}
+        {{- end }}
+        {{- if .Values.failback.enabled }}
+        - name: nginx-config-volume
+          configMap:
+            name: "{{ .Release.Name }}-nginx-config"
         {{- end }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:

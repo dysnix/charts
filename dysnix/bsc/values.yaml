@@ -94,6 +94,21 @@ prometheus:
   rules:
     enabled: false
 
+failback:
+  enabled: false
+  image:
+    repository: nginxinc/nginx-unprivileged
+    tag: "1.20-alpine"
+    pullPolicy: IfNotPresent
+  port: 8000
+
+multicluster:
+  enabled: false
+  ingress:
+    ip: ""
+  service:
+    port: 80
+
 bscCmdOverride: false
 bscCmd: ""
 
@@ -168,9 +183,10 @@ autoscaling:
   # targetMemory: 50
 
 securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  fsGroup: 101
+  runAsGroup: 101
+  runAsUser: 101
+
 nodeSelector: {}
 tolerations: []
 affinity:
