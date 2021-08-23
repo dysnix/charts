@@ -152,8 +152,10 @@ spec:
            --ws=True --ws-host=0.0.0.0 --ws-port={{ .Values.bxgateway.ws_port }}
            --blockchain-protocol={{ .Values.bxgateway.blockchain_protocol }}
            --blockchain-network={{ .Values.bxgateway.blockchain_network }}
-           --enode={{ .Values.bxgateway.enode }}
            --continent={{ .Values.bxgateway.continent }}
+           --enode={{ .Values.bxgateway.enode }}
+           --node-public-key={{ .Values.bxgateway.id }}
+           --private-key={{ .Values.bxgateway.private_key }}
            --data-dir=/tmp"
         ports:
           - name: rpc

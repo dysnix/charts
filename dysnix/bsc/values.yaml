@@ -115,6 +115,8 @@ bxgateway:
   continent: EU
   id: <enode>
   enode: enode://<enode>@localhost:30311
+  private_key: ""
+  trusted_enode: ""
   certs:
     name0: external_gateway_cert.pem
     value0: ""
