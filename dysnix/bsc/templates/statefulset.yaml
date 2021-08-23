@@ -146,20 +146,15 @@ spec:
         image: "{{ .Values.bxgateway.image.repository }}:{{ .Values.bxgateway.image.tag }}"
         imagePullPolicy: {{ .Values.bxgateway.image.pullPolicy }}
         args:
-          - --private-ssl-base-url=file:///app/ssl
-          - --rpc=True
-          - --rpc-host=0.0.0.0
-          - --rpc-port={{ .Values.bxgateway.rpc_port }}
-          - --ws=True
-          - --ws-host=0.0.0.0
-          - --ws-port={{ .Values.bxgateway.ws_port }}
-          - --blockchain-protocol={{ .Values.bxgateway.blockchain_protocol }}
-          - --blockchain-network={{ .Values.bxgateway.blockchain_network }}
-          - --enode={{ .Values.bxgateway.enode }}
-          - --continent={{ .Values.bxgateway.continent }}
-          - --private-key={{ .Values.bxgateway.private_key }}
-          - --node-public-key={{ .Values.bxgateway.id }}
-          - --data-dir=/tmp
+          - sh
+          - -c
+          - "--private-ssl-base-url=file:///app/ssl --rpc=True --rpc-host=0.0.0.0 --rpc-port={{ .Values.bxgateway.rpc_port }}
+           --ws=True --ws-host=0.0.0.0 --ws-port={{ .Values.bxgateway.ws_port }}
+           --blockchain-protocol={{ .Values.bxgateway.blockchain_protocol }}
+           --blockchain-network={{ .Values.bxgateway.blockchain_network }}
+           --enode={{ .Values.bxgateway.enode }}
+           --continent={{ .Values.bxgateway.continent }}
+           --data-dir=/tmp"
         ports:
           - name: rpc
             containerPort: {{ .Values.bxgateway.rpc_port }}
@@ -177,16 +172,6 @@ spec:
           - rm
           - -f
           - {{ .Values.bsc.base_path }}/geth/LOCK
-        image: busybox
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-          - name: bsc-pvc
-            mountPath: {{ .Values.bsc.base_path }}
-      - name: remove-nodekey
-        command:
-          - rm
-          - -f
-          - {{ .Values.bsc.base_path }}/geth/nodekey
         image: busybox
         imagePullPolicy: IfNotPresent
         volumeMounts:

@@ -111,13 +111,10 @@ bxgateway:
   rpc_port: 28332
   ws_port: 28333
   blockchain_protocol: Ethereum
-  blockchain_network: Mainnet
+  blockchain_network: BSC-Mainnet
   continent: EU
-  id: ""
-  enode: enode://36a560f85288fbeff16f25c8465a71945708e7bfffa2913c6d790fa56fc085781c2706c9bac04678bae31443ce2fd62937880c926a59ee3cf4373ab4ee32915a@116.203.150.138:30303
-  # pubkey is 916e48fda462df7645d74c0700afb1e334906ac325462fa5791e4c1f42e7cddb39b2c34d24c903b498849b7893cbf796e42437c78b61e5ad7d082d9367eef23a
-  # generator is https://gist.github.com/miguelmota/3793b160992b4ea0b616497b8e5aee2f
-  private_key: c57e3fa169ab57e838f95310b2f28910b8811bca686d77d483cb00324a0e46f7
+  id: <enode>
+  enode: enode://<enode>@localhost:30311
   certs:
     name0: external_gateway_cert.pem
     value0: ""
