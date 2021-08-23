@@ -141,6 +141,36 @@ spec:
           - mountPath: /etc/nginx/
             name: nginx-config-volume
       {{- end }}
+      {{- if .Values.bxgateway.enabled }}
+      - name: bxgateway
+        image: "{{ .Values.bxgateway.image.repository }}:{{ .Values.bxgateway.image.tag }}"
+        imagePullPolicy: {{ .Values.bxgateway.image.pullPolicy }}
+        args:
+          - --private-ssl-base-url=file:///app/ssl
+          - --rpc=True
+          - --rpc-host=0.0.0.0
+          - --rpc-port={{ .Values.bxgateway.rpc_port }}
+          - --ws=True
+          - --ws-host=0.0.0.0
+          - --ws-port={{ .Values.bxgateway.ws_port }}
+          - --blockchain-protocol={{ .Values.bxgateway.blockchain_protocol }}
+          - --blockchain-network={{ .Values.bxgateway.blockchain_network }}
+          - --enode={{ .Values.bxgateway.enode }}
+          - --continent={{ .Values.bxgateway.continent }}
+          - --private-key={{ .Values.bxgateway.private_key }}
+          - --node-public-key={{ .Values.bxgateway.id }}
+          - --data-dir=/tmp
+        ports:
+          - name: rpc
+            containerPort: {{ .Values.bxgateway.rpc_port }}
+            protocol: TCP
+          - name: ws
+            containerPort: {{ .Values.bxgateway.ws_port }}
+            protocol: TCP
+        volumeMounts:
+          - name: bxgateway-certs
+            mountPath: /app/ssl/external_gateway/registration_only
+      {{- end }}
       initContainers:
       - name: remove-lock
         command:
@@ -189,6 +219,11 @@ spec:
         - name: nginx-config-volume
           configMap:
             name: "{{ .Release.Name }}-nginx-config"
+        {{- end }}
+        {{- if .Values.bxgateway.enabled }}
+        - name: bxgateway-certs
+          secret:
+            secretName: "{{ .Release.Name }}-bxgateway-certs"
         {{- end }}
   {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
