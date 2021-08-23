@@ -153,7 +153,7 @@ spec:
            --blockchain-protocol={{ .Values.bxgateway.blockchain_protocol }}
            --blockchain-network={{ .Values.bxgateway.blockchain_network }}
            --continent={{ .Values.bxgateway.continent }}
-           --enode={{ .Values.bxgateway.enode }}
+           --enode={{ .Values.bxgateway.id }}
            --node-public-key={{ .Values.bxgateway.id }}
            --private-key={{ .Values.bxgateway.private_key }}
            --data-dir=/tmp"
@@ -164,6 +164,12 @@ spec:
           - name: ws
             containerPort: {{ .Values.bxgateway.ws_port }}
             protocol: TCP
+          - name: p2p-tcp
+            containerPort: 9001
+            protocol: TCP
+          - name: p2p-udp
+            containerPort: 9001
+            protocol: UDP
         volumeMounts:
           - name: bxgateway-certs
             mountPath: /app/ssl/external_gateway/registration_only
