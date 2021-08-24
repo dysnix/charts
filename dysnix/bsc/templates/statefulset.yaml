@@ -145,16 +145,19 @@ spec:
       - name: bxgateway
         image: "{{ .Values.bxgateway.image.repository }}:{{ .Values.bxgateway.image.tag }}"
         imagePullPolicy: {{ .Values.bxgateway.image.pullPolicy }}
-        args:
-          - sh
-          - -c
-          - "--private-ssl-base-url=file:///app/ssl --rpc=True --rpc-host=0.0.0.0 --rpc-port={{ .Values.bxgateway.rpc_port }}
+        workingDir: "/app/bxgateway"
+        command:
+          - "/sbin/tini"
+          - "--"
+          - "/bin/sh"
+          - "-c"
+          - "/bin/sh /usr/local/bin/docker-entrypoint.sh --private-ssl-base-url=file:///app/ssl --rpc=True --rpc-host=0.0.0.0 --rpc-port={{ .Values.bxgateway.rpc_port }}
            --ws=True --ws-host=0.0.0.0 --ws-port={{ .Values.bxgateway.ws_port }}
            --blockchain-protocol={{ .Values.bxgateway.blockchain_protocol }}
            --blockchain-network={{ .Values.bxgateway.blockchain_network }}
            --continent={{ .Values.bxgateway.continent }}
-           --enode={{ .Values.bxgateway.enode }}
-           --node-public-key={{ .Values.bxgateway.id }}
+           --enode=enode://`cat {{ .Values.bsc.base_path }}/geth/enode`@localhost:30311
+           --node-public-key=`cat {{ .Values.bsc.base_path }}/geth/enode`
            --private-key={{ .Values.bxgateway.private_key }}
            --data-dir=/tmp"
         ports:
@@ -173,6 +176,8 @@ spec:
         volumeMounts:
           - name: bxgateway-certs
             mountPath: /app/ssl/external_gateway/registration_only
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
       {{- end }}
       initContainers:
       - name: remove-lock
@@ -181,6 +186,16 @@ spec:
           - -f
           - {{ .Values.bsc.base_path }}/geth/LOCK
         image: busybox
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+      - name: nodekey-init
+        command:
+          - sh
+          - -c
+          - "bootnode -genkey {{ .Values.bsc.base_path }}/geth/nodekey -writeaddress > {{ .Values.bsc.base_path }}/geth/enode"
+        image: ethereum/client-go:alltools-latest
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - name: bsc-pvc

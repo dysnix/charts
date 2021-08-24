@@ -113,10 +113,7 @@ bxgateway:
   blockchain_protocol: Ethereum
   blockchain_network: BSC-Mainnet
   continent: EU
-  enode: enode://<id>@localhost:30311
-  id: <id>
   private_key: ""
-  trusted_enode: ""
   certs:
     name0: external_gateway_cert.pem
     value0: ""
