@@ -114,6 +114,7 @@ bxgateway:
   blockchain_network: BSC-Mainnet
   continent: EU
   private_key: ""
+  id: ""
   certs:
     name0: external_gateway_cert.pem
     value0: ""
