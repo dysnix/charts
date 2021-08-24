@@ -102,6 +102,25 @@ failback:
     pullPolicy: IfNotPresent
   port: 8000
 
+bxgateway:
+  enabled: false
+  image:
+    repository: bloxroute/bxgateway
+    tag: latest
+    pullPolicy: Always
+  rpc_port: 28332
+  ws_port: 28333
+  blockchain_protocol: Ethereum
+  blockchain_network: BSC-Mainnet
+  continent: EU
+  private_key: ""
+  id: ""
+  certs:
+    name0: external_gateway_cert.pem
+    value0: ""
+    name1: external_gateway_key.pem
+    value1: ""
+
 multicluster:
   enabled: false
   ingress:
