@@ -22,5 +22,5 @@ metadata:
   name: "{{ .Release.Name }}-nginx-config"
 data:
   nginx.conf: |-
-  {{- include (print $.Template.BasePath "/configs/_nginx.conf") . | nindent 4 }}
+  {{- include (print $.Template.BasePath "/configs/_nginx.txt") . | nindent 4 }}
 ---

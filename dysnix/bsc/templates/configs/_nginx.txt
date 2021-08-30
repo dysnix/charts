@@ -57,5 +57,8 @@ http {
         location / {
             proxy_pass http://bsc;
         }
+        location = /metrics {
+            stub_status;
+        }
     }
 }
