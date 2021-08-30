@@ -101,6 +101,18 @@ failback:
     tag: "1.20-alpine"
     pullPolicy: IfNotPresent
   port: 8000
+  metrics:
+    enabled: false
+    image:
+      repository: nginx/nginx-prometheus-exporter
+      tag: "0.9.0"
+      pullPolicy: IfNotPresent
+    service:
+      port: 8081
+      name: nginx-metrics
+
+nodekey_init:
+  enabled: false
 
 bxgateway:
   enabled: false

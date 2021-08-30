@@ -141,6 +141,17 @@ spec:
           - mountPath: /etc/nginx/
             name: nginx-config-volume
       {{- end }}
+      {{- if .Values.failback.metrics.enabled }}
+      - name: nginx-metrics
+        image: "{{ .Values.failback.metrics.image.repository }}:{{ .Values.failback.metrics.image.tag }}"
+        imagePullPolicy: {{ .Values.failback.metrics.image.pullPolicy }}
+        args:
+          - -nginx.scrape-uri=http://localhost:8000/metrics
+        ports:
+          - containerPort: {{ .Values.failback.metrics.port }}
+            name: {{ .Values.failback.metrics.name }}
+            protocol: TCP
+      {{- end }}
       {{- if .Values.bxgateway.enabled }}
       - name: bxgateway
         image: "{{ .Values.bxgateway.image.repository }}:{{ .Values.bxgateway.image.tag }}"
@@ -190,6 +201,7 @@ spec:
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
+      {{- if .Values.nodekey_init.enabled }}
       - name: nodekey-init
         command:
           - sh
@@ -200,6 +212,7 @@ spec:
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
+      {{- end }}
       {{- if .Values.init_genesis }}
       - name: init
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
