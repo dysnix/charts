@@ -12,6 +12,12 @@ spec:
     name: "{{ $val.name }}"
     protocol: {{ $val.protocol | default "TCP" }}
   {{- end }}
+  {{- if .Values.failback.metrics.enabled }}
+  - port: {{ .Values.failback.metrics.service.port }}
+    name: {{ .Values.failback.metrics.service.name }}
+    protocol: "TCP"
+    targetPort: {{ .Values.failback.metrics.service.port }}
+  {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "bsc.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
