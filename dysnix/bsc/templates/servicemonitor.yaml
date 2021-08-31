@@ -31,7 +31,7 @@ spec:
   - interval: 1m
     scrapeTimeout: 30s
     honorLabels: true
-    port: {{ .Values.failback.metrics.name }}
+    port: {{ .Values.failback.metrics.service.name }}
     path: /metrics
     scheme: http
   jobLabel: "{{ .Values.failback.metrics.name }}-{{ .Values.bxgateway.continent }}"
