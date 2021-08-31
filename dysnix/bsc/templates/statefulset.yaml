@@ -146,10 +146,10 @@ spec:
         image: "{{ .Values.failback.metrics.image.repository }}:{{ .Values.failback.metrics.image.tag }}"
         imagePullPolicy: {{ .Values.failback.metrics.image.pullPolicy }}
         args:
-          - -nginx.scrape-uri=http://localhost:8000/metrics
+          - -nginx.scrape-uri=http://localhost:{{ .Values.failback.port }}/metrics
         ports:
-          - containerPort: {{ .Values.failback.metrics.port }}
-            name: {{ .Values.failback.metrics.name }}
+          - containerPort: {{ .Values.failback.metrics.service.port }}
+            name: {{ .Values.failback.metrics.service.name }}
             protocol: TCP
       {{- end }}
       {{- if .Values.bxgateway.enabled }}
