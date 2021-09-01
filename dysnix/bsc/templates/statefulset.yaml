@@ -170,7 +170,8 @@ spec:
            --enode=enode://`cat {{ .Values.bsc.base_path }}/geth/enode`@localhost:30311
            --node-public-key=`cat {{ .Values.bsc.base_path }}/geth/enode`
            --private-key={{ .Values.bxgateway.private_key }}
-           --data-dir=/tmp"
+           --data-dir=/tmp
+           --external-ip=`wget -o /dev/null -O - http://checkip.amazonaws.com`"
         ports:
           - name: rpc
             containerPort: {{ .Values.bxgateway.rpc_port }}
@@ -184,6 +185,9 @@ spec:
           - name: p2p-udp
             containerPort: 9001
             protocol: UDP
+          - name: gw-tcp
+            containerPort: 1801
+            hostPort: 1801
         volumeMounts:
           - name: bxgateway-certs
             mountPath: /app/ssl/external_gateway/registration_only
