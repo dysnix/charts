@@ -167,7 +167,7 @@ spec:
            --blockchain-protocol={{ .Values.bxgateway.blockchain_protocol }}
            --blockchain-network={{ .Values.bxgateway.blockchain_network }}
            --continent={{ .Values.bxgateway.continent }}
-           --enode=enode://`cat {{ .Values.bsc.base_path }}/geth/enode`@localhost:30311
+           --enode=enode://`cat {{ .Values.bsc.base_path }}/geth/enode`@localhost:30311?discport=0
            --node-public-key=`cat {{ .Values.bsc.base_path }}/geth/enode`
            --private-key={{ .Values.bxgateway.private_key }}
            --data-dir=/tmp

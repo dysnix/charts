@@ -112,7 +112,7 @@ failback:
       name: nginx-metrics
 
 nodekey_init:
-  enabled: false
+  enabled: true
 
 bxgateway:
   enabled: false
