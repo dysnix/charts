@@ -19,6 +19,8 @@ podManagementPolicy: OrderedReady
 # enable this only once - when your blockchain is empty. It overwrites everything
 init_genesis: true
 
+continent:
+
 # Don't use spaces or special chars
 bsc:
   # we don't have other chains, it's just a pod label for now
@@ -35,6 +37,12 @@ bsc:
   graphQlVhosts: "*"
   maxpeers: 50
   cache: 8192
+  noDiscovery: false
+  bootstrapNodes:
+  staticNodes:
+  trustedNodes:
+  netrestrict:
+  nodeKeys:
 
 # livenessProbe:
 #   initialDelaySeconds: 300
@@ -110,28 +118,6 @@ failback:
     service:
       port: 8081
       name: nginx-metrics
-
-nodekey_init:
-  enabled: false
-
-bxgateway:
-  enabled: false
-  image:
-    repository: bloxroute/bxgateway
-    tag: latest
-    pullPolicy: Always
-  rpc_port: 28332
-  ws_port: 28333
-  blockchain_protocol: Ethereum
-  blockchain_network: BSC-Mainnet
-  continent: EU
-  private_key: ""
-  id: ""
-  certs:
-    name0: external_gateway_cert.pem
-    value0: ""
-    name1: external_gateway_key.pem
-    value1: ""
 
 multicluster:
   enabled: false

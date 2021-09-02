@@ -34,7 +34,7 @@ spec:
     port: {{ .Values.failback.metrics.service.name }}
     path: /metrics
     scheme: http
-  jobLabel: "{{ .Values.failback.metrics.service.name }}-{{ .Values.bxgateway.continent }}"
+  jobLabel: "{{ .Values.failback.metrics.service.name }}-{{ .Values.continent }}"
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "bsc.name" . }}
