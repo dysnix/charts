@@ -91,6 +91,17 @@ spec:
         - name: bsc-pvc
           mountPath: {{ .Values.bsc.base_path }}
         {{- if .Values.livenessProbe }}
+        startupProbe:
+          exec:
+            command:
+            - /bin/sh
+            - /scripts/check_node_health.sh
+            - http://127.0.0.1:{{ .Values.service.rpcPort }}
+            - "300"
+            - last_synced_block.txt
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
         livenessProbe:
           exec:
             command:
@@ -104,6 +115,7 @@ spec:
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.livenessProbe.successThreshold }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+
         {{- end }}
         {{- if .Values.readinessProbe }}
         readinessProbe:
