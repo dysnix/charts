@@ -59,6 +59,7 @@ spec:
           - --cache={{ .Values.bsc.cache }}
           - --snapshot=false
           - --port={{ .Values.service.p2pPort0 }}
+          - --rpc.allow-unprotected-txs
           - --txlookuplimit=0
           - --cache.preimages
           {{- if and .Values.externalLBp2p .Values.externalLBp2pIP }}
