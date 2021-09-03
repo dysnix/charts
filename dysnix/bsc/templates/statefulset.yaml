@@ -124,7 +124,7 @@ spec:
             - /bin/sh
             - /scripts/check_node_readiness.sh
             - --timestamp-distinct
-            - "300"
+            - "{{ .Values.bsc.readinessProbeTimestampDistinct }}"
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
