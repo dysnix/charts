@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 set -ex # -e exits on error
 
 usage() { echo "Usage: $0 <rpc_endpoint> <max_lag_in_seconds> <last_synced_block_file>]" 1>&2; exit 1; }
