@@ -1,0 +1,18 @@
+apiVersion: v2
+name: base
+description: A Library Helm Chart for grouping common logic between Dysnix charts. This chart is not deployable by itself.
+version: 0.4.0
+type: library
+engine: gotpl
+home: https://github.com/dysnix/charts/tree/master/dysnix/base
+sources:
+  - https://github.com/dysnix/charts
+maintainers:
+  - email: services@dysnix.com
+    name: Dysnix
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
