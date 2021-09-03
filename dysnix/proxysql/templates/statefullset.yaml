@@ -6,7 +6,6 @@ metadata:
   labels:
     {{- include "proxysql.labels" . | nindent 4 }}
 spec:
-  serviceName: "proxysql"
   replicas: {{ .Values.proxysql_cluster.core.replicas }}
   selector:
     matchLabels:
@@ -19,7 +18,7 @@ spec:
         # Automatically Roll Deployments
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-      {{- with .Values.podAnnotations }}
+      {{- with (default .Values.podAnnotations .Values.proxysql_cluster.core.statefullset.podAnnotations) }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -62,7 +61,7 @@ spec:
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           {{- end }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml (default .Values.resources .Values.proxysql_cluster.core.statefullset.resources) | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /data/proxysql
@@ -76,15 +75,15 @@ spec:
             - name: ssl
               mountPath: /etc/proxysql/ssl
           {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.proxysql_cluster.core.statefullset.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+    {{- with (default .Values.affinity .Values.proxysql_cluster.core.statefullset.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with (default .Values.tolerations .Values.proxysql_cluster.core.statefullset.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
