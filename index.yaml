@@ -156,6 +156,28 @@ entries:
   bsc:
   - apiVersion: v2
     appVersion: v1.1.2
+    created: "2021-09-04T10:50:34.488601449Z"
+    description: Binance Smart Chain chart for Kubernetes
+    digest: e5afc57f1b3bdaeab23bbfe925eedbb661559edb71dcea8616fa5cdb2b5e0781
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    - email: ap@dysnix.com
+      name: apolegoshko
+    name: bsc
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bsc-0.3.2/bsc-0.3.2.tgz
+    version: 0.3.2
+  - apiVersion: v2
+    appVersion: v1.1.2
     created: "2021-09-03T22:44:44.669297932Z"
     description: Binance Smart Chain chart for Kubernetes
     digest: 65635e8b40e929a2efc4524bff0425cd5045ef477a950445651a29f5211f117b
