@@ -52,13 +52,13 @@ MaxPeers = {{ .Values.bsc.maxpeers }}
 NoDiscovery = {{ .Values.bsc.noDiscovery }}
 ListenAddr = ":{{ .Values.service.p2pPort0 }}"
 {{- if .Values.bsc.bootstrapNodes }}
-BootstrapNodes = ["{{ join "," .Values.bsc.bootstrapNodes }}"]
+BootstrapNodes = ["{{ join "\",\"" .Values.bsc.bootstrapNodes }}"]
 {{- end }}
 {{- if .Values.bsc.staticNodes }}
-StaticNodes = ["{{ join "," .Values.bsc.staticNodes }}"]
+StaticNodes = ["{{ join "\",\"" .Values.bsc.staticNodes }}"]
 {{- end }}
 {{- if .Values.bsc.trustedNodes }}
-TrustedNodes = ["{{ join "," .Values.bsc.trustedNodes }}"]
+TrustedNodes = ["{{ join "\",\"" .Values.bsc.trustedNodes }}"]
 {{- end }}
 
 [Node.HTTPTimeouts]
