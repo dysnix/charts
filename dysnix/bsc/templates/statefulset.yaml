@@ -71,6 +71,11 @@ spec:
           {{- if .Values.bsc.netrestrict }}
           - --netrestrict={{ .Values.bsc.netrestrict }}
           {{- end }}
+          {{- if .Values.bsc.metrics.enabled }}
+          - --metrics
+          - --pprof
+          - --pprof.addr=0.0.0.0
+          {{- end }}
         workingDir: "{{ .Values.bsc.base_path }}"
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
