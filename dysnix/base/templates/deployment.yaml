@@ -27,7 +27,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      {{- include "app.imagePullSecrets" . | nindent 6 }}
+      {{- include "base.imagePullSecrets" . | nindent 6 }}
       dnsPolicy: {{ .Values.dnsPolicy }}
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName | quote }}
@@ -60,7 +60,7 @@ spec:
       {{- end }}
       containers:
         - name: app
-          image: {{ include "app.image" . }}
+          image: {{ include "base.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -100,7 +100,7 @@ spec:
         {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "app.pvc" . }}
+            claimName: {{ include "base.pvc" . }}
         {{- end }}
         {{- if .Values.volumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.volumes "context" $) | nindent 8 }}

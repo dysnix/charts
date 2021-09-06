@@ -1,13 +1,13 @@
 {{/*
 Compile all warnings into a single message, and call fail.
 */}}
-{{- define "app.validateValues" -}}
+{{- define "base.validateValues" -}}
 {{- $messages := list -}}
-{{- $messages := append $messages (include "app.validateValues.nameGiven" .) -}}
-{{- $messages := append $messages (include "app.validateValues.imageRepositoryGiven" .) -}}
-{{- $messages := append $messages (include "app.validateValues.noSecretsData" .) -}}
-{{- $messages := append $messages (include "app.validateValues.noConfigMapsData" .) -}}
-{{- $messages := append $messages (include "app.validateValues.ingressHasPortsProvided" .) -}}
+{{- $messages := append $messages (include "base.validateValues.nameGiven" .) -}}
+{{- $messages := append $messages (include "base.validateValues.imageRepositoryGiven" .) -}}
+{{- $messages := append $messages (include "base.validateValues.noSecretsData" .) -}}
+{{- $messages := append $messages (include "base.validateValues.noConfigMapsData" .) -}}
+{{- $messages := append $messages (include "base.validateValues.ingressHasPortsProvided" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
@@ -17,7 +17,7 @@ Compile all warnings into a single message, and call fail.
 {{- end -}}
 
 {{/* Validate value name is given */}}
-{{- define "app.validateValues.nameGiven" -}}
+{{- define "base.validateValues.nameGiven" -}}
 {{- if not .Values.name -}}
 app: no-name
     You did not specify the application name for the generic app chart. Please
@@ -26,7 +26,7 @@ app: no-name
 {{- end -}}
 
 {{/* Validate that the container repository name is given */}}
-{{- define "app.validateValues.imageRepositoryGiven" -}}
+{{- define "base.validateValues.imageRepositoryGiven" -}}
 {{- if and (not .Values.image.repository) (has .Values.appKind (list "Deployment" "StatefulSet" "DaemonSet")) -}}
 app: no-image-repository
     You did not specify the application image repository. Please
@@ -35,7 +35,7 @@ app: no-image-repository
 {{- end -}}
 
 {{/* Validate that the container has command or args given */}}
-{{- define "app.validateValues.containerCommandOrArgsGiven" -}}
+{{- define "base.validateValues.containerCommandOrArgsGiven" -}}
 {{- if not (or .Values.command .Values.args) -}}
 app: no-command-or-args
     You did not specify command or args for the application default
@@ -44,7 +44,7 @@ app: no-command-or-args
 {{- end -}}
 
 {{/* Validate that secrets have data or stringData given */}}
-{{- define "app.validateValues.noSecretsData" -}}
+{{- define "base.validateValues.noSecretsData" -}}
 {{- range $_, $values := .Values.secrets -}}
 {{- if not (or $values.data $values.stringData) -}}
 app: no-secrets-data-or-stringdata
@@ -55,7 +55,7 @@ app: no-secrets-data-or-stringdata
 {{- end -}}
 
 {{/* Validate that configMaps have data given */}}
-{{- define "app.validateValues.noConfigMapsData" -}}
+{{- define "base.validateValues.noConfigMapsData" -}}
 {{- range $_, $values := .Values.configMaps -}}
 {{- if not $values.data -}}
 app: no-configmaps-data
@@ -66,7 +66,7 @@ app: no-configmaps-data
 {{- end -}}
 
 {{/* Validate that the enabled ingress has service ports provided */}}
-{{- define "app.validateValues.ingressHasPortsProvided" -}}
+{{- define "base.validateValues.ingressHasPortsProvided" -}}
 {{- if and .Values.ingress.enabled (not (or .Values.service.port .Values.service.ports)) -}}
 app: no-service-ports-for-ingress
     You enabled ingress, but did not specify service port or ports. Please set

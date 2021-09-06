@@ -8,7 +8,7 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
   annotations:
-    {{- include "app.ingress.annotations" . | nindent 4 }}
+    {{- include "base.ingress.annotations" . | nindent 4 }}
     {{- if .Values.ingress.annotations }}
     {{- include "common.tplvalues.render" (dict "value" .Values.ingress.annotations "context" $) | nindent 4 }}
     {{- end }}
@@ -28,7 +28,7 @@ spec:
             {{- if eq "true" (include "common.ingress.supportsPathType" .) }}
             pathType: {{ .Values.ingress.pathType }}
             {{- end }}
-            {{- $svcPort := include "app.service.defaultPortName" (pick .Values.service "port" "targetPort") }}
+            {{- $svcPort := include "base.service.defaultPortName" (pick .Values.service "port" "targetPort") }}
             backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" .) "servicePort" $svcPort "context" .) | nindent 14 }}
     {{- end }}
     {{- range .Values.ingress.extraHosts }}

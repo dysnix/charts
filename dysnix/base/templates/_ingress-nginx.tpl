@@ -3,7 +3,7 @@
 {{/*
 Ingress annotations
 */}}
-{{- define "app.ingress.annotations" -}}
+{{- define "base.ingress.annotations" -}}
 {{- if .Values.ingress.certManager }}
 kubernetes.io/tls-acme: "true"
 {{- end }}

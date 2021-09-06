@@ -2,14 +2,14 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "common.names.name" -}}
+{{- define "base.names.name" -}}
 {{- default (.Values.name | default "") .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "common.names.chart" -}}
+{{- define "base.names.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -18,7 +18,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "common.names.fullname" -}}
+{{- define "base.names.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -32,8 +32,8 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
-Short for "common.name.fullname"
+Short for "base.name.fullname"
 */}}
-{{- define "app.fullname" -}}
-{{ template "common.names.fullname" . }}
+{{- define "base.fullname" -}}
+{{ template "base.names.fullname" . }}
 {{- end -}}
