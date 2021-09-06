@@ -1,3 +1,4 @@
+{{- if .Values.bsc.daemonsetEnabled }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -221,3 +222,4 @@ spec:
         {{- end }}
   {{- if .Values.persistence.enabled }}
   {{- end }}
+{{- end }}

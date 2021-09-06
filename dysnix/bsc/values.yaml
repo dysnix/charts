@@ -38,7 +38,7 @@ bsc:
   maxpeers: 50
   cache: 8192
   noDiscovery: false
-
+  daemonsetEnabled: false
   snapshotUrl: "https://storage.googleapis.com/pancake-bsc-bootstrap-us/geth.tar"
 
   bootstrapNodes:
