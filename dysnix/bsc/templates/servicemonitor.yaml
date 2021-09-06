@@ -19,6 +19,14 @@ spec:
     path: /metrics
     scheme: http
   {{- end }}
+  {{- if .Values.bsc.metrics.enabled }}
+  - interval: 1m
+    scrapeTimeout: 30s
+    honorLabels: true
+    port: 6060
+    path: /debug/metrics/prometheus
+    scheme: http
+  {{- end }}
   jobLabel: {{ include "bsc.fullname" . }}
   selector:
     matchLabels:
