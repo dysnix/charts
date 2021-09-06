@@ -23,7 +23,7 @@ spec:
   - interval: 1m
     scrapeTimeout: 30s
     honorLabels: true
-    port: 6060
+    port: {{ .Values.bsc.metrics.service.name }}
     path: /debug/metrics/prometheus
     scheme: http
   {{- end }}

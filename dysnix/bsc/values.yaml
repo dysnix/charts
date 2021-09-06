@@ -75,6 +75,9 @@ bsc:
   readinessProbeTimestampDistinct: 300
   metrics:
     enabled: true
+    service:
+      port: 6060
+      name: bsc-metrics
 
 # livenessProbe:
 #   initialDelaySeconds: 300

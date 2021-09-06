@@ -18,6 +18,12 @@ spec:
     protocol: "TCP"
     targetPort: {{ .Values.failback.metrics.service.port }}
   {{- end }}
+  {{- if .Values.bsc.metrics.enabled }}
+  - port: {{ .Values.bsc.metrics.service.port }}
+    name: {{ .Values.bsc.metrics.service.name }}
+    protocol: "TCP"
+    targetPort: {{ .Values.bsc.metrics.service.port }}
+  {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "bsc.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
