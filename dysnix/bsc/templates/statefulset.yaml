@@ -75,6 +75,7 @@ spec:
           - --metrics
           - --pprof
           - --pprof.addr=0.0.0.0
+          - --pprof.port={{ .Values.bsc.metrics.service.port }}
           {{- end }}
         workingDir: "{{ .Values.bsc.base_path }}"
         resources:
