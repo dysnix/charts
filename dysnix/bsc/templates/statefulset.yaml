@@ -192,9 +192,9 @@ spec:
       {{- end }}
       {{- if .Values.bsc.initFromSnapshot }}
       - name: init-from-snapshpt
-        image: busybox
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ["/bin/sh", "-c", "wget {{ .Values.bsc.snapshotUrl }} -O - | tar -x -C {{ .Values.bsc.base_path }}"]
+        image: alpine:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c", "wget {{ .Values.bsc.snapshotUrl }} -O - | tar --overwrite -x -C {{ .Values.bsc.base_path }}"]
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
