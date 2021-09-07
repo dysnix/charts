@@ -1,7 +1,7 @@
 apiVersion: v2
 name: gcp-local-ssd-raid
 description: A Helm chart for Kubernetes
-version: 0.1.0
+version: 0.1.1
 appVersion: "0.1.0"
 
 keywords:
@@ -11,6 +11,7 @@ keywords:
 
 sources:
   - https://github.com/dysnix/charts
+  - https://github.com/pingcap/tidb-operator/blob/master/manifests/gke/local-ssd-provision/local-ssd-provision.yaml
 
 maintainers:
   - name: daniel-yavorovich
