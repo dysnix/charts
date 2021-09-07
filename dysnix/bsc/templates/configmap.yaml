@@ -17,6 +17,8 @@ data:
     {{- include (print $.Template.BasePath "/scripts/_check_node_readiness.tpl") . | nindent 4 }}
   get_nodekey.py: |-
     {{- include (print $.Template.BasePath "/scripts/_get_nodekey.tpl") . | nindent 4 }}
+  init_from_snaphot.sh: |-
+  {{- include (print $.Template.BasePath "/scripts/_init_from_snaphot.tpl") . | nindent 4 }}
 ---
 apiVersion: v1
 kind: ConfigMap

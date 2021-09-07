@@ -194,10 +194,14 @@ spec:
       - name: init-from-snapshpt
         image: alpine:latest
         imagePullPolicy: IfNotPresent
-        command: ["/bin/sh", "-c", "wget {{ .Values.bsc.snapshotUrl }} -O - | tar --overwrite -x -C {{ .Values.bsc.base_path }}"]
+        command:
+          - /bin/sh
+          - /scripts/init_from_snaphot.sh
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
       {{- end }}
       - name: remove-lock
         command:
