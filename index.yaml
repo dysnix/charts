@@ -156,6 +156,28 @@ entries:
   bsc:
   - apiVersion: v2
     appVersion: v1.1.2
+    created: "2021-09-07T13:00:10.033279455Z"
+    description: Binance Smart Chain chart for Kubernetes
+    digest: 61dd8a8819cdca05e7d3abc7a6c6494a13d582889b5d15a5ebebedff6fffa5e4
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    - email: ap@dysnix.com
+      name: apolegoshko
+    name: bsc
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bsc-0.3.5/bsc-0.3.5.tgz
+    version: 0.3.5
+  - apiVersion: v2
+    appVersion: v1.1.2
     created: "2021-09-06T18:35:09.110961318Z"
     description: Binance Smart Chain chart for Kubernetes
     digest: fe4e7f6b53f5d4ef46ef709fa4e4b823ad31eb68ec22fdf91502c51f2151ef39
@@ -593,6 +615,26 @@ entries:
     - https://github.com/dysnix/charts
     urls:
     - https://github.com/dysnix/charts/releases/download/bsc-0.1.0/bsc-0.1.0.tgz
+    version: 0.1.0
+  gcp-local-ssd-raid:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-09-07T13:00:10.13408001Z"
+    description: A Helm chart for Kubernetes
+    digest: 96988e18bd9cfab3fc7c13ec59e803ec87c48e536e0689fcc227387a3ff1b4e2
+    keywords:
+    - gcp
+    - nvme
+    - ssd
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    name: gcp-local-ssd-raid
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/gcp-local-ssd-raid-0.1.0/gcp-local-ssd-raid-0.1.0.tgz
     version: 0.1.0
   geth:
   - apiVersion: v2
