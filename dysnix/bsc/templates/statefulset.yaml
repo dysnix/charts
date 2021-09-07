@@ -191,13 +191,17 @@ spec:
             mountPath: {{ .Values.bsc.base_path }}
       {{- end }}
       {{- if .Values.bsc.initFromSnapshot }}
-      - name: init-from-snapshpt
+      - name: init-from-snapshot
         image: alpine:latest
         imagePullPolicy: IfNotPresent
-        command: ["/bin/sh", "-c", "wget {{ .Values.bsc.snapshotUrl }} -O - | tar --overwrite -x -C {{ .Values.bsc.base_path }}"]
+        command:
+          - /bin/sh
+          - /scripts/init_from_snaphot.sh
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
       {{- end }}
       - name: remove-lock
         command:
