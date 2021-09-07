@@ -619,6 +619,26 @@ entries:
   gcp-local-ssd-raid:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2021-09-07T13:06:44.908057269Z"
+    description: A Helm chart for Kubernetes
+    digest: 0d905a490d00acc32e6b03412c916017d621906348f02c631eed1b640e474a0f
+    keywords:
+    - gcp
+    - nvme
+    - ssd
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    name: gcp-local-ssd-raid
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pingcap/tidb-operator/blob/master/manifests/gke/local-ssd-provision/local-ssd-provision.yaml
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/gcp-local-ssd-raid-0.1.1/gcp-local-ssd-raid-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2021-09-07T13:00:10.13408001Z"
     description: A Helm chart for Kubernetes
     digest: 96988e18bd9cfab3fc7c13ec59e803ec87c48e536e0689fcc227387a3ff1b4e2
