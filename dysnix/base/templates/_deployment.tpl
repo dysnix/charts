@@ -1,4 +1,9 @@
-{{- if eq .Values.appKind "Deployment" }}
+{{/*
+This template serves as the blueprint for the Deployment objects that are created
+within the base library.
+*/}}
+{{- define "base.deployment" }}
+---
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:

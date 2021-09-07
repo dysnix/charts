@@ -1,4 +1,10 @@
+{{/*
+This template serves as the blueprint for the Ingress objects that are created
+within the base library.
+*/}}
+{{- define "base.ingress" }}
 {{- if and .Values.ingress.enabled (or .Values.service.port .Values.service.ports) }}
+---
 apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
@@ -52,4 +58,5 @@ spec:
     {{- include "common.tplvalues.render" ( dict "value" .Values.ingress.extraTls "context" $ ) | nindent 4 }}
     {{- end }}
   {{- end }}
+{{- end }}
 {{- end }}

@@ -1,4 +1,10 @@
-{{- if and .Values.autoscaling.enabled (eq .Values.appKind "Deployment") }}
+{{/*
+This template serves as the blueprint for the HorizontalPodAutoscaler objects that are created
+within the base library.
+*/}}
+{{- define "base.hpa" }}
+{{- if and .Values.autoscaling.enabled (eq .Values.controller.type  "deployment") }}
+---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -32,4 +38,5 @@ spec:
         name: memory
         targetAverageUtilization: {{ .Values.autoscaling.targetMemory }}
     {{- end }}
+{{- end }}
 {{- end }}

@@ -1,5 +1,11 @@
+{{/*
+This template serves as the blueprint for the Service objects that are created
+within the base library.
+*/}}
+{{- define "base.service" }}
 {{- if or .Values.service.port .Values.service.ports -}}
 {{- $service := .Values.service -}}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -48,3 +54,4 @@ spec:
     {{- end }}
   selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
 {{- end -}}
+{{- end }}

@@ -1,5 +1,10 @@
 
-{{- if .Values.serviceAccount.create -}}
+{{/*
+This template serves as the blueprint for the ServiceAccount objects that are created
+within the base library.
+*/}}
+{{- define "base.serviceAccount" }}
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
