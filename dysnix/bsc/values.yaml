@@ -38,6 +38,7 @@ bsc:
   maxpeers: 50
   cache: 8192
   noDiscovery: false
+  snapshotUrl:
 
   bootstrapNodes:
     - "enode://1cc4534b14cfe351ab740a1418ab944a234ca2f702915eadb7e558a02010cb7c5a8c295a3b56bcefa7701c07752acd5539cb13df2aab8ae2d98934d712611443@52.71.43.172:30311"

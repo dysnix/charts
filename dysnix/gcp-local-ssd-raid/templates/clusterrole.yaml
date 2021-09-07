@@ -1,0 +1,8 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "gcp-local-ssd-raid.fullname" . }}-clusterrole
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get"]
