@@ -178,18 +178,8 @@ spec:
             protocol: TCP
       {{- end }}
       initContainers:
-      - name: remove-lock
-        command:
-          - rm
-          - -f
-          - {{ .Values.bsc.base_path }}/geth/LOCK
-        image: busybox
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-          - name: bsc-pvc
-            mountPath: {{ .Values.bsc.base_path }}
-      {{- if .Values.init_genesis }}
-      - name: init
+      {{- if .Values.bsc.initGenesis }}
+      - name: init-genesis
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/bin/sh", "-c", "wget -O /tmp/mainnet.zip
@@ -200,6 +190,25 @@ spec:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
       {{- end }}
+      {{- if .Values.bsc.initFromSnapshot }}
+      - name: init-from-snapshpt
+        image: busybox
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/sh", "-c", "wget {{ .Values.bsc.snapshotUrl }} -O - | tar -x -C {{ .Values.bsc.base_path }}"]
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+      {{- end }}
+      - name: remove-lock
+        command:
+          - rm
+          - -f
+          - {{ .Values.bsc.base_path }}/geth/LOCK
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
       - name: get-nodekey
         command:
           - python

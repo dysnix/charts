@@ -16,9 +16,6 @@ nameOverride: ""
 fullnameOverride: ""
 podManagementPolicy: OrderedReady
 
-# enable this only once - when your blockchain is empty. It overwrites everything
-init_genesis: true
-
 continent:
 
 # Don't use spaces or special chars
@@ -38,6 +35,8 @@ bsc:
   maxpeers: 50
   cache: 8192
   noDiscovery: false
+  initGenesis: false
+  initFromSnapshot: false
   snapshotUrl:
 
   bootstrapNodes:
