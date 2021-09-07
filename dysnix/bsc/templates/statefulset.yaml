@@ -191,7 +191,7 @@ spec:
             mountPath: {{ .Values.bsc.base_path }}
       {{- end }}
       {{- if .Values.bsc.initFromSnapshot }}
-      - name: init-from-snapshpt
+      - name: init-from-snapshot
         image: alpine:latest
         imagePullPolicy: IfNotPresent
         command:
