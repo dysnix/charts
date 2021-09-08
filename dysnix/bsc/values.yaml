@@ -37,6 +37,7 @@ bsc:
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
+  forceInitFromSnapshot: false
   snapshotUrl:
 
   bootstrapNodes:
