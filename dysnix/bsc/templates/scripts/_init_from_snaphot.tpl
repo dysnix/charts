@@ -5,6 +5,10 @@ DATA_DIR="{{ .Values.bsc.base_path }}"
 TEST_FILE="${DATA_DIR}/.initialized"
 SNAPSHOT_URL="{{ .Values.bsc.snapshotUrl }}"
 
+{{- if .Values.bsc.forceInitFromSnapshot }}
+    rm -f ${TEST_FILE}
+{{- end }}
+
 if [ -f ${TEST_FILE} ]; then
     echo "Blockchain already initialized. Exiting..."
     exit 0
