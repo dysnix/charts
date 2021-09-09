@@ -46,7 +46,7 @@ spec:
             - name: NIFI_REGISTRY_GIT_PASSWORD
               value: {{ .Values.flowProvider.git.password }}
           {{- if .Values.initContainers.extraEnvs }}
-{{ toYaml .Values.initContainers.extraEnvs | indent 12 }}
+            {{ toYaml .Values.initContainers.extraEnvs | indent 12 }}
           {{- end }}
           volumeMounts:
             - name: "flow-storage"
@@ -89,6 +89,12 @@ spec:
             - bash
             - -ce
             - |
+            {{- if .Values.flowProvider.postgres.enabled }}
+              cd /opt/nifi-registry/nifi-registry-current/ext
+              mkdir postgresql
+              cd postgresql
+              curl -k "{{ .Values.flowProvider.postgres.driverURL }}{{ .Values.flowProvider.postgres.fileName }}" -o "{{ .Values.flowProvider.postgres.fileName }}"
+            {{- end }}
               ${NIFI_REGISTRY_BASE_DIR}/scripts/start.sh
           ports:
             - name: http
@@ -105,8 +111,22 @@ spec:
             - name: NIFI_REGISTRY_GIT_PASSWORD
               value: {{ .Values.flowProvider.git.password }} 
           {{- end }}
+          {{- if .Values.flowProvider.postgres.enabled }}
+            - name: NIFI_REGISTRY_FLOW_PROVIDER
+              value: postgres
+            - name: NIFI_REGISTRY_DB_DIR
+              value: ./ext/postgresql
+            - name: NIFI_REGISTRY_DB_CLASS
+              value: {{ .Values.flowProvider.postgres.driverClass }}
+            - name: NIFI_REGISTRY_DB_URL
+              value: {{ .Values.flowProvider.postgres.url }}
+            - name: NIFI_REGISTRY_DB_USER
+              value: {{ .Values.flowProvider.postgres.username }}
+            - name: NIFI_REGISTRY_DB_PASS
+              value: {{ .Values.flowProvider.postgres.password }}
+          {{- end }}
           {{- if .Values.extraEnvs }}
-{{ toYaml .Values.extraEnvs | indent 12 }}
+            {{ toYaml .Values.extraEnvs | indent 12 }}
           {{- end }}
           volumeMounts:
             {{ if .Values.persistence.enabled }}

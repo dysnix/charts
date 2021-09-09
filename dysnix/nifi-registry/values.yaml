@@ -50,7 +50,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 18080
 
 ingress:
   enabled: false
@@ -122,6 +122,14 @@ flowProvider:
       # data: |
       #   [credential "https://github.com"]
       #           username = foo
+  postgres:
+    enabled: true
+    driverURL: https://jdbc.postgresql.org/download/
+    fileName: postgresql-42.2.6.jar
+    driverClass: org.postgresql.Driver
+    url: jdbc:postgresql://localhost/nifireg
+    username: nifireg
+    password: nifireg
 
 
 # Additional environment variables to set
