@@ -1,4 +1,4 @@
-worker_processes    1;
+worker_processes    auto;
 error_log           /dev/stdout info;
 pid                 /tmp/nginx.pid;
 
@@ -16,6 +16,11 @@ http {
     access_log /dev/stdout;
     sendfile        on;
     keepalive_timeout  65;
+
+    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 http_403;
+    proxy_connect_timeout 10s;
+    proxy_read_timeout 10s;
+    proxy_send_timeout 10s;
 
     server {
         listen 8001;
