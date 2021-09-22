@@ -13,6 +13,9 @@ metadata:
     "helm.sh/hook-weight": "-10"
     # Delete the resource after the hook is successfully executed
     #"helm.sh/hook-delete-policy": hook-succeeded
+    {{- with (default .Values.podAnnotations .Values.proxysql_cluster.job.podAnnotations) }}
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
 spec:
   backoffLimit: {{ .Values.proxysql_cluster.job.backoffLimit | int }}
   ttlSecondsAfterFinished: {{ .Values.proxysql_cluster.job.ttlSecondsAfterFinished | int }}
@@ -45,7 +48,7 @@ spec:
           image: {{ template "proxysql.proxysql_cluster.job.image" . }}
           imagePullPolicy: {{ .Values.proxysql_cluster.job.image.pullPolicy }}
           resources:
-            {{- toYaml .Values.proxysql_cluster.job.resources | nindent 12 }}
+            {{- toYaml (default .Values.resources .Values.proxysql_cluster.job.resources) | nindent 12 }}
           env:
             - name: PSQL_USER
               valueFrom:
@@ -61,15 +64,15 @@ spec:
             - name: update-cluster-checksums-sql
               mountPath: /data/update-cluster-checksums.sql
               subPath: update-cluster-checksums.sql
-      {{- with .Values.nodeSelector }}
+      {{- with (default .Values.nodeSelector .Values.proxysql_cluster.job.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+    {{- with (default .Values.affinity .Values.proxysql_cluster.job.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with (default .Values.tolerations .Values.proxysql_cluster.job.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
