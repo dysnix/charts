@@ -213,6 +213,7 @@ spec:
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
+      {{- if .Values.bsc.getNodeKey }}
       - name: get-nodekey
         command:
           - python
@@ -224,6 +225,7 @@ spec:
             mountPath: {{ .Values.bsc.base_path }}
           - name: scripts
             mountPath: /scripts
+      {{- end }}
       volumes:
         - name: bsc-config
           configMap:
