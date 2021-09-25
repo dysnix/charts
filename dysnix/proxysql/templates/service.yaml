@@ -36,13 +36,6 @@ spec:
       nodePort: {{ .Values.service.adminNodePort }}
       {{- end }}
   topologyKeys:
-    {{- /*
-      Service prefers node local, zonal, then regional endpoints but falls back to cluster wide endpoints.
-    */}}
-    - "kubernetes.io/hostname"
-    - "topology.kubernetes.io/zone"
-    - "topology.kubernetes.io/region"
-    - "*"
   selector:
     app: {{ include "proxysql.name" . }}
     release: {{ .Release.Name }}
@@ -67,14 +60,6 @@ spec:
       nodePort: {{ .Values.service.adminNodePort }}
       {{- end }}
   clusterIP: None
-  topologyKeys:
-    {{- /*
-      Service prefers node local, zonal, then regional endpoints but falls back to cluster wide endpoints.
-    */}}
-    - "kubernetes.io/hostname"
-    - "topology.kubernetes.io/zone"
-    - "topology.kubernetes.io/region"
-    - "*"
   selector:
     app: {{ include "proxysql.name" . }}-core
     release: {{ .Release.Name }}
