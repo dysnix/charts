@@ -81,6 +81,7 @@ http {
               add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
               add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
               add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
+              add_header 'Access-Control-Max-Age' 86400;
               add_header 'X-Frame-Options' 'SAMEORIGIN'  always;
               add_header 'X-XSS-Protection' '1; mode=block' always;
               add_header 'Referrer-Policy' 'origin-when-cross-origin' always;
