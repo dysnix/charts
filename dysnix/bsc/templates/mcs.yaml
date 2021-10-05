@@ -3,6 +3,10 @@ apiVersion: networking.gke.io/v1
 kind: MultiClusterService
 metadata:
   name: {{ .Release.Name }}
+  {{- if and .Values.multicluster.enabled .Values.multicluster.backend.sessionAffinity }}
+  annotations:
+    beta.cloud.google.com/backend-config: '{"ports": {"{{ .Values.multicluster.service.port }}":"{{ .Release.Name }}"}}'
+  {{- end }}
   labels:
 {{ include "bsc.labels" . | indent 4 }}
 spec:

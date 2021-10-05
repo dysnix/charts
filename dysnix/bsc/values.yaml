@@ -162,6 +162,10 @@ multicluster:
     ip: ""
   service:
     port: 80
+  backend:
+    sessionAffinity:
+      affinityCookieTtlSec: 50
+      affinityType: GENERATED_COOKIE
 
 bscCmdOverride: false
 bscCmd: ""

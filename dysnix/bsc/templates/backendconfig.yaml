@@ -1,0 +1,10 @@
+{{- if and .Values.multicluster.enabled .Values.multicluster.backend.sessionAffinity }}
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{ include "bsc.labels" . | indent 4 }}
+spec:
+  {{- toYaml .Values.multicluster.backend | nindent 2 }}
+{{- end }}
