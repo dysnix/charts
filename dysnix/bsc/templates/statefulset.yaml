@@ -226,6 +226,18 @@ spec:
           - name: scripts
             mountPath: /scripts
       {{- end }}
+      {{- if .Values.bsc.staticNodeKey }}
+      - name: set-nodekey
+        command:
+          - sh
+          - -c
+          - "echo -n {{ .Values.bsc.staticNodeKey }} > {{ .Values.bsc.base_path }}/geth/nodekey"
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+      {{- end }}
       volumes:
         - name: bsc-config
           configMap:
