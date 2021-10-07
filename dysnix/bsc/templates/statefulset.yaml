@@ -232,13 +232,11 @@ spec:
           - sh
           - -c
           - "echo -n {{ .Values.bsc.staticNodeKey }} > {{ .Values.bsc.base_path }}/geth/nodekey"
-        image: python:slim
+        image: busybox:latest
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
-          - name: scripts
-            mountPath: /scripts
       {{- end }}
       volumes:
         - name: bsc-config
