@@ -15,6 +15,7 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 podManagementPolicy: OrderedReady
+updateStrategy: RollingUpdate
 
 continent:
 
