@@ -138,4 +138,4 @@ helm install my-release -f values.yaml dysnix/app
 ## Persistence
 
 AI-Scale-Provider is an AI-Scale operator microservice, which is used to receive and group metrics from an external source (currently only Prometheus is supported), 
-further post-processing of these metrics to the form described in the proto file [proto files](github.com/dysnix/ai-scale-proto) of the AI-Scale component interaction protocol.
+further post-processing of these metrics to the form described in the proto file [proto files](https://github.com/dysnix/ai-scale-proto) of the AI-Scale component interaction protocol.
