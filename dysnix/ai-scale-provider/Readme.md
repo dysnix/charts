@@ -142,4 +142,4 @@ further post-processing of these metrics to the form described in the proto file
 
 ## Configuration of service
 
-For configuration service you can change list of options in [configMaps](https://github.com/dysnix/ai-scale-provider/Readme.md) value.
+For configuration service you can change list of options in [configMaps](https://github.com/dysnix/ai-scale-provider) value.
