@@ -6,6 +6,9 @@ bin/*
 /.bin
 /_test/secrets/*.json
 
+# TMP dirs for generate templates
+**/*tmp
+
 # OSX leaves these everywhere on SMB shares
 ._*
 

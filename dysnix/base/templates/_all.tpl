@@ -4,7 +4,7 @@ Main entrypoint for the base library chart. It will render all underlying templa
 {{- define "base.all" -}}
 {{- /* Build the templates */ -}}
 
-{{- if .Values.persistence -}}
+{{- if .Values.persistence.enabled -}}
   {{- include "base.pvc" . }}
 {{- end -}}
 

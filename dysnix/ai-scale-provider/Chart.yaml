@@ -1,0 +1,26 @@
+apiVersion: v2
+name: ai-scale-provider
+description: "AI-Scale: metrics provider service"
+version: 0.0.1
+appVersion: 0.0.1
+type: application
+engine: gotpl
+home: https://github.com/dysnix/charts/tree/master/dysnix/ai-scale-provider
+icon: https://github.com/dysnix/charts/tree/master/dysnix/ai-scale-provider/img/ai-scale.png
+sources:
+  - https://github.com/dysnix/charts
+maintainers:
+  - email: services@dysnix.com
+    name: Dysnix
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
+  - name: base
+    # TODO: change to load from Dysnix museum...
+    repository: "file://../base"
+    tags:
+      - dysnix-base
+    version: 0.x.x
