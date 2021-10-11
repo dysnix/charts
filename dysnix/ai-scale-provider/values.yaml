@@ -1,12 +1,13 @@
 image:
   registry: ""
-  repository: "alex6021710/ai-scale-provider"
+  # TODO: push to Dysnix registry
+  repository: ""
   tag: latest
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -44,8 +45,8 @@ replicaCount: 1
 args: []
 command:
   - /app
-  - -conf=""
-  - -queries=""
+  - -conf=/etc/provider/configs/configs.yaml
+  - -queries=/etc/provider/queries/queries.yaml
   - -logs=""
 
 ## String to partially override common.names.fullname template (will maintain the release name)
@@ -379,11 +380,23 @@ envFrom: []
 
 ## Array to add volumes
 ##
-volumes: []
+volumes:
+  - name: configs
+    configMap:
+      name: "{{ include \"common.names.fullname\" $ }}-configs"
+  - name: queries
+    configMap:
+      name: "{{ include \"common.names.fullname\" $ }}-queries"
 
 ## Array to add volume mounts (normally used with volumes)
 ##
-volumeMounts: []
+volumeMounts:
+  - name: configs
+    mountPath: "/etc/provider/configs"
+    readOnly: true
+  - name: queries
+    mountPath: "/etc/provider/queries"
+    readOnly: true
 
 ## Configure options for liveness and readiness probes
 ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
@@ -440,7 +453,94 @@ persistence:
 ## The above example will create app configMap
 ## (prefixed with {{ template "app.fullname" $ }}-).
 ##
-configMaps: {}
+configMaps:
+  queries:
+    data:
+      queries.yaml: |-
+        Cpu:
+          - |-
+            sum(
+                    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}"})
+          - |-
+            sum(
+                    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}"})
+          - |-
+            sum(
+                    kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="cpu"})
+          - |-
+            sum(
+                    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}"})
+                /sum(
+                    kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="cpu"})
+        Memory:
+          - |-
+            sum(
+                    container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
+          - |-
+            sum(
+                    container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
+          - |-
+            sum(
+                    kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
+          - |-
+            sum(
+                    container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
+                /sum(
+                    kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
+          - |-
+            sum(
+                    kube_pod_container_resource_limits{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
+          - |-
+            sum(
+                    container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
+                /sum(
+                    kube_pod_container_resource_limits{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
+        Network:
+          - (sum(irate(container_network_receive_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_transmit_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_receive_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_transmit_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_receive_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_transmit_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_receive_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_transmit_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (avg(irate(container_network_receive_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (avg(irate(container_network_transmit_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_receive_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_transmit_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_receive_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+          - (sum(irate(container_network_transmit_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+  configs:
+    data:
+      configs.yaml: |-
+        base:
+          debugMode: true
+          useProfiling: true
+        metricsSource:
+          metricsSourceType: Prometheus
+          prometheus:
+            url: http://localhost:9090
+            concurrency: 10
+            httpTransport:
+              maxIdleConnDuration: 1m
+              readTimeout: 7s
+              writeTimeout: 7s
+        grpc:
+          enabled: true
+          useReflection: true
+          compression:
+            enabled: false
+            type: None
+          health:
+            host: ""
+            port: 8091
+          connection:
+            host:
+            port: 8090
+            readBufferSize: 100MiB
+            writeBufferSize: 100MiB
+            maxMessageSize: 30MiB
+            insecure: true
 
 ## Populate secrets for the application
 ##
