@@ -139,3 +139,7 @@ helm install my-release -f values.yaml dysnix/app
 
 AI-Scale-Provider is an AI-Scale operator microservice, which is used to receive and group metrics from an external source (currently only Prometheus is supported), 
 further post-processing of these metrics to the form described in the proto file [proto files](https://github.com/dysnix/ai-scale-proto) of the AI-Scale component interaction protocol.
+
+## Configuration of service
+
+For configuration service you can change list of options in [configMaps](https://github.com/dysnix/ai-scale-provider/Readme.md) value.
