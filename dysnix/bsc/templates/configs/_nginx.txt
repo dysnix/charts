@@ -14,7 +14,7 @@ http {
                       '"$http_user_agent" "$http_x_forwarded_for" '
                       '"$upstream_addr" "$upstream_status" "$upstream_response_time"';
 
-    access_log /dev/stdout;
+    access_log /dev/stdout main;
     sendfile        on;
     keepalive_timeout  65;
 
@@ -53,9 +53,6 @@ http {
 
     upstream bsc {
         server {{ .Release.Name }}:{{ .Values.service.rpcPort }};
-        server localhost:8001 backup;
-        server localhost:8002 backup;
-        server localhost:8003 backup;
     }
 
     server {
