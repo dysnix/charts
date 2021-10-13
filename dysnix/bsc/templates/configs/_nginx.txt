@@ -52,7 +52,7 @@ http {
     }
 
     upstream bsc {
-        server {{ .Release.Name }}:{{ .Values.service.rpcPort }};
+        server {{ .Release.Name }}:{{ .Values.service.rpcPort }} max_fails=0;
     }
 
     server {
