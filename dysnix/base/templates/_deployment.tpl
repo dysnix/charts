@@ -32,6 +32,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "base.serviceAccountName" . }}
       {{- include "base.imagePullSecrets" . | nindent 6 }}
       dnsPolicy: {{ .Values.dnsPolicy }}
       {{- if .Values.priorityClassName }}

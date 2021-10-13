@@ -1,0 +1,207 @@
+{{- if .Values.operator.serviceAccount.create }}
+  {{- include "base.serviceAccount" . }}
+  {{- end }}
+
+  {{- if .Values.rbac.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "common.names.fullname" . }}-operator
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: operator
+rules:
+{{/*  - apiGroups:*/}}
+{{/*      - "*"*/}}
+{{/*    resources:*/}}
+{{/*      - '*'*/}}
+{{/*    verbs:*/}}
+{{/*      - '*'*/}}
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers/status
+    verbs:
+      - get
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers/status
+    verbs:
+      - get
+  - apiGroups:
+      - authentication.k8s.io
+    resources:
+      - tokenreviews
+    verbs:
+      - create
+  - apiGroups:
+      - authorization.k8s.io
+    resources:
+      - subjectaccessreviews
+    verbs:
+      - create
+  - apiGroups:
+    - apps
+    resources:
+      - daemonset
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - daemonset/status
+    verbs:
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/status
+    verbs:
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - statefulset
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - statefulset/status
+    verbs:
+      - get
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers/status
+    verbs:
+      - get
+      - patch
+      - update
+  {{- if .Values.webhook.enabled }}
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingwebhookconfigurations
+      - validatingwebhookconfigurations
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  {{- end }}
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "common.names.fullname" . }}-operator
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "common.names.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "base.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+  {{- end }}

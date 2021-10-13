@@ -52,6 +52,15 @@ spec:
       nodePort: {{ .nodePort }}
       {{- end }}
     {{- end }}
+    {{- if .Values.monitoring.enabled }}
+    - name: metrics
+      protocol: TCP
+      port: {{ .Values.monitoring.port | default 8080 }}
+      targetPort: metrics
+    {{- end  }}
   selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
+    {{- if .Values.commonSelectors }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonSelectors "context" $ ) | nindent 4 }}
+    {{- end }}
 {{- end -}}
 {{- end }}

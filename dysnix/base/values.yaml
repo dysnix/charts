@@ -67,6 +67,10 @@ serviceAccount:
 ##
 commonLabels: {}
 
+## Add selectors to all the deployed resources
+##
+commonSelectors: {}
+
 ## Add annotations to all the deployed resources
 ##
 commonAnnotations: {}

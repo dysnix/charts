@@ -40,6 +40,10 @@ controller:
 
 replicaCount: 1
 
+monitoring:
+  enabled: false
+  port: 8091
+
 ##
 ##
 args: []
