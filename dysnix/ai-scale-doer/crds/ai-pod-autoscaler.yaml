@@ -1,3 +1,4 @@
+
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -38,6 +39,14 @@ spec:
               for the fields to be serialized. AIPodAutoscalerSpec defines the desired
               state of AIPodAutoscaler'
               properties:
+                autoAdjustReplicasCount:
+                  description: AutoAdjustReplicasCount enabled flag for auto adjust
+                    replicas count
+                  type: boolean
+                autoAdjustStartupDuration:
+                  description: AutoAdjustStartupDuration enabled flag for auto adjust
+                    startup duration
+                  type: boolean
                 maxReplicas:
                   default: 30
                   description: MaxReplicas maximal replicas count
@@ -113,6 +122,9 @@ spec:
                       - type
                     type: object
                   type: array
+                startupDuration:
+                  description: StartupDuration startup duration for Doer service
+                  type: string
                 stepDuration:
                   default: 10s
                   description: StepDuration step duration for monitoring queries
@@ -130,10 +142,13 @@ spec:
                   pattern: ^([0-9]+(m|s|ms|mk|h|d|w))+$
                   type: string
               required:
+                - autoAdjustReplicasCount
+                - autoAdjustStartupDuration
                 - maxReplicas
                 - minReplicas
                 - scaleTargetRef
                 - sources
+                - startupDuration
                 - stepDuration
                 - timeWindow
                 - updateInterval
