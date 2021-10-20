@@ -564,7 +564,12 @@ configMaps:
     data:
       configs.yaml: |-
         debugMode: true
-        useProfiling: true
+        profiling:
+          enabled: true
+          host: localhost
+          port: 6060
+        startupWorkers:
+          cron: '@every 20s'
         grpc:
             enabled: true
             useReflection: true

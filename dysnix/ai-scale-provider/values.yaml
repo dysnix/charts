@@ -18,14 +18,14 @@ image:
 profiling:
   enabled: false
   port: 6060
-  
+
 serviceAccount:
   ## Specifies whether a service account should be created
   ##
   create: true
   ## Annotations to add to the service account
   ##
-  annotations: {}
+  annotations: { }
   ## The name of the service account to use.
   ## If not set and create is true, a name is generated using the fullname template
   ##
@@ -50,7 +50,7 @@ monitoring:
 
 ##
 ##
-args: []
+args: [ ]
 command:
   - /app
   - -conf=/etc/provider/configs/configs.yaml
@@ -68,28 +68,28 @@ command:
 ## Deployment pod host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
-hostAliases: []
+hostAliases: [ ]
 
 ## Add labels to all the deployed resources
 ##
-commonLabels: {}
+commonLabels: { }
 
 ## Add annotations to all the deployed resources
 ##
-commonAnnotations: {}
+commonAnnotations: { }
 
 ## Pod annotations
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
-podAnnotations: {}
+podAnnotations: { }
 
 ## Extra labels to add to Pod
 ##
-podLabels: {}
+podLabels: { }
 
 ## Add init containers to the pod
 ##
-initContainers: []
+initContainers: [ ]
 ## e.g.
 # - name: your-image-name
 # image: your-image
@@ -151,8 +151,8 @@ service:
   ## Specify the default service port and targetPort
   ## Note: port or ports must be provided to enable service!
   ##
-#  port: 8090
-#  targetPort: grpc
+  #  port: 8090
+  #  targetPort: grpc
   
   ## Specify the nodePort value for the LoadBalancer and NodePort service types.
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
@@ -172,17 +172,17 @@ service:
   
   ## Provide any additional service annotations
   ##
-  annotations: {}
+  annotations: { }
   
   ## Provide any additional service labels
   ##
-  labels: {}
+  labels: { }
   
   ports:
-  - name: grpc
-    port: 8090
-    targetPort: grpc
-    
+    - name: grpc
+      port: 8090
+      targetPort: grpc
+  
   
   ## Expose additional ports
   ##
@@ -250,7 +250,7 @@ ingress:
   ##
   ## If certManager is set to true, annotation kubernetes.io/tls-acme: "true" will automatically be set
   ##
-  annotations: {}
+  annotations: { }
   
   ## Enable TLS configuration for the hostname defined at ingress.hostname parameter
   ## TLS certificates will be retrieved from a TLS secret with name: {{- printf "%s-tls" .Values.ingress.hostname }}
@@ -307,12 +307,12 @@ resources: #{}
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-   limits:
-     cpu: 200m
-     memory: 256Mi
-   requests:
-     cpu: 100m
-     memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 ## Autoscaling configuration
 ##
@@ -323,9 +323,9 @@ autoscaling:
   targetCPU: 100
   targetMemory: 200
 
-nodeSelector: {}
-tolerations: []
-topologySpreadConstraints: []
+nodeSelector: { }
+tolerations: [ ]
+topologySpreadConstraints: [ ]
 
 ## Pod affinity preset
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
@@ -359,13 +359,13 @@ nodeAffinityPreset:
   ##   - e2e-az1
   ##   - e2e-az2
   ##
-  values: []
+  values: [ ]
 
 ## Affinity for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
 ##
-affinity: {}
+affinity: { }
 
 ## An array to add env vars
 ## For example:
@@ -373,7 +373,7 @@ affinity: {}
 ##  - name: TEST_VAR
 ##    value: test
 ##
-env: {}
+env: { }
 
 ## Array of sources to populate environment variables in the container from
 ## Ref: https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envfromsource-v1-core
@@ -384,7 +384,7 @@ env: {}
 ##   - secretRef:
 ##       name: '{{ include "app.fullname" . }}-env'
 ##
-envFrom: []
+envFrom: [ ]
 
 ## Array to add volumes
 ##
@@ -521,9 +521,11 @@ configMaps:
   configs:
     data:
       configs.yaml: |-
-        base:
-          debugMode: true
-          useProfiling: true
+        debugMode: true
+        profiling:
+          enabled: false
+          host: localhost
+          port: 6060
         metricsSource:
           metricsSourceType: Prometheus
           prometheus:
@@ -564,7 +566,7 @@ configMaps:
 ## The above example will create two secrets db and b64
 ## (prefixed with {{ template "app.fullname" $ }}-).
 ##
-secrets: {}
+secrets: { }
 
 ## Array of templates paths to automatically adds checksum annotation for
 ## (ex: checksum/secrets.yaml: **sha256sum**)
@@ -572,7 +574,7 @@ secrets: {}
 ## checksums:
 ##   - secrets.yaml
 ##
-checksums: []
+checksums: [ ]
 
 tests:
   httpChecks:

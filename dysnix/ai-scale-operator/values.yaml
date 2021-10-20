@@ -572,7 +572,12 @@ ai-scale-doer:
       data:
         configs.yaml: |-
           debugMode: true
-          useProfiling: true
+          profiling:
+            enabled: false
+            host: localhost
+            port: 6060
+          startupWorkers:
+            cron: '@every 20s'
           grpc:
               enabled: true
               useReflection: true
@@ -729,9 +734,11 @@ ai-scale-provider:
     configs:
       data:
         configs.yaml: |-
-          base:
-            debugMode: true
-            useProfiling: true
+          debugMode: true
+          profiling:
+            enabled: false
+            host: localhost
+            port: 6060
           metricsSource:
             metricsSourceType: Prometheus
             prometheus:
