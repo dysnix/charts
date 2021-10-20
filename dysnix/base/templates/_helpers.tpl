@@ -54,3 +54,22 @@ app
 {{ $targetPort }}
 {{- end -}}
 {{- end -}}
+
+{{- define "base.deployment.containerPorts" -}}
+{{- $default := (include "base.deployment.defaultPorts" .) | fromYaml | default (dict "ports" list) }}
+{{- (concat ($default.ports | default list) .Values.containerPorts) | toYaml }}
+{{- end }}
+
+{{- define "base.deployment.defaultPorts" -}}
+ports:
+{{- if .Values.profiling.enabled }}
+  - name: profiling
+    containerPort: {{ .Values.profiling.port | default 6060 }}
+    protocol: TCP
+{{- end }}
+{{- if .Values.monitoring.enabled }}
+  - name: metrics
+    protocol: TCP
+    port: {{ .Values.monitoring.port | default 8080 }}
+{{- end }}
+{{- end }}

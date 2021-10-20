@@ -1,6 +1,6 @@
 apiVersion: v2
-name: ai-scale-doer
-description: "AI-Scale: doer operator service"
+name: ai-scale-operator
+description: "AI-Scale: umbrella Helm chart for deploy all needed services of ai-scale helm operator"
 version: 0.0.1
 appVersion: 0.0.1
 type: application
@@ -23,4 +23,18 @@ dependencies:
     repository: "file://../base"
     tags:
       - dysnix-base
+    version: 0.x.x
+  - name: ai-scale-provider
+    # TODO: change to load from Dysnix museum...
+    repository: "file://../ai-scale-provider"
+    tags:
+      - dysnix-provider
+      - ai-scale-provider
+    version: 0.x.x
+  - name: ai-scale-doer
+    # TODO: change to load from Dysnix museum...
+    repository: "file://../ai-scale-doer"
+    tags:
+      - dysnix-doer
+      - ai-scale-doer
     version: 0.x.x

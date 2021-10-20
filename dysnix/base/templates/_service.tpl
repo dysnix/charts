@@ -52,6 +52,12 @@ spec:
       nodePort: {{ .nodePort }}
       {{- end }}
     {{- end }}
+    {{- if .Values.profiling.enabled }}
+    - name: profiling
+      protocol: TCP
+      port: {{ .Values.profiling.port | default 6060 }}
+      targetPort: profiling
+    {{- end }}
     {{- if .Values.monitoring.enabled }}
     - name: metrics
       protocol: TCP

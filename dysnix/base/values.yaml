@@ -29,6 +29,14 @@ image:
 ##
 name:
 
+monitoring:
+  enabled: false
+  port: 8091
+
+profiling:
+  enabled: false
+  port: 6060
+
 ## Specifies the application resource kind
 ##
 appKind: Deployment

@@ -85,7 +85,7 @@ spec:
           envFrom: {{- include "common.tplvalues.render" (dict "value" .Values.envFrom "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.containerPorts }}
-          ports: {{ .Values.containerPorts | toYaml | nindent 12 }}
+          ports: {{- (include "base.deployment.containerPorts" .) | nindent 12 }}
           {{- end }}
           resources: {{- include "common.tplvalues.render" (dict "value" .Values.resources "context" $) | nindent 12 }}
           {{- if .Values.livenessProbe.enabled }}

@@ -23,54 +23,55 @@ rbac:
   enabled: true
 
 monitoring:
-  enabled: false
+  enabled: true
   port: 8091
 
 crd:
-  enabled: true
-  crs:
-    - name: aipodautoscaler-apache
-      scaleTargetRef:
-        kind: Deployment
-        name: php-apache
-      minReplicas: 1
-      maxReplicas: 10
-      updateInterval: 60s
-      stepDuration: 30s
-      timeWindow: 30m
-      sources:
-        - type: History
-          period:
-            - "daily"
-            - "weekly"
-            - "monthly"
-          metrics:
-            - "cpu"
-            - "memory"
-            - "disk"
-            - "network"
-            - "logs"
-    - name: aipodautoscaler-bsc
-      scaleTargetRef:
-        kind: StatefulSet
-        name: bsc
-      minReplicas: 1
-      maxReplicas: 10
-      timeWindow: 30m
-      stepDuration: 30s
-      updateInterval: 10s
-      sources:
-        - type: History
-          period:
-            - "daily"
-            - "weekly"
-            - "monthly"
-          metrics:
-            - "cpu"
-            - "memory"
-            - "disk"
-            - "network"
-            - "logs"
+  enabled: false
+  crs: []
+#  crs:
+#    - name: aipodautoscaler-apache
+#      scaleTargetRef:
+#        kind: Deployment
+#        name: php-apache
+#      minReplicas: 1
+#      maxReplicas: 10
+#      updateInterval: 60s
+#      stepDuration: 30s
+#      timeWindow: 30m
+#      sources:
+#        - type: History
+#          period:
+#            - "daily"
+#            - "weekly"
+#            - "monthly"
+#          metrics:
+#            - "cpu"
+#            - "memory"
+#            - "disk"
+#            - "network"
+#            - "logs"
+#    - name: aipodautoscaler-bsc
+#      scaleTargetRef:
+#        kind: StatefulSet
+#        name: bsc
+#      minReplicas: 1
+#      maxReplicas: 10
+#      timeWindow: 30m
+#      stepDuration: 30s
+#      updateInterval: 10s
+#      sources:
+#        - type: History
+#          period:
+#            - "daily"
+#            - "weekly"
+#            - "monthly"
+#          metrics:
+#            - "cpu"
+#            - "memory"
+#            - "disk"
+#            - "network"
+#            - "logs"
 
 ## Global Docker image parameters
 ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
@@ -110,7 +111,8 @@ appKind: Deployment
 
 ##
 ##
-args: "{{- include \"getWebhookFlags\" . }}"
+args: []
+#  - --arg1=true
 command:
   - /manager
 
@@ -490,18 +492,12 @@ envFrom: [ ]
 
 ## Array to add volumes
 ##
-volumes: "{{- include \"getVolumes\" . | indent 2 }}"
+volumes: []
+
 
 ## Array to add volume mounts (normally used with volumes)
 ##
-volumeMounts:
-  - name: configs
-    mountPath: "/etc/doer/configs"
-    readOnly: true
-    # TODO: Fix templating...
-  - name: serving-cert
-    mountPath: "{{ (.Values.webhook.tls).certDir | default \"/etc/webhook/certs\" | toString }}"
-    readOnly: true
+volumeMounts: []
 ## Configure options for liveness and readiness probes
 ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
 ## Note: probes are disabled by default and have no checks defined
@@ -618,134 +614,3 @@ checksums: [ ]
 tests:
   httpChecks:
     default: false
-
-ai-scale-provider:
-  image:
-    tag: v0.0.3
-    repository: "alex6021710/ai-scale-provider"
-    pullPolicy: Always
-  
-  readinessProbe:
-    enabled: false
-    exec:
-      command: [ "/bin/grpc_health_probe", "-addr=doer-operator-ai-scale-provider:8090" ]
-    initialDelaySeconds: 10
-  livenessProbe:
-    enabled: false
-    exec:
-      command: [ "/bin/grpc_health_probe", "-addr=:8090" ]
-    initialDelaySeconds: 5
-  
-  command:
-    - /app
-    - -conf=/etc/provider/configs/configs.yaml
-    - -queries=/etc/provider/queries/queries.yaml
-  
-  volumes:
-    - name: configs
-      configMap:
-        name: "{{ include \"common.names.fullname\" $ }}-configs"
-    - name: queries
-      configMap:
-        name: "{{ include \"common.names.fullname\" $ }}-queries"
-  
-  volumeMounts:
-    - name: configs
-      mountPath: "/etc/provider/configs"
-      readOnly: true
-    - name: queries
-      mountPath: "/etc/provider/queries"
-      readOnly: true
-  
-  configMaps:
-    queries:
-      data:
-        queries.yaml: |-
-          Cpu:
-            - |-
-              sum(
-                      node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}"})
-            - |-
-              sum(
-                      node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}"})
-            - |-
-              sum(
-                      kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="cpu"})
-            - |-
-              sum(
-                      node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}"})
-                  /sum(
-                      kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="cpu"})
-          Memory:
-            - |-
-              sum(
-                      container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
-            - |-
-              sum(
-                      container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
-            - |-
-              sum(
-                      kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
-            - |-
-              sum(
-                      container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
-                  /sum(
-                      kube_pod_container_resource_requests{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
-            - |-
-              sum(
-                      kube_pod_container_resource_limits{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
-            - |-
-              sum(
-                      container_memory_working_set_bytes{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", container!="", image!=""})
-                  /sum(
-                      kube_pod_container_resource_limits{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace="{{ "{{" }} .Namespace {{ "}}" }}", resource="memory"})
-          Network:
-            - (sum(irate(container_network_receive_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_transmit_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_receive_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_transmit_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_receive_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_transmit_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_receive_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_transmit_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (avg(irate(container_network_receive_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (avg(irate(container_network_transmit_bytes_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_receive_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_transmit_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_receive_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-            - (sum(irate(container_network_transmit_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
-    configs:
-      data:
-        configs.yaml: |-
-          base:
-            debugMode: true
-            useProfiling: true
-          metricsSource:
-            metricsSourceType: Prometheus
-            prometheus:
-              url: http://34.78.234.22:9090
-              concurrency: 10
-              httpTransport:
-                maxIdleConnDuration: 1m
-                readTimeout: 7s
-                writeTimeout: 7s
-          grpc:
-            enabled: true
-            useReflection: true
-            compression:
-              enabled: false
-              type: None
-            connection:
-              host:
-              port: 8090
-              readBufferSize: 100MiB
-              writeBufferSize: 100MiB
-              maxMessageSize: 30MiB
-              insecure: true
-              timeout: 15s
-#              keepalive:
-#                time: 5m
-#                timeout: 5m
-#                enforcementPolicy:
-#                  minTime: 20m
-#                  permitWithoutStream: false

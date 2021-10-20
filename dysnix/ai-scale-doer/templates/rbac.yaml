@@ -12,12 +12,6 @@ metadata:
     {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: operator
 rules:
-{{/*  - apiGroups:*/}}
-{{/*      - "*"*/}}
-{{/*    resources:*/}}
-{{/*      - '*'*/}}
-{{/*    verbs:*/}}
-{{/*      - '*'*/}}
   - apiGroups:
       - autoscaling.ai.op.dysnix.org
     resources:
