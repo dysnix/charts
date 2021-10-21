@@ -6,7 +6,7 @@ ai-scale-doer:
       create: true
   
   webhook:
-    enabled: true
+    enabled: false
     serverPort: 443
     tls:
       certDir: "/etc/webhooks/certs"
@@ -28,61 +28,61 @@ ai-scale-doer:
     port: 8091
   
   profiling:
-    enabled: true
+    enabled: false
     port: 6060
   
   crd:
     enabled: true
-    # crs: []
-    crs:
-      - name: aipodautoscaler-apache
-        scaleTargetRef:
-          kind: Deployment
-          name: php-apache
-        minReplicas: 1
-        maxReplicas: 10
-        updateInterval: 60s
-        stepDuration: 30s
-        timeWindow: 30m
-        autoAdjustReplicasCount: false
-        autoAdjustStartupDuration: false
-        startupDuration: 2d
-        sources:
-          - type: History
-            period:
-              - "daily"
-              - "weekly"
-              - "monthly"
-            metrics:
-              - "cpu"
-              - "memory"
-              - "disk"
-              - "network"
-              - "logs"
-      - name: aipodautoscaler-bsc
-        scaleTargetRef:
-          kind: StatefulSet
-          name: bsc
-        minReplicas: 1
-        maxReplicas: 10
-        timeWindow: 30m
-        stepDuration: 30s
-        updateInterval: 10s
-        autoAdjustReplicasCount: false
-        autoAdjustStartupDuration: true
-        startupDuration: 2d
-        sources:
-          - type: History
-            period:
-              - "daily"
-              - "weekly"
-              - "monthly"
-            metrics:
-              - "cpu"
-              - "memory"
-              - "disk"
-              - "network"
-              - "logs"
+    crs: []
+#    crs:
+#      - name: aipodautoscaler-apache
+#        scaleTargetRef:
+#          kind: Deployment
+#          name: php-apache
+#        minReplicas: 1
+#        maxReplicas: 10
+#        updateInterval: 60s
+#        stepDuration: 30s
+#        timeWindow: 30m
+#        autoAdjustReplicasCount: false
+#        autoAdjustStartupDuration: false
+#        startupDuration: 2d
+#        sources:
+#          - type: History
+#            period:
+#              - "daily"
+#              - "weekly"
+#              - "monthly"
+#            metrics:
+#              - "cpu"
+#              - "memory"
+#              - "disk"
+#              - "network"
+#              - "logs"
+#      - name: aipodautoscaler-bsc
+#        scaleTargetRef:
+#          kind: StatefulSet
+#          name: bsc
+#        minReplicas: 1
+#        maxReplicas: 10
+#        timeWindow: 30m
+#        stepDuration: 30s
+#        updateInterval: 10s
+#        autoAdjustReplicasCount: false
+#        autoAdjustStartupDuration: true
+#        startupDuration: 2d
+#        sources:
+#          - type: History
+#            period:
+#              - "daily"
+#              - "weekly"
+#              - "monthly"
+#            metrics:
+#              - "cpu"
+#              - "memory"
+#              - "disk"
+#              - "network"
+#              - "logs"
   
   ## Global Docker image parameters
   ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
@@ -742,7 +742,7 @@ ai-scale-provider:
           metricsSource:
             metricsSourceType: Prometheus
             prometheus:
-              url: http://34.78.234.22:9090
+              url: http://localhost:9090
               concurrency: 10
               httpTransport:
                 maxIdleConnDuration: 1m

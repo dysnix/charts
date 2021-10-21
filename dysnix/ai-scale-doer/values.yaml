@@ -5,7 +5,7 @@ operator:
     create: true
 
 webhook:
-  enabled: true
+  enabled: false
   serverPort: 443
   tls:
     certDir: "/etc/webhooks/certs"
@@ -23,7 +23,7 @@ rbac:
   enabled: true
 
 monitoring:
-  enabled: true
+  enabled: false
   port: 8091
 
 crd:

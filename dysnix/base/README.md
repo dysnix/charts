@@ -159,6 +159,8 @@ ingress:
 | podSecurityContext.enabled | bool | `false` |  |
 | podSecurityContext.fsGroup | int | `1001` |  |
 | priorityClassName | string | `""` |  |
+| profiling.enabled | bool | `false` |  |
+| profiling.port | int | `6060` |  |
 | readinessProbe.enabled | bool | `false` |  |
 | readinessProbe.failureThreshold | int | `6` |  |
 | readinessProbe.initialDelaySeconds | int | `60` |  |

@@ -1,7 +1,7 @@
 image:
   registry: ""
   # TODO: push to Dysnix registry
-  repository: ""
+  repository: "alex6021710/ai-scale-provider"
   tag: latest
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
