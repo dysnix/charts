@@ -6,7 +6,7 @@ chart-repos:
   - bitnami=https://charts.bitnami.com/bitnami
   - grafana=https://grafana.github.io/helm-charts
 excluded-charts:
-  - base
+  - ai-base
 debug: true
 check-version-increment: true
 validate-chart-schema: true

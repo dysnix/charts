@@ -20,7 +20,7 @@ dependencies:
     version: 1.x.x
   - name: base
     # TODO: change to load from Dysnix museum...
-    repository: "file://../base"
+    repository: "file://../ai-base"
     tags:
       - dysnix-base
     version: 0.x.x
