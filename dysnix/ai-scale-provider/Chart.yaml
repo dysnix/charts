@@ -1,7 +1,7 @@
 apiVersion: v2
 name: ai-scale-provider
 description: "AI-Scale: metrics provider service"
-version: 0.0.1
+version: 0.0.2
 appVersion: 0.0.1
 type: application
 engine: gotpl
