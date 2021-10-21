@@ -1,10 +1,10 @@
 ai-scale-doer:
   replicaCount: 1
-  
+
   operator:
     serviceAccount:
       create: true
-  
+
   webhook:
     enabled: false
     serverPort: 443
@@ -19,71 +19,71 @@ ai-scale-doer:
         tls:
           crt: ""
           key: ""
-  
+
   rbac:
     enabled: true
-  
+
   monitoring:
     enabled: false
     port: 8091
-  
+
   profiling:
     enabled: false
     port: 6060
-  
+
   crd:
     enabled: true
     crs: []
-#    crs:
-#      - name: aipodautoscaler-apache
-#        scaleTargetRef:
-#          kind: Deployment
-#          name: php-apache
-#        minReplicas: 1
-#        maxReplicas: 10
-#        updateInterval: 60s
-#        stepDuration: 30s
-#        timeWindow: 30m
-#        autoAdjustReplicasCount: false
-#        autoAdjustStartupDuration: false
-#        startupDuration: 2d
-#        sources:
-#          - type: History
-#            period:
-#              - "daily"
-#              - "weekly"
-#              - "monthly"
-#            metrics:
-#              - "cpu"
-#              - "memory"
-#              - "disk"
-#              - "network"
-#              - "logs"
-#      - name: aipodautoscaler-bsc
-#        scaleTargetRef:
-#          kind: StatefulSet
-#          name: bsc
-#        minReplicas: 1
-#        maxReplicas: 10
-#        timeWindow: 30m
-#        stepDuration: 30s
-#        updateInterval: 10s
-#        autoAdjustReplicasCount: false
-#        autoAdjustStartupDuration: true
-#        startupDuration: 2d
-#        sources:
-#          - type: History
-#            period:
-#              - "daily"
-#              - "weekly"
-#              - "monthly"
-#            metrics:
-#              - "cpu"
-#              - "memory"
-#              - "disk"
-#              - "network"
-#              - "logs"
-  
+    ## CRS list definitions
+    #   - name: aipodautoscaler-apache
+    #     scaleTargetRef:
+    #       kind: Deployment
+    #       name: php-apache
+    #     minReplicas: 1
+    #     maxReplicas: 10
+    #     updateInterval: 60s
+    #     stepDuration: 30s
+    #     timeWindow: 30m
+    #     autoAdjustReplicasCount: false
+    #     autoAdjustStartupDuration: false
+    #     startupDuration: 2d
+    #     sources:
+    #       - type: History
+    #         period:
+    #           - "daily"
+    #           - "weekly"
+    #           - "monthly"
+    #         metrics:
+    #           - "cpu"
+    #           - "memory"
+    #           - "disk"
+    #           - "network"
+    #           - "logs"
+    #   - name: aipodautoscaler-bsc
+    #     scaleTargetRef:
+    #       kind: StatefulSet
+    #       name: bsc
+    #     minReplicas: 1
+    #     maxReplicas: 10
+    #     timeWindow: 30m
+    #     stepDuration: 30s
+    #     updateInterval: 10s
+    #     autoAdjustReplicasCount: false
+    #     autoAdjustStartupDuration: true
+    #     startupDuration: 2d
+    #     sources:
+    #       - type: History
+    #         period:
+    #           - "daily"
+    #           - "weekly"
+    #           - "monthly"
+    #         metrics:
+    #           - "cpu"
+    #           - "memory"
+    #           - "disk"
+    #           - "network"
+    #           - "logs"
+
   ## Global Docker image parameters
   ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
   ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
@@ -93,7 +93,7 @@ ai-scale-doer:
   #   imagePullSecrets:
   #     - myRegistryKeySecretName
   #   storageClass: myStorageClass
-  
+
   image:
     registry: ""
     # TODO: change to Dysnix registry...
@@ -110,81 +110,81 @@ ai-scale-doer:
     ##
     # pullSecrets:
     #   - myRegistryKeySecretName
-  
-  
+
+
   ## Specifies the application name (required to be set)
   ##
   name:
-  
+
   ## Specifies the application resource kind
   ##
   appKind: Deployment
-  
+
   ##
   ##
-  args: [ ]
+  args: []
   #  - --arg1=true
   command:
     - /manager
-  
+
   ## String to partially override common.names.fullname template (will maintain the release name)
   ##
   # nameOverride:
-  
+
   ## String to fully override common.names.fullname template
   ##
   # fullnameOverride:
-  
+
   ## Deployment pod host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
-  hostAliases: [ ]
-  
+  hostAliases: []
+
   serviceAccount:
     ## Specifies whether a service account should be created
     ##
     create: true
     ## Annotations to add to the service account
     ##
-    annotations: { }
+    annotations: {}
     ## The name of the service account to use.
     ## If not set and create is true, a name is generated using the fullname template
     ##
     name: ai-scale-doer
-  
+
   ## Add labels to all the deployed resources
   ##
   commonLabels:
     control-plane: controller-manager
     controller-tools.k8s.io: "1.0"
     app.kubernetes.io/component: operator
-  
+
   ## Add selectors to all the deployed resources
   ##
   commonSelectors:
     control-plane: controller-manager
     controller-tools.k8s.io: "1.0"
     app.kubernetes.io/component: operator
-  
+
   ## Add annotations to all the deployed resources
   ##
-  commonAnnotations: { }
-  
+  commonAnnotations: {}
+
   ## Pod annotations
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
   ##
-  podAnnotations: { }
-  
+  podAnnotations: {}
+
   ## Extra labels to add to Pod
   ##
   podLabels:
     control-plane: controller-manager
     controller-tools.k8s.io: "1.0"
     app.kubernetes.io/component: operator
-  
+
   ## Add init containers to the pod
   ##
-  initContainers: [ ]
+  initContainers: []
   ## e.g.
   # - name: your-image-name
   # image: your-image
@@ -192,26 +192,26 @@ ai-scale-doer:
   # ports:
   # - name: portname
   #   containerPort: 1234
-  
-  
+
+
   ## priorityClassName
   ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
   ##
   priorityClassName: ''
-  
+
   ## Optionally, change this to ClusterFirstWithHostNet in case you have 'hostNetwork: true'.
   ## By default, while using host network, name resolution uses the host's DNS. If you wish nginx-controller
   ## to keep resolving names inside the k8s network, use ClusterFirstWithHostNet.
   ##
   dnsPolicy: ClusterFirst
-  
+
   ## Pod securityContext
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ##
   podSecurityContext:
     enabled: false
     fsGroup: 1001
-  
+
   ## Container security context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ##
@@ -227,7 +227,7 @@ ai-scale-doer:
   containerSecurityContext:
     enabled: false
     runAsUser: 1001
-  
+
   ## Application container ports definitions (for use with service.ports)
   ##
   containerPorts:
@@ -243,7 +243,7 @@ ai-scale-doer:
     - name: probes
       containerPort: 8081
       protocol: TCP
-  
+
   ## Application service parameters
   ##
   service:
@@ -251,42 +251,42 @@ ai-scale-doer:
     ##
     type: ClusterIP
     # clusterIP: None
-    
+
     ## Specify the default service port and targetPort
     ## Note: port or ports must be provided to enable service!
     ##
     # port:
     # targetPort:
-    
+
     ## Specify the nodePort value for the LoadBalancer and NodePort service types.
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
     ##
     # nodePort: 30080
-    
+
     ## Set the LoadBalancer service type to internal only.
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
     ##
     # loadBalancerIP:
-    
+
     ## Load Balancer sources
     ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
     ##
     # loadBalancerSourceRanges:
     # - 10.10.10.0/24
-    
+
     ## Provide any additional service annotations
     ##
     annotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "8091"
       prometheus.io/scheme: http
-    
+
     ## Provide any additional service labels
     ##
     labels:
       control-plane: controller-manager
       controller-tools.k8s.io: "1.0"
-    
+
     ## Expose additional ports
     ##
     # ports:
@@ -314,7 +314,7 @@ ai-scale-doer:
       - name: probes
         port: 8081
         targetPort: probes
-  
+
   ## Set up update strategy for Kibana installation. Set to Recreate if you use persistent volume that cannot be mounted by more than one pods to makesure the pods are destroyed first.
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
   ## Example:
@@ -325,7 +325,7 @@ ai-scale-doer:
   #    maxUnavailable: 25%
   updateStrategy:
     type: RollingUpdate
-  
+
   ## Configure the ingress resource that allows you to access the
   ## app installation. Set up the URL
   ## ref: http://kubernetes.io/docs/user-guide/ingress/
@@ -334,42 +334,42 @@ ai-scale-doer:
     ## Set to true to enable ingress record generation
     ##
     enabled: false
-    
+
     ## Set this to true in order to add the corresponding annotations for cert-manager
     ##
     certManager: false
-    
+
     ## Ingress Path type
     ##
     pathType: ImplementationSpecific
-    
+
     ## Override API Version (automatically detected if not set)
     ##
     apiVersion:
-    
+
     ## When the ingress is enabled, a host pointing to this will be created
     ##
     hostname: app.local
-    
+
     ## The Path to Nginx. You may need to set this to '/*' in order to use this
     ## with ALB ingress controllers.
     ##
     path: /
-    
+
     ## Ingress annotations done as key:value pairs
     ## For a full list of possible ingress annotations, please see
     ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
     ##
     ## If certManager is set to true, annotation kubernetes.io/tls-acme: "true" will automatically be set
     ##
-    annotations: { }
-    
+    annotations: {}
+
     ## Enable TLS configuration for the hostname defined at ingress.hostname parameter
     ## TLS certificates will be retrieved from a TLS secret with name: {{- printf "%s-tls" .Values.ingress.hostname }}
     ## You can use the ingress.secrets parameter to create this TLS secret or relay on cert-manager to create it
     ##
     tls: false
-    
+
     ## The list of additional hostnames to be covered with this ingress record.
     ## Most likely the hostname above will be enough, but in the event more hosts are needed, this is an array
     ## extraHosts:
@@ -378,7 +378,7 @@ ai-scale-doer:
     ## - name: app.local
     ##   path: /
     ##   servicePort: http
-    
+
     ## Any additional arbitrary paths that may need to be added to the ingress under the main host.
     ## For example: The ALB ingress controller requires a special rule for handling SSL redirection.
     ## extraPaths:
@@ -387,7 +387,7 @@ ai-scale-doer:
     ##     serviceName: ssl-redirect
     ##     servicePort: use-annotation
     ##
-    
+
     ## The tls configuration for additional hostnames to be covered with this ingress record.
     ## see: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
     ## extraTls:
@@ -395,7 +395,7 @@ ai-scale-doer:
     ##     - app.local
     ##   secretName: app.local-tls
     ##
-    
+
     ## Adds location and server snippets annotations for ingress-nginx
     ## Ref: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#configuration-snippet
     ## Ref: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#server-snippet
@@ -413,7 +413,7 @@ ai-scale-doer:
     nginx:
       configurationSnippet:
       serverSnippet:
-  
+
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -425,7 +425,7 @@ ai-scale-doer:
     requests:
       cpu: 100m
       memory: 128Mi
-  
+
   ## Autoscaling configuration
   ##
   autoscaling:
@@ -434,23 +434,23 @@ ai-scale-doer:
     maxReplicas: 5
     targetCPU: 100
     targetMemory: 200
-  
-  nodeSelector: { }
-  tolerations: [ ]
-  topologySpreadConstraints: [ ]
-  
+
+  nodeSelector: {}
+  tolerations: []
+  topologySpreadConstraints: []
+
   ## Pod affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ## Allowed values: soft, hard
   ##
   podAffinityPreset: ""
-  
+
   ## Pod anti-affinity preset
   ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ## Allowed values: soft, hard
   ##
   podAntiAffinityPreset: soft
-  
+
   ## Node affinity preset
   ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ## Allowed values: soft, hard
@@ -471,22 +471,22 @@ ai-scale-doer:
     ##   - e2e-az1
     ##   - e2e-az2
     ##
-    values: [ ]
-  
+    values: []
+
   ## Affinity for pod assignment
   ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
   ##
-  affinity: { }
-  
+  affinity: {}
+
   ## An array to add env vars
   ## For example:
   ## env:
   ##  - name: TEST_VAR
   ##    value: test
   ##
-  env: { }
-  
+  env: {}
+
   ## Array of sources to populate environment variables in the container from
   ## Ref: https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#envfromsource-v1-core
   ##
@@ -496,21 +496,21 @@ ai-scale-doer:
   ##   - secretRef:
   ##       name: '{{ include "app.fullname" . }}-env'
   ##
-  envFrom: [ ]
-  
+  envFrom: []
+
   ## Array to add volumes
   ##
-  volumes: [ ]
-  
-  
+  volumes: []
+
+
   ## Array to add volume mounts (normally used with volumes)
   ##
-  volumeMounts: [ ]
+  volumeMounts: []
   ## Configure options for liveness and readiness probes
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
   ## Note: probes are disabled by default and have no checks defined
   ##
-  
+
   livenessProbe:
     enabled: false
     httpGet:
@@ -534,7 +534,7 @@ ai-scale-doer:
     timeoutSeconds: 5
     failureThreshold: 6
     successThreshold: 1
-  
+
   ## Enable persistence using Persistent Volume Claims
   ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
   ##
@@ -556,7 +556,7 @@ ai-scale-doer:
     accessMode: ReadWriteOnce
     size: 10Gi
     mountPath: /data
-  
+
   ## Populate сonfigMaps for the application
   ##
   ## configMaps:
@@ -598,8 +598,8 @@ ai-scale-doer:
   #                enforcementPolicy:
   #                    minTime: 20m
   #                    permitWithoutStream: false
-  
-  
+
+
   ## Populate secrets for the application
   ##
   ## secrets:
@@ -614,16 +614,16 @@ ai-scale-doer:
   ## The above example will create two secrets db and b64
   ## (prefixed with {{ template "app.fullname" $ }}-).
   ##
-  secrets: { }
-  
+  secrets: {}
+
   ## Array of templates paths to automatically adds checksum annotation for
   ## (ex: checksum/secrets.yaml: **sha256sum**)
   ##
   ## checksums:
   ##   - secrets.yaml
   ##
-  checksums: [ ]
-  
+  checksums: []
+
   tests:
     httpChecks:
       default: false
@@ -632,32 +632,32 @@ ai-scale-provider:
   monitoring:
     enabled: false
     port: 8091
-  
+
   profiling:
     enabled: false
     port: 6060
-  
+
   image:
     tag: v0.0.3
     repository: "alex6021710/ai-scale-provider"
     pullPolicy: Always
-  
+
   readinessProbe:
     enabled: false
     exec:
-      command: [ "/bin/grpc_health_probe", "-addr=doer-operator-ai-scale-provider:8090" ]
+      command: ["/bin/grpc_health_probe", "-addr=doer-operator-ai-scale-provider:8090"]
     initialDelaySeconds: 10
   livenessProbe:
     enabled: false
     exec:
-      command: [ "/bin/grpc_health_probe", "-addr=:8090" ]
+      command: ["/bin/grpc_health_probe", "-addr=:8090"]
     initialDelaySeconds: 5
-  
+
   command:
     - /app
     - -conf=/etc/provider/configs/configs.yaml
     - -queries=/etc/provider/queries/queries.yaml
-  
+
   volumes:
     - name: configs
       configMap:
@@ -665,7 +665,7 @@ ai-scale-provider:
     - name: queries
       configMap:
         name: "{{ include \"common.names.fullname\" $ }}-queries"
-  
+
   volumeMounts:
     - name: configs
       mountPath: "/etc/provider/configs"
@@ -673,7 +673,7 @@ ai-scale-provider:
     - name: queries
       mountPath: "/etc/provider/queries"
       readOnly: true
-  
+
   configMaps:
     queries:
       data:
