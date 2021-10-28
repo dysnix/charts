@@ -1,5 +1,4 @@
 name: Lint and Test Charts
-
 on: pull_request
 
 jobs:
@@ -28,7 +27,8 @@ jobs:
         id: list-changed
         run: |
           cp .github/ct.yaml $CT_CONFIG_DIR
-          changed=$(ct list-changed)
+          # skip ct detailed output
+          changed=$(ct list-changed | sed '/^>>>.*/d')
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
