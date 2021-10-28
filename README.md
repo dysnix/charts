@@ -1,4 +1,4 @@
-# Dysnix charts
+# Dysnix Helm Charts
 
 To add dysnix charts repository:
 
