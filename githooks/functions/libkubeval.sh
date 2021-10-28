@@ -3,7 +3,7 @@
 check_kubeval() {
     if ! command -v kubeval > /dev/null 2>&1; then
         printf '\033[0;31m\U0001F6AB kubeval is not installed\033[0m'
-        printf '  Install it from https://github.com/instrumenta/kubeval/releases'
+        printf '  Install it from https://github.com/instrumenta/kubeval/releases\n'
         exit 1
     fi
 }
