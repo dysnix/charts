@@ -1,0 +1,336 @@
+## @section Global parameters
+## Global Docker image parameters
+## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets [array] Global Docker registry secret names as an array
+## @param global.storageClass Global StorageClass for Persistent Volume(s)
+##
+global:
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  storageClass: ""
+
+## @section Common parameters for all deployed objects
+
+## @param kubeVersion Override Kubernetes version
+##
+kubeVersion: ""
+
+## @param nameOverride String to partially override common.names.fullname template (will maintain the release name)
+##
+nameOverride: ""
+## @param fullnameOverride String to fully override common.names.fullname template
+##
+fullnameOverride: ""
+## @param commonLabels [object] Labels to add to all deployed objects
+##
+commonLabels: {}
+## @param commonAnnotations [object] Annotations to add to all deployed objects
+##
+commonAnnotations: {}
+## @param clusterDomain Kubernetes cluster domain name
+##
+clusterDomain: cluster.local
+## @param extraDeploy (TBI) Array of extra objects to deploy with the release
+##
+extraDeploy: []
+
+## @section Default Pod parameters
+##
+defaultPod:
+  ## @param defaultPod.enabled Create the default Pod
+  ## @param defaultPod.controller Default Pod controller type
+  enabled: true
+  controller: deployment
+
+## @section Pod(s) specific parameters
+##
+## Image version
+## @param image.registry Image registry
+## @param image.repository Image name
+## @param image.tag Image tag
+## @param image.pullPolicy [string] Image pull policy
+## @param image.pullSecrets [array] Image pull secrets
+##
+image:
+  registry: ""
+  repository: foo/bar
+  tag: latest
+  ## Specify a imagePullPolicy
+  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+  ##
+  ## pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ## e.g:
+  ## pullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  pullSecrets: []
+
+## @param replicaCount Number of pod replicas to deploy
+replicaCount: 1
+
+## @param containerPorts [array] Container Ports definition (map is also supported)
+## containerPorts:
+##   - name: http
+##     containerPort: 8080
+##     protocol: TCP
+##
+## Map form can be used too, in this case the default portocol will be used (which is TCP):
+##
+## containerPorts:
+##   http: 80
+##   https: 443
+
+## Configure extra options for containers' liveness and readiness probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param livenessProbe.enabled Enable livenessProbe on containers
+## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+## @param livenessProbe.periodSeconds Period seconds for livenessProbe
+## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+## @param livenessProbe.failureThreshold Failure threshold for livenessProbe
+## @param livenessProbe.successThreshold Success threshold for livenessProbe
+##
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+## @param readinessProbe.enabled Enable readinessProbe on containers
+## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+## @param readinessProbe.periodSeconds Period seconds for readinessProbe
+## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
+## @param readinessProbe.successThreshold Success threshold for readinessProbe
+##
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+## @param startupProbe.enabled Enable startupProbe on containers
+## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+## @param startupProbe.periodSeconds Period seconds for startupProbe
+## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
+## @param startupProbe.failureThreshold Failure threshold for startupProbe
+## @param startupProbe.successThreshold Success threshold for startupProbe
+##
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+## @param customLivenessProbe Custom livenessProbe that overrides the default one
+##
+customLivenessProbe: {}
+## @param customReadinessProbe Custom readinessProbe that overrides the default one
+##
+customReadinessProbe: {}
+## @param customStartupProbe Custom startupProbe that overrides the default one
+##
+customStartupProbe: {}
+## resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+## @param resources.limits The resources limits for the containers
+## @param resources.requests The requested resources for the containers
+##
+resources:
+  limits: {}
+  requests: {}
+## Configure Pods Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+##
+## @param podSecurityContext.enabled Enabled pods' Security Context
+## @param podSecurityContext.fsGroup Set pod's Security Context fsGroup
+##
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+## Configure Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+##
+## @param containerSecurityContext.enabled Enabled containers' Security Context
+## @param containerSecurityContext.propogated Propogate containerSecurityContext to all `podContainers` (when enabled==propogated==true)
+## @param containerSecurityContext.runAsUser Set containers' Security Context runAsUser
+## @param containerSecurityContext.runAsNonRoot Set containers' Security Context runAsNonRoot
+##
+containerSecurityContext:
+  enabled: true
+  propogated: true
+  runAsUser: 1001
+  runAsNonRoot: true
+## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for
+existingConfigmap:
+## @param command Override default container command (useful when using custom images)
+##
+command: []
+## @param args Override default container args (useful when using custom images)
+##
+args: []
+## @param hostAliases pods host aliases
+## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+##
+hostAliases: []
+## @param component [string] Defines pod's component name (used for naming and labeling etc, not necessary for the default pod).
+##
+component: ""
+## @param podLabels Extra labels for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+podLabels: {}
+## @param podAnnotations Annotations for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+podAnnotations: {}
+## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAffinityPreset: ""
+## @param podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAntiAffinityPreset: soft
+## Node affinity preset
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+##
+nodeAffinityPreset:
+  ## @param nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+  ##
+  type: ""
+  ## @param nodeAffinityPreset.key Node label key to match. Ignored if `affinity` is set
+  ##
+  key: ""
+  ## @param nodeAffinityPreset.values Node label values to match. Ignored if `affinity` is set
+  ## E.g.
+  ## values:
+  ##   - e2e-az1
+  ##   - e2e-az2
+  ##
+  values: []
+## @param affinity Affinity for pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+## NOTE: `podAffinityPreset`, `podAntiAffinityPreset`, and `nodeAffinityPreset` will be ignored when it's set
+##
+affinity: {}
+## @param nodeSelector Node labels for pods assignment
+## ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector: {}
+## @param tolerations Tolerations for pods assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+## @param updateStrategy.type Deployment/Statefulset/Daemonset updateStrategy type
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+##
+updateStrategy:
+  ## StrategyType
+  ## Can be set to RollingUpdate/OnDelete/Recreate (depends on the controller)
+  ##
+  type: RollingUpdate
+## @param priorityClassName Pods' priorityClassName
+##
+priorityClassName: ""
+## @param schedulerName Name of the k8s scheduler (other than default) for pods
+## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+schedulerName: ""
+## @param lifecycleHooks for the container(s) to automate configuration before or after startup
+##
+lifecycleHooks: {}
+## @param env Array with environment variables to add to nodes
+## @param extraEnv Array with extra environment variables to add to nodes
+## e.g:
+## env:
+##   - name: FOO
+##     value: "bar"
+##
+env: []
+extraEnv: []
+## @param envFromCMs Array of existing ConfigMap names containing env vars
+##
+envFromCMs: []
+## @param envFromSecrets Array of existing Secret names containing env vars
+##
+envFromSecrets: []
+## @param volumes Array of volumes for the pod(s)
+## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
+##
+volumes: []
+extraVolumes: []
+## @param volumeMounts Array of volumeMounts for the pod(s) main container
+## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
+##
+volumeMounts: []
+extraVolumeMounts: []
+## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
+## e.g:
+podContainers: []
+##
+## @param sidecars Add additional sidecar containers to the pod(s) (raw definitions)
+## e.g:
+## sidecars:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
+sidecars: []
+##
+## @param initContainers Add additional init containers to the pod(s)
+## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+## e.g:
+## initContainers:
+##  - name: your-image-name
+##    image: your-image
+##    imagePullPolicy: Always
+##    command: ['sh', '-c', 'echo "hello world"']
+##
+initContainers: {}
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+##
+## @param persistence.enabled Enable persistence, i.e. provide a volume for the default Pod
+## @param persistence.volumeName Specifies volume name for the default volume
+## @param persistence.storageClass [string] Specify a storageClassName
+## @param persistence.existingClam [string] Specify an existing Persistent Volume Claim name
+## @param persistence.accessMode Volume access mode
+## @param persistence.size Volume size
+## @param persistence.mountPath Volume mount path
+##
+persistence:
+  enabled: false
+  volumeName: data
+  ## Application data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  ##
+  ## If you want to reuse an existing claim, you can pass the name of the PVC using
+  ## the existingClaim variable
+  # existingClaim: your-claim
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  mountPath: /data

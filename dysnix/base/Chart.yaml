@@ -1,0 +1,27 @@
+annotations:
+  category: Infrastructure
+apiVersion: v2
+name: base
+description: Generic base Helm chart for Kubernetes Applications
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - base
+  - common
+  - library
+  - helper
+  - template
+  - function
+  - dysnix
+type: library
+sources:
+  - https://github.com/dysnix/charts
+maintainers:
+  - email: services@dysnix.com
+    name: Dysnix
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    version: 1.10.x
+    tags:
+      - bitnami-common
