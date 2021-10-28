@@ -20,25 +20,37 @@ jobs:
         with:
           python-version: 3.7
       -
-        name: Set up chart-testing
         uses: helm/chart-testing-action@v2.1.0
       -
-        name: Run chart-testing (list-changed)
-        id: list-changed
-        run: |
-          cp .github/ct.yaml $CT_CONFIG_DIR
-          # skip ct detailed output
-          changed=$(ct list-changed | sed '/^>>>.*/d')
-          if [[ -n "$changed" ]]; then
-            echo "::set-output name=changed::true"
-          fi
+        name: Config chart-testing
+        run: cp .github/ct.yaml $CT_CONFIG_DIR
       -
-        name: Run chart-testing (lint)
+        name: Lint chart-testing
         run: ct lint
       -
-        name: Create kind cluster
-        uses: helm/kind-action@v1.2.0
-        if: steps.list-changed.outputs.changed == 'true'
+        name: Changes chart-testing
+        id: charts
+        run: |
+          # Get library chart list
+          ls -1 dysnix/*/Chart.yaml | xargs grep -E "type:\s+library" | sed 's/\/Chart.yaml.*//' > /tmp/_library_charts || /bin/true
+          # Get ct detailed output (excluding control output)
+          ct list-changed | sed '/^>>>.*/d' > /tmp/_changed_charts
+          # Create list of charts to test
+          test_charts=$(grep -v -x -f /tmp/_library_charts /tmp/_changed_charts 2>/dev/null || /bin/true)
+          # Exclude library charts (comma separated list)
+          exclude_charts=$(cat /tmp/_library_charts | sed '/^ *$/d;N;s/\n/,/')
+
+          if [[ -n "$test_charts" ]]; then
+            echo "::set-output name=testing::true"
+          fi
+          if [[ -n "$exclude_list" ]]; then
+            echo "::set-output name=excluded-charts::--excluded-charts ${exclude_list}"
+          fi
       -
-        name: Run chart-testing (install)
-        run: ct install
+        name: Create Kubernetes Cluster (kind)
+        uses: helm/kind-action@v1.2.0
+        if: steps.charts.outputs.testing == 'true'
+      -
+        name: Install Charts chart-testing
+        run: ct install ${{ steps.charts.outputs.excluded-charts }}
+        if: steps.list-changed.outputs.testing == 'true'
