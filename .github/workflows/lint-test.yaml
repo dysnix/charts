@@ -53,4 +53,4 @@ jobs:
       -
         name: Install Charts chart-testing
         run: ct install ${{ steps.charts.outputs.excluded-charts }}
-        if: steps.list-changed.outputs.testing == 'true'
+        if: steps.charts.outputs.testing == 'true'
