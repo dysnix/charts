@@ -194,11 +194,24 @@ spec:
       {{- end }}
       {{- if .Values.bsc.initFromSnapshot }}
       - name: init-from-snapshot
-        image: alpine:latest
+        image: instrumentisto/rsync-ssh:latest
         imagePullPolicy: IfNotPresent
         command:
           - /bin/sh
           - /scripts/init_from_snaphot.sh
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
+      {{- end }}
+      {{- if .Values.bsc.initFromRsync }}
+      - name: init-from-rsync
+        image: alpine:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /scripts/init_from_rsync.sh
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}

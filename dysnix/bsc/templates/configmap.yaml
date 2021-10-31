@@ -19,6 +19,8 @@ data:
     {{- include (print $.Template.BasePath "/scripts/_get_nodekey.tpl") . | nindent 4 }}
   init_from_snaphot.sh: |-
   {{- include (print $.Template.BasePath "/scripts/_init_from_snaphot.tpl") . | nindent 4 }}
+  init_from_rsync.sh: |-
+  {{- include (print $.Template.BasePath "/scripts/_init_from_rsync.tpl") . | nindent 4 }}
 ---
 {{- if .Values.failback.enabled }}
 apiVersion: v1

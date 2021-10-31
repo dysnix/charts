@@ -39,8 +39,10 @@ bsc:
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
+  initFromRsync: false
   forceInitFromSnapshot: false
   snapshotUrl:
+  snapshotRsyncUrl: "rsync://192.168.8.4/snapshot/geth/node/geth"
   getNodeKey: false
   staticNodeKey: false
 
