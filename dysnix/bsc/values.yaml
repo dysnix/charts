@@ -80,6 +80,8 @@ bsc:
   netrestrict:
   nodeKeys:
   readinessProbeTimestampDistinct: 300
+  livenessProbeTimestampDistinct: 300
+  startupProbeTimestampDistinct: 300
   metrics:
     enabled: true
     service:
