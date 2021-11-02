@@ -9,6 +9,14 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: "{{ .Release.Name }}-env"
+data:
+  config.toml: |-
+  {{- include (print $.Template.BasePath "/configs/_env.txt") . | nindent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: "{{ .Release.Name }}-scripts"
 data:
   check_node_health.sh: |-

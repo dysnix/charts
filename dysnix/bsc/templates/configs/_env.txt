@@ -1,0 +1,3 @@
+ReadinessProbeTimestampDistinct=120
+LivenessProbeTimestampDistinct=300
+StartupProbeTimestampDistinct=300
