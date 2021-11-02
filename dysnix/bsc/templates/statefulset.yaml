@@ -64,6 +64,7 @@ spec:
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0
           - --cache.preimages
+          - --diffsync
           {{- if and .Values.externalLBp2p .Values.externalLBp2pIP }}
           - --nat=extip:{{- .Values.externalLBp2pIP -}}
           {{- end }}
