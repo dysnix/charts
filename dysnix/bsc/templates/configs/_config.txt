@@ -8,6 +8,7 @@ TrieTimeout = 100000000000
 EnablePreimageRecording = false
 EWASMInterpreter = ""
 EVMInterpreter = ""
+DisablePeerTxBroadcast = true
 
 [Eth.Miner]
 GasFloor = 30000000
