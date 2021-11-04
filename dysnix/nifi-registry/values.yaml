@@ -104,14 +104,14 @@ flowProvider:
     user:
     password:
     # The secret name can be used to supply your own SSH key:
-    # 1. Generate a SSH key named identity:
-    #      ssh-keygen -q -N "" -f ./identity
+    # 1. Generate a SSH key named id_rsa:
+    #      ssh-keygen -q -N "" -f ./id_rsa
     # 2. Create a Kubernetes secret:
-    #      kubectl -n nifi-registry create secret generic nifi-registry-git-deploy --from-file=./identity
+    #      kubectl -n nifi-registry create secret generic nifi-registry-git-deploy --from-file=./id_rsa
     # 3. Don't check these key files into your Git repository! Once you've created
     #    the Kubernetes secret, Delete the private key:
-    #      rm ./identity
-    # 4. Add ./identity.pub as a deployment key with write access in your Git repo
+    #      rm ./id_rsa
+    # 4. Add ./id_rsa.pub as a deployment key with write access in your Git repo
     # 5. Set the secret name (default: nifi-registry-git-deploy) below
     secretName:
     # Global Git configuration See https://git-scm.com/docs/git-config for more details.
