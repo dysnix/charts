@@ -97,8 +97,12 @@ spec:
             {{- end }}
             {{- if .Values.ssh.known_hosts }}
               cp --verbose --dereference /sshcfgmap/known_hosts /home/nifi/.ssh/
-              cp --verbose --dereference --force /sshcfgmap/config /home/nifi/.ssh/
-              cp --verbose --dereference --force /ssh/id_rsa /home/nifi/.ssh/
+              {{- if .Values.ssh.config }}
+                cp --verbose --dereference /sshcfgmap/config /home/nifi/.ssh/
+              {{- end }}
+              {{- if .Values.flowProvider.git.enabled }}
+                cp --verbose --dereference /ssh/id_rsa /home/nifi/.ssh/
+              {{- end }}
             {{- end }}
               ${NIFI_REGISTRY_BASE_DIR}/scripts/start.sh
           ports:
