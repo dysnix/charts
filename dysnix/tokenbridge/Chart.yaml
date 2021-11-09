@@ -1,7 +1,7 @@
 apiVersion: v2
 name: tokenbridge
 description: The POA TokenBridge allows users to transfer assets between two chains in the Ethereum ecosystem.
-version: "0.1.0"
+version: "0.1.1"
 appVersion: "v3.0.0"
 
 keywords:
