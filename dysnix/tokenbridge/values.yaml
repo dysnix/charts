@@ -1,0 +1,86 @@
+image:
+  repository: public.ecr.aws/u6u9e0g3/velas-tokenbridge
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+bridge:
+  ORACLE_VALIDATOR_ADDRESS: ""
+  ORACLE_VALIDATOR_ADDRESS_PRIVATE_KEY: ""
+  ORACLE_BRIDGE_MODE: "ERC_TO_ERC"
+  ORACLE_LOG_LEVEL: "debug"
+
+  ## Home contract
+  COMMON_HOME_RPC_URL: ""
+  COMMON_HOME_BRIDGE_ADDRESS: ""
+  ORACLE_HOME_RPC_POLLING_INTERVAL: "1000"
+  ORACLE_HOME_RPC_BLOCK_POLLING_LIMIT: "100"
+
+  ## Foreign contract
+  COMMON_FOREIGN_RPC_URL: ""
+  COMMON_FOREIGN_BRIDGE_ADDRESS: ""
+  ORACLE_FOREIGN_RPC_POLLING_INTERVAL: "1000"
+  ORACLE_FOREIGN_RPC_BLOCK_POLLING_LIMIT: "100"
+
+  ## Gasprice
+  COMMON_HOME_GAS_PRICE_SUPPLIER_URL: ""
+  COMMON_HOME_GAS_PRICE_SPEED_TYPE: "instant"
+  COMMON_HOME_GAS_PRICE_FALLBACK: "2000000000"
+  ORACLE_HOME_GAS_PRICE_UPDATE_INTERVAL: "600000"
+  COMMON_HOME_GAS_PRICE_FACTOR: "1"
+
+  COMMON_FOREIGN_GAS_PRICE_SPEED_TYPE: "instant"
+  COMMON_FOREIGN_GAS_PRICE_FALLBACK: "60000000000"
+  ORACLE_FOREIGN_GAS_PRICE_UPDATE_INTERVAL: "600000"
+  COMMON_FOREIGN_GAS_PRICE_FACTOR: "1"
+
+  ## Transport configuration
+  ORACLE_ALLOW_HTTP_FOR_RPC: "yes"
+
+  ORACLE_HOME_START_BLOCK: "0"
+  ORACLE_FOREIGN_START_BLOCK: "0"
+  ORACLE_RPC_REQUEST_TIMEOUT: "0"
