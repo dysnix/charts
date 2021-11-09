@@ -48,6 +48,20 @@ tolerations: []
 
 affinity: {}
 
+components:
+  transfer:
+    enabled: false
+  affirmation:
+    enabled: true
+  collected:
+    enabled: true
+  request:
+    enabled: true
+  senderforeign:
+    enabled: true
+  senderhome:
+    enabled: true
+
 bridge:
   ORACLE_VALIDATOR_ADDRESS: ""
   ORACLE_VALIDATOR_ADDRESS_PRIVATE_KEY: ""

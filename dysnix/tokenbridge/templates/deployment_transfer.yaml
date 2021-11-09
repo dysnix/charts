@@ -1,4 +1,4 @@
-{{ if .Values.components.request.enabled }}
+{{ if .Values.components.transfer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,7 +32,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command:
             - "yarn"
-            - "watcher:signature-request"
+            - "watcher:transfer"
           envFrom:
             - secretRef:
                 name: {{ include "tokenbridge.fullname" . }}-env
