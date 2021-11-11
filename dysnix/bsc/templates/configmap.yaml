@@ -6,6 +6,16 @@ data:
   config.toml: |-
   {{- include (print $.Template.BasePath "/configs/_config.txt") . | nindent 4 }}
 ---
+{{- if .Values.rsyncd.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-rsyncd-config"
+data:
+  rsyncd.conf: |-
+  {{- include (print $.Template.BasePath "/configs/_rsyncd.conf") . | nindent 4 }}
+---
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

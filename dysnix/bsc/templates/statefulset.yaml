@@ -177,6 +177,26 @@ spec:
             name: {{ .Values.failback.metrics.service.name }}
             protocol: TCP
       {{- end }}
+      {{- if .Values.rsyncd.enabled }}
+      - name: rsyncd
+        image: {{ .Values.rsyncd.image }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/bin/rsync
+          - --daemon
+          - --config=/config/rsyncd.conf
+          - --no-detach
+          - --port={{ .Values.rsyncd.service.port }}
+        ports:
+          - containerPort: {{ .Values.rsyncd.service.port }}
+            name: {{ .Values.rsyncd.service.name }}
+            protocol: TCP
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.rsyncd.bsc_path }}
+          - name: rsyncd-config
+            mountPath: /config
+      {{- end }}
       initContainers:
       {{- if .Values.bsc.initGenesis }}
       - name: init-genesis
@@ -192,7 +212,7 @@ spec:
       {{- end }}
       {{- if .Values.bsc.initFromSnapshot }}
       - name: init-from-snapshot
-        image: instrumentisto/rsync-ssh:latest
+        image: {{ .Values.bsc.initFromSnapshotImage }}
         imagePullPolicy: IfNotPresent
         command:
           - /bin/sh
@@ -205,11 +225,19 @@ spec:
       {{- end }}
       {{- if .Values.bsc.initFromRsync }}
       - name: init-from-rsync
-        image: alpine:latest
+        image: {{ .Values.bsc.initFromRsyncImage }}
         imagePullPolicy: IfNotPresent
         command:
           - /bin/sh
           - /scripts/init_from_rsync.sh
+        envFrom:
+          - configMapRef:
+              name: "{{ .Release.Name }}-env"
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -255,6 +283,11 @@ spec:
         - name: bsc-config
           configMap:
             name: "{{ .Release.Name }}-config"
+        {{- if .Values.rsyncd.enabled }}
+        - name: rsyncd-config
+          configMap:
+            name: "{{ .Release.Name }}-rsyncd-config"
+        {{- end }}
         - name: scripts
           configMap:
             name: "{{ .Release.Name }}-scripts"
