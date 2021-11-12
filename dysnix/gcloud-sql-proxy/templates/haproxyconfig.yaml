@@ -1,0 +1,33 @@
+{{ if .Values.haproxy.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "gcloud-sqlproxy.fullname" . }}-haproxy
+  labels:
+    {{- include "gcloud-sqlproxy.labels" . | nindent 4 }}
+data:
+  haproxy.cfg: |
+    global
+        maxconn 50000
+
+    defaults
+        log global
+        mode tcp
+        retries 2
+        timeout client 30m
+        timeout connect 4s
+        timeout server 30m
+        timeout check 5s
+
+    {{ if gt (len .Values.haproxy.instances) 0 }}
+    listen ReadOnly
+        bind *:{{ .Values.haproxy.port }}
+    {{- range .Values.haproxy.instances }}
+        server {{ .instance }} localhost:{{ .port }} maxconn 50000
+    {{- end -}}
+    {{- end -}}
+    {{ printf "\n" }}
+  patch.cfg: |
+    test
+---
+{{- end }}
