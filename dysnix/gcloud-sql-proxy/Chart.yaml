@@ -6,3 +6,6 @@ home: https://cloud.google.com/sql/docs/postgres/sql-proxy
 name: gcloud-sql-proxy
 type: application
 version: 0.1.0
+maintainers:
+  - name: killmeplz
+    email: petr.shilo@dysnix.com
