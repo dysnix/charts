@@ -56,8 +56,6 @@ haproxy:
   instances:
     - 5432
 
-
-
 ## SQL connection settings
 ##
 cloudsql:
