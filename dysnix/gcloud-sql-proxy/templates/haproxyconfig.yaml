@@ -23,7 +23,7 @@ data:
     listen ReadOnly
         bind *:{{ .Values.haproxy.port }}
     {{- range .Values.haproxy.instances }}
-        server {{ .instance }} localhost:{{ .port }} maxconn 50000
+        server server{{ . }} localhost:{{ . }} maxconn 50000
     {{- end -}}
     {{- end -}}
     {{ printf "\n" }}

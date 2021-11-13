@@ -51,12 +51,11 @@ haproxy:
   ## Haproxy loadbalancer port
   port: 6432
   ## List of backend instances
+  ## Port must match any open port on cloudsqlproxy
+  ## Config backend would be localhost:port
   instances:
-      ## Provide any unique name
-    - instance: "instance"
-      ## Port must match any open port on cloudsqlproxy
-      ## Config backend would be localhost:port
-      port: 5432
+    - 5432
+
 
 
 ## SQL connection settings
