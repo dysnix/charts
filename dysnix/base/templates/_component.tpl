@@ -42,5 +42,11 @@ Params:
 
     {{/* ServiceAccount generation */}}
     {{- include "base.serviceAccount" (dict "value" $value "component" $component "context" $context) -}}
+
+    {{/* ConfigMap generation */}}
+    {{- include "base.configMap" (dict "value" $value "component" $component "context" $context) -}}
+
+    {{/* Secret generation */}}
+    {{- include "base.secret" (dict "value" $value "component" $component "context" $context) -}}
   {{- end -}}
 {{- end -}}

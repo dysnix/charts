@@ -2,7 +2,7 @@
 
 {{/*
 Usage:
-  {{- include "base.serviceAccount" (dict "value" .Values.or.path "name" "optional" "component" "optional" "context" $) -}}
+  {{- include "base.secret" (dict "value" .Values.or.path "name" "optional" "component" "optional" "context" $) -}}
 
 Params:
   value - [dict] .Values or path to component values
@@ -10,32 +10,41 @@ Params:
   name - (optional) specifies the ServiceAccount name supplement
   component - (optional) specifies the component name (used for naming and labeling)
 */}}
-{{- define "base.serviceAccount" -}}
+{{- define "base.secret" -}}
 
 {{- $context := .context -}}
 {{- $value := .value -}}
-{{- $sa := $value | merge dict | dig "serviceAccount" dict -}}
+{{- $secret := $value | merge dict | dig "secret" dict -}}
 {{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
 
 {{/* Validations */}}
 {{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
-{{- if $sa.create }}
+{{- if and $secret.create (or ($secret.data | default dict) ($secret.stringData | default dict)) }}
 ---
 apiVersion: v1
-kind: ServiceAccount
+kind: Secret
 metadata:
-  name: {{ include "base.lib.serviceAccountName" (dict "serviceAccount" $sa "name" .name "component" $component "context" $context) }}
+  name: {{ include "base.lib.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- if or $sa.annotations $context.Values.commonAnnotations }}
+  {{- if or $secret.annotations $context.Values.commonAnnotations }}
   annotations:
     {{- with (include "common.tplvalues.render" (dict "value" $context.Values.commonAnnotations "context" $context)) }}
       {{ . | nindent 4 }}
     {{- end }}
-    {{- with (include "common.tplvalues.render" (dict "value" $sa.annotations "context" $context)) }}
+    {{- with (include "common.tplvalues.render" (dict "value" $secret.annotations "context" $context)) }}
       {{ . | nindent 4 }}
     {{- end }}
   {{- end }}
+type: {{ $secret.type | default "Opaque" }}
+{{- with $secret.data }}
+data:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with $secret.stringData }}
+stringData:
+  {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 2 }}
 {{- end }}
 
+{{- end -}}
 {{- end -}}
