@@ -79,7 +79,8 @@ image:
 ## @param replicaCount Number of pod replicas to deploy
 replicaCount: 1
 
-## @param containerPorts [array] Container Ports definition (map is also supported)
+## @param containerPorts [array] Container Ports definition (dict form is also supported)
+## @param ports [array] Alias to containerPorts
 ## containerPorts:
 ##   - name: http
 ##     containerPort: 8080

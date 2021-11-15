@@ -27,14 +27,8 @@ kind: Secret
 metadata:
   name: {{ include "base.lib.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- if or $secret.annotations $context.Values.commonAnnotations }}
-  annotations:
-    {{- with (include "common.tplvalues.render" (dict "value" $context.Values.commonAnnotations "context" $context)) }}
-      {{ . | nindent 4 }}
-    {{- end }}
-    {{- with (include "common.tplvalues.render" (dict "value" $secret.annotations "context" $context)) }}
-      {{ . | nindent 4 }}
-    {{- end }}
+  {{- with (list $secret.annotations $context.Values.commonAnnotations | compact) }}
+  annotations: {{- include "base.lib.flatrender" (dict "value" . "context" $context) | nindent 4 }}
   {{- end }}
 type: {{ $secret.type | default "Opaque" }}
 {{- with $secret.data }}

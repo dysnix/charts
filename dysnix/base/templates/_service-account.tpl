@@ -27,15 +27,8 @@ kind: ServiceAccount
 metadata:
   name: {{ include "base.lib.serviceAccountName" (dict "serviceAccount" $sa "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- if or $sa.annotations $context.Values.commonAnnotations }}
-  annotations:
-    {{- with (include "common.tplvalues.render" (dict "value" $context.Values.commonAnnotations "context" $context)) }}
-      {{ . | nindent 4 }}
-    {{- end }}
-    {{- with (include "common.tplvalues.render" (dict "value" $sa.annotations "context" $context)) }}
-      {{ . | nindent 4 }}
-    {{- end }}
+  {{- with (list $sa.annotations $context.Values.commonAnnotations | compact) }}
+  annotations: {{- include "base.lib.flatrender" (dict "value" . "context" $context) | nindent 4 }}
   {{- end }}
-{{- end }}
-
+{{- end -}}
 {{- end -}}
