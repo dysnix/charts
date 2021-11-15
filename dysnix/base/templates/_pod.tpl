@@ -68,4 +68,9 @@ initContainers: {{- include "common.tplvalues.render" (dict "value" $value.initC
 {{- end }}
 
 containers: {{- include "base.lib.containers" (dict "value" $value "component" $component "context" $context) | nindent 2 }}
+
+{{- with (include "base.lib.volumes" (dict "value" $value "context" $context)) }}
+volumes: {{ . | indent 2 }}
+{{- end }}
+
 {{- end -}}

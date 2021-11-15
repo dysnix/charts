@@ -1,0 +1,61 @@
+{{/* vim: set filetype=mustache: */}}
+
+{{/*
+Usage:
+  {{- include "base.pvc.spec" (dict "persistence" .Values.path.to.persistence "context" $) -}}
+
+Params:
+  persistence - value dict
+  context - render context (root is propogated - $)
+*/}}
+{{- define "base.pvc.spec" -}}
+{{- $persistence := .persistence -}}
+{{- $context := .context -}}
+
+accessModes:
+{{- if not (empty $persistence.accessModes) }}
+{{- range $persistence.accessModes }}
+  - {{ . | quote }}
+{{- end }}
+{{- else }}
+  - {{ $persistence.accessMode | quote }}
+{{- end }}
+resources:
+  requests:
+    storage: {{ $persistence.size | quote }}
+{{ include "common.storage.class" (dict "persistence" $persistence "global" $context.Values.global) -}}
+
+{{- end -}}
+
+{{/*
+Usage:
+  {{- include "base.pvc" (dict "value" .Values.path.to.values "name" "name" "component" "foo" "context" $) -}}
+
+Params:
+  value - value dict
+  context - render context (root is propogated - $)
+  name - (optional) name of the volume (.value.volumeName is used by default)
+  component -(optional) specifies the component name (used for naming and labeling)
+*/}}
+{{- define "base.pvc" -}}
+{{- $value := .value -}}
+{{- $context := .context -}}
+{{- $component := .component | default .value.component | default "" -}}
+{{- $persistence := .value | merge dict | dig "persistence" dict -}}
+{{- $name := .name | default $persistence.volumeName -}}
+
+{{- if and $persistence.enabled (not $persistence.existingClaim) }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "base.lib.fullname" (dict "value" $value "name" $name "component" $component "context" $context) }}
+  labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
+  {{- if $context.Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" $context.Values.commonAnnotations "context" $context) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- include "base.pvc.spec" (dict "persistence" $persistence "context" $context) | nindent 2 }}
+{{- end }}
+
+{{- end -}}
