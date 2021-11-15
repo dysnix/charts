@@ -1,69 +1,6 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{/*
-Container ports section
-ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#containerport-v1-core
-
-Usage:
-  {{ include "base.lib.containerPorts" (dict "ports" .Values.containerPorts "context" $) }}
-
-Params:
-  ports - container ports object, dict or list
-  context - template render context
-
-Ports can have a dict form, e.g.
-  http: 80
-  https: 443
-in this case all port numbers refer to the default protocol which is TCP.
-
-Note: for finegrained controll use the list form (for e.g to specify protocol or targetPort)
-*/}}
-{{- define "base.lib.containerPorts" -}}
-{{- if and .ports (kindIs "map" .ports) -}}
-ports:
-    {{- range $name, $port := .ports }}
-  - name: {{ $name }}
-    containerPort: {{ $port | int }}
-    {{- end }}
-{{- else if .ports -}}
-ports:
-    {{- range $item := .ports }}
-  - name: {{ $item.name }}
-      {{- include "common.tplvalues.render" (dict "value" (omit $item "name") "context" $.context) | nindent 4 }}
-    {{- end }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Container volumeMounts section
-
-Usage
-  {{- include "base.lib.volumeMounts" (dict "value" $value "context" $context) | nindent 2 }}
-*/}}
-{{- define "base.lib.volumeMounts" -}}
-  {{- $context := .context -}}
-  {{- $value := .value -}}
-  {{- $persistence := .value | merge dict | dig "persistence" dict -}}
-  {{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
-
-  {{- if $persistence.enabled }}
-    {{- $mount := pick $persistence "volumeName" "mountPath" "mountPropagation" "readOnly" "subPath" "subPathExpr" -}}
-    {{- with merge (dict "name" $mount.volumeName) (omit $mount "volumeName") }}
-      {{- include "common.tplvalues.render" (dict "value" (list .) "context" $context) | nindent 0 }}
-    {{- end }}
-  {{- end }}
-
-  {{- with $value.volumeMounts }}
-    {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 0 }}
-  {{- end }}
-
-  {{- with $value.extraVolumeMounts }}
-    {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 0 }}
-  {{- end }}
-
-{{- end -}}
-
-{{/*
 Kubernetes containers list
 
 Usage:

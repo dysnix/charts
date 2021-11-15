@@ -64,8 +64,8 @@ resources: {{- $value.resources | toYaml | nindent 2 -}}
 {{- end }}
 
 {{- $ports := list $value.containerPorts $value.ports | compact | first -}}
-{{- with $ports }}
-{{ template "base.lib.containerPorts" (dict "ports" $ports "context" $context) }}
+{{- with (include "base.lib.containerPorts" (dict "ports" $ports "context" $context)) }}
+ports: {{- . | indent 2 }}
 {{- end }}
 
 {{- if $value | dig "livenessProbe" "enabled" "" }}
