@@ -106,7 +106,7 @@ containerPorts:
 livenessProbe:
   enabled: true
   exec:
-    command: [ "/bin/grpc_health_probe", "-addr=:8099" ]
+    command: [ "/bin/grpc_health_probe", "-addr=:8091" ]
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -122,7 +122,7 @@ livenessProbe:
 readinessProbe:
   enabled: true
   exec:
-    command: [ "/bin/grpc_health_probe", "-addr=:8099" ]
+    command: [ "/bin/grpc_health_probe", "-addr=:8091" ]
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -352,7 +352,7 @@ persistence:
 ## Oweride default service configs map.
 ## ref: https://github.com/dysnix/ai-scale-saver
 ## @param configs [map] saver service configs owerride
-configs: {}
+configs: { }
 
 ## Service resource configs.
 ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
@@ -379,7 +379,7 @@ service:
 ## @param serviceAccount Setup authenticated for deployment resource
 serviceAccount:
   create: false
-  annotations: {}
+  annotations: { }
 
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
