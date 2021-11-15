@@ -1163,6 +1163,21 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/bsc-0.1.0/bsc-0.1.0.tgz
     version: 0.1.0
+  gcloud-sql-proxy:
+  - apiVersion: v2
+    appVersion: 1.24.0
+    created: "2021-11-15T12:53:31.501001304Z"
+    description: Google Cloud SQL Proxy forked from https://github.com/rimusz/charts/stable/gcloud-sqlproxy
+    digest: 07b48e764203dd065ce88b20561f72d5dc54997581359a3b49a1fbca20547174
+    home: https://cloud.google.com/sql/docs/postgres/sql-proxy
+    maintainers:
+    - email: petr.shilo@dysnix.com
+      name: killmeplz
+    name: gcloud-sql-proxy
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/gcloud-sql-proxy-0.1.0/gcloud-sql-proxy-0.1.0.tgz
+    version: 0.1.0
   gcp-local-ssd-raid:
   - apiVersion: v2
     appVersion: 0.1.0
