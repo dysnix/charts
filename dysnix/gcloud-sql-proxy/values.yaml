@@ -40,7 +40,7 @@ serviceAccountName: ""
 usingGCPController: ""
 
 haproxy:
-  enabled: true
+  enabled: false
   image:
     repository: haproxy
     tag: latest
