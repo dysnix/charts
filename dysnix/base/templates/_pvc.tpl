@@ -40,9 +40,9 @@ Params:
 {{- define "base.pvc" -}}
 {{- $value := .value -}}
 {{- $context := .context -}}
-{{- $component := .component | default .value.component | default "" -}}
 {{- $persistence := .value | merge dict | dig "persistence" dict -}}
 {{- $name := .name | default $persistence.volumeName -}}
+{{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
 
 {{- if and $persistence.enabled (not $persistence.existingClaim) }}
 ---

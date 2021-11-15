@@ -153,6 +153,9 @@ The [Parameters](#parameters) section provides a wide set parameters to configur
 | `podContainers`                         | Pod containers, creates a multi-container pod(s) (`base.container` template is used)                | `[]`            |
 | `sidecars`                              | Add additional sidecar containers to the pod(s) (raw definitions)                                   | `[]`            |
 | `initContainers`                        | Add additional init containers to the pod(s)                                                        | `{}`            |
+| `serviceAccount.create`                 | Specifies whether a ServiceAccount should be created                                                | `true`          |
+| `serviceAccount.annotations`            | annotations for the ServiceAccount                                                                  | `{}`            |
+| `serviceAccount.name`                   | The name of the ServiceAccount to use.                                                              | `""`            |
 | `persistence.enabled`                   | Enable persistence, i.e. provide a volume for the default Pod                                       | `false`         |
 | `persistence.volumeName`                | Specifies volume name for the default volume                                                        | `data`          |
 | `persistence.storageClass`              | Specify a storageClassName                                                                          | `""`            |

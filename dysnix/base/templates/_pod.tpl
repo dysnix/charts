@@ -28,6 +28,9 @@ dnsPolicy: {{ $value.dnsPolicy }}
 priorityClassName: {{ $value.priorityClassName | quote }}
 {{- end }}
 
+{{- "" }}
+serviceAccountName: {{ template "base.lib.serviceAccountName" (dict "serviceAccount" $value.serviceAccount "component" $component "context" $context) }}
+
 {{- if $value.hostAliases }}
 hostAliases: {{- include "common.tplvalues.render" (dict "value" $value.hostAliases "context" $context) | nindent 2 }}
 {{- end -}}

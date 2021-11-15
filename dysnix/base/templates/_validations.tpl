@@ -23,7 +23,8 @@ Type `{{ .controller }}` was provided. Please use one from the bellow list:
 {{- if empty .component -}}
 .component is not provided!
 
-Make sure to specify .path.to.dict.component
+Make sure to either pass "component" argument or "value" object
+must contain non-empty "component" field.
 {{- end -}}
 {{- end -}}
 
