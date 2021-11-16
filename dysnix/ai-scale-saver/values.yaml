@@ -59,7 +59,7 @@ defaultPod:
 ## @param image.pullSecrets [array] Image pull secrets
 ##
 image:
-  registry: hub.docker.com
+  registry: ""
   repository: alex6021710/ai-scale-saver
   tag: latest
   ## Specify a imagePullPolicy
@@ -185,8 +185,8 @@ containerSecurityContext:
 existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
 ##
-command: #[]
-  - -conf="/etc/configs.yaml"
+command:
+  - -conf="/etc/configs/configs.yaml"
 ## @param args Override default container args (useful when using custom images)
 ##
 args: [ ]
