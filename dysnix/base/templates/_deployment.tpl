@@ -9,11 +9,11 @@ Usage:
 Params:
   value - deployment (dict)
   context - template render context
-  component - component name used for naming and labeling
+  component - (optional) component name (used for naming and labeling)
+  name - (optional) deployment name suffix (used for naming and labeling)
 
 Note:
-  - value.component has precedence over .component. For the default pod
-      "_default" passed as .component parameter.
+  - value.component has precedence over .component
   - value is expected to be .Values/.Values.mycomponentfoo etc.
 */}}
 {{- define "base.deployment" -}}
@@ -28,7 +28,7 @@ Note:
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" $context }}
 kind: Deployment
 metadata:
-  name: {{ include "base.lib.fullname" (dict "value" $value "name" $component "context" $context) }}
+  name: {{ include "base.lib.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
   {{- if $context.Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" (dict "value" $context.Values.commonAnnotations "context" $context) | nindent 4 }}
@@ -51,11 +51,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" $value.podAnnotations "context" $context) | nindent 8 }}
         {{- end }}
       {{- end }}
-      labels:
-        {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 8 }}
+      labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 8 }}
         {{- if $value.podLabels }}
           {{- include "common.tplvalues.render" (dict "value" $value.podLabels "context" $context) | nindent 8 }}
         {{- end }}
-    spec:
-      {{- include "base.pod.spec" (dict "value" $value "component" $component "context" $context) | nindent 6 -}}
+    spec: {{ include "base.pod.spec" (dict "value" $value "component" $component "context" $context) | indent 6 -}}
 {{- end -}}

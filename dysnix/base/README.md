@@ -72,7 +72,7 @@ The [Parameters](#parameters) section provides a wide set parameters to configur
 | `commonLabels`      | Labels to add to all deployed objects                                                        | `{}`            |
 | `commonAnnotations` | Annotations to add to all deployed objects                                                   | `{}`            |
 | `clusterDomain`     | Kubernetes cluster domain name                                                               | `cluster.local` |
-| `extraDeploy`       | (TBI) Array of extra objects to deploy with the release                                      | `[]`            |
+| `extraDeploy`       | Array of extra objects to deploy with the release                                            | `[]`            |
 
 
 ### Default Pod parameters
@@ -153,6 +153,18 @@ The [Parameters](#parameters) section provides a wide set parameters to configur
 | `podContainers`                         | Pod containers, creates a multi-container pod(s) (`base.container` template is used)                | `[]`            |
 | `sidecars`                              | Add additional sidecar containers to the pod(s) (raw definitions)                                   | `[]`            |
 | `initContainers`                        | Add additional init containers to the pod(s)                                                        | `{}`            |
+| `serviceAccount.create`                 | Specifies whether a ServiceAccount should be created                                                | `true`          |
+| `serviceAccount.annotations`            | Annotations for the ServiceAccount                                                                  | `{}`            |
+| `serviceAccount.name`                   | The name of the ServiceAccount to use.                                                              | `""`            |
+| `configMap.create`                      | Specifies whether to enable the ConfigMap                                                           | `true`          |
+| `configMap.immutable`                   | Ensures that data stored in the ConfigMap cannot be updated                                         | `false`         |
+| `configMap.annotations`                 | Annotations for the configMap                                                                       | `{}`            |
+| `configMap.data`                        | Specifies data stored in the ConfigMap (must be provided to create the resource)                    | `{}`            |
+| `secret.create`                         | Specifies whether to enable the Secret                                                              | `true`          |
+| `secret.immutable`                      | Ensures that data stored in the Secret cannot be updated                                            | `false`         |
+| `secret.annotations`                    | Annotations for the secret                                                                          | `{}`            |
+| `secret.data`                           | Specifies data stored in the Secret (either .data or .strigData should be provided)                 | `{}`            |
+| `secret.stringData`                     | Specifies stringData stored in the Secret                                                           | `{}`            |
 | `persistence.enabled`                   | Enable persistence, i.e. provide a volume for the default Pod                                       | `false`         |
 | `persistence.volumeName`                | Specifies volume name for the default volume                                                        | `data`          |
 | `persistence.storageClass`              | Specify a storageClassName                                                                          | `""`            |
