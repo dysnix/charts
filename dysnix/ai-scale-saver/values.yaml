@@ -318,6 +318,82 @@ sidecars: [ ]
 ##
 initContainers: { }
 
+## Oweride default service configs map.
+## ref: https://github.com/dysnix/ai-scale-saver
+## @param configs [map] saver service configs owerride
+configs: { }
+
+## Service resource configs.
+## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+##
+##
+## @param service.type Type of service k8s resource
+## @param service.ports [array] Service Ports definition (map is also supported)
+service:
+  type: ClusterIP
+  ports:
+    - name: grpc
+      port: 8091
+      protocol: TCP
+      targetPort: grpc
+    - name: monitoring
+      port: 8097
+      protocol: TCP
+      targetPort: monitoring
+
+## ServiceAccount configuration
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## @param serviceAccount.annotations Annotations for the ServiceAccount
+  ##
+  annotations: {}
+  ## @param serviceAccount.name The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the base.lib.fullname template
+  ##
+  name: ""
+
+## ConfigMap configuration
+##
+## @param configMap.create Specifies whether to enable the ConfigMap
+## @param configMap.immutable Ensures that data stored in the ConfigMap cannot be updated
+## @param configMap.annotations Annotations for the configMap
+## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
+##
+configMap:
+  create: false
+  annotations: {}
+  ## When enabled only object metadata can be modified
+  immutable: false
+  ## ConfigMap data has to be provide for the actual resource creation
+  ## data:
+  ##   foo: bar
+  ##   hello: bar
+
+## Secret configuration
+##
+## @param secret.create Specifies whether to enable the Secret
+## @param secret.immutable Ensures that data stored in the Secret cannot be updated
+## @param secret.annotations Annotations for the secret
+## @param secret.data [object] Specifies data stored in the Secret (either .data or .strigData should be provided)
+## @param secret.stringData [object] Specifies stringData stored in the Secret
+##
+secret:
+  create: true
+  annotations: {}
+  ## When enabled only object metadata can be modified
+  immutable: false
+  ## Secret .data or .stringData has to be provide for the actual resource creation
+  ##
+  ## Base64 encoded string
+  # data: Zm9vOiBiYXIKaGVsbG86IGJhcgo=
+  ##
+  # stringData:
+  #   hello: world
+  #   a: b
+
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 ##
@@ -348,38 +424,6 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
   mountPath: /data
-
-## Oweride default service configs map.
-## ref: https://github.com/dysnix/ai-scale-saver
-## @param configs [map] saver service configs owerride
-configs: { }
-
-## Service resource configs.
-## ref: https://kubernetes.io/docs/concepts/services-networking/service/
-##
-##
-## @param service.type Type of service k8s resource
-## @param service.ports [array] Service Ports definition (map is also supported)
-service:
-  type: ClusterIP
-  ports:
-    - name: grpc
-      port: 8091
-      protocol: TCP
-      targetPort: grpc
-    - name: monitoring
-      port: 8097
-      protocol: TCP
-      targetPort: monitoring
-
-## Service Account configs.
-## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-##
-##
-## @param serviceAccount Setup authenticated for deployment resource
-serviceAccount:
-  create: false
-  annotations: { }
 
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
