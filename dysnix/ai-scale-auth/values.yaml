@@ -388,7 +388,9 @@ configMap:
   ## ConfigMap data has to be provide for the actual resource creation
   data:
     configs.yaml: |-
-      {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "configs/configs.yaml" | fromYaml) | toYaml | nindent 4 }}
+      {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "configs/default.yaml" | fromYaml) | toYaml | nindent 4 }}
+    |-
+    {{- include "migrations.configmaps" . | nindent 2 }}
 
 ## Secret configuration
 ##
@@ -448,3 +450,17 @@ postgresql:
   host: postgresql.default.svc.cluster.local
   port: 5432
   database: ai-scale
+  
+## Set servicemonitore resource enabled status.
+## @param monitoring.enabled
+monitoring:
+  enabled: true
+
+## Autoscaling parameters
+autoscaling:
+  enabled: false
+  # scaleDownDisabled: true
+  # targetCPU: 60
+  # minReplicas: 1
+  # maxReplicas: 10
+  # targetMemory: 50
