@@ -196,8 +196,13 @@ mysql_query_rules:
   #   destination_hostgroup: 0
   #   apply: 1
 
+
+## If enabled, generate automagically a list of proxysql servers based on the
+#    the number statefullset 'proxysql-core' replicas (default 3).
+use_default_proxysql_servers: true
+
 ## Defines an additional list of ProxySQL peers (clustering).
-#   The default list `proxysql_servers` iterates over the number statefullset 'proxysql-core' replicas (default 3).
+#   For example, externally hosted proxysql core servers.
 #   ref: https://proxysql.com/documentation/proxysql-cluster/
 additional_proxysql_servers:
   # - hostname : peer’s hostname/IP
