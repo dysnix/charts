@@ -5,10 +5,10 @@
 replicas: 1
 
 image:
+  registry: docker.io
   repository: proxysql/proxysql
+  tag: "2.0.9"
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
 
 imagePullSecrets: []
 nameOverride: ""

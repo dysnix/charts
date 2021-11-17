@@ -37,7 +37,7 @@ spec:
           command: ["proxysql", "-c", "/etc/proxysql/proxysql.cnf", "-f"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ template "proxysql.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: proxy

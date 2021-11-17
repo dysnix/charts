@@ -56,6 +56,16 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Return the proper ProxySQL image name
+*/}}
+{{- define "proxysql.image" -}}
+{{- $registryName := .Values.image.registry -}}
+{{- $repositoryName := .Values.image.repository -}}
+{{- $tag := .Values.image.tag | toString -}}
+  {{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- end -}}
+
+{{/*
 Return the proper Cluster Job image name
 */}}
 {{- define "proxysql.proxysql_cluster.job.image" -}}
