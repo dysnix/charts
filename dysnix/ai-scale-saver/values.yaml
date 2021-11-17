@@ -104,9 +104,9 @@ containerPorts:
 ## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
 livenessProbe:
-  enabled: true
+  enabled: false
   exec:
-    command: [ "/bin/grpc_health_probe", "-addr=:8091" ]
+    command: [ "/bin/grpc_health_probe", "-addr=0.0.0.0:8091" ]
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -120,9 +120,9 @@ livenessProbe:
 ## @param readinessProbe.successThreshold Success threshold for readinessProbe
 ##
 readinessProbe:
-  enabled: true
+  enabled: false
   exec:
-    command: [ "/bin/grpc_health_probe", "-addr=:8091" ]
+    command: [ "/bin/grpc_health_probe", "-addr=0.0.0.0:8091" ]
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -186,10 +186,12 @@ existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
 ##
 command:
-  - -conf="/etc/configs/configs.yaml"
+  - /app
 ## @param args Override default container args (useful when using custom images)
 ##
-args: [ ]
+args:
+  - -conf=/etc/saver/configs/configs.yaml
+
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
@@ -289,7 +291,7 @@ extraVolumes: [ ]
 ##
 volumeMounts:
   - name: configs
-    mountPath: /etc/configs
+    mountPath: "/etc/saver/configs"
     readOnly: true
 extraVolumeMounts: [ ]
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
@@ -321,7 +323,7 @@ initContainers: { }
 ## Oweride default service configs map.
 ## ref: https://github.com/dysnix/ai-scale-saver
 ## @param configs [map] saver service configs owerride
-configs: { }
+configs: {}
 
 ## Service resource configs.
 ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
@@ -363,14 +365,14 @@ serviceAccount:
 ## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
 ##
 configMap:
-  create: false
+  create: true
   annotations: {}
   ## When enabled only object metadata can be modified
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
-  ## data:
-  ##   foo: bar
-  ##   hello: bar
+  data:
+    configs.yaml: |-
+      {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "configs/configs.yaml" | fromYaml) | toYaml | nindent 4 }}
 
 ## Secret configuration
 ##
