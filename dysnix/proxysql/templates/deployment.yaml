@@ -1,4 +1,4 @@
-{{- if (eq .Values.proxysql_cluster.satellite.kind "Deployment") -}}
+{{- if and (.Values.proxysql_cluster.satellite.enabled (eq .Values.proxysql_cluster.satellite.kind "Deployment")) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

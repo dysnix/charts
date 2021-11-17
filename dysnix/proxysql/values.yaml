@@ -222,6 +222,7 @@ proxysql_cluster:
     ## DNS Example:
     #   headless-svc:                 proxysql-core.<namespace>.svc.cluster.local
     #   sts-pod:      proxysql-core-0.proxysql-core.<namespace>.svc.cluster.local
+    enabled: true
 
     # Number of core/main ProxySQL nodes to listen for changes on AdminPort
     #   It is recommended to use one of the following number of replicas: 3, 5, 7, or 9.
@@ -245,6 +246,8 @@ proxysql_cluster:
     # Select the Kubernetes Resource type for the Satellite nodes,
     #   either "DaemonSet" or "Deployment"
     kind: "DaemonSet"
+
+    enabled: true
 
     # Only applies if kind=Deployment
     replicas: 3
@@ -286,6 +289,8 @@ proxysql_cluster:
       repository: mysql
       tag: "8"
       pullPolicy: IfNotPresent
+
+    enabled: true
 
     # Retry 3 times until failed
     backoffLimit: 3
