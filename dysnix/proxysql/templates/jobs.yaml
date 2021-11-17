@@ -1,4 +1,4 @@
-{{- if and (.Values.proxysql_cluster.enabled .Values.proxysql_cluster.job.enabled .Values.proxysql_cluster.core.enabled) }}
+{{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.job.enabled .Values.proxysql_cluster.core.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
