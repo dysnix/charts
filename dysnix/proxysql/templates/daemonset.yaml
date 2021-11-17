@@ -1,4 +1,4 @@
-{{- if (eq .Values.proxysql_cluster.satellite.kind "DaemonSet") -}}
+{{- if and .Values.proxysql_cluster.satellite.enabled (eq .Values.proxysql_cluster.satellite.kind "DaemonSet") }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
