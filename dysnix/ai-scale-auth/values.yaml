@@ -102,6 +102,8 @@ replicaCount: 1
 ##
 livenessProbe:
   enabled: false
+  exec:
+    command: [ "/bin/grpc_health_probe", "-addr=0.0.0.0:8091" ]
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -116,6 +118,8 @@ livenessProbe:
 ##
 readinessProbe:
   enabled: false
+  exec:
+    command: [ "/bin/grpc_health_probe", "-addr=0.0.0.0:8091" ]
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -178,10 +182,12 @@ containerSecurityContext:
 existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
 ##
-command: []
+command:
+  - /app
 ## @param args Override default container args (useful when using custom images)
 ##
-args: []
+args:
+  - -conf=/etc/auth/configs/configs.yaml
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
@@ -271,12 +277,18 @@ envFromSecrets: []
 ## @param volumes Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
-volumes: []
+volumes:
+  - name: configs
+    configMap:
+      name: "{{ .Release.Name }}-config"
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
-volumeMounts: []
+volumeMounts:
+  - name: configs
+    mountPath: "/etc/auth/configs"
+    readOnly: true
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
 ## e.g:
@@ -302,7 +314,50 @@ sidecars: []
 ##    imagePullPolicy: Always
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
-initContainers: {}
+initContainers:
+  - name: migrations
+    image: migrate/migrate:latest
+    command: ['/migrate']
+    args:
+      - -source
+      - "file://migrations"
+      - -database
+      - "{{ include \"migration.string\" . }}"
+      - up
+    env:
+      - name: PG_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: password
+            name: "{{ .Values.postgresql.secretName }}"
+      - name: PG_USERNAME
+        valueFrom:
+          secretKeyRef:
+            key: username
+            name: "{{ .Values.postgresql.secretName }}"
+
+## Oweride default service configs map.
+## ref: https://github.com/dysnix/ai-scale-saver
+## @param configs [map] saver service configs owerride
+configs: {}
+
+## Service resource configs.
+## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+##
+##
+## @param service.type Type of service k8s resource
+## @param service.ports [array] Service Ports definition (map is also supported)
+service:
+  type: ClusterIP
+  ports:
+    - name: grpc
+      port: 8091
+      protocol: TCP
+      targetPort: grpc
+    - name: monitoring
+      port: 8097
+      protocol: TCP
+      targetPort: monitoring
 
 ## ServiceAccount configuration
 ##
@@ -331,9 +386,9 @@ configMap:
   ## When enabled only object metadata can be modified
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
-  ## data:
-  ##   foo: bar
-  ##   hello: bar
+  data:
+    configs.yaml: |-
+      {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "configs/configs.yaml" | fromYaml) | toYaml | nindent 4 }}
 
 ## Secret configuration
 ##
@@ -387,3 +442,9 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
   mountPath: /data
+
+postgresql:
+  secretName: tmp-secret
+  host: postgresql.default.svc.cluster.local
+  port: 5432
+  database: ai-scale
