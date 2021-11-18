@@ -1977,6 +1977,22 @@ entries:
     version: 0.3.1
   - apiVersion: v1
     appVersion: 2.3.2
+    created: "2021-11-18T08:04:41.12399158Z"
+    description: ProxySQL Helm chart for Kubernetes
+    digest: 1d8a2b9107a214deb6b47074aa8f99283714174dce908ceb5ce169d2d30f8e6c
+    home: https://www.proxysql.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: proxysql
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/sysown/proxysql
+    urls:
+    - https://github.com/dysnix/charts/releases/download/proxysql-0.2.4/proxysql-0.2.4.tgz
+    version: 0.2.4
+  - apiVersion: v1
+    appVersion: 2.3.2
     created: "2021-11-17T13:20:20.838025429Z"
     description: ProxySQL Helm chart for Kubernetes
     digest: aba491e7ceb33c685db65aabee83387a827cf9a8dfec9c2bfd80d5d4b4dcca7c
