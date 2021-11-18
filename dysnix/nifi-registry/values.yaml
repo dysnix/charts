@@ -123,7 +123,7 @@ flowProvider:
       #   [credential "https://github.com"]
       #           username = foo
   postgres:
-    enabled: true
+    enabled: false
     driverURL: https://jdbc.postgresql.org/download/
     fileName: postgresql-42.2.6.jar
     driverClass: org.postgresql.Driver
