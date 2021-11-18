@@ -1,4 +1,4 @@
-{{- if (eq .Values.proxysql_cluster.satellite.kind "DaemonSet") -}}
+{{- if and .Values.proxysql_cluster.satellite.enabled (eq .Values.proxysql_cluster.satellite.kind "DaemonSet") }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -51,7 +51,7 @@ spec:
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
-              command: ["sh", "-c", "ss -n4 state listening | grep -wq '*:6033'"]
+              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/6033"]
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}

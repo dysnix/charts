@@ -1,0 +1,3 @@
+ReadinessProbeTimestampDistinct={{ .Values.bsc.readinessProbeTimestampDistinct }}
+LivenessProbeTimestampDistinct={{ .Values.bsc.livenessProbeTimestampDistinct }}
+StartupProbeTimestampDistinct={{ .Values.bsc.startupProbeTimestampDistinct }}

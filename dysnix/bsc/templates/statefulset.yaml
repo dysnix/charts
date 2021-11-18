@@ -64,6 +64,7 @@ spec:
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0
           - --cache.preimages
+          - --diffsync
           {{- if and .Values.externalLBp2p .Values.externalLBp2pIP }}
           - --nat=extip:{{- .Values.externalLBp2pIP -}}
           {{- end }}
@@ -96,6 +97,8 @@ spec:
           mountPath: /config
         - name: scripts
           mountPath: /scripts
+        - name: env
+          mountPath: /env
         - name: bsc-pvc
           mountPath: {{ .Values.bsc.base_path }}
         {{- if .Values.livenessProbe }}
@@ -103,10 +106,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_health.sh
-            - http://127.0.0.1:{{ .Values.service.rpcPort }}
-            - "300"
-            - last_synced_block.txt
+            - -c
+            - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $StartupProbeTimestampDistinct last_synced_block.txt
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
@@ -114,10 +115,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_health.sh
-            - http://127.0.0.1:{{ .Values.service.rpcPort }}
-            - "300"
-            - last_synced_block.txt
+            - -c
+            - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $LivenessProbeTimestampDistinct last_synced_block.txt
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
@@ -130,9 +129,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_readiness.sh
-            - --timestamp-distinct
-            - "{{ .Values.bsc.readinessProbeTimestampDistinct }}"
+            - -c
+            - source /env/env.txt && /bin/sh /scripts/check_node_readiness.sh --timestamp-distinct $ReadinessProbeTimestampDistinct
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -260,6 +258,9 @@ spec:
         - name: scripts
           configMap:
             name: "{{ .Release.Name }}-scripts"
+        - name: env
+          configMap:
+            name: "{{ .Release.Name }}-env"
         {{- if not .Values.persistence.enabled }}
         - name: bsc-pvc
           emptyDir: {}
