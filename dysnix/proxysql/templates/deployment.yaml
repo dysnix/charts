@@ -92,7 +92,7 @@ spec:
           {{- end }}
         {{- if .Values.debug.sidecar.enabled }}
         - name: debug
-          image: {{.Values.debug.sidecar.image }}
+          image: {{ .Values.debug.sidecar.image }}
           command:
             {{- toYaml .Values.debug.sidecar.command | nindent 14 }}
           securityContext:
