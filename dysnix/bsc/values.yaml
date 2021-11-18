@@ -24,6 +24,8 @@ continent:
 bsc:
   # we don't have other chains, it's just a pod label for now
   chain: mainnet
+  # possible values: rpc, bootnode
+  role: rpc
   #  Blockchain sync mode ("fast", "full", or "light") (default: fast)
   syncmode: "full"
   # Blockchain garbage collection mode ("full", "archive") (default: "full")
