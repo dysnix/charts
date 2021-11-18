@@ -41,7 +41,9 @@ bsc:
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
+  initFromSnapshotImage: alpine:latest
   initFromRsync: false
+  initFromRsyncImage: instrumentisto/rsync-ssh:latest
   forceInitFromSnapshot: false
   snapshotUrl:
   snapshotRsyncUrl: "rsync://192.168.8.4/snapshot/geth/node/geth"
@@ -147,6 +149,14 @@ metrics:
 prometheus:
   rules:
     enabled: false
+
+rsyncd:
+  enabled: false
+  image: instrumentisto/rsync-ssh:latest
+  bsc_path: /data
+  service:
+    port: 1873
+    name: rsyncd
 
 failback:
   enabled: false
