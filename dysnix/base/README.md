@@ -93,7 +93,8 @@ The [Parameters](#parameters) section provides a wide set parameters to configur
 | `image.pullPolicy`                      | Image pull policy                                                                                   | `""`            |
 | `image.pullSecrets`                     | Image pull secrets                                                                                  | `[]`            |
 | `replicaCount`                          | Number of pod replicas to deploy                                                                    | `1`             |
-| `containerPorts`                        | Container Ports definition (map is also supported)                                                  | `[]`            |
+| `containerPorts`                        | Container Ports definition (dict form is also supported)                                            | `[]`            |
+| `ports`                                 | Alias to containerPorts                                                                             | `[]`            |
 | `livenessProbe.enabled`                 | Enable livenessProbe on containers                                                                  | `false`         |
 | `livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                             | `20`            |
 | `livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                    | `10`            |

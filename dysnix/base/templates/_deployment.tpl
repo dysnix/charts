@@ -30,8 +30,8 @@ kind: Deployment
 metadata:
   name: {{ include "base.lib.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- if $context.Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" $context.Values.commonAnnotations "context" $context) | nindent 4 }}
+  {{- with $context.Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 4 }}
   {{- end }}
 spec:
   replicas: {{ $value.replicaCount }}
@@ -47,13 +47,15 @@ spec:
         {{- range $value.checksums }}
         checksum/{{ . | trimPrefix "/" }}: {{ include (print $context.Template.BasePath "/" (. | trimPrefix "/")) $context | sha256sum }}
         {{- end }}
-        {{- if $value.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" $value.podAnnotations "context" $context) | nindent 8 }}
+        {{- with $value.podAnnotations }}
+          {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 8 }}
         {{- end }}
       {{- end }}
-      labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 8 }}
-        {{- if $value.podLabels }}
-          {{- include "common.tplvalues.render" (dict "value" $value.podLabels "context" $context) | nindent 8 }}
+      labels:
+        {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 8 }}
+        {{- with $value.podLabels }}
+          {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 8 }}
         {{- end }}
-    spec: {{ include "base.pod.spec" (dict "value" $value "component" $component "context" $context) | indent 6 -}}
+    spec:
+      {{- ""}}{{ include "base.pod.spec" (dict "value" $value "component" $component "context" $context) | indent 6 -}}
 {{- end -}}
