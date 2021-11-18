@@ -35,6 +35,5 @@ metadata:
 data:
   {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 2 }}
 {{- end }}
-
 {{- end -}}
 {{- end -}}

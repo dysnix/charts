@@ -33,12 +33,13 @@ metadata:
 type: {{ $secret.type | default "Opaque" }}
 {{- with $secret.data }}
 data:
-  {{- toYaml . | nindent 2 }}
+  {{- range $k, $v := . }}
+  {{ $k }}: {{ include "common.tplvalues.render" (dict "value" $v "context" $context) }}
+  {{- end }}
 {{- end }}
 {{- with $secret.stringData }}
 stringData:
   {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 2 }}
 {{- end }}
-
 {{- end -}}
 {{- end -}}

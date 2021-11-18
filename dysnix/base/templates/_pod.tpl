@@ -14,9 +14,6 @@ Params:
 {{- $context := .context -}}
 {{- $component := .component -}}
 
-{{/* Validations */}}
-{{- template "base.validate" (dict "template" "base.validate.componentGiven" "component" $component "context" $context) -}}
-
 {{/* imagePullSecrets: */}}
 {{- template "common.images.pullSecrets" (dict "images" (list $value.image) "global" $context.Values.global) }}
 

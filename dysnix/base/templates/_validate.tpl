@@ -28,20 +28,11 @@ Note: check that all .podContainers item have .name attribute.
 
 {{- define "base.validate.controllerSupported" -}}
 {{- $supported := list ("deployment") -}}
-{{- if not (has .controller (list "deployment")) -}}
+{{- if not (has .controller $supported) -}}
 Unsupported controller type!
    
 Type `{{ .controller }}` was provided. Please use one from the bellow list:
   {{ $supported | join ", " }}
-{{- end -}}
-{{- end -}}
-
-{{- define "base.validate.componentGiven" -}}
-{{- if empty .component -}}
-.component is not provided!
-   
-Make sure to either pass "component" argument or "value" object
-must contain non-empty "component" field.
 {{- end -}}
 {{- end -}}
 

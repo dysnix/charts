@@ -22,8 +22,7 @@ Note:
 {{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
 
 {{/* Validations */}}
-{{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
-{{- template "base.validate" (dict "template" "base.validate.componentGiven" "component" $component "context" $context) }}
+{{- template "base.validate" (dict "template" "base.validate.context" "context" $context) }}
 ---
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" $context }}
 kind: Deployment

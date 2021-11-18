@@ -42,17 +42,19 @@ Params:
   {{/* Validations */}}
   {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
-  {{- if eq .component "_default" -}}
-    {{ $pod = mergeOverwrite $pod ($value.defaultPod | merge dict) }}
+  {{- if eq $component "_default" -}}
+    {{ $pod = mergeOverwrite $pod ($value.defaultComponent | merge dict) }}
   {{- end -}}
 
   {{- if eq "true" (get $pod "enabled" | toString | default "true") -}}
     {{/* Pod controller (ex deployment/statefulset etc) */}}
-    {{- template "base.validate" (dict "template" "base.validate.controllerSupported" "controller" $pod.controller "context" $context) -}}
-    {{- include (printf "base.%s" $pod.controller) (dict "value" $value "component" $component "context" $context) -}}
+    {{- if get $pod "controller" -}}
+      {{- template "base.validate" (dict "template" "base.validate.controllerSupported" "controller" $pod.controller "context" $context) -}}
+      {{- include (printf "base.%s" $pod.controller) (dict "value" $value "component" $component "context" $context) -}}
+    {{- end -}}
 
-    {{/* PersistentVolumeClaim (for Deployment resource) */}}
-    {{- if eq $pod.controller "deployment" -}}
+    {{/* PersistentVolumeClaim for the default Deployment */}}
+    {{- if eq (get $pod "controller") "deployment" -}}
       {{- include "base.pvc" (dict "value" $value "component" $component "context" $context) -}}
     {{- end -}}
 

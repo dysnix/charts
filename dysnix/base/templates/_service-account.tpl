@@ -20,7 +20,7 @@ Params:
 {{/* Validations */}}
 {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
-{{- if eq "true" ($sa.create | toString | default "true") }}
+{{- if eq "true" (get $sa "create" | toString) }}
 ---
 apiVersion: v1
 kind: ServiceAccount

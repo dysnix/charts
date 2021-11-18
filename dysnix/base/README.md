@@ -128,12 +128,12 @@ service:
 | `extraDeploy`       | Array of extra objects to deploy with the release                                            | `[]`            |
 
 
-### Default Pod parameters
+### Default Component default parameters
 
-| Name                    | Description                 | Value        |
-| ----------------------- | --------------------------- | ------------ |
-| `defaultPod.enabled`    | Create the default Pod      | `true`       |
-| `defaultPod.controller` | Default Pod controller type | `deployment` |
+| Name                          | Description                 | Value        |
+| ----------------------------- | --------------------------- | ------------ |
+| `defaultComponent.enabled`    | Create the default Pod      | `true`       |
+| `defaultComponent.controller` | Default Pod controller type | `deployment` |
 
 
 ### Component specific parameters
@@ -225,7 +225,7 @@ service:
 | `persistence.size`                      | Volume size                                                                                           | `10Gi`          |
 | `persistence.mountPath`                 | Volume mount path                                                                                     | `/data`         |
 | `service.type`                          | Service type (default is not set, effectively ClusterIP)                                              | `""`            |
-| `service.ports`                         | Map or list of defining service ports (see TBI)                                                       | `{}`            |
+| `service.ports`                         | Map or list of defining service ports                                                                 | `{}`            |
 | `service.nodePorts`                     | Map of nodePorts (effictive with type NodePort or LoadBalancer)                                       | `{}`            |
 | `service.clusterIP`                     | Service Cluster IP                                                                                    | `nil`           |
 | `service.loadBalancerIP`                | Service Load Balancer IP                                                                              | `nil`           |

@@ -17,7 +17,6 @@ Params:
   {{- $name_list := list -}}
 
   {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
-  {{- template "base.validate" (dict "template" "base.validate.componentGiven" "component" $component "context" $context) -}}
 
   {{- if eq "_default" $component -}}
     {{- $name_list = append $name_list $context.Chart.Name -}}
@@ -52,7 +51,7 @@ Params:
 {{/* https://github.com/helm/helm/issues/9266 */}}
 {{- $value := .container | merge dict -}}
 {{- $parent := .parent | merge dict -}}
-{{- $name := .name | default $value.name -}}
+{{- $name := .name | default $value.name | default $context.Chart.Name -}}
 {{- $securityContext := $value.securityContext | default $value.containerSecurityContext -}}
 
 {{/* Validations */}}
