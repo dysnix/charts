@@ -311,37 +311,30 @@ sidecars: []
 ## @param initContainers Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
-## initContainers:
-##  - name: your-image-name
-##    image: your-image
-##    imagePullPolicy: Always
-##    command: ['sh', '-c', 'echo "hello world"']
-##
+#initContainers:
+#  - name: migrations
+#    image: migrate/migrate:latest
+#    command: ['/migrate']
+#    args:
+#      - -source
+#      - "file://etc/auth/migrations"
+#      - -database
+#      - "{{ include \"migration.string\" . }}"
+#      - up
+#    volumeMounts:
+#      - name: migrations
+#        mountPath: "/etc/auth/migrations"
+#        readOnly: true
 initContainers:
   - name: migrations
-    image: migrate/migrate:latest
-    command: ['/migrate']
+    image: alex6021710/ai-scale-migrator:latest
+    command: ['/usr/local/bin/migrate']
     args:
       - -source
-      - "file://etc/auth/migrations"
+      - "file://./migrations"
       - -database
       - "{{ include \"migration.string\" . }}"
       - up
-    volumeMounts:
-      - name: migrations
-        mountPath: "/etc/auth/migrations"
-        readOnly: true
-#    env:
-#      - name: PG_PASSWORD
-#        valueFrom:
-#          secretKeyRef:
-#            key: password
-#            name: "{{ .Values.postgresql.secretName }}"
-#      - name: PG_USERNAME
-#        valueFrom:
-#          secretKeyRef:
-#            key: username
-#            name: "{{ .Values.postgresql.secretName }}"
 
 ## Oweride default service configs map.
 ## ref: https://github.com/dysnix/ai-scale-saver
@@ -450,13 +443,13 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-postgresql: {}
+postgresql: #{}
 #  secretName: tmp-secret
-#  username: ai-scale
-#  password: '1234567'
-#  host: postgresql.default.svc.cluster.local
-#  port: 5432
-#  database: ai-scale
+  username: ai-scale
+  password: '1234567'
+  host: postgresql.default.svc.cluster.local
+  port: 5432
+  database: ai-scale
   
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled

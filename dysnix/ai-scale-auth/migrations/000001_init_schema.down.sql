@@ -1,8 +1,0 @@
-BEGIN;
-
-DROP TABLE IF EXISTS clients;
-DROP TABLE IF EXISTS client_keys;
-
-DROP TYPE key_type;
-
-COMMIT;
