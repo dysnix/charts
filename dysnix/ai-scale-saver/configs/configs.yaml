@@ -26,7 +26,7 @@ elasticsearch:
     password: ""
     maxRetries: 7
     transport:
-      maxIdleConnDuration: 1m0s
+      maxIdleConnDuration: 1m
       readTimeout: 7s
       writeTimeout: 7s
   processor:
