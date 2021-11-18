@@ -72,6 +72,22 @@ spec:
           {{- if .Values.ssl.fromSecret }}
             - name: ssl
               mountPath: /etc/proxysql/ssl
+          {{- else }}
+            {{- if .Values.ssl.ca }}
+            - name: secrets
+              mountPath: {{ include "proxysql.sslDir" . }}/ca.pem
+              subPath: ca.pem
+            {{- end }}
+            {{- if .Values.ssl.cert }}
+            - name: secrets
+              mountPath: {{ include "proxysql.sslDir" . }}/cert.pem
+              subPath: cert.pem
+            {{- end }}
+            {{- if .Values.ssl.key }}
+            - name: secrets
+              mountPath: {{ include "proxysql.sslDir" . }}/key.pem
+              subPath: key.pem
+            {{- end }}
           {{- end }}
         {{- if .Values.debug.sidecar.enabled }}
         - name: debug
