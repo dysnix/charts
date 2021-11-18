@@ -1,7 +1,7 @@
-pid file = /var/run/rsyncd.pid
-use chroot = yes
+pid file = /tmp/rsyncd.pid
+use chroot = no
 read only = yes
 
 [bsc]
-	path = {{ .Values.rsyncd.bsc_path }}
-	list = no
+  path = {{ .Values.rsyncd.bsc_path }}
+  list = no

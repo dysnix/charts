@@ -196,6 +196,7 @@ spec:
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.rsyncd.bsc_path }}
+            readOnly: true
           - name: rsyncd-config
             mountPath: /config
       {{- end }}

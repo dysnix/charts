@@ -24,6 +24,8 @@ if [ -f ${TEST_FILE} ]; then
 fi
 
 rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
+# one more time to catch up
+rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
 
 # Mark data dir as initialized
 touch ${TEST_FILE}
