@@ -60,7 +60,7 @@ defaultPod:
 ##
 image:
   registry: ""
-  repository: foo/bar
+  repository: alex6021710/ai-scale-auth
   tag: latest
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -280,7 +280,10 @@ envFromSecrets: []
 volumes:
   - name: configs
     configMap:
-      name: "{{ .Release.Name }}-config"
+      name: "{{ include \"common.names.fullname\" . }}-configs"
+  - name: migrations
+    configMap:
+      name: "{{ include \"common.names.fullname\" . }}-migrations"
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
@@ -320,21 +323,25 @@ initContainers:
     command: ['/migrate']
     args:
       - -source
-      - "file://migrations"
+      - "file://etc/auth/migrations"
       - -database
       - "{{ include \"migration.string\" . }}"
       - up
-    env:
-      - name: PG_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            key: password
-            name: "{{ .Values.postgresql.secretName }}"
-      - name: PG_USERNAME
-        valueFrom:
-          secretKeyRef:
-            key: username
-            name: "{{ .Values.postgresql.secretName }}"
+    volumeMounts:
+      - name: migrations
+        mountPath: "/etc/auth/migrations"
+        readOnly: true
+#    env:
+#      - name: PG_PASSWORD
+#        valueFrom:
+#          secretKeyRef:
+#            key: password
+#            name: "{{ .Values.postgresql.secretName }}"
+#      - name: PG_USERNAME
+#        valueFrom:
+#          secretKeyRef:
+#            key: username
+#            name: "{{ .Values.postgresql.secretName }}"
 
 ## Oweride default service configs map.
 ## ref: https://github.com/dysnix/ai-scale-saver
@@ -381,16 +388,14 @@ serviceAccount:
 ## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
 ##
 configMap:
-  create: true
+  create: false
   annotations: {}
   ## When enabled only object metadata can be modified
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
   data:
     configs.yaml: |-
-      {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "configs/default.yaml" | fromYaml) | toYaml | nindent 4 }}
-    |-
-    {{- include "migrations.configmaps" . | nindent 2 }}
+      {{- include "merge.configs" . | nindent 2 }}
 
 ## Secret configuration
 ##
@@ -445,16 +450,18 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-postgresql:
-  secretName: tmp-secret
-  host: postgresql.default.svc.cluster.local
-  port: 5432
-  database: ai-scale
+postgresql: {}
+#  secretName: tmp-secret
+#  username: ai-scale
+#  password: '1234567'
+#  host: postgresql.default.svc.cluster.local
+#  port: 5432
+#  database: ai-scale
   
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
 monitoring:
-  enabled: true
+  enabled: false
 
 ## Autoscaling parameters
 autoscaling:
