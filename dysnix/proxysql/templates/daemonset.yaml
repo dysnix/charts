@@ -73,6 +73,15 @@ spec:
             - name: ssl
               mountPath: /etc/proxysql/ssl
           {{- end }}
+        {{- if .Values.debug.sidecar.enabled }}
+        - name: debug
+          image: {{ .Values.debug.sidecar.image }}
+          command:
+            {{- toYaml .Values.debug.sidecar.command | nindent 14 }}
+          securityContext:
+            runAsGroup: 1001
+            runAsUser: 1001
+        {{- end }}
       {{- with (default .Values.nodeSelector .Values.proxysql_cluster.satellite.daemonset.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

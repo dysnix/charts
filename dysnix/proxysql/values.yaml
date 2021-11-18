@@ -311,5 +311,15 @@ proxysql_cluster:
     #    cpu: 100m
     #    memory: 128Mi
 
+# Enable debugging container along the proxysql instance
+#   It may be usefull to access the proxysql admin interface locally to debug issues
+debug:
+  sidecar:
+    # inject a debug sidecar container to all proxysql Pods
+    enabled: false
+    image: mysql
+    command:
+      - /bin/sleep
+      - infinity
 
 terminationGracePeriodSeconds: 60
