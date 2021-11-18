@@ -13,7 +13,7 @@ metadata:
   name: "{{ .Release.Name }}-rsyncd-config"
 data:
   rsyncd.conf: |-
-  {{- include (print $.Template.BasePath "/configs/_rsyncd.conf") . | nindent 4 }}
+  {{- include (print $.Template.BasePath "/configs/_rsyncd.txt") . | nindent 4 }}
 ---
 {{- end }}
 apiVersion: v1
