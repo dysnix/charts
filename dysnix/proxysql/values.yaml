@@ -124,11 +124,17 @@ ssl:
   ## When a cert and a key or fromSecret are provided use_ssl is be enabled automaticaly (in mysql_servers items)
   #  if use_ssl is not specified.
   auto: true
-  # ProxySQL SSL directory
-  sslDir: "/etc/proxysql"
+
+  ## Sets the values for the SSL CA, Cert and private Key in PEM format.
   ca: ""
   cert: ""
   key: ""
+
+  sslDir: "/etc/proxysql"   # ProxySQL SSL directory
+  ca_file: "ca.pem"         # Name of the CA file
+  cert_file: "cert.pem"     # Name of the Cert file
+  key_file: "key.pem"       # Name of the private Key file
+
   ## Loads ca.pem, cert.pem, and key.pem from an existingSecret
   fromSecret: ""
 

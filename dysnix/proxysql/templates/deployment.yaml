@@ -76,17 +76,17 @@ spec:
           {{- else }}
             {{- if .Values.ssl.ca }}
             - name: secrets
-              mountPath: {{ include "proxysql.sslDir" . }}/ca.pem
+              mountPath: {{ include "proxysql.sslDir" . }}/{{ .Values.ssl.ca_file }}
               subPath: ca.pem
             {{- end }}
             {{- if .Values.ssl.cert }}
             - name: secrets
-              mountPath: {{ include "proxysql.sslDir" . }}/cert.pem
+              mountPath: {{ include "proxysql.sslDir" . }}/{{ .Values.ssl.cert_file }}
               subPath: cert.pem
             {{- end }}
             {{- if .Values.ssl.key }}
             - name: secrets
-              mountPath: {{ include "proxysql.sslDir" . }}/key.pem
+              mountPath: {{ include "proxysql.sslDir" . }}/{{ .Values.ssl.key_file }}
               subPath: key.pem
             {{- end }}
           {{- end }}
