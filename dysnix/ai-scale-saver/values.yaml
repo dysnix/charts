@@ -13,7 +13,7 @@ global:
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
-  imagePullSecrets: [ ]
+  imagePullSecrets: []
   storageClass: ""
 
 ## @section Common parameters for all deployed objects
@@ -30,22 +30,22 @@ nameOverride: ""
 fullnameOverride: ""
 ## @param commonLabels [object] Labels to add to all deployed objects
 ##
-commonLabels: { }
+commonLabels: {}
 ## @param commonAnnotations [object] Annotations to add to all deployed objects
 ##
-commonAnnotations: { }
+commonAnnotations: {}
 ## @param clusterDomain Kubernetes cluster domain name
 ##
 clusterDomain: cluster.local
 ## @param extraDeploy (TBI) Array of extra objects to deploy with the release
 ##
-extraDeploy: [ ]
+extraDeploy: []
 
-## @section Default Pod parameters
+## @section Default Component default parameters
 ##
-defaultPod:
-  ## @param defaultPod.enabled Create the default Pod
-  ## @param defaultPod.controller Default Pod controller type
+defaultComponent:
+  ## @param defaultComponent.enabled Create the default Pod
+  ## @param defaultComponent.controller Default Pod controller type
   enabled: true
   controller: deployment
 
@@ -74,7 +74,7 @@ image:
   ## pullSecrets:
   ##   - myRegistryKeySecretName
   ##
-  pullSecrets: [ ]
+  pullSecrets: []
 
 ## @param replicaCount Number of pod replicas to deploy
 replicaCount: 1
@@ -140,21 +140,21 @@ startupProbe:
   successThreshold: 1
 ## @param customLivenessProbe Custom livenessProbe that overrides the default one
 ##
-customLivenessProbe: { }
+customLivenessProbe: {}
 ## @param customReadinessProbe Custom readinessProbe that overrides the default one
 ##
-customReadinessProbe: { }
+customReadinessProbe: {}
 ## @param customStartupProbe Custom startupProbe that overrides the default one
 ##
-customStartupProbe: { }
+customStartupProbe: {}
 ## resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
 ## @param resources.limits The resources limits for the containers
 ## @param resources.requests The requested resources for the containers
 ##
 resources:
-  limits: { }
-  requests: { }
+  limits: {}
+  requests: {}
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ##
@@ -191,18 +191,18 @@ args:
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
-hostAliases: [ ]
+hostAliases: []
 ## @param component [string] Defines pod's component name (used for naming and labeling etc, not necessary for the default pod).
 ##
 component: ""
 ## @param podLabels Extra labels for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
-podLabels: { }
+podLabels: {}
 ## @param podAnnotations Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
-podAnnotations: { }
+podAnnotations: {}
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -227,20 +227,20 @@ nodeAffinityPreset:
   ##   - e2e-az1
   ##   - e2e-az2
   ##
-  values: [ ]
+  values: []
 ## @param affinity Affinity for pods assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ## NOTE: `podAffinityPreset`, `podAntiAffinityPreset`, and `nodeAffinityPreset` will be ignored when it's set
 ##
-affinity: { }
+affinity: {}
 ## @param nodeSelector Node labels for pods assignment
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
-nodeSelector: { }
+nodeSelector: {}
 ## @param tolerations Tolerations for pods assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
-tolerations: [ ]
+tolerations: []
 ## @param updateStrategy.type Deployment/Statefulset/Daemonset updateStrategy type
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
 ##
@@ -258,7 +258,7 @@ priorityClassName: ""
 schedulerName: ""
 ## @param lifecycleHooks for the container(s) to automate configuration before or after startup
 ##
-lifecycleHooks: { }
+lifecycleHooks: {}
 ## @param env Array with environment variables to add to nodes
 ## @param extraEnv Array with extra environment variables to add to nodes
 ## e.g:
@@ -266,22 +266,22 @@ lifecycleHooks: { }
 ##   - name: FOO
 ##     value: "bar"
 ##
-env: [ ]
-extraEnv: [ ]
+env: []
+extraEnv: []
 ## @param envFromCMs Array of existing ConfigMap names containing env vars
 ##
-envFromCMs: [ ]
+envFromCMs: []
 ## @param envFromSecrets Array of existing Secret names containing env vars
 ##
-envFromSecrets: [ ]
+envFromSecrets: []
 ## @param volumes Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
 volumes:
   - name: configs
     configMap:
-      name: "{{ .Release.Name }}-config"
-extraVolumes: [ ]
+      name: "{{ include \"common.names.fullname\" . }}"
+extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
@@ -289,10 +289,11 @@ volumeMounts:
   - name: configs
     mountPath: "/etc/saver/configs"
     readOnly: true
-extraVolumeMounts: [ ]
+
+extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
 ## e.g:
-podContainers: [ ]
+podContainers: []
 ##
 ## @param sidecars Add additional sidecar containers to the pod(s) (raw definitions)
 ## e.g:
@@ -303,7 +304,7 @@ podContainers: [ ]
 ##     ports:
 ##       - name: portname
 ##         containerPort: 1234
-sidecars: [ ]
+sidecars: []
 ##
 ## @param initContainers Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
@@ -314,7 +315,7 @@ sidecars: [ ]
 ##    imagePullPolicy: Always
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
-initContainers: { }
+initContainers: {}
 
 ## Oweride default service configs map.
 ## ref: https://github.com/dysnix/ai-scale-saver

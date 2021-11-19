@@ -1,9 +1,0 @@
-{{/* vim: set filetype=mustache: */}}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: "{{ .Release.Name }}-config"
-data:
-  configs.yaml: |-
-    {{- deepCopy .Values.configs | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml | nindent 4 }}
