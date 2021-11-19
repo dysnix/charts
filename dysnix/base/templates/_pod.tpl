@@ -14,9 +14,6 @@ Params:
 {{- $context := .context -}}
 {{- $component := .component -}}
 
-{{/* Validations */}}
-{{- template "base.lib.validate" (dict "template" "base.validate.componentGiven" "component" $component "context" $context) -}}
-
 {{/* imagePullSecrets: */}}
 {{- template "common.images.pullSecrets" (dict "images" (list $value.image) "global" $context.Values.global) }}
 
@@ -29,24 +26,28 @@ priorityClassName: {{ $value.priorityClassName | quote }}
 {{- end }}
 
 {{- "" }}
-serviceAccountName: {{ template "base.lib.serviceAccountName" (dict "serviceAccount" $value.serviceAccount "component" $component "context" $context) }}
+serviceAccountName: {{ template "base.serviceAccountName" (dict "serviceAccount" $value.serviceAccount "component" $component "context" $context) }}
 
 {{- if $value.hostAliases }}
 hostAliases: {{- include "common.tplvalues.render" (dict "value" $value.hostAliases "context" $context) | nindent 2 }}
-{{- end -}}
+{{- end }}
 
 {{- if $value.affinity }}
 affinity: {{- include "common.tplvalues.render" (dict "value" $value.affinity "context" $context) | nindent 2 }}
 {{- else }}
+  {{- if or $value.podAffinityPreset $value.podAntiAffinityPreset $value.nodeAffinityPreset }}
 affinity:
-  {{- with (include "common.affinities.pods" (dict "type" $value.podAffinityPreset "component" $value.component . "context" $context) | default dict) }}
-  podAffinity: {{- . | nindent 4 }}
+  {{- with $value.podAffinityPreset }}
+  podAffinity: {{- include "common.affinities.pods" (dict "type" . "component" $value.component $ "context" $context) | nindent 4 }}
   {{- end }}
-  {{- with (include "common.affinities.pods" (dict "type" $value.podAntiAffinityPreset "component" $value.component "context" $context) | default dict) }}
-  podAntiAffinity: {{- . | nindent 4 }}
+  {{- with $value.podAntiAffinityPreset }}
+  podAntiAffinity: {{- include "common.affinities.pods" (dict "type" . "component" $value.component "context" $context) | nindent 4 }}
   {{- end }}
-  {{- with (include "common.affinities.nodes" (dict "type" $value.nodeAffinityPreset.type "key" $value.nodeAffinityPreset.key "values" $value.nodeAffinityPreset.values)) | default dict -}}
+  {{- with $value.nodeAffinityPreset -}}
+    {{- with (include "common.affinities.nodes" (dict "type" .type "key" .key "values" .values)) -}}
   nodeAffinity: {{- . | nindent 4 }}
+    {{- end -}}
+  {{- end }}
   {{- end }}
 {{- end }}
 
@@ -62,7 +63,7 @@ tolerations: {{- include "common.tplvalues.render" (dict "value" $value.tolerati
 schedulerName: {{ $value.schedulerName | quote -}}
 {{- end }}
 
-{{- with (include "base.lib.securityContext" (dict "securityContext" $value.podSecurityContext)) }}
+{{- with (include "base.securityContext" (dict "securityContext" $value.podSecurityContext)) }}
 podSecurityContext: {{ . | nindent 2 }}
 {{- end }}
 
@@ -70,9 +71,9 @@ podSecurityContext: {{ . | nindent 2 }}
 initContainers: {{- include "common.tplvalues.render" (dict "value" $value.initContainers "context" $context) | nindent 2 -}}
 {{- end }}
 
-containers: {{- include "base.lib.containers" (dict "value" $value "component" $component "context" $context) | nindent 2 }}
+containers: {{- include "base.containers.podContainers" (dict "value" $value "component" $component "context" $context) | nindent 2 }}
 
-{{- with (include "base.lib.volumes" (dict "value" $value "context" $context)) }}
+{{- with (include "base.volumes.spec" (dict "value" $value "context" $context)) }}
 volumes: {{ . | indent 2 }}
 {{- end }}
 

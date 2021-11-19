@@ -19,16 +19,15 @@ Note:
 {{- define "base.deployment" -}}
 {{- $value := .value -}}
 {{- $context := .context -}}
-{{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
+{{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
 
 {{/* Validations */}}
-{{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
-{{- template "base.lib.validate" (dict "template" "base.validate.componentGiven" "component" $component "context" $context) }}
+{{- template "base.validate" (dict "template" "base.validate.context" "context" $context) }}
 ---
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" $context }}
 kind: Deployment
 metadata:
-  name: {{ include "base.lib.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
+  name: {{ include "base.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
   {{- with $context.Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 4 }}

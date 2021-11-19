@@ -15,30 +15,31 @@ Params:
 {{- $context := .context -}}
 {{- $value := .value -}}
 {{- $secret := $value | merge dict | dig "secret" dict -}}
-{{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
+{{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
 
 {{/* Validations */}}
-{{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
+{{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
-{{- if and $secret.create (or ($secret.data | default dict) ($secret.stringData | default dict)) }}
+{{- if and (eq "true" (get $secret "create" | toString | default "true")) (or $secret.data $secret.stringData) }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "base.lib.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
+  name: {{ include "base.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
   {{- with (list $secret.annotations $context.Values.commonAnnotations | compact) }}
-  annotations: {{- include "base.lib.flatrender" (dict "value" . "context" $context) | nindent 4 }}
+  annotations: {{- include "base.tpl.flatrender" (dict "value" . "context" $context) | nindent 4 }}
   {{- end }}
 type: {{ $secret.type | default "Opaque" }}
 {{- with $secret.data }}
 data:
-  {{- toYaml . | nindent 2 }}
+  {{- range $k, $v := . }}
+  {{ $k }}: {{ include "common.tplvalues.render" (dict "value" $v "context" $context) }}
+  {{- end }}
 {{- end }}
 {{- with $secret.stringData }}
 stringData:
   {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 2 }}
 {{- end }}
-
 {{- end -}}
 {{- end -}}

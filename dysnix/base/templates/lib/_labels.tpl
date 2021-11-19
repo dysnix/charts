@@ -13,10 +13,10 @@ Params:
 */}}
 {{- define "base.labels.standard" -}}
   {{- $context := .context -}}
-  {{- $component := include "base.lib.component" (dict "value" .value "component" .component) -}}
+  {{- $component := include "base.component.name" (dict "value" .value "component" .component) -}}
 
   {{/* Validations */}}
-  {{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
+  {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
   {{/* skip empty or default component */}}
   {{- if not (has $component (list "" "_default")) -}}
@@ -43,8 +43,8 @@ Labels to use on deploy.spec.selector.matchLabels and svc.spec.selector
 {{- define "base.labels.matchLabels" -}}
   {{- $context := .context -}}
   {{- $value := .value -}}
-  {{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
-  {{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
+  {{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
+  {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
 {{- if not (has $component (list "" "_default")) -}}
   {{- printf "app.kubernetes.io/component: %s\n" .component }}

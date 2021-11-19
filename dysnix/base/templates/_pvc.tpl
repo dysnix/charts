@@ -11,20 +11,18 @@ Params:
 {{- define "base.pvc.spec" -}}
 {{- $persistence := .persistence -}}
 {{- $context := .context -}}
-
 accessModes:
-{{- if not (empty $persistence.accessModes) }}
-{{- range $persistence.accessModes }}
+  {{- if not (empty $persistence.accessModes) }}
+    {{- range $persistence.accessModes }}
   - {{ . | quote }}
-{{- end }}
-{{- else }}
+    {{- end }}
+  {{- else }}
   - {{ $persistence.accessMode | quote }}
-{{- end }}
+  {{- end }}
 resources:
   requests:
     storage: {{ $persistence.size | quote }}
 {{ include "common.storage.class" (dict "persistence" $persistence "global" $context.Values.global) -}}
-
 {{- end -}}
 
 {{/*
@@ -42,14 +40,14 @@ Params:
 {{- $context := .context -}}
 {{- $persistence := .value | merge dict | dig "persistence" dict -}}
 {{- $name := .name | default $persistence.volumeName -}}
-{{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
+{{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
 
 {{- if and $persistence.enabled (not $persistence.existingClaim) }}
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ include "base.lib.fullname" (dict "value" $value "name" $name "component" $component "context" $context) }}
+  name: {{ include "base.fullname" (dict "value" $value "name" $name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
   {{- with $context.Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 4 }}
