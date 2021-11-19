@@ -3,21 +3,6 @@
 {{- end }}
 
 {{- define "merge.configs" -}}
-{{- $data := dict }}
-{{- if not (empty (.Values.postgresql.username)) }}
-{{- $_ := set $data "username" .Values.postgresql.username }}
-{{- end }}
-{{- if not (empty (.Values.postgresql.password)) }}
-{{- $_ := set $data "password" .Values.postgresql.password }}
-{{- end }}
-{{- if not (empty (.Values.postgresql.database)) }}
-{{- $_ := set $data "database" .Values.postgresql.database }}
-{{- end }}
-{{- if not (empty (.Values.postgresql.host)) }}
-{{- $_ := set $data "host" .Values.postgresql.host }}
-{{- end }}
-{{- if not (empty (.Values.postgresql.port)) }}
-{{- $_ := set $data "port" .Values.postgresql.port }}
-{{- end }}
-{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "postgres" $data)) | mergeOverwrite (include "default.sservice.configs" . | fromYaml) | toYaml }}
-{{- end }}
+{{- $data := pick .Values.postgresql "username" "password" "database" "host" "port" -}}
+{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "postgres" $data)) | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml -}}
+{{- end -}}

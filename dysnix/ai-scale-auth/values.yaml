@@ -280,7 +280,7 @@ envFromSecrets: []
 volumes:
   - name: configs
     configMap:
-      name: "{{ include \"common.names.fullname\" . }}-configs"
+      name: "{{ include \"common.names.fullname\" . }}"
       
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
@@ -396,13 +396,13 @@ serviceAccount:
 ## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
 ##
 configMap:
-  create: false
+  create: true
   annotations: {}
   ## When enabled only object metadata can be modified
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
   data:
-    configs.yaml: |-
+    configs.yaml: |
       {{- include "merge.configs" . | nindent 2 }}
 
 ## Secret configuration
@@ -478,5 +478,3 @@ autoscaling:
   # minReplicas: 1
   # maxReplicas: 10
   # targetMemory: 50
-  
-configPath: "Users/aleksandr/work/src/github.com/dysnix/ai-scale-auth/tmp/test-tmp-configs.yaml"
