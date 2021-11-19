@@ -23,9 +23,11 @@ if [ -f ${TEST_FILE} ]; then
     exit 0
 fi
 
+set +e
 rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
 # one more time to catch up
 rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
+set -e
 
 # Mark data dir as initialized
 touch ${TEST_FILE}

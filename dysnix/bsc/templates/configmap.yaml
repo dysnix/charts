@@ -21,8 +21,7 @@ kind: ConfigMap
 metadata:
   name: "{{ .Release.Name }}-env"
 data:
-  env.txt: |-
-  {{- include (print $.Template.BasePath "/configs/_env.txt") . | nindent 4 }}
+  {{- include (print $.Template.BasePath "/configs/_env.txt") . | nindent 2 }}
 ---
 apiVersion: v1
 kind: ConfigMap
