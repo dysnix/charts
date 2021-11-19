@@ -41,15 +41,15 @@ clusterDomain: cluster.local
 ##
 extraDeploy: []
 
-## @section Default Pod parameters
+## @section Default Component default parameters
 ##
-defaultPod:
-  ## @param defaultPod.enabled Create the default Pod
-  ## @param defaultPod.controller Default Pod controller type
+defaultComponent:
+  ## @param defaultComponent.enabled Create the default Pod
+  ## @param defaultComponent.controller Default Pod controller type
   enabled: true
   controller: deployment
 
-## @section Pod(s) specific parameters
+## @section Component specific parameters
 ##
 ## Image version
 ## @param image.registry Image registry
@@ -80,7 +80,6 @@ image:
 replicaCount: 1
 
 ## @param containerPorts [array] Container Ports definition (dict form is also supported)
-## @param ports [array] Alias to containerPorts
 ## containerPorts:
 ##   - name: http
 ##     containerPort: 8080
@@ -166,7 +165,7 @@ podSecurityContext:
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ##
 ## @param containerSecurityContext.enabled Enabled containers' Security Context
-## @param containerSecurityContext.propogated Propogate containerSecurityContext to all `podContainers` (when enabled==propogated==true)
+## @param containerSecurityContext.propogated Propogate containerSecurityContext to all containers `podContainers` (when enabled==propogated==true)
 ## @param containerSecurityContext.runAsUser Set containers' Security Context runAsUser
 ## @param containerSecurityContext.runAsNonRoot Set containers' Security Context runAsNonRoot
 ##
@@ -175,8 +174,6 @@ containerSecurityContext:
   propogated: true
   runAsUser: 1001
   runAsNonRoot: true
-## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for
-existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
 ##
 command: []
@@ -315,13 +312,13 @@ serviceAccount:
   ##
   annotations: {}
   ## @param serviceAccount.name The name of the ServiceAccount to use.
-  ## If not set and create is true, a name is generated using the base.lib.fullname template
+  ## If not set and create is true, a name is generated using the base.fullname template
   ##
   name: ""
 
 ## ConfigMap configuration
 ##
-## @param configMap.create Specifies whether to enable the ConfigMap
+## @param configMap.create Specifies whether to enable the ConfigMap (defaults to true if not set)
 ## @param configMap.immutable Ensures that data stored in the ConfigMap cannot be updated
 ## @param configMap.annotations Annotations for the configMap
 ## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
@@ -338,7 +335,7 @@ configMap:
 
 ## Secret configuration
 ##
-## @param secret.create Specifies whether to enable the Secret
+## @param secret.create Specifies whether to enable the Secret (defaults to true if not set)
 ## @param secret.immutable Ensures that data stored in the Secret cannot be updated
 ## @param secret.annotations Annotations for the secret
 ## @param secret.data [object] Specifies data stored in the Secret (either .data or .strigData should be provided)
@@ -370,6 +367,48 @@ secret:
 ## @param persistence.size Volume size
 ## @param persistence.mountPath Volume mount path
 ##
+
+## Service parameters
+##
+service:
+  ## @param service.type [string] Service type (default is not set, effectively ClusterIP)
+  ##
+  # type: ClusterIP
+  ## @param service.ports Map or list of defining service ports
+  ##
+  ports: {}
+  ## Node ports to expose
+  ## @param service.nodePorts Map of nodePorts (effictive with type NodePort or LoadBalancer)
+  ## NOTE: choose port between <30000-32767>
+  ##
+  nodePorts: {}
+  ## @param service.clusterIP Service Cluster IP
+  ## e.g.:
+  ## clusterIP: None
+  ##
+  clusterIP:
+  ## @param service.loadBalancerIP Service Load Balancer IP
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+  ##
+  loadBalancerIP:
+  ## @param service.loadBalancerSourceRanges Service Load Balancer sources
+  ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ## e.g:
+  ## loadBalancerSourceRanges:
+  ##   - 10.10.10.0/24
+  ##
+  loadBalancerSourceRanges: []
+  ## @param service.externalTrafficPolicy Service external traffic policy
+  ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+  ## @param service.annotations Additional custom annotations for service
+  ##
+  annotations: {}
+  ## @param service.extraPorts Extra ports to expose in service (normally used with the `sidecars` value)
+  ##
+  extraPorts: []
+
 persistence:
   enabled: false
   volumeName: data

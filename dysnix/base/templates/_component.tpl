@@ -1,11 +1,27 @@
 {{/* vim: set filetype=mustache: */}}
 {{/*
-Render all resources
+Render the default component resources
 Usage:
-  {{ include "base.all" $) }}
+  {{ include "base.component.default" $) }}
 */}}
-{{- define "base.all" -}}
+{{- define "base.component.default" -}}
   {{- include "base.component" (dict "component" "_default" "value" $.Values "context" $) -}}
+{{- end -}}
+
+{{/*
+Get component name!
+.value.component has precedence over .component.
+
+Usage:
+  {{ include "base.component.name" (dict "value" .path.to.dict "component" .component }}
+
+Params:
+  value - (optional) values dict
+  component - (optional)
+*/}}
+{{- define "base.component.name" -}}
+  {{- $value := default (dict) .value -}}
+  {{- $value.component | default .component | default "" -}}
 {{- end -}}
 
 {{/*
@@ -20,23 +36,25 @@ Params:
 {{- define "base.component" -}}
   {{- $value := .value -}}
   {{- $context := .context -}}
-  {{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
+  {{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
   {{- $pod := pick $value "enabled" "controller" -}}
 
   {{/* Validations */}}
-  {{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
+  {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
-  {{- if eq .component "_default" -}}
-    {{ $pod = mergeOverwrite $pod ($value.defaultPod | merge dict) }}
+  {{- if eq $component "_default" -}}
+    {{ $pod = mergeOverwrite $pod ($value.defaultComponent | merge dict) }}
   {{- end -}}
 
-  {{- if $pod.enabled -}}
+  {{- if eq "true" (get $pod "enabled" | toString | default "true") -}}
     {{/* Pod controller (ex deployment/statefulset etc) */}}
-    {{- template "base.lib.validate" (dict "template" "base.validate.controllerSupported" "controller" $pod.controller "context" $context) -}}
-    {{- include (printf "base.%s" $pod.controller) (dict "value" $value "component" $component "context" $context) -}}
+    {{- if get $pod "controller" -}}
+      {{- template "base.validate" (dict "template" "base.validate.controllerSupported" "controller" $pod.controller "context" $context) -}}
+      {{- include (printf "base.%s" $pod.controller) (dict "value" $value "component" $component "context" $context) -}}
+    {{- end -}}
 
-    {{/* PersistentVolumeClaim (for Deployment resource) */}}
-    {{- if eq $pod.controller "deployment" -}}
+    {{/* PersistentVolumeClaim for the default Deployment */}}
+    {{- if eq (get $pod "controller") "deployment" -}}
       {{- include "base.pvc" (dict "value" $value "component" $component "context" $context) -}}
     {{- end -}}
 
@@ -48,5 +66,8 @@ Params:
 
     {{/* Secret generation */}}
     {{- include "base.secret" (dict "value" $value "component" $component "context" $context) -}}
+
+    {{/* Service generation */}}
+    {{- include "base.service" (dict "value" $value "component" $component "context" $context) -}}
   {{- end -}}
 {{- end -}}
