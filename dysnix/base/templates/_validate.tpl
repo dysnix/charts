@@ -13,16 +13,16 @@ Params
 {{- define "base.validate" -}}
   {{- $error := include .template (omit . "template") -}}
   {{- if $error -}}
-    {{- printf "\n\n==> Chart `%s' validation failed!\n==> %s" "xxx" $error | fail -}}
+    {{- printf "\n\n===> Chart `%s' validation failed!\n===> %s" "xxx" $error | fail -}}
   {{- end -}}
 {{- end -}}
 
 {{- define "base.validate.containerHasName" -}}
 {{- if empty .name -}}
 Container name is empty!
-   
-Please provide .name or .value.name to the template!
-Note: check that all .podContainers item have .name attribute.
+  
+  Please provide .name or .value.name to the template!
+  Note: check that all .podContainers item have .name attribute.
 {{- end -}}
 {{- end -}}
 
@@ -30,25 +30,25 @@ Note: check that all .podContainers item have .name attribute.
 {{- $supported := list ("deployment") -}}
 {{- if not (has .controller $supported) -}}
 Unsupported controller type!
-   
-Type `{{ .controller }}` was provided. Please use one from the bellow list:
-  {{ $supported | join ", " }}
+  
+  Type `{{ .controller }}` was provided. Please use one from the bellow list:
+    {{ $supported | join ", " }}
 {{- end -}}
 {{- end -}}
 
 {{- define "base.validate.context" -}}
 {{- if not (hasKey (default (dict) .context) "Values") -}}
 .context is not valid!
-   
-Make sure to pass $ object, containing .Values as the context
+  
+  Make sure to pass $ object, containing .Values as the context
 {{- end -}}
 {{- end -}}
 
 {{- define "base.validate.failPortNotFound" -}}
 
-Could not find port with the name `{{ .name }}' in
-  - .containerPorts
-  - .podContainers.*.ports
-  - .sidecar.*.ports
-Failed!
+  Could not find port with the name `{{ .name }}' in
+    - .containerPorts
+    - .podContainers.*.ports
+    - .sidecar.*.ports
+  Failed!
 {{- end -}}
