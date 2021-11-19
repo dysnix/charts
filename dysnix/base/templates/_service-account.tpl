@@ -15,20 +15,20 @@ Params:
 {{- $context := .context -}}
 {{- $value := .value -}}
 {{- $sa := $value | merge dict | dig "serviceAccount" dict -}}
-{{- $component := include "base.lib.component" (dict "value" $value "component" .component) -}}
+{{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
 
 {{/* Validations */}}
-{{- template "base.lib.validate" (dict "template" "base.validate.context" "context" $context) -}}
+{{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
-{{- if $sa.create }}
+{{- if eq "true" (get $sa "create" | toString) }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "base.lib.serviceAccountName" (dict "serviceAccount" $sa "name" .name "component" $component "context" $context) }}
+  name: {{ include "base.serviceAccountName" (dict "serviceAccount" $sa "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
   {{- with (list $sa.annotations $context.Values.commonAnnotations | compact) }}
-  annotations: {{- include "base.lib.flatrender" (dict "value" . "context" $context) | nindent 4 }}
+  annotations: {{- include "base.tpl.flatrender" (dict "value" . "context" $context) | nindent 4 }}
   {{- end }}
 {{- end -}}
 {{- end -}}

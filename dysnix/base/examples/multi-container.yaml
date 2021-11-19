@@ -1,0 +1,25 @@
+defaultComponent:
+  controller: deployment
+
+## Default PersistentVolumeClaim is created for the first replica
+## and is automounted into the default container (first in the Pod)
+persistence:
+  enabled: true
+  volumeName: data
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  mountPath: /data
+
+## Additional containers can be added
+podContainers:
+  - name: hello
+    image:
+      repository: foo/foo
+      tag: latest
+    cmd:
+      - /bin/bash
+    ports:
+      api: 3030
+
+## Sidecars (for userland confgurations) are also welcome
+sidecars: []

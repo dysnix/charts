@@ -1,0 +1,10 @@
+containerPorts:
+  rest: 8080
+
+service:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: rest
+      nodePort: 30100
