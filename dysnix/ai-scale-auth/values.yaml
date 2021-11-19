@@ -458,12 +458,12 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-postgresql:
-  username: ai-scale
-  password: '1234567'
-  host: postgresql.default.svc.cluster.local
-  port: 5432
-  database: ai-scale
+postgresql: {}
+#  username: ai-scale
+#  password: '1234567'
+#  host: postgresql.default.svc.cluster.local
+#  port: 5432
+#  database: ai-scale
   
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
