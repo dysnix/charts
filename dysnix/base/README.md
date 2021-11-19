@@ -39,7 +39,9 @@ EHD
 
 ## Introduction
 
-This chart provides library templates which are meant to deploy various number of [Kubernetes](http://kubernetes.io) resources using the [Helm](https://helm.sh) package manager. *Base* provides a rich set of templates to generate a component or multiple components along with the desired resources. Unlike [bitnami chart template](https://github.com/bitnami/charts/tree/master/template) which is used for charts generation and their further modification *base* encourages "use values first" approach. So *base* chart is used as a library chart with its templates providing comprehensive resource generation such as Deployment(s), Service(s) etc. This is achieved simply by modifying [values.yaml](values.yaml) file first. At the same time dependant charts might add, customize its own values and resources as needed.
+This chart provides library templates which are meant to deploy various number of [Kubernetes](http://kubernetes.io) resources using the [Helm](https://helm.sh) package manager. *Base* provides a rich set of templates to generate a component or multiple components along with the desired resources.
+
+Unlike [bitnami chart template](https://github.com/bitnami/charts/tree/master/template) which is used for charts generation and their further modification, *base* encourages "use values first" approach. So *base* chart is used as a library chart with its templates providing comprehensive resource generation facilities such to get Deployment(s), Service(s) etc up and running. This can be achieved simply by modifying [values.yaml](values.yaml) file first. At the same time dependant charts might add, customize its own values and resources as needed.
 
 *base* chart has **a concept of component** which represents a set of chart resources grouped by the same component name. Resources such as Deployment, ServiceAccount, PersistentVolumeClaim are groupped together by mixing *"common component"* part into its' names, resources of non-default component also shipped with the additional label set - `app.kubernetes.io/component: component_name`.
 
