@@ -1,0 +1,11 @@
+containerPorts:
+  rest: 3030
+
+nodePorts:
+  grpc: 30100
+
+service:
+  type: NodePort
+  ports:
+    http: rest
+    grpc: 443
