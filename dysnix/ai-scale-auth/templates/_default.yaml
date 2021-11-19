@@ -1,4 +1,4 @@
-{{- define "default.sservice.configs" -}}
+{{- define "default.service.configs" -}}
 debugMode: true
 profiling:
   enabled: true
