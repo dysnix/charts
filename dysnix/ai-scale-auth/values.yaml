@@ -41,11 +41,11 @@ clusterDomain: cluster.local
 ##
 extraDeploy: []
 
-## @section Default Pod parameters
+## @section Default Component default parameters
 ##
-defaultPod:
-  ## @param defaultPod.enabled Create the default Pod
-  ## @param defaultPod.controller Default Pod controller type
+defaultComponent:
+  ## @param defaultComponent.enabled Create the default Pod
+  ## @param defaultComponent.controller Default Pod controller type
   enabled: true
   controller: deployment
 
@@ -79,7 +79,7 @@ image:
 ## @param replicaCount Number of pod replicas to deploy
 replicaCount: 1
 
-## @param containerPorts [array] Container Ports definition (map is also supported)
+## @param containerPorts [array] Container Ports definition (dict form is also supported)
 ## containerPorts:
 ##   - name: http
 ##     containerPort: 8080
@@ -87,9 +87,9 @@ replicaCount: 1
 ##
 ## Map form can be used too, in this case the default portocol will be used (which is TCP):
 ##
-## containerPorts:
-##   http: 80
-##   https: 443
+containerPorts:
+  grpc: 8091
+  monitoring: 8097
 
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
@@ -169,7 +169,7 @@ podSecurityContext:
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ##
 ## @param containerSecurityContext.enabled Enabled containers' Security Context
-## @param containerSecurityContext.propogated Propogate containerSecurityContext to all `podContainers` (when enabled==propogated==true)
+## @param containerSecurityContext.propogated Propogate containerSecurityContext to all containers `podContainers` (when enabled==propogated==true)
 ## @param containerSecurityContext.runAsUser Set containers' Security Context runAsUser
 ## @param containerSecurityContext.runAsNonRoot Set containers' Security Context runAsNonRoot
 ##
@@ -281,9 +281,7 @@ volumes:
   - name: configs
     configMap:
       name: "{{ include \"common.names.fullname\" . }}-configs"
-  - name: migrations
-    configMap:
-      name: "{{ include \"common.names.fullname\" . }}-migrations"
+      
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
@@ -311,20 +309,6 @@ sidecars: []
 ## @param initContainers Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
-#initContainers:
-#  - name: migrations
-#    image: migrate/migrate:latest
-#    command: ['/migrate']
-#    args:
-#      - -source
-#      - "file://etc/auth/migrations"
-#      - -database
-#      - "{{ include \"migration.string\" . }}"
-#      - up
-#    volumeMounts:
-#      - name: migrations
-#        mountPath: "/etc/auth/migrations"
-#        readOnly: true
 initContainers:
   - name: migrations
     image: alex6021710/ai-scale-migrator:latest
@@ -341,14 +325,14 @@ initContainers:
 ## @param configs [map] saver service configs owerride
 configs: {}
 
-## Service resource configs.
-## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+## Service parameters
 ##
-##
-## @param service.type Type of service k8s resource
-## @param service.ports [array] Service Ports definition (map is also supported)
 service:
+  ## @param service.type [string] Service type (default is not set, effectively ClusterIP)
+  ##
   type: ClusterIP
+  ## @param service.ports Map or list of defining service ports
+  ##
   ports:
     - name: grpc
       port: 8091
@@ -358,6 +342,37 @@ service:
       port: 8097
       protocol: TCP
       targetPort: monitoring
+  ## Node ports to expose
+  ## @param service.nodePorts Map of nodePorts (effictive with type NodePort or LoadBalancer)
+  ## NOTE: choose port between <30000-32767>
+  ##
+  nodePorts: {}
+  ## @param service.clusterIP Service Cluster IP
+  ## e.g.:
+  ## clusterIP: None
+  ##
+  clusterIP:
+  ## @param service.loadBalancerIP Service Load Balancer IP
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+  ##
+  loadBalancerIP:
+  ## @param service.loadBalancerSourceRanges Service Load Balancer sources
+  ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ## e.g:
+  ## loadBalancerSourceRanges:
+  ##   - 10.10.10.0/24
+  ##
+  loadBalancerSourceRanges: []
+  ## @param service.externalTrafficPolicy Service external traffic policy
+  ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+  ## @param service.annotations Additional custom annotations for service
+  ##
+  annotations: {}
+  ## @param service.extraPorts Extra ports to expose in service (normally used with the `sidecars` value)
+  ##
+  extraPorts: []
 
 ## ServiceAccount configuration
 ##
@@ -443,8 +458,7 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-postgresql: #{}
-#  secretName: tmp-secret
+postgresql:
   username: ai-scale
   password: '1234567'
   host: postgresql.default.svc.cluster.local
