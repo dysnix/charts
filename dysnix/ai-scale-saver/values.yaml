@@ -81,12 +81,8 @@ replicaCount: 1
 
 ## @param containerPorts [array] Container Ports definition (map is also supported)
 containerPorts:
-  - name: grpc
-    containerPort: 8091
-    protocol: TCP
-  - name: monitoring
-    containerPort: 8097
-    protocol: TCP
+  grpc: 8091
+  monitoring: 8097
 
 ## Map form can be used too, in this case the default portocol will be used (which is TCP):
 ##
