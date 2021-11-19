@@ -8,11 +8,3 @@ metadata:
 data:
   configs.yaml: |-
   {{- include "merge.configs" . | nindent 4 }}
----
-apiVersion: v1
-kind: ConfigMap
-immutable: false
-metadata:
-  name: "{{ include "common.names.fullname" . }}-migrations"
-data:
-  {{- (.Files.Glob "migrations/*").AsConfig | nindent 2 }}
