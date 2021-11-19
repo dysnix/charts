@@ -478,3 +478,5 @@ autoscaling:
   # minReplicas: 1
   # maxReplicas: 10
   # targetMemory: 50
+  
+configPath: "Users/aleksandr/work/src/github.com/dysnix/ai-scale-auth/tmp/test-tmp-configs.yaml"

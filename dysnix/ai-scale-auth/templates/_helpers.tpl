@@ -19,5 +19,5 @@
 {{- if not (empty (.Values.postgresql.port)) }}
 {{- $_ := set $data "port" .Values.postgresql.port }}
 {{- end }}
-{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "postgres" $data)) | mergeOverwrite (.Files.Get "configs/default.yaml" | fromYaml) | toYaml }}
+{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "postgres" $data)) | mergeOverwrite (include "default.sservice.configs" . | fromYaml) | toYaml }}
 {{- end }}
