@@ -6,4 +6,4 @@ metadata:
   name: "{{ .Release.Name }}-config"
 data:
   configs.yaml: |-
-    {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "configs/configs.yaml" | fromYaml) | toYaml | nindent 4 }}
+    {{- deepCopy .Values.configs | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml | nindent 4 }}

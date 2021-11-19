@@ -361,14 +361,14 @@ serviceAccount:
 ## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
 ##
 configMap:
-  create: true
+  create: false
   annotations: {}
   ## When enabled only object metadata can be modified
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
   data:
     configs.yaml: |-
-      {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "configs/configs.yaml" | fromYaml) | toYaml | nindent 4 }}
+      {{- deepCopy .Values.configs | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml | nindent 4 }}
 
 ## Secret configuration
 ##
