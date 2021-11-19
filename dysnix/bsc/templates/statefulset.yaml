@@ -109,10 +109,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_health.sh
-            - http://127.0.0.1:{{ .Values.service.rpcPort }}
-            - $StartupProbeTimestampDistinct
-            - last_synced_block.txt
+            - -c
+            - /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $StartupProbeTimestampDistinct last_synced_block.txt
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
@@ -120,10 +118,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_health.sh
-            - http://127.0.0.1:{{ .Values.service.rpcPort }}
-            - $LivenessProbeTimestampDistinct
-            - last_synced_block.txt
+            - -c
+            - /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $LivenessProbeTimestampDistinct last_synced_block.txt
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
@@ -136,9 +132,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_readiness.sh
-            - --timestamp-distinct
-            - $ReadinessProbeTimestampDistinct
+            - -c
+            - /bin/sh /scripts/check_node_readiness.sh --timestamp-distinct $ReadinessProbeTimestampDistinct
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
