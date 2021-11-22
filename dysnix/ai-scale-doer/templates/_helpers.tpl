@@ -32,7 +32,7 @@
     {{- if (.Values.webhook.tls).certDir -}}
       {{- $webhooks = append $webhooks (printf "--tls-cert-dir=%s" (.Values.webhook.tls.certDir | default "/etc/webhook/certs")) -}}
     {{- end}}
-    {{- $webhooksSrvPort := include "get.metrics.port" . -}}
+    {{- $webhooksSrvPort := include "get.webhooks.port" . -}}
     {{- if not (empty $webhooksSrvPort) -}}
       {{- $webhooks = append $webhooks (printf "--webhooks-port=%d" ($webhooksSrvPort | int)) -}}
     {{- end }}
@@ -41,8 +41,3 @@
   {{- end }}
 {{- print ($webhooks | toYaml) -}}
 {{- end }}
-
-{{- define "merge.configs" -}}
-{{- $data := pick .Values.prometheus "url" -}}
-{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "metricsSource" (dict "prometheus" $data))) | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml -}}
-{{- end -}}

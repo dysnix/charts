@@ -592,7 +592,7 @@ autoscaling:
 
 ## Set configs for operator webhooks
 webhook:
-  enabled: true
+  enabled: false
   tls:
     certDir: "/etc/webhooks/certs"
   certs:
