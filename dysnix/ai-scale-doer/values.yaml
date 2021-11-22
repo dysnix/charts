@@ -216,7 +216,8 @@ podLabels: {}
 ## @param podAnnotations Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
-podAnnotations: {}
+podAnnotations:
+  checksum/config: "{{ deepCopy .Values.configs | mergeOverwrite (include \"default.service.configs\" . | fromYaml) | toYaml | sha256sum }}"
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
