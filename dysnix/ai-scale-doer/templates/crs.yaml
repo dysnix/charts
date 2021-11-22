@@ -1,0 +1,22 @@
+{{- if .Values.crd.enabled }}
+{{- range $key, $cr := .Values.crd.crs }}
+---
+apiVersion: autoscaling.ai.op.dysnix.org/v2
+kind: AIPodAutoscaler
+metadata:
+  name: {{ $cr.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{ $cr.scaleTargetRef.kind }}
+    name: {{ $cr.scaleTargetRef.name }}
+  autoAdjustReplicasCount: {{ $cr.autoAdjustReplicasCount }}
+  autoAdjustStartupDuration: {{ $cr.autoAdjustStartupDuration }}
+  minReplicas: {{ $cr.minReplicas }}
+  maxReplicas: {{ $cr.maxReplicas }}
+  updateInterval: {{ $cr.updateInterval }}
+  stepDuration: {{ $cr.stepDuration }}
+  startupDuration: {{ $cr.startupDuration }}
+  sources: {{ $cr.sources | toYaml | nindent 4 }}
+{{- end }}
+{{- end }}
