@@ -24,6 +24,8 @@ continent:
 bsc:
   # we don't have other chains, it's just a pod label for now
   chain: mainnet
+  # possible values: rpc, bootnode
+  role: rpc
   #  Blockchain sync mode ("fast", "full", or "light") (default: fast)
   syncmode: "full"
   # Blockchain garbage collection mode ("full", "archive") (default: "full")
@@ -39,8 +41,12 @@ bsc:
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
+  initFromSnapshotImage: alpine:latest
+  initFromRsync: false
+  initFromRsyncImage: instrumentisto/rsync-ssh:latest
   forceInitFromSnapshot: false
   snapshotUrl:
+  snapshotRsyncUrl: "rsync://192.168.8.4/snapshot/geth/node/geth"
   getNodeKey: false
   staticNodeKey: false
 
@@ -78,6 +84,8 @@ bsc:
   netrestrict:
   nodeKeys:
   readinessProbeTimestampDistinct: 300
+  livenessProbeTimestampDistinct: 300
+  startupProbeTimestampDistinct: 300
   metrics:
     enabled: true
     service:
@@ -141,6 +149,14 @@ metrics:
 prometheus:
   rules:
     enabled: false
+
+rsyncd:
+  enabled: false
+  image: instrumentisto/rsync-ssh:latest
+  bsc_path: /data
+  service:
+    port: 1873
+    name: rsyncd
 
 failback:
   enabled: false

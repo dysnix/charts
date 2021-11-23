@@ -19,7 +19,10 @@ Params:
 {{- $service_type := $service.type | default "" -}}
 {{- $nodePorts := $service.nodePorts | default dict -}}
 
-{{- if or $service.port $service.ports }}
+{{/* Validations */}}
+{{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
+
+{{- if $service.ports }}
 ---
 apiVersion: v1
 kind: Service
