@@ -44,7 +44,7 @@ grpc:
     enabled: false
     type: Zstd
   connection:
-    host: localhost
+    host: 0.0.0.0
     port: 8091
     readBufferSize: 100MiB
     writeBufferSize: 100MiB
