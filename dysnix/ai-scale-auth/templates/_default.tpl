@@ -6,7 +6,7 @@ monitoring:
   enabled: true
 single:
   enabled: true
-  host: localhost
+  host: 0.0.0.0
   port: 8097
   name: pprof/monitoring server
   concurrency: 100000
@@ -39,7 +39,7 @@ grpc:
     enabled: false
     type: Zstd
   connection:
-    host: localhost
+    host: 0.0.0.0
     port: 8091
     readBufferSize: 4MiB
     writeBufferSize: 4MiB
