@@ -46,13 +46,13 @@ spec:
             - name: NIFI_REGISTRY_GIT_PASSWORD
               value: {{ .Values.flowProvider.git.password }}
           {{- if .Values.initContainers.extraEnvs }}
-            {{ toYaml .Values.initContainers.extraEnvs | indent 12 }}
+            {{ toYaml .Values.initContainers.extraEnvs | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: "flow-storage"
               mountPath: /tmp
             {{- if .Values.ssh.known_hosts }}
-            - name: sshdir
+            - name: sshcfgmap
               mountPath: /root/.ssh
               readOnly: true
             {{- end }}
@@ -95,6 +95,15 @@ spec:
               cd postgresql
               curl -k "{{ .Values.flowProvider.postgres.driverURL }}{{ .Values.flowProvider.postgres.fileName }}" -o "{{ .Values.flowProvider.postgres.fileName }}"
             {{- end }}
+            {{- if .Values.ssh.known_hosts }}
+              cp --verbose --dereference /sshcfgmap/known_hosts /home/nifi/.ssh/
+              {{- if .Values.ssh.config }}
+                cp --verbose --dereference /sshcfgmap/config /home/nifi/.ssh/
+              {{- end }}
+              {{- if .Values.flowProvider.git.enabled }}
+                cp --verbose --dereference /ssh/id_rsa /home/nifi/.ssh/
+              {{- end }}
+            {{- end }}
               ${NIFI_REGISTRY_BASE_DIR}/scripts/start.sh
           ports:
             - name: http
@@ -126,7 +135,7 @@ spec:
               value: {{ .Values.flowProvider.postgres.password }}
           {{- end }}
           {{- if .Values.extraEnvs }}
-            {{ toYaml .Values.extraEnvs | indent 12 }}
+            {{ toYaml .Values.extraEnvs | nindent 12 }}
           {{- end }}
           volumeMounts:
             {{ if .Values.persistence.enabled }}
@@ -139,9 +148,12 @@ spec:
               subPath: flow_storage
             {{ end }}
             {{- if .Values.ssh.known_hosts }}
+            - name: sshcfgmap
+              mountPath: /sshcfgmap
+              readOnly: true
             - name: sshdir
               mountPath: /home/nifi/.ssh
-              readOnly: true
+              readOnly: false
             {{- end }}
             {{- if .Values.flowProvider.git.enabled }}
             {{- if .Values.flowProvider.git.config.enabled }}
@@ -167,6 +179,8 @@ spec:
       volumes:
         {{- if .Values.ssh.known_hosts }}
         - name: sshdir
+          emptyDir: {}
+        - name: sshcfgmap
           configMap:
             name: {{ template "nifi-registry.fullname" . }}-ssh-config
             defaultMode: 0644
