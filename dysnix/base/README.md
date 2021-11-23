@@ -28,7 +28,7 @@ dependencies:
     version: 0.2.x
     repository: https://dysnix.github.io/charts
     tags:
-      - ai-scale-auth
+      - dysnix-base
 EHD
 
 cat <<EHD > $CHART_NAME/templates/all.yaml
