@@ -196,8 +196,13 @@ mysql_query_rules:
   #   destination_hostgroup: 0
   #   apply: 1
 
+
+## If enabled, generate automagically a list of proxysql servers based on the
+#    the number statefullset 'proxysql-core' replicas (default 3).
+use_default_proxysql_servers: true
+
 ## Defines an additional list of ProxySQL peers (clustering).
-#   The default list `proxysql_servers` iterates over the number statefullset 'proxysql-core' replicas (default 3).
+#   For example, externally hosted proxysql core servers.
 #   ref: https://proxysql.com/documentation/proxysql-cluster/
 additional_proxysql_servers:
   # - hostname : peer’s hostname/IP
@@ -217,6 +222,7 @@ proxysql_cluster:
     ## DNS Example:
     #   headless-svc:                 proxysql-core.<namespace>.svc.cluster.local
     #   sts-pod:      proxysql-core-0.proxysql-core.<namespace>.svc.cluster.local
+    enabled: true
 
     # Number of core/main ProxySQL nodes to listen for changes on AdminPort
     #   It is recommended to use one of the following number of replicas: 3, 5, 7, or 9.
@@ -240,6 +246,8 @@ proxysql_cluster:
     # Select the Kubernetes Resource type for the Satellite nodes,
     #   either "DaemonSet" or "Deployment"
     kind: "DaemonSet"
+
+    enabled: true
 
     # Only applies if kind=Deployment
     replicas: 3
@@ -282,6 +290,8 @@ proxysql_cluster:
       tag: "8"
       pullPolicy: IfNotPresent
 
+    enabled: true
+
     # Retry 3 times until failed
     backoffLimit: 3
 
@@ -301,5 +311,15 @@ proxysql_cluster:
     #    cpu: 100m
     #    memory: 128Mi
 
+# Enable debugging container along the proxysql instance
+#   It may be usefull to access the proxysql admin interface locally to debug issues
+debug:
+  sidecar:
+    # inject a debug sidecar container to all proxysql Pods
+    enabled: false
+    image: mysql
+    command:
+      - /bin/sleep
+      - infinity
 
 terminationGracePeriodSeconds: 60

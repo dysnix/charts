@@ -1,0 +1,44 @@
+containerPorts:
+  api: 3030
+
+ingress:
+  enabled: true
+  ## Default port
+  servicePort: api
+
+  paths:
+    - path: /hello
+      servicePort: undefined
+      # serviceName: default service
+
+  ## Resreved for end-users 
+  extraPaths:
+    - path: /custom-backend
+      backend:
+        resource:
+          apiGroup: k8s.example.com
+          kind: StorageBucket
+          name: icon-assets
+
+  hosts:
+    - name: hostname.tld
+      path: /
+      # servicePort: default port
+      # serviceName: default service
+
+    - name: hostname.tld
+      path: /
+      servicePort: 1010
+      serviceName: yetanother
+
+  ## Reserved for end-users
+  extraHosts: 
+    - name: extra.too
+      path: /
+      servicePort: 7070
+      # serviceName: default service
+
+    - name: extra.too
+      path: /
+      servicePort: 7070
+      serviceName: aservice

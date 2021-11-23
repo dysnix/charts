@@ -69,5 +69,8 @@ Params:
 
     {{/* Service generation */}}
     {{- include "base.service" (dict "value" $value "component" $component "context" $context) -}}
+
+    {{/* ingress generation */}}
+    {{- include "base.ingress" (dict "value" $value "component" $component "context" $context) -}}
   {{- end -}}
 {{- end -}}

@@ -15,12 +15,14 @@ spec:
       app.kubernetes.io/name: {{ include "bsc.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
       bsc/chain: {{ .Values.bsc.chain }}
+      bsc/role: {{ .Values.bsc.role }}
   template:
     metadata:
       labels:
         app.kubernetes.io/name: {{ include "bsc.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         bsc/chain: {{ .Values.bsc.chain }}
+        bsc/role: {{ .Values.bsc.role }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
@@ -64,6 +66,7 @@ spec:
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0
           - --cache.preimages
+          - --diffsync
           {{- if and .Values.externalLBp2p .Values.externalLBp2pIP }}
           - --nat=extip:{{- .Values.externalLBp2pIP -}}
           {{- end }}
@@ -79,6 +82,9 @@ spec:
           - --pprof.addr=0.0.0.0
           - --pprof.port={{ .Values.bsc.metrics.service.port }}
           {{- end }}
+        envFrom:
+          - configMapRef:
+              name: "{{ .Release.Name }}-env"
         workingDir: "{{ .Values.bsc.base_path }}"
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
@@ -96,6 +102,8 @@ spec:
           mountPath: /config
         - name: scripts
           mountPath: /scripts
+        - name: probe-env
+          mountPath: /env
         - name: bsc-pvc
           mountPath: {{ .Values.bsc.base_path }}
         {{- if .Values.livenessProbe }}
@@ -103,10 +111,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_health.sh
-            - http://127.0.0.1:{{ .Values.service.rpcPort }}
-            - "300"
-            - last_synced_block.txt
+            - -c
+            - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $StartupProbeTimestampDistinct last_synced_block.txt
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
@@ -114,10 +120,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_health.sh
-            - http://127.0.0.1:{{ .Values.service.rpcPort }}
-            - "300"
-            - last_synced_block.txt
+            - -c
+            - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $LivenessProbeTimestampDistinct last_synced_block.txt
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
@@ -130,9 +134,8 @@ spec:
           exec:
             command:
             - /bin/sh
-            - /scripts/check_node_readiness.sh
-            - --timestamp-distinct
-            - "{{ .Values.bsc.readinessProbeTimestampDistinct }}"
+            - -c
+            - source /env/env.txt && /bin/sh /scripts/check_node_readiness.sh --timestamp-distinct $ReadinessProbeTimestampDistinct
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -179,6 +182,27 @@ spec:
             name: {{ .Values.failback.metrics.service.name }}
             protocol: TCP
       {{- end }}
+      {{- if .Values.rsyncd.enabled }}
+      - name: rsyncd
+        image: {{ .Values.rsyncd.image }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/bin/rsync
+          - --daemon
+          - --config=/config/rsyncd.conf
+          - --no-detach
+          - --port={{ .Values.rsyncd.service.port }}
+        ports:
+          - containerPort: {{ .Values.rsyncd.service.port }}
+            name: {{ .Values.rsyncd.service.name }}
+            protocol: TCP
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.rsyncd.bsc_path }}
+            readOnly: true
+          - name: rsyncd-config
+            mountPath: /config
+      {{- end }}
       initContainers:
       {{- if .Values.bsc.initGenesis }}
       - name: init-genesis
@@ -194,11 +218,32 @@ spec:
       {{- end }}
       {{- if .Values.bsc.initFromSnapshot }}
       - name: init-from-snapshot
-        image: alpine:latest
+        image: {{ .Values.bsc.initFromSnapshotImage }}
         imagePullPolicy: IfNotPresent
         command:
           - /bin/sh
           - /scripts/init_from_snaphot.sh
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
+      {{- end }}
+      {{- if .Values.bsc.initFromRsync }}
+      - name: init-from-rsync
+        image: {{ .Values.bsc.initFromRsyncImage }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /scripts/init_from_rsync.sh
+        envFrom:
+          - configMapRef:
+              name: "{{ .Release.Name }}-env"
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -244,9 +289,17 @@ spec:
         - name: bsc-config
           configMap:
             name: "{{ .Release.Name }}-config"
+        {{- if .Values.rsyncd.enabled }}
+        - name: rsyncd-config
+          configMap:
+            name: "{{ .Release.Name }}-rsyncd-config"
+        {{- end }}
         - name: scripts
           configMap:
             name: "{{ .Release.Name }}-scripts"
+        - name: probe-env
+          configMap:
+            name: "{{ .Release.Name }}-probe-env"
         {{- if not .Values.persistence.enabled }}
         - name: bsc-pvc
           emptyDir: {}

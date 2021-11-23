@@ -21,7 +21,7 @@ run_kubeval_chart() {
     printf '\033[0;34m- Running kubeval in %s \033[0m\n' "$chart_name"
 
     for values_file in "$chart_path"/values.yaml $(< "$ci_values_file_list"); do
-        if [[ ! -f "$values_file" ]];then
+        if [[ ! -f "$values_file" ]] || [[ "$values_file" = */dysnix/app/* ]];then
             continue
         fi
         values_file_display=${chart_name}/${values_file#$chart_path/}

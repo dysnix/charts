@@ -1,0 +1,27 @@
+{{- if .Values.useStatefulset }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "gcloud-sqlproxy.fullname" . }}-headless
+  labels:
+    {{- include "gcloud-sqlproxy.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  {{- range .Values.cloudsql.instances }}
+  {{- $instanceShortName := include "gcloud-sqlproxy.instanceShortName" . }}
+  - name: {{ $instanceShortName }}
+    protocol: TCP
+    port: {{ .port }}
+    targetPort: {{ $instanceShortName }}
+  {{- end }}
+  {{ if .Values.haproxy.enabled -}}
+  - name: haproxy
+    protocol: TCP
+    port: {{ .Values.haproxy.port }}
+    targetPort: {{ .Values.haproxy.port }}
+  {{- end }}  
+  selector:
+    {{- include "gcloud-sqlproxy.selectorLabels" . | nindent 4 }}
+{{- end }}

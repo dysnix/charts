@@ -18,47 +18,45 @@ http {
     sendfile        on;
     keepalive_timeout  65;
 
-    proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 http_403;
-    proxy_connect_timeout 10s;
-    proxy_read_timeout 10s;
-    proxy_send_timeout 10s;
+    proxy_next_upstream error timeout invalid_header http_500 http_502 http_504;
+    proxy_connect_timeout 500ms;
+    proxy_read_timeout 6s;
+    proxy_send_timeout 1s;
     client_max_body_size 100m;
 
-    server {
-        listen 8001;
-        server_name _;
-        location / {
-            proxy_set_header Host bsc-dataseed1.ninicoin.io;
-            proxy_pass https://bsc-dataseed1.ninicoin.io:443;
-        }
-    }
-
-    server {
-        listen 8002;
-        server_name _;
-        location / {
-            proxy_set_header Host bsc-dataseed1.defibit.io;
-            proxy_pass https://bsc-dataseed1.defibit.io:443;
-        }
-    }
-
-    server {
-        listen 8003;
-        server_name _;
-        location / {
-            proxy_set_header Host bsc-dataseed.binance.org;
-            proxy_pass https://bsc-dataseed.binance.org:443;
-        }
+    map $connection $fallback {
+      default bsc-dataseed.binance.org;
+      "~[0-3]$" bsc-dataseed1.ninicoin.io;
+      "~[4-6]$" bsc-dataseed1.defibit.io;
+      "~[7-9]$" bsc-dataseed.binance.org;
     }
 
     upstream bsc {
         server {{ .Release.Name }}:{{ .Values.service.rpcPort }} max_fails=0;
+        keepalive 16;
     }
 
     server {
         listen          {{ .Values.failback.port }};
         server_name     _;
+        location @fallback {
+            add_header 'Access-Control-Allow-Origin' '*' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
+            add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
+            add_header 'Access-Control-Max-Age' 86400;
+            add_header 'X-Frame-Options' 'SAMEORIGIN'  always;
+            add_header 'X-XSS-Protection' '1; mode=block' always;
+            add_header 'Referrer-Policy' 'origin-when-cross-origin' always;
+            add_header 'Strict-Transport-Security' 'max-age=31536000; includeSubdomains' always;
+
+            return 307 https://$fallback;
+        }
+
         location / {
+            if ( $http_user_agent ~ 'GoogleHC/1.0' ) {
+              return 200;
+            }
             if ($request_method = 'OPTIONS') {
               add_header 'Access-Control-Allow-Origin' '*';
               add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
@@ -97,7 +95,11 @@ http {
               add_header 'Access-Control-Max-Age' 86400;
             }
             proxy_pass http://bsc;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            error_page 502 504 = @fallback;
         }
+
         location = /metrics {
             stub_status;
         }

@@ -1,0 +1,1 @@
+SNAPSHOT_URL_123: "rsync://bsc-bootnode.bsc:1873/bsc"

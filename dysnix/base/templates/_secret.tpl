@@ -34,7 +34,7 @@ type: {{ $secret.type | default "Opaque" }}
 {{- with $secret.data }}
 data:
   {{- range $k, $v := . }}
-  {{ $k }}: {{ include "common.tplvalues.render" (dict "value" $v "context" $context) }}
+  {{ $k }}: {{ include "common.tplvalues.render" (dict "value" $v "context" $context) | trim }}
   {{- end }}
 {{- end }}
 {{- with $secret.stringData }}
