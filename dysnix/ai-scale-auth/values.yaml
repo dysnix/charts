@@ -459,6 +459,7 @@ persistence:
   size: 10Gi
   mountPath: /data
 
+## Set postgresql connection params for migrations and auth containers.
 postgresql: {}
 #  username: ai-scale
 #  password: '1234567'
