@@ -11,7 +11,7 @@ dependencies:
       - bitnami-common
     version: 1.10.x
   - name: base
-    version: 0.1.x
-    repository: file://../base #https://dysnix.github.io/charts
+    version: 0.2.x
+    repository: https://dysnix.github.io/charts
     tags:
       - dysnix-base
