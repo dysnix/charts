@@ -30,7 +30,9 @@ nameOverride: ""
 fullnameOverride: ""
 ## @param commonLabels [object] Labels to add to all deployed objects
 ##
-commonLabels: {}
+commonLabels:
+  control-plane: controller-manager
+  controller-tools.k8s.io: "1.0"
 ## @param commonAnnotations [object] Annotations to add to all deployed objects
 ##
 commonAnnotations: {}
@@ -89,7 +91,7 @@ replicaCount: 1
 ##
 containerPorts:
   - name: https
-    containerPort: 443
+    containerPort: 8443
     protocol: TCP
   - name: pprof
     containerPort: 8098
@@ -111,7 +113,7 @@ containerPorts:
 ## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
 livenessProbe:
-  enabled: true
+  enabled: false
   httpGet:
     path: /healthz
     port: 8081
@@ -128,7 +130,7 @@ livenessProbe:
 ## @param readinessProbe.successThreshold Success threshold for readinessProbe
 ##
 readinessProbe:
-  enabled: true
+  enabled: false
   httpGet:
     path: /readyz
     port: 8081
@@ -192,15 +194,17 @@ containerSecurityContext:
   runAsNonRoot: true
 ## @param command Override default container command (useful when using custom images)
 ##
-command:
-  - /manager
+command: # [ "/bin/bash", "-c", "--" ]
+  - /usr/local/bin/manager
 ## @param args Override default container args (useful when using custom images)
 ##
 args: "{{- include \"args.webhooks\" . }}"
+# [ "while true; do sleep 30000; done;" ]
 
 ## @param args Override default Doer service cmd args
 ##
-overrideArgs: []
+overrideArgs:
+  - --zap-log-level=debug
   
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -292,18 +296,12 @@ envFromSecrets: []
 ## @param volumes Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
-volumes:
-  - name: configs
-    configMap:
-      name: "{{ include \"common.names.fullname\" . }}"
+volumes: "{{- tpl (include \"default.volumes\" .) . | indent 0 }}"
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
-volumeMounts:
-  - name: configs
-    mountPath: "/etc/doer/configs"
-    readOnly: true
+volumeMounts: "{{- tpl (include \"default.volumeMounts\" .) . | indent 0 }}"
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
 ## e.g:
@@ -410,25 +408,12 @@ service:
   # type: ClusterIP
   ## @param service.ports Map or list of defining service ports
   ##
-  ports:
-    - name: https
-      port: 443
-      protocol: TCP
-      targetPort: https
-    - name: pprof
-      port: 8098
-      protocol: TCP
-      targetPort: pprof
-    - name: metrics
-      port: 8097
-      protocol: TCP
-      targetPort: metrics
-    - name: probes
-      port: 8081
-      protocol: TCP
-      targetPort: probes
+  ports: "{{- include \"get.service.ports\" . }}"
+  ## @param service.overridePorts Map or list of defining service ports will merged to ports slice
+  ##
+  overridePorts: []
   ## Node ports to expose
-  ## @param service.nodePorts Map of nodePorts (effictive with type NodePort or LoadBalancer)
+  ## @param service.nodePorts Map of nodePorts (effective with type NodePort or LoadBalancer)
   ## NOTE: choose port between <30000-32767>
   ##
   nodePorts: {}

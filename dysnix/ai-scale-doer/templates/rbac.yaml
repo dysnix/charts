@@ -1,4 +1,4 @@
-{{- if .Values.rbac.enabled }}
+{{- if and .Values.rbac.enabled .Values.serviceAccount.create }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -6,188 +6,145 @@ metadata:
   name: {{ include "common.names.fullname" . }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: operator
 rules:
   - apiGroups:
-      - '*'
+      - ""
     resources:
-      - '*'
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - statefulsets
+      - daemonsets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups: [""]
+    resources:
+      - aipodautoscalers
+      - aipodautoscaler
+    verbs:
+      - "*"
+  - apiGroups: [""]
+    resources:
+      - aipodautoscalers/status
+      - aipodautoscaler/status
+    verbs:
+      - "*"
+  - apiGroups: ["autoscaling.ai.op.dysnix.org"]
+    resources: ["*"]
+    verbs: ["*"]
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers/status
+      - aipodautoscaler/status
     verbs:
       - '*'
-  - nonResourceURLs:
-      - '*'
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers
+      - aipodautoscaler
     verbs:
       - '*'
-{{/*  - apiGroups:*/}}
-{{/*      - autoscaling.ai.op.dysnix.org*/}}
-{{/*    resources:*/}}
-{{/*      - aipodautoscalers*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*      - delete*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - patch*/}}
-{{/*      - update*/}}
-{{/*      - watch*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - autoscaling.ai.op.dysnix.org*/}}
-{{/*    resources:*/}}
-{{/*      - aipodautoscalers/status*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - autoscaling.ai.op.dysnix.org*/}}
-{{/*    resources:*/}}
-{{/*      - aipodautoscalers*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - watch*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - autoscaling.ai.op.dysnix.org*/}}
-{{/*    resources:*/}}
-{{/*      - aipodautoscalers/status*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - authentication.k8s.io*/}}
-{{/*    resources:*/}}
-{{/*      - tokenreviews*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - authorization.k8s.io*/}}
-{{/*    resources:*/}}
-{{/*      - subjectaccessreviews*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - apps*/}}
-{{/*    resources:*/}}
-{{/*      - daemonset*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*      - delete*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - patch*/}}
-{{/*      - update*/}}
-{{/*      - watch*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - apps*/}}
-{{/*    resources:*/}}
-{{/*      - daemonset/status*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - apps*/}}
-{{/*    resources:*/}}
-{{/*      - deployments*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*      - delete*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - patch*/}}
-{{/*      - update*/}}
-{{/*      - watch*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - apps*/}}
-{{/*    resources:*/}}
-{{/*      - deployments/status*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - apps*/}}
-{{/*    resources:*/}}
-{{/*      - statefulset*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*      - delete*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - patch*/}}
-{{/*      - update*/}}
-{{/*      - watch*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - apps*/}}
-{{/*    resources:*/}}
-{{/*      - statefulset/status*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - autoscaling.ai.op.dysnix.org*/}}
-{{/*    resources:*/}}
-{{/*      - aipodautoscalers*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*      - delete*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - patch*/}}
-{{/*      - update*/}}
-{{/*      - watch*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - autoscaling.ai.op.dysnix.org*/}}
-{{/*    resources:*/}}
-{{/*      - aipodautoscalers/finalizers*/}}
-{{/*    verbs:*/}}
-{{/*      - update*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - autoscaling.ai.op.dysnix.org*/}}
-{{/*    resources:*/}}
-{{/*      - aipodautoscalers/status*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*      - patch*/}}
-{{/*      - update*/}}
-{{/*  {{- if .Values.webhook.enabled }}*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - admissionregistration.k8s.io*/}}
-{{/*    resources:*/}}
-{{/*      - mutatingwebhookconfigurations*/}}
-{{/*      - validatingwebhookconfigurations*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - watch*/}}
-{{/*      - create*/}}
-{{/*      - update*/}}
-{{/*      - patch*/}}
-{{/*      - delete*/}}
-{{/*  {{- end }}*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - ""*/}}
-{{/*    resources:*/}}
-{{/*      - configmaps*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - watch*/}}
-{{/*      - create*/}}
-{{/*      - update*/}}
-{{/*      - patch*/}}
-{{/*      - delete*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - coordination.k8s.io*/}}
-{{/*    resources:*/}}
-{{/*      - leases*/}}
-{{/*    verbs:*/}}
-{{/*      - get*/}}
-{{/*      - list*/}}
-{{/*      - watch*/}}
-{{/*      - create*/}}
-{{/*      - update*/}}
-{{/*      - patch*/}}
-{{/*      - delete*/}}
-{{/*  - apiGroups:*/}}
-{{/*      - ""*/}}
-{{/*    resources:*/}}
-{{/*      - events*/}}
-{{/*    verbs:*/}}
-{{/*      - create*/}}
-{{/*      - patch*/}}
+  - apiGroups:
+      - authorization.k8s.io
+    resources:
+      - subjectaccessreviews
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - daemonsets/status
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/status
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets/status
+    verbs:
+      - '*'
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers/finalizers
+      - aipodautoscaler/finalizers
+    verbs:
+      - '*'
+  - apiGroups:
+      - autoscaling.ai.op.dysnix.org
+    resources:
+      - aipodautoscalers/status
+      - aipodautoscaler/status
+    verbs:
+      - '*'
+  {{- if .Values.webhook.enabled }}
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingwebhookconfigurations
+      - validatingwebhookconfigurations
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  {{- end }}
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - update
+      - delete
+      - deletecollection
+      - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -195,11 +152,9 @@ metadata:
   name: {{ include "common.names.fullname" . }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-{{/*  name: cluster-admin*/}}
   name: {{ include "common.names.fullname" . }}
 subjects:
   - kind: ServiceAccount
