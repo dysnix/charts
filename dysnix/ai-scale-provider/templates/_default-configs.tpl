@@ -6,7 +6,7 @@ monitoring:
   enabled: true
 single:
   enabled: true
-  host: localhost
+  host: 0.0.0.0
   port: 8097
   name: pprof/monitoring server
   concurrency: 100000
