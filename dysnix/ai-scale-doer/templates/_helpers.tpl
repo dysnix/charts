@@ -31,7 +31,7 @@
 
 {{- define "get.webhooks.port" -}}
   {{- range .Values.containerPorts -}}
-    {{- if or (contains "https" .name) (contains "webhook" .name) }}
+    {{- if or (contains "webhook" .name) (contains "https" .name) }}
       {{- print .containerPort }}
     {{- end }}
   {{- end }}
@@ -48,8 +48,8 @@
 {{- define "args.webhooks" -}}
   {{- $defaultFlags := list "--leader-elect=false" "--sync-period=120s" "-conf=/etc/doer/configs/configs.yaml" -}}
   {{- $webhooks := concat (.Values.overrideArgs) $defaultFlags | uniq -}}
-  {{- $webhooks = append $webhooks (printf "--health-probe-bind-address=:%d" (include "get.health.port" . | int)) -}}
-  {{- $webhooks = append $webhooks (printf "--metrics-bind-address=:%d" (include "get.metrics.port" . | int)) -}}
+  {{- $webhooks = append $webhooks (printf "--health-probe-bind-address=0.0.0.0:%d" (include "get.health.port" . | int)) -}}
+  {{- $webhooks = append $webhooks (printf "--metrics-bind-address=0.0.0.0:%d" (include "get.metrics.port" . | int)) -}}
   {{- if .Values.webhook.enabled -}}
     {{- $webhooks = append $webhooks "--enable-webhooks=true" -}}
     {{- if (.Values.webhook.tls).certDir -}}
