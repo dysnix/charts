@@ -25,7 +25,9 @@ fi
 
 set +e
 rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
-# one more time to catch up
+# add more times to catch up
+rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
+rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
 rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
 set -e
 
