@@ -52,4 +52,13 @@ Network:
   - (sum(irate(container_network_transmit_packets_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
   - (sum(irate(container_network_receive_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
   - (sum(irate(container_network_transmit_packets_dropped_total{cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}])))
+Nginx:
+  - sum(irate(nginx_http_requests_total{pod=~".*{{ "{{" }} .Name {{ "}}" }}.*", cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}]))
+  - max(irate(nginx_http_requests_total{pod=~".*{{ "{{" }} .Name {{ "}}" }}.*", cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}]))
+  - min(irate(nginx_http_requests_total{pod=~".*{{ "{{" }} .Name {{ "}}" }}.*", cluster="{{ "{{" }} .Cluster {{ "}}" }}", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}[{{ "{{" }} .Period.GetDurationString {{ "}}" }}]))
+ReplicasCount:
+  - min(kube_{{ "{{" }} .Kind {{ "}}" }}_status_replicas_ready{job="kube-state-metrics", {{ "{{" }} .Kind {{ "}}" }}=~".*{{ "{{" }} .Name {{ "}}" }}.*", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}) without (instance, pod)
+  - min(kube_{{ "{{" }} .Kind {{ "}}" }}_status_replicas{job="kube-state-metrics", {{ "{{" }} .Kind {{ "}}" }}=~".*{{ "{{" }} .Name {{ "}}" }}.*", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}) without (instance, pod)
+  - max(kube_{{ "{{" }} .Kind {{ "}}" }}_status_replicas_ready{job="kube-state-metrics", {{ "{{" }} .Kind {{ "}}" }}=~".*{{ "{{" }} .Name {{ "}}" }}.*", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}) without (instance, pod)
+  - max(kube_{{ "{{" }} .Kind {{ "}}" }}_status_replicas{job="kube-state-metrics", {{ "{{" }} .Kind {{ "}}" }}=~".*{{ "{{" }} .Name {{ "}}" }}.*", namespace=~"{{ "{{" }} .Namespace {{ "}}" }}"}) without (instance, pod)
 {{- end }}
