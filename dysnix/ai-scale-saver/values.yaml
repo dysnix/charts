@@ -189,7 +189,6 @@ command:
 ##
 args:
   - -conf=/etc/saver/configs/configs.yaml
-
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
@@ -292,7 +291,6 @@ volumeMounts:
   - name: configs
     mountPath: "/etc/saver/configs"
     readOnly: true
-
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
 ## e.g:
