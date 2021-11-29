@@ -47,7 +47,7 @@ Network:
   - (sum(irate(container_network_transmit_packets_dropped_total{cluster="{{ .Cluster }}", namespace=~"{{ .Namespace }}"}[{{ .Period.GetDurationString }}])))
   - (avg(irate(container_network_receive_bytes_total{cluster="{{ .Cluster }}", namespace=~"{{ .Namespace }}"}[{{ .Period.GetDurationString }}])))
   - (avg(irate(container_network_transmit_bytes_total{cluster="{{ .Cluster }}", namespace=~"{{ .Namespace }}"}[{{ .Period.GetDurationString }}])))
-  - (sum(irate(container_network_receive_packets_dropped_total{cluster="{{ .Cluster }}", namespace=~"{{ .amespace }}"}[{{ .Period.GetDurationString }}])))
+  - (sum(irate(container_network_receive_packets_dropped_total{cluster="{{ .Cluster }}", namespace=~"{{ .Namespace }}"}[{{ .Period.GetDurationString }}])))
   - (sum(irate(container_network_transmit_packets_droppd_total{cluster="{{ .Cluster }}", namespace=~"{{ .Namespace }}"}[{{ .Period.GetDurationString }}])))
 Nginx:
   - sum(irate(nginx_http_requests_total{pod=~".*{{ .Name }}.*", cluster="{{ .Cluster }}", namespace=~"{{ .Namespace }}"}[{{ .Period.GetDurationString }}]))
