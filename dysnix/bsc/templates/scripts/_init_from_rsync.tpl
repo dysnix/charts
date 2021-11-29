@@ -24,7 +24,8 @@ if [ -f ${TEST_FILE} ]; then
 fi
 
 set +e
-rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
+# remove missing files to cleanup
+rsync -av --delete-before ${SNAPSHOT_URL}/ ${DATA_DIR}/
 # add more times to catch up
 rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
 rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
