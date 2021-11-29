@@ -65,12 +65,6 @@
 {{- print ($webhooks | toYaml) -}}
 {{- end }}
 
-{{/*{{- define "args.webhooks.1" -}}*/}}
-{{/*  {{- $defaultFlags := list "-conf=/etc/doer/configs/configs.yaml" "--enable-webhooks=false" "--zap-log-level=debug" -}}*/}}
-{{/*  {{- $webhooks := concat (.Values.overrideArgs) $defaultFlags | uniq -}}*/}}
-{{/*{{- print ($webhooks | toYaml) -}}*/}}
-{{/*{{- end }}*/}}
-
 {{- define "default.volumes" -}}
 - name: configs
   configMap:
