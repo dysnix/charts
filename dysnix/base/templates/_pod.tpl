@@ -64,7 +64,7 @@ schedulerName: {{ $value.schedulerName | quote -}}
 {{- end }}
 
 {{- with (include "base.securityContext" (dict "securityContext" $value.podSecurityContext)) }}
-podSecurityContext: {{ . | nindent 2 }}
+securityContext: {{ . | nindent 2 }}
 {{- end }}
 
 {{- if $value.initContainers }}
