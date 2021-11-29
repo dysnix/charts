@@ -15,3 +15,6 @@ dependencies:
     repository: https://dysnix.github.io/charts
     tags:
       - dysnix-base
+maintainers:
+  - email: services@dysnix.com
+    name: Dysnix
