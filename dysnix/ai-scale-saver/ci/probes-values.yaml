@@ -2,4 +2,4 @@ livenessProbe:
   enabled: false
 
 readinessProbe:
-  enabled: true
+  enabled: false
