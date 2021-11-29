@@ -58,6 +58,5 @@ ReplicasCount:
   - min(kube_{{ .Kind }}_status_replicas{job="kube-state-metrics", {{ .Kind }}=~".*{{ .Name }}.*", namespace=~"{{ .Namespace }}"}) without (instance, pod)
   - max(kube_{{ .Kind }}_status_replicas_ready{job="kube-state-metrics", {{ .Kind }}=~".*{{ .Name }}.*", namespace=~"{{ .Namespace }}"}) without (instance, pod)
   - max(kube_{{ .Kind }}_status_replicas{job="kube-state-metrics", {{ .Kind }}=~".*{{ .Name }}.*", namespace=~"{{ .Namespace }}"}) without (instance, pod)
-
 `}}
 {{- end }}
