@@ -37,7 +37,7 @@ commonAnnotations: {}
 ## @param clusterDomain Kubernetes cluster domain name
 ##
 clusterDomain: cluster.local
-## @param extraDeploy (TBI) Array of extra objects to deploy with the release
+## @param extraDeploy Array of extra objects to deploy with the release
 ##
 extraDeploy: []
 
@@ -49,7 +49,7 @@ defaultComponent:
   enabled: true
   controller: deployment
 
-## @section Pod(s) specific parameters
+## @section Component specific parameters
 ##
 ## Image version
 ## @param image.registry Image registry
@@ -66,7 +66,7 @@ image:
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
-  pullPolicy: Always # IfNotPresent
+  pullPolicy: Always
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -79,16 +79,17 @@ image:
 ## @param replicaCount Number of pod replicas to deploy
 replicaCount: 1
 
-## @param containerPorts [array] Container Ports definition (map is also supported)
+## @param containerPorts [array] Container Ports definition (dict form is also supported)
+## containerPorts:
+##   - name: http
+##     containerPort: 8080
+##     protocol: TCP
+##
+## Map form can be used too, in this case the default portocol will be used (which is TCP):
+##
 containerPorts:
   grpc: 8091
   monitoring: 8097
-
-## Map form can be used too, in this case the default portocol will be used (which is TCP):
-##
-## containerPorts:
-##   http: 80
-##   https: 443
 
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
@@ -170,7 +171,7 @@ podSecurityContext:
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ##
 ## @param containerSecurityContext.enabled Enabled containers' Security Context
-## @param containerSecurityContext.propogated Propogate containerSecurityContext to all `podContainers` (when enabled==propogated==true)
+## @param containerSecurityContext.propogated Propogate containerSecurityContext to all containers `podContainers` (when enabled==propogated==true)
 ## @param containerSecurityContext.runAsUser Set containers' Security Context runAsUser
 ## @param containerSecurityContext.runAsNonRoot Set containers' Security Context runAsNonRoot
 ##
@@ -179,8 +180,7 @@ containerSecurityContext:
   propogated: true
   runAsUser: 1001
   runAsNonRoot: true
-## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for
-existingConfigmap:
+
 ## @param command Override default container command (useful when using custom images)
 ##
 command:
@@ -431,6 +431,7 @@ monitoring:
   enabled: true
 
 ## Autoscaling parameters
+##
 autoscaling:
   enabled: false
   # scaleDownDisabled: true
