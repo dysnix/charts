@@ -177,6 +177,37 @@ entries:
       category: Infrastructure
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2021-11-29T12:11:32.077927709Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    description: Generic base Helm chart for Kubernetes Applications
+    digest: 9aa56b7e643e9324c437695f1ae1059c4e659e44c9990d5e1a3040cfc7b76330
+    keywords:
+    - base
+    - common
+    - library
+    - helper
+    - template
+    - function
+    - dysnix
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: base
+    sources:
+    - https://github.com/dysnix/charts
+    type: library
+    urls:
+    - https://github.com/dysnix/charts/releases/download/base-0.2.1/base-0.2.1.tgz
+    version: 0.2.1
+  - annotations:
+      category: Infrastructure
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2021-11-19T19:47:28.686072359Z"
     dependencies:
     - name: common
@@ -205,6 +236,28 @@ entries:
     - https://github.com/dysnix/charts/releases/download/base-0.2.0/base-0.2.0.tgz
     version: 0.2.0
   bsc:
+  - apiVersion: v2
+    appVersion: v1.1.5
+    created: "2021-11-29T12:11:32.189473295Z"
+    description: Binance Smart Chain chart for Kubernetes
+    digest: 37939873efb295deb9886e1379d08f4d126032eddc5113f9497bad8f33a4f408
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    - email: ap@dysnix.com
+      name: apolegoshko
+    name: bsc
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bsc-0.4.20/bsc-0.4.20.tgz
+    version: 0.4.20
   - apiVersion: v2
     appVersion: v1.1.5
     created: "2021-11-19T09:28:02.936693172Z"
