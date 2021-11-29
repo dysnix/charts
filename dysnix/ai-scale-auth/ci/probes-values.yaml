@@ -3,3 +3,5 @@ livenessProbe:
 
 readinessProbe:
   enabled: false
+
+initContainers: []
