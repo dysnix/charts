@@ -194,8 +194,9 @@ containerSecurityContext:
   runAsNonRoot: true
 ## @param command Override default container command (useful when using custom images)
 ##
-command: # [ "/bin/bash", "-c", "--" ]
+command:
   - /usr/local/bin/manager
+# - [ "/bin/bash", "-c", "--" ]
 ## @param args Override default container args (useful when using custom images)
 ##
 args: '{{- include "args.webhooks" . }}'
