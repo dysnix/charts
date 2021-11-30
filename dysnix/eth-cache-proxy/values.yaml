@@ -157,12 +157,12 @@ customStartupProbe: {}
 ## @param resources.requests The requested resources for the containers
 ##
 resources:
- limits:
-   cpu: 1300m
-   memory: 1024Mi
- requests:
-   cpu: 1000m
-   memory: 256Mi
+  limits:
+    cpu: 1300m
+    memory: 1024Mi
+  requests:
+    cpu: 1000m
+    memory: 256Mi
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ##
@@ -187,11 +187,11 @@ containerSecurityContext:
   runAsNonRoot: true
 ## @param command Override default container command (useful when using custom images)
 ##
-#command: {}
+# command: {}
 
 ## @param args Override default container args (useful when using custom images)
 ##
-#args: {}
+# args: {}
 
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -274,11 +274,7 @@ lifecycleHooks: {}
 env:
   - name: BACKEND_RPC_URL
     value: "http://bscrpc.bsc:8575"
-#  - name: CACHE_TTL
-#    value: "3"
 extraEnv:
-#  - name: BACKEND_RPC_URL
-#    value: "http://bscrpc.bsc:8575"
   - name: CACHE_TTL
     value: "3"
 ## @param envFromCMs Array of existing ConfigMap names containing env vars
