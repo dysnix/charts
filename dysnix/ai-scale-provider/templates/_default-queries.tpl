@@ -1,4 +1,4 @@
-{{- define "default.service.queries" -}}
+{{- define "ai-provider.defaultServiceQueries" -}}
 {{`
 Cpu:
   - |-

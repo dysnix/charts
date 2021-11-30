@@ -1,4 +1,4 @@
-{{- define "merge.configs" -}}
+{{- define "ai-provider.mergeConfigs" -}}
 {{- $data := pick .Values.prometheus "url" -}}
-{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "metricsSource" (dict "prometheus" $data))) | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml -}}
+{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "metricsSource" (dict "prometheus" $data))) | mergeOverwrite (include "ai-provider.defaultServiceConfigs" . | fromYaml) | toYaml -}}
 {{- end -}}
