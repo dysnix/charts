@@ -205,7 +205,7 @@ podLabels: {}
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
-  checksum/config: '{{ include "merge.configs" . | sha256sum }}'
+  checksum/config: '{{ include "ai-auth.mergeConfigs" . | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -313,6 +313,17 @@ sidecars: []
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
 initContainers:
+  - name: check-postgresql
+    image: alpine:3.9.2
+    command:
+      - sh
+      - -c
+      - |
+        until printf "." && nc -z -w 2 {{ include "ai-auth.postgresqlHost" . }} 5432; do
+            sleep 2;
+        done;
+
+        echo 'PostgreSQL OK ✓'
   - name: migrations
     image: alex6021710/ai-scale-migrator:latest
     command: ["/usr/local/bin/migrate"]
@@ -320,7 +331,7 @@ initContainers:
       - -source
       - "file://./migrations"
       - -database
-      - '{{ include "migration.string" . }}'
+      - '{{ include "ai-auth.migrationString" . }}'
       - up
 
 ## Oweride default service configs map.
@@ -406,7 +417,7 @@ configMap:
   ## ConfigMap data has to be provide for the actual resource creation
   data:
     configs.yaml: |
-      {{- include "merge.configs" . | nindent 2 }}
+      {{- include "ai-auth.mergeConfigs" . | nindent 2 }}
 
 ## Secret configuration
 ##
@@ -464,11 +475,13 @@ persistence:
 ## Set postgresql connection params for migrations and auth containers.
 postgresql:
   enabled: false
-#  username: ai-scale
-#  password: '1234567'
-#  host: postgresql.default.svc.cluster.local
-#  port: 5432
-#  database: ai-scale
+  username: ai-scale
+  #  password: '1234567'
+  #  host: postgresql
+  port: 5432
+  database: ai-scale
+  postgresqlUsername: ai-scale
+  postgresqlDatabase: ai-scale
 
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
