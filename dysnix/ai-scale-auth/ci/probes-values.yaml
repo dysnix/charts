@@ -11,7 +11,7 @@ initContainers:
       - sh
       - -c
       - |
-        until printf "." && nc -z -w 2 postgresql.default.svc.cluster.local 5432; do
+        until printf "." && nc -z -w 2 {{ include "dafault.postgresql.host" . }} 5432; do
             sleep 2;
         done;
 
