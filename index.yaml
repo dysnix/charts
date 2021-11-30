@@ -1389,6 +1389,31 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/bsc-0.1.0/bsc-0.1.0.tgz
     version: 0.1.0
+  eth-cache-proxy:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-11-30T17:50:26.024293374Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    description: A Helm chart for Kubernetes
+    digest: 1df8c70b2f0a340d1c94d565f4dc0be00c24c3c3888b5c2bf54fbc8b9d22d5dc
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: eth-cache-proxy
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/eth-cache-proxy-0.1.0/eth-cache-proxy-0.1.0.tgz
+    version: 0.1.0
   gcloud-sql-proxy:
   - apiVersion: v2
     appVersion: 1.24.0
