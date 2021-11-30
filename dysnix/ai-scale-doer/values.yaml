@@ -199,7 +199,7 @@ command:
 # - [ "/bin/bash", "-c", "--" ]
 ## @param args Override default container args (useful when using custom images)
 ##
-args: '{{- include "args.webhooks" . }}'
+args: '{{- include "ai-doer.argsWebhooks" . }}'
 # [ "while true; do sleep 30000; done;" ]
 
 ## @param args Override default Doer service cmd args
@@ -222,7 +222,7 @@ podLabels: {}
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
-  checksum/config: '{{ deepCopy .Values.configs | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml | sha256sum }}'
+  checksum/config: '{{ deepCopy .Values.configs | mergeOverwrite (include "ai-doer.defaultServiceConfigs" . | fromYaml) | toYaml | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -297,12 +297,12 @@ envFromSecrets: []
 ## @param volumes Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
-volumes: '{{- tpl (include "default.volumes" .) . | indent 0 }}'
+volumes: '{{- tpl (include "ai-doer.defaultVolumes" .) . | indent 0 }}'
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
-volumeMounts: '{{- tpl (include "default.volumeMounts" .) . | indent 0 }}'
+volumeMounts: '{{- tpl (include "ai-doer.defaultVolumeMounts" .) . | indent 0 }}'
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
 ## e.g:
@@ -364,7 +364,7 @@ configMap:
   ## ConfigMap data has to be provide for the actual resource creation
   data:
     configs.yaml: |
-      {{- deepCopy .Values.configs | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml | nindent 2 }}
+      {{- deepCopy .Values.configs | mergeOverwrite (include "ai-doer.defaultServiceConfigs" . | fromYaml) | toYaml | nindent 2 }}
 
 ## Secret configuration
 ##
@@ -409,7 +409,7 @@ service:
   # type: ClusterIP
   ## @param service.ports Map or list of defining service ports
   ##
-  ports: '{{- include "get.service.ports" . }}'
+  ports: '{{- include "ai-doer.getServicePorts" . }}'
   ## @param service.overridePorts Map or list of defining service ports will merged to ports slice
   ##
   overridePorts: []
@@ -622,27 +622,3 @@ crd:
 #      startupDuration: 1m
 #      stepDuration: 10s
 #      updateInterval: 10s
-#    - name: aipodautoscaler-bsc
-#      scaleTargetRef:
-#        kind: StatefulSet
-#        name: bsc
-#      autoAdjustReplicasCount: false
-#      autoAdjustStartupDuration: false
-#      maxReplicas: 10
-#      minReplicas: 1
-#      sources:
-#        - metrics:
-#            - cpu
-#            - memory
-#            - disk
-#            - network
-#            - logs
-#            - nginx
-#          period:
-#            - daily
-#            - weekly
-#            - monthly
-#          type: History
-#      startupDuration: 30s
-#      stepDuration: 10s
-#      updateInterval: 30s

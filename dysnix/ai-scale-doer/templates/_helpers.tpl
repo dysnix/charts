@@ -1,4 +1,4 @@
-{{- define "get.certs" }}
+{{- define "ai-doer.getCerts" }}
   {{- $tlsCrt := "" }}
   {{- $tlsKey := "" }}
   {{- $caCrt := "" }}
@@ -21,7 +21,7 @@
     {{- $result | toJson }}
 {{- end }}
 
-{{- define "get.health.port" -}}
+{{- define "ai-doer.getHealthPort" -}}
   {{- range .Values.containerPorts -}}
     {{- if contains "probes" .name }}
       {{- print .containerPort }}
@@ -29,7 +29,7 @@
   {{- end }}
 {{- end }}
 
-{{- define "get.webhooks.port" -}}
+{{- define "ai-doer.getWebhooksPort" -}}
   {{- range .Values.containerPorts -}}
     {{- if or (contains "webhook" .name) (contains "https" .name) }}
       {{- print .containerPort }}
@@ -37,7 +37,7 @@
   {{- end }}
 {{- end }}
 
-{{- define "get.metrics.port" -}}
+{{- define "ai-doer.getMetricsPort" -}}
   {{- range .Values.containerPorts -}}
     {{- if contains "metric" .name }}
       {{- print .containerPort }}
@@ -45,17 +45,17 @@
   {{- end }}
 {{- end }}
 
-{{- define "args.webhooks" -}}
+{{- define "ai-doer.argsWebhooks" -}}
   {{- $defaultFlags := list "--leader-elect=false" "--sync-period=120s" "-conf=/etc/doer/configs/configs.yaml" -}}
   {{- $webhooks := concat (.Values.overrideArgs) $defaultFlags | uniq -}}
-  {{- $webhooks = append $webhooks (printf "--health-probe-bind-address=0.0.0.0:%d" (include "get.health.port" . | int)) -}}
-  {{- $webhooks = append $webhooks (printf "--metrics-bind-address=0.0.0.0:%d" (include "get.metrics.port" . | int)) -}}
+  {{- $webhooks = append $webhooks (printf "--health-probe-bind-address=0.0.0.0:%d" (include "ai-doer.getHealthPort" . | int)) -}}
+  {{- $webhooks = append $webhooks (printf "--metrics-bind-address=0.0.0.0:%d" (include "ai-doer.getMetricsPort" . | int)) -}}
   {{- if .Values.webhook.enabled -}}
     {{- $webhooks = append $webhooks "--enable-webhooks=true" -}}
     {{- if (.Values.webhook.tls).certDir -}}
       {{- $webhooks = append $webhooks (printf "--tls-cert-dir=%s" (.Values.webhook.tls.certDir | default "/etc/webhook/certs")) -}}
     {{- end}}
-    {{- $webhooksSrvPort := include "get.webhooks.port" . -}}
+    {{- $webhooksSrvPort := include "ai-doer.getWebhooksPort" . -}}
     {{- if not (empty $webhooksSrvPort) -}}
       {{- $webhooks = append $webhooks (printf "--webhooks-port=%d" ($webhooksSrvPort | int)) -}}
     {{- end }}
@@ -65,7 +65,7 @@
 {{- print ($webhooks | toYaml) -}}
 {{- end }}
 
-{{- define "default.volumes" -}}
+{{- define "ai-doer.defaultVolumes" -}}
 - name: configs
   configMap:
     name: {{ include "common.names.fullname" . | quote }}
@@ -76,7 +76,7 @@
 {{- end }}
 {{- end }}
 
-{{- define "default.volumeMounts" -}}
+{{- define "ai-doer.defaultVolumeMounts" -}}
 - name: configs
   mountPath: /etc/doer/configs
   readOnly: true
@@ -87,7 +87,7 @@
 {{- end }}
 {{- end }}
 
-{{- define "get.service.ports" -}}
+{{- define "ai-doer.getServicePorts" -}}
   {{- $mergePorts := .Values.service.overridePorts -}}
   {{- range .Values.containerPorts -}}
     {{- $mergePorts = append $mergePorts (dict "name" .name "protocol" .protocol "port" .containerPort "targetPort" .name) }}

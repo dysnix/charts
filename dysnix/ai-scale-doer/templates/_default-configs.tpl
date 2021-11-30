@@ -1,4 +1,4 @@
-{{- define "default.service.configs" -}}
+{{- define "ai-doer.defaultServiceConfigs" -}}
 debugMode: true
 profiling:
   enabled: true

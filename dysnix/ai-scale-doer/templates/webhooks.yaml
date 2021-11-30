@@ -1,5 +1,5 @@
 {{- if .Values.webhook.enabled }}
-{{- $certs := (include "get.certs" .) | fromJson }}
+{{- $certs := (include "ai-doer.getCerts" .) | fromJson }}
 ---
 apiVersion: v1
 kind: Secret
