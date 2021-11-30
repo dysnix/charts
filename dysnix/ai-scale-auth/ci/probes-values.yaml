@@ -4,4 +4,35 @@ livenessProbe:
 readinessProbe:
   enabled: false
 
-initContainers: []
+initContainers:
+  - name: check-postgresql
+    image: alpine:3.9.2
+    command:
+      - sh
+      - -c
+      - |
+        until printf "." && nc -z -w 2 postgresql.default.svc.cluster.local 5432; do
+            sleep 2;
+        done;
+
+        echo 'PostgreSQL OK ✓'
+  - name: migrations
+    image: alex6021710/ai-scale-migrator:latest
+    command: ["/usr/local/bin/migrate"]
+    args:
+      - -source
+      - "file://./migrations"
+      - -database
+      - '{{ include "migration.string" . }}'
+      - up
+
+postgresql:
+  enabled: true
+  username: ai-scale
+  password: "1234567"
+  postgresqlUsername: ai-scale
+  postgresqlPassword: "1234567"
+  host: postgresql.default.svc.cluster.local
+  port: 5432
+  database: ai-scale
+  postgresqlDatabase: ai-scale

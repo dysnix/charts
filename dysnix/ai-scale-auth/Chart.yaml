@@ -15,6 +15,12 @@ dependencies:
     repository: https://dysnix.github.io/charts
     tags:
       - dysnix-base
+  - name: postgresql
+    version: 10.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+    tags:
+      - bitnami-postgresql
 sources:
   - https://github.com/dysnix/charts
 maintainers:

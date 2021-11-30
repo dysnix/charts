@@ -462,7 +462,8 @@ persistence:
   mountPath: /data
 
 ## Set postgresql connection params for migrations and auth containers.
-postgresql: {}
+postgresql:
+  enabled: false
 #  username: ai-scale
 #  password: '1234567'
 #  host: postgresql.default.svc.cluster.local
