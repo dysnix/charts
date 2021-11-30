@@ -1,0 +1,17 @@
+{{- if eq (.Values.monitoring.enabled | toString) "true" }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "common.names.fullname" . }}-prometheus-service-monitor
+  labels: {{ include "common.labels.standard" . | nindent 4 }}
+spec:
+  endpoints:
+    - interval: 30s
+      path: /metrics
+      port: monitoring
+  selector:
+    matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ include "common.names.fullname" . }}
+{{- end }}
