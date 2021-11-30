@@ -1748,6 +1748,26 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/kafkamagic-0.1.3/kafkamagic-0.1.3.tgz
     version: 0.1.3
+  local-path-provisioner:
+  - apiVersion: v1
+    appVersion: v0.0.20
+    created: "2021-11-30T14:57:00.122648193Z"
+    description: Use HostPath for persistent local storage with Kubernetes
+    digest: 92b6de4af901a27ecfc58297ceaca50cc40a6f1d98cf6dc9817cecf0239d7b5b
+    home: https://github.com/rancher/local-path-provisioner
+    keywords:
+    - storage
+    - hostpath
+    kubeVersion: '>=1.12.0-r0'
+    maintainers:
+    - email: petr.shilo@dysnix.com
+      name: killmeplz
+    name: local-path-provisioner
+    sources:
+    - https://github.com/rancher/local-path-provisioner.git
+    urls:
+    - https://github.com/dysnix/charts/releases/download/local-path-provisioner-0.0.20/local-path-provisioner-0.0.20.tgz
+    version: 0.0.20
   nginx:
   - annotations:
       category: Infrastructure
