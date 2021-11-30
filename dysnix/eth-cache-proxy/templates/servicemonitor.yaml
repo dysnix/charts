@@ -6,9 +6,9 @@ metadata:
   labels: {{ include "common.labels.standard" . | nindent 4 }}
 spec:
   endpoints:
-    - interval: 30s
+    - interval: 10s
       path: /metrics
-      port: monitoring
+      port: http
   selector:
     matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
   namespaceSelector:
