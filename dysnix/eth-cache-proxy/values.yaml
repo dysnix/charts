@@ -453,7 +453,7 @@ persistence:
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
 monitoring:
-  enabled: false
+  enabled: true
 
 ## Autoscaling parameters
 autoscaling:
