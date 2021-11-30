@@ -8,5 +8,8 @@ keywords:
   - hostpath
 kubeVersion: ">=1.12.0-r0"
 home: https://github.com/rancher/local-path-provisioner
+maintainers:
+  - name: killmeplz
+    email: petr.shilo@dysnix.com
 sources:
   - https://github.com/rancher/local-path-provisioner.git
