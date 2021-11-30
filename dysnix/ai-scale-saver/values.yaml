@@ -204,7 +204,7 @@ podLabels: {}
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
-  checksum/config: '{{ deepCopy .Values.configs | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml | sha256sum }}'
+  checksum/config: '{{ deepCopy .Values.configs | mergeOverwrite (include "ai-saver.defaultServiceConfigs" . | fromYaml) | toYaml | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -370,7 +370,7 @@ configMap:
   ## ConfigMap data has to be provide for the actual resource creation
   data:
     configs.yaml: |
-      {{- deepCopy .Values.configs | mergeOverwrite (include "default.service.configs" . | fromYaml) | toYaml | nindent 2 }}
+      {{- deepCopy .Values.configs | mergeOverwrite (include "ai-saver.defaultServiceConfigs" . | fromYaml) | toYaml | nindent 2 }}
 
 ## Secret configuration
 ##

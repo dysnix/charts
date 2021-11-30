@@ -1,4 +1,4 @@
-{{- define "default.service.configs" -}}
+{{- define "ai-saver.defaultServiceConfigs" -}}
 debugMode: true
 profiling:
   enabled: true
