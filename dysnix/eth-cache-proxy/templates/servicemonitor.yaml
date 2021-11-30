@@ -13,5 +13,5 @@ spec:
     matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
   namespaceSelector:
     matchNames:
-      - {{ include "common.names.fullname" . }}
+      - "{{ .Release.Namespace }}"
 {{- end }}
