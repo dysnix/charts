@@ -1391,6 +1391,30 @@ entries:
     version: 0.1.0
   eth-cache-proxy:
   - apiVersion: v2
+    appVersion: 0.0.2
+    created: "2021-11-30T19:09:34.830588397Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    description: A Helm chart for Kubernetes
+    digest: f395118eea8acbef7b87b19a67ef6982b563182b84957b18e4c2be1c9c59723f
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: eth-cache-proxy
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/eth-cache-proxy-0.1.1/eth-cache-proxy-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2021-11-30T17:50:26.024293374Z"
     dependencies:
