@@ -1,0 +1,18 @@
+configMap:
+  annotations: {}
+  data:
+    FOO: bar
+    JOJOBA: jojoba
+    WHATENV: what
+
+envFromCMs:
+  - |-
+    {{- template "base.fullname" (dict "value" .Values "context" .) | }}
+
+env:
+  - name: BACKEND_RPC_URL
+    value: "http://bscrpc.bsc:8575"
+
+extraEnv:
+  - name: CACHE_TTL
+    value: "3"

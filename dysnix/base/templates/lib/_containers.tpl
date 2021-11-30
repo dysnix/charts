@@ -77,10 +77,9 @@ command: {{- include "common.tplvalues.render" (dict "value" $value.command "con
 args: {{- include "common.tplvalues.render" (dict "value" $value.args "context" $context) | nindent 2 }}
 {{- end }}
 
-{{- if or $value.env $value.extraEnv }}
+{{- with concat ($value.env | default list) ($value.extraEnv | default list) | compact }}
 env:
-  {{- include "common.tplvalues.render" (dict "value" $value.env "context" $context) | nindent 2 }}
-  {{- include "common.tplvalues.render" (dict "value" $value.extraEnv "context" $context) | nindent 2 }}
+  {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 2 }}
 {{- end }}
 
 {{- if or $value.envFromCMs $value.envFromSecrets }}
