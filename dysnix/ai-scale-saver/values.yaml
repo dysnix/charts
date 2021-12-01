@@ -431,9 +431,11 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-## Set servicemonitore resource enabled status.
-## @param monitoring.enabled
+## Monitoring parameters
+##
 monitoring:
+  ## @param monitoring.enabled Enable generate servicemonitor resource
+  ##
   enabled: false
 
 ## Autoscaling parameters
