@@ -1,5 +1,38 @@
 apiVersion: v1
 entries:
+  ai-scale-auth:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-12-01T11:09:31.413860326Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-postgresql
+      version: 10.x
+    description: A Helm chart for Kubernetes
+    digest: 2a5d94ac62df8c04bf8fcd1fe22159809f7079dc80080ea5dab37b18485a2169
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: ai-scale-auth
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/ai-scale-auth-0.1.0/ai-scale-auth-0.1.0.tgz
+    version: 0.1.0
   ai-scale-doer:
   - apiVersion: v2
     appVersion: 0.1.0
