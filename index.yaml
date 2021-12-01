@@ -27,6 +27,31 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/ai-scale-doer-0.1.0/ai-scale-doer-0.1.0.tgz
     version: 0.1.0
+  ai-scale-provider:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-12-01T11:08:24.53592179Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    description: A Helm chart for Kubernetes
+    digest: cca891246899ccf7411b74994104202f3b34f9f4de082e933bd2467e3fe727f6
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: ai-scale-provider
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/ai-scale-provider-0.1.0/ai-scale-provider-0.1.0.tgz
+    version: 0.1.0
   ai-scale-saver:
   - apiVersion: v2
     appVersion: 0.1.0
