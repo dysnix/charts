@@ -19,7 +19,7 @@ $ helm install my-release dysnix/ai-scale-doer
 ```
 
 The command deploys AI-Scale-Doer on the Kubernetes cluster in the default configuration.
-The [configuration](#configuration) section lists the parameters that can be configured during installation.
+The [configuration](#parameters) section lists the parameters that can be configured during installation.
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
