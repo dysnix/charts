@@ -1,0 +1,55 @@
+debugMode: true
+profiling:
+  enabled: true
+  host: 0.0.0.0
+  port: 8098
+monitoring:
+  enabled: true
+  host: 0.0.0.0
+  port: 8097
+client:
+  clusterId: <some_client_cluster_id>
+  name: <some_client_name>
+  token: <some_client_token>
+startupWorkers:
+  cron: "@every 20s"
+grpc:
+  enabled: true
+  useReflection: true
+  compression:
+    enabled: false
+    type: Zstd
+  connection:
+    host: localhost
+    port: 8091
+    readBufferSize: 100MiB
+    writeBufferSize: 100MiB
+    maxMessageSize: 30MiB
+    insecure: true
+    timeout: 15s
+  keepalive:
+    time: 5m
+    timeout: 5m
+    enforcementPolicy:
+      minTime: 20m
+      permitWithoutStream: false
+gatewaySaverGrpc:
+  enabled: true
+  useReflection: true
+  compression:
+    enabled: false
+    type: Zstd
+  connection:
+    host: localhost
+    port: 8091
+    readBufferSize: 100MiB
+    writeBufferSize: 100MiB
+    maxMessageSize: 30MiB
+    insecure: true
+    timeout: 15s
+  keepalive:
+    time: 5m
+    timeout: 5m
+    enforcementPolicy:
+      minTime: 20m
+      permitWithoutStream: false
