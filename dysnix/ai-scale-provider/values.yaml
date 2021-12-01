@@ -204,7 +204,7 @@ podLabels: {}
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
-  checksum/config: '{{ deepCopy .Values.queries | mergeOverwrite (include "ai-provider.defaultServiceQueries" . | fromYaml) | toYaml | sha256sum }}'
+  checksum/config: '{{ deepCopy .Values.queries | mergeOverwrite (.Files.Get "default-queries.yml" | fromYaml) | toYaml | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -349,7 +349,7 @@ configMap:
     configs.yaml: |
       {{- include "ai-provider.mergeConfigs" . | nindent 2 }}
     queries.yaml: |
-      {{- deepCopy .Values.queries | mergeOverwrite (include "ai-provider.defaultServiceQueries" . | fromYaml) | toYaml | nindent 2 }}
+      {{- deepCopy .Values.queries | mergeOverwrite (.Files.Get "default-queries.yml" | fromYaml) | toYaml | nindent 2 }}
 
 ## Secret configuration
 ##
