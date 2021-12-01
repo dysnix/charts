@@ -1,4 +1,3 @@
-{{- define "ai-doer.defaultServiceConfigs" -}}
 debugMode: true
 profiling:
   enabled: true
@@ -13,7 +12,7 @@ client:
   name: <some_client_name>
   token: <some_client_token>
 startupWorkers:
-  cron: '@every 20s'
+  cron: "@every 20s"
 grpc:
   enabled: true
   useReflection: true
@@ -54,4 +53,3 @@ gatewaySaverGrpc:
     enforcementPolicy:
       minTime: 20m
       permitWithoutStream: false
-{{- end }}
