@@ -9,5 +9,5 @@
 {{- define "ai-auth.mergeConfigs" -}}
 {{- $data := pick .Values.postgresql "username" "password" "database" "port" -}}
 {{- $data = deepCopy $data | mergeOverwrite (dict "host" (.Values.postgresql.host | default (include "ai-auth.postgresqlHost" .))) }}
-{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "postgres" $data)) | mergeOverwrite (include "ai-auth.defaultServiceConfigs" . | fromYaml) | toYaml -}}
+{{- deepCopy (deepCopy .Values.configs | mergeOverwrite (dict "postgres" $data)) | mergeOverwrite (.Files.Get "default-configs.yml" | fromYaml) | toYaml -}}
 {{- end -}}

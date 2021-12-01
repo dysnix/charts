@@ -1,4 +1,3 @@
-{{- define "ai-auth.defaultServiceConfigs" -}}
 debugMode: true
 profiling:
   enabled: true
@@ -52,4 +51,3 @@ grpc:
     enforcementPolicy:
       minTime: 20m
       permitWithoutStream: false
-{{- end }}
