@@ -23,13 +23,26 @@ ttl: 3s
 redis:
   username: ""
   password: secretpassword
-  database: 0
-  host: localhost
-  port: 6379
-  max-retries: 5
+  requestTimeout: 150ms
+  maxRedirects: 3
+  readAddrs: localhost:6379
+  writeAddrs: localhost:6379
+  minRetryBackoff: 10ms
+  maxRetryBackoff: 1s
+  dialTimeout: 2s
+  readTimeout: 1s
+  writeTimeout: 1s
+  pool:
+    poolSize: 1000
+    minIdleConns: 100
+    maxConnAge: 1h
+    poolTimeout: 1s
+    idleTimeout: 1m
+    idleCheckTimeout: 10s
+  maxRetries: 5
   watch:
-    max-retries: 3
-    interval-milliseconds: 2s
+    maxRetries: 3
+    intervalMilliseconds: 2s
 server:
   enabled: true
   host: 0.0.0.0
@@ -46,10 +59,10 @@ server:
     maxIdleConnDuration: 15s
     readTimeout: 7s
     writeTimeout: 7s
-remote-client:
+remoteClient:
   transport:
     maxIdleConnDuration: 15s
-    readTimeout: 7s
-    writeTimeout: 7s
-  requests-timeouts: 15s
-  backend-rpc-url: https://nodes.pancakeswap.com
+    readTimeout: 3s
+    writeTimeout: 3s
+  requestsTimeouts: 3s
+  backendRpcUrl: https://nodes.pancakeswap.com

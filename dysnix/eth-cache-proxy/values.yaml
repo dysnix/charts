@@ -327,13 +327,24 @@ sidecars: []
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
 initContainers:
-  - name: check-redis
+  - name: check-redis-read
     image: alpine:3.9.2
     command:
       - sh
       - -c
       - |
-        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisHost" . }} 6379; do
+        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisReadHost" . }} 6379; do
+            sleep 2;
+        done;
+
+        echo 'Redis OK ✓'
+  - name: check-redis-write
+    image: alpine:3.9.2
+    command:
+      - sh
+      - -c
+      - |
+        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisWriteHost" . }} 6379; do
             sleep 2;
         done;
 
@@ -482,8 +493,8 @@ redis:
   enabled: false
   username: ""
   #  password: '1234567'
-  #  host: redis-master
-  port: 6379
+  #  readAddrs: redis-replicas-1:6379,redis-replicas-2:6379
+  #  writeAddrs: redis-master-1:6379,redis-master-2:6379
   database: 0
 #  auth:
 #    password: '1234567'
