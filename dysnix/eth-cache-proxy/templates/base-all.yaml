@@ -1,1 +1,2 @@
+{{/* vim: set filetype=mustache: */}}
 {{- include "base.component.default" $ -}}

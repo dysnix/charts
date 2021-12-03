@@ -1,0 +1,55 @@
+debugMode: true
+profiling:
+  enabled: true
+monitoring:
+  enabled: true
+single:
+  enabled: true
+  host: 0.0.0.0
+  port: 8097
+  name: pprof/monitoring server
+  concurrency: 100000
+  buffer:
+    readBufferSize: 4MiB
+    writeBufferSize: 4MiB
+  tcpKeepalive:
+    enabled: true
+    period: 1s
+  httptransport:
+    maxIdleConnDuration: 15s
+    readTimeout: 7s
+    writeTimeout: 7s
+ttl: 3s
+redis:
+  username: ""
+  password: secretpassword
+  database: 0
+  host: localhost
+  port: 6379
+  max-retries: 5
+  watch:
+    max-retries: 3
+    interval-milliseconds: 2s
+server:
+  enabled: true
+  host: 0.0.0.0
+  port: 8091
+  name: rpc-proxy
+  concurrency: 100000
+  buffer:
+    readBufferSize: 4MiB
+    writeBufferSize: 4MiB
+  tcpKeepalive:
+    enabled: true
+    period: 1s
+  httptransport:
+    maxIdleConnDuration: 15s
+    readTimeout: 7s
+    writeTimeout: 7s
+remote-client:
+  transport:
+    maxIdleConnDuration: 15s
+    readTimeout: 7s
+    writeTimeout: 7s
+  requests-timeouts: 15s
+  backend-rpc-url: https://nodes.pancakeswap.com
