@@ -2,11 +2,11 @@ apiVersion: v1
 appVersion: "2.3.2"
 description: ProxySQL Helm chart for Kubernetes
 name: proxysql
-version: 0.3.1
+version: 0.3.2
 home: https://www.proxysql.com/
 sources:
   - https://github.com/dysnix/charts
   - https://github.com/sysown/proxysql
 maintainers:
-  - name: dennybaa
-    email: dennybaa@gmail.com
+  - email: services@dysnix.com
+    name: Dysnix
