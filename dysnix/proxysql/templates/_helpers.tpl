@@ -82,6 +82,6 @@ ProxySQL SSL directory
 {{- if .Values.ssl.fromSecret -}}
 /etc/proxysql/ssl
 {{- else -}}
-/etc/proxysql
+{{ .Values.ssl.sslDir }}
 {{- end -}}
 {{- end -}}
