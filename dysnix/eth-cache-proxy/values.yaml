@@ -89,7 +89,7 @@ replicaCount: 1
 ##
 containerPorts:
   - name: http
-    containerPort: 8080
+    containerPort: 8091
   - name: monitoring
     containerPort: 8097
 ## Configure extra options for containers' liveness and readiness probes
@@ -105,7 +105,7 @@ livenessProbe:
   enabled: true
   httpGet:
     path: /healthz
-    port: 8097
+    port: 8091
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -122,7 +122,7 @@ readinessProbe:
   enabled: true
   httpGet:
     path: /readyz
-    port: 8097
+    port: 8091
   initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
@@ -187,11 +187,13 @@ containerSecurityContext:
   runAsNonRoot: true
 ## @param command Override default container command (useful when using custom images)
 ##
-# command: {}
+command:
+  - /app
 
 ## @param args Override default container args (useful when using custom images)
 ##
-# args: {}
+args:
+  - -conf=/etc/proxy/configs/configs.yaml
 
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -207,7 +209,8 @@ podLabels: {}
 ## @param podAnnotations Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
-podAnnotations: {}
+podAnnotations:
+  checksum/config: '{{ include "eth-cache-proxy.mergeConfigs" . | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -272,11 +275,11 @@ lifecycleHooks: {}
 ##     value: "bar"
 ##
 env:
-  - name: BACKEND_RPC_URL
-    value: "http://bscrpc.bsc:8575"
+#  - name: BACKEND_RPC_URL
+#    value: "http://bscrpc.bsc:8575"
 extraEnv:
   - name: CACHE_TTL
-    value: "3"
+    value: 3s
 ## @param envFromCMs Array of existing ConfigMap names containing env vars
 ##
 envFromCMs: []
@@ -286,12 +289,18 @@ envFromSecrets: []
 ## @param volumes Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
-volumes: []
+volumes:
+  - name: configs
+    configMap:
+      name: '{{ include "common.names.fullname" . }}'
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
-volumeMounts: []
+volumeMounts:
+  - name: configs
+    mountPath: "/etc/proxy/configs"
+    readOnly: true
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
 ## e.g:
@@ -317,7 +326,29 @@ sidecars: []
 ##    imagePullPolicy: Always
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
-initContainers: {}
+initContainers:
+  - name: check-redis-read
+    image: alpine:3.9.2
+    command:
+      - sh
+      - -c
+      - |
+        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisReadHost" . }} 6379; do
+            sleep 2;
+        done;
+
+        echo 'Redis OK ✓'
+  - name: check-redis-write
+    image: alpine:3.9.2
+    command:
+      - sh
+      - -c
+      - |
+        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisWriteHost" . }} 6379; do
+            sleep 2;
+        done;
+
+        echo 'Redis OK ✓'
 
 ## ServiceAccount configuration
 ##
@@ -333,6 +364,11 @@ serviceAccount:
   ##
   name: ""
 
+## Oweride default service configs map.
+## ref: https://github.com/dysnix/rpc-proxy-cacher
+## @param configs [map] proxy service configs override
+configs: {}
+
 ## ConfigMap configuration
 ##
 ## @param configMap.create Specifies whether to enable the ConfigMap (defaults to true if not set)
@@ -341,12 +377,14 @@ serviceAccount:
 ## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
 ##
 configMap:
-  create: false
+  create: true
   annotations: {}
   ## When enabled only object metadata can be modified
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
-  data: {}
+  data:
+    configs.yaml: |
+      {{- include "eth-cache-proxy.mergeConfigs" . | nindent 2 }}
 ## Secret configuration
 ##
 ## @param secret.create Specifies whether to enable the Secret (defaults to true if not set)
@@ -392,7 +430,7 @@ service:
   ##
   ports:
     - name: http
-      port: 8080
+      port: 8091
       protocol: TCP
       targetPort: http
     - name: monitoring
@@ -450,6 +488,17 @@ persistence:
   size: 10Gi
   mountPath: /data
 
+## Set postgresql connection params for migrations and auth containers.
+redis:
+  enabled: false
+  username: ""
+  #  password: '1234567'
+  #  readAddrs: redis-replicas-1:6379,redis-replicas-2:6379
+  #  writeAddrs: redis-master-1:6379,redis-master-2:6379
+  database: 0
+#  auth:
+#    password: '1234567'
+
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
 monitoring:
@@ -463,5 +512,3 @@ autoscaling:
   # minReplicas: 1
   # maxReplicas: 10
   # targetMemory: 50
-
-prometheus: {}

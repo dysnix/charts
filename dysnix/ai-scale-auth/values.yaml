@@ -335,8 +335,8 @@ initContainers:
       - up
 
 ## Oweride default service configs map.
-## ref: https://github.com/dysnix/ai-scale-saver
-## @param configs [map] saver service configs owerride
+## ref: https://github.com/dysnix/ai-scale-auth
+## @param configs [map] auth service configs override
 configs: {}
 
 ## Service parameters

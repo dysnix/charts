@@ -3,3 +3,13 @@ livenessProbe:
 
 readinessProbe:
   enabled: false
+
+image:
+  repository: alex6021710/rpc-proxy-cacher
+  tag: latest
+
+redis:
+  enabled: true
+  password: "1234567"
+  auth:
+    password: "1234567"
