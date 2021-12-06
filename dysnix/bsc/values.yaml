@@ -26,6 +26,9 @@ bsc:
   chain: mainnet
   # possible values: rpc, bootnode
   role: rpc
+  # status label to remove node from service manually
+  # possible values: in-service, any-other-value
+  manualStatus: in-service
   #  Blockchain sync mode ("fast", "full", or "light") (default: fast)
   syncmode: "full"
   # Blockchain garbage collection mode ("full", "archive") (default: "full")
@@ -41,7 +44,7 @@ bsc:
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
-  initFromSnapshotImage: alpine:latest
+  initFromSnapshotImage: dysnix/alpine-zstd:3.15
   initFromRsync: false
   initFromRsyncImage: instrumentisto/rsync-ssh:latest
   forceInitFromSnapshot: false
