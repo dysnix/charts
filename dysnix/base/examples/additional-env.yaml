@@ -9,7 +9,8 @@ envFromCMs:
   - |-
     {{- template "base.fullname" (dict "value" .Values "context" .) | }}
 
-env:
+## Note passing a list or string is supported transparently!
+env: |-
   - name: BACKEND_RPC_URL
     value: "http://bscrpc.bsc:8575"
 

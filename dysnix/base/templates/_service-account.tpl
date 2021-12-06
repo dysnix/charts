@@ -28,7 +28,7 @@ metadata:
   name: {{ include "base.serviceAccountName" (dict "serviceAccount" $sa "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
   {{- with (list $sa.annotations $context.Values.commonAnnotations | compact) }}
-  annotations: {{- include "base.tpl.flatrender" (dict "value" . "context" $context) | nindent 4 }}
+  annotations: {{- include "base.tpl.render" (dict "value" . "context" $context) | nindent 4 }}
   {{- end }}
 {{- end -}}
 {{- end -}}
