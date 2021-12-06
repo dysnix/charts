@@ -73,13 +73,14 @@ securityContext: {{ . | nindent 2 }}
 command: {{- include "common.tplvalues.render" (dict "value" $value.command "context" $context) | nindent 2 }}
 {{- end }}
 
-{{- if $value.args }}
-args: {{- include "common.tplvalues.render" (dict "value" $value.args "context" $context) | nindent 2 }}
+{{- if include "base.tpl.render" (dict "value" (list $value.args $value.extraArgs) "context" $context) }}
+args:
+  {{- . | nindent 2 }}
 {{- end }}
 
-{{- with concat ($value.env | default list) ($value.extraEnv | default list) | compact }}
+{{- with include "base.tpl.render" (dict "value" (list $value.env $value.extraEnv) "context" $context) }}
 env:
-  {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 2 }}
+  {{- . | nindent 2 }}
 {{- end }}
 
 {{- if or $value.envFromCMs $value.envFromSecrets }}
