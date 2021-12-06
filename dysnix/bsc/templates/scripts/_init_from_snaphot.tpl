@@ -20,8 +20,6 @@ rm -rf ${DATA_DIR}/geth
 # Download & extract snapshot
 # special handling of zstd
 if [[ "${SNAPSHOT_URL}" =~ "\.zst$" ]]; then
-  #alpine-specific
-  apk update && apk add zstd tar
   wget ${SNAPSHOT_URL} -O - | tar --zstd --overwrite -x -C ${DATA_DIR}
 else
   wget ${SNAPSHOT_URL} -O - | tar --overwrite -x -C ${DATA_DIR}

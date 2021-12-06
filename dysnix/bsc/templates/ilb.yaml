@@ -29,4 +29,5 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "bsc.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    manualstatus: "in-service"
 {{ end }}

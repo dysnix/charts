@@ -23,6 +23,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
         bsc/chain: {{ .Values.bsc.chain }}
         bsc/role: {{ .Values.bsc.role }}
+        manualstatus: {{ .Values.bsc.manualStatus }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
