@@ -18,7 +18,7 @@ serviceAccount:
   create: true
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name:
+  name: ""
 
 securityContext:
   privileged: true
@@ -136,16 +136,17 @@ ingress:
   secrets: []
 
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+## We usually recommend not to specify default resources and to leave this as a conscious
+## choice for the user. This also increases chances charts run on environments with little
+## resources, such as Minikube. If you do want to specify resources, uncomment the following
+##  lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+## resources:
+##   limits:
+##     cpu: 100m
+##     memory: 128Mi
+##   requests:
+##     cpu: 100m
+##     memory: 128Mi
 
 nodeSelector: {}
 
@@ -170,15 +171,15 @@ mongodb:
   strategyType: Recreate
 
 ## Custom mongodb URI settings if given
-#
+##
 mongodbUri:
 mongodbUriTemplate:
 
 ## /etc/pritunl/conf
-#
+##
 conf:
   ## Specify host id which preserves settings for the POD in the database
-  #  (no settings a lost on reboot, ex. public_address)
+  ##  (no settings a lost on reboot, ex. public_address)
   host_id: ffd7a38db01042cf806760c211ff4a41
   log_path: /var/log/pritunl.log
   static_cache: true
@@ -187,3 +188,6 @@ conf:
   www_path: /usr/share/pritunl/www
   local_address_interface: auto
   port: 443
+
+logs:
+  emptyDir: false
