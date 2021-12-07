@@ -14,8 +14,6 @@ spec:
     matchLabels:
       app.kubernetes.io/name: {{ include "bsc.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
-      bsc/chain: {{ .Values.bsc.chain }}
-      bsc/role: {{ .Values.bsc.role }}
   template:
     metadata:
       labels:
