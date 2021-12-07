@@ -2360,6 +2360,32 @@ entries:
     - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.0/nifi-registry-0.1.0.tgz
     version: 0.1.0
   pritunl:
+  - apiVersion: v2
+    appVersion: "1.29"
+    created: "2021-12-07T21:48:54.840886071Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: ~10.30.x
+    description: A Helm chart for Kubernetes
+    digest: 2b1d8c0330a1ad8cf1023b4493f70fc2ba7d639ac825884a0dbe3f7c5b84abf8
+    home: https://pritunl.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: pritunl
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pritunl/pritunl
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pritunl-0.2.1/pritunl-0.2.1.tgz
+    version: 0.2.1
   - apiVersion: v1
     appVersion: "1.29"
     created: "2021-04-23T08:36:32.981037622Z"
