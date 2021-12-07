@@ -66,3 +66,13 @@ Pritunl mongodb uri template
 {{- printf "mongodb://%s:$PRITUNL_MONGODB_PASSWORD@%s-mongodb/%s" .Values.mongodb.auth.username $fullName .Values.mongodb.auth.database -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Return true if cert-manager required annotations for TLS signed certificates are set in the Ingress annotations
+Ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+*/}}
+{{- define "pritunl.ingress.certManagerRequest" -}}
+{{ if or (hasKey . "cert-manager.io/cluster-issuer") (hasKey . "cert-manager.io/issuer") (hasKey . "kubernetes.io/tls-acme") }}
+    {{- true -}}
+{{- end -}}
+{{- end -}}

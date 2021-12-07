@@ -1,5 +1,0 @@
-dependencies:
-- name: mongodb
-  version: ~8.3.2
-  repository: https://charts.bitnami.com/bitnami
-  condition: mongodb.enabled

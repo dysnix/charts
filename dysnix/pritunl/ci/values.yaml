@@ -1,0 +1,5 @@
+mongodb:
+  enabled: true
+  auth:
+    enabled: true
+    password: foobartest
