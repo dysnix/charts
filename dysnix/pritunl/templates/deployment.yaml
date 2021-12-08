@@ -67,10 +67,23 @@ spec:
           volumeMounts:
             - name: conf
               mountPath: /etc/pritunl
-            {{- if .Values.logs.emptyDir }}
+            {{- if .Values.logs.tail }}
             - name: log
               mountPath: /var/log
             {{- end }}
+        {{- if .Values.logs.tail }}
+        - name: {{ .Values.logs.name }}
+          image: alpine:3.15
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |-
+                /usr/bin/tail -F {{ .Values.logs.path }} 2>/dev/null
+          volumeMounts:
+            - name: log
+              mountPath: /var/log
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -89,7 +102,7 @@ spec:
             name: {{ include "pritunl.fullname" . }}
         - name: conf
           emptyDir: {}
-        {{- if .Values.logs.emptyDir }}
+        {{- if .Values.logs.tail }}
         - name: log
           emptyDir: {}
         {{- end }}

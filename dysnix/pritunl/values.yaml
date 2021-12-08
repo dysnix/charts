@@ -190,4 +190,6 @@ conf:
   port: 443
 
 logs:
-  emptyDir: false
+  tail: false
+  name: audit-logs
+  path: /var/log/pritunl_journal.log
