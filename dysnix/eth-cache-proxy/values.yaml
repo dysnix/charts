@@ -88,10 +88,9 @@ replicaCount: 1
 ## Map form can be used too, in this case the default portocol will be used (which is TCP):
 ##
 containerPorts:
-  - name: http
-    containerPort: 8091
-  - name: monitoring
-    containerPort: 8097
+  http: 8091
+  monitoring: 8097
+  memberlist: 3322
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
 ## @param livenessProbe.enabled Enable livenessProbe on containers
@@ -277,9 +276,9 @@ lifecycleHooks: {}
 env:
 #  - name: BACKEND_RPC_URL
 #    value: "http://bscrpc.bsc:8575"
-extraEnv:
-  - name: CACHE_TTL
-    value: 3s
+extraEnv: []
+#  - name: CACHE_TTL
+#    value: 3s
 ## @param envFromCMs Array of existing ConfigMap names containing env vars
 ##
 envFromCMs: []
@@ -326,7 +325,10 @@ sidecars: []
 ##    imagePullPolicy: Always
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
-initContainers:
+#initContainers: |
+#  {{- include "eth-cache-proxy.initContainers" . }}
+initContainers: |
+  {{- if .Values.redis.enabled -}}
   - name: check-redis-read
     image: alpine:3.9.2
     command:
@@ -349,6 +351,7 @@ initContainers:
         done;
 
         echo 'Redis OK ✓'
+  {{- end -}}
 
 ## ServiceAccount configuration
 ##
@@ -429,14 +432,9 @@ service:
   ## @param service.ports Map or list of defining service ports
   ##
   ports:
-    - name: http
-      port: 8091
-      protocol: TCP
-      targetPort: http
-    - name: monitoring
-      port: 8097
-      protocol: TCP
-      targetPort: monitoring
+    http: http
+    monitoring: monitoring
+    memberlist: memberlist
   ## Node ports to expose
   ## @param service.nodePorts Map of nodePorts (effictive with type NodePort or LoadBalancer)
   ## NOTE: choose port between <30000-32767>

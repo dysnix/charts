@@ -1,6 +1,6 @@
-debugMode: true
+debugMode: false
 profiling:
-  enabled: true
+  enabled: false
 monitoring:
   enabled: true
 single:
@@ -10,8 +10,8 @@ single:
   name: pprof/monitoring server
   concurrency: 100000
   buffer:
-    readBufferSize: 4MiB
-    writeBufferSize: 4MiB
+    readBufferSize: 256KiB
+    writeBufferSize: 256KiB
   tcpKeepalive:
     enabled: true
     period: 1s
@@ -22,47 +22,44 @@ single:
 ttl: 3s
 redis:
   username: ""
-  password: secretpassword
-  requestTimeout: 150ms
+  password: "1234567"
+  requestTimeout: 1s
   maxRedirects: 3
   readAddrs: localhost:6379
   writeAddrs: localhost:6379
-  minRetryBackoff: 10ms
-  maxRetryBackoff: 1s
-  dialTimeout: 2s
-  readTimeout: 1s
-  writeTimeout: 1s
+  minRetryBackoff: 8ms
+  maxRetryBackoff: 256ms
+  dialTimeout: 5s
+  readTimeout: 3s
+  writeTimeout: 3s
   pool:
-    poolSize: 1000
-    minIdleConns: 100
-    maxConnAge: 1h
-    poolTimeout: 1s
-    idleTimeout: 1m
-    idleCheckTimeout: 10s
+    poolSize: 20
+    minIdleConns: 10
+    maxConnAge: 0s
+    poolTimeout: 4s
+    idleTimeout: 5m
+    idleCheckTimeout: 1m
   maxRetries: 5
   watch:
     maxRetries: 3
     intervalMilliseconds: 2s
 server:
-  enabled: true
   host: 0.0.0.0
   port: 8091
-  name: rpc-proxy
-  concurrency: 100000
-  buffer:
-    readBufferSize: 4MiB
-    writeBufferSize: 4MiB
-  tcpKeepalive:
-    enabled: true
-    period: 1s
+  keepalive: true
+  requestsPause: 80ms
   httptransport:
     maxIdleConnDuration: 15s
     readTimeout: 7s
     writeTimeout: 7s
 remoteClient:
   transport:
-    maxIdleConnDuration: 15s
-    readTimeout: 3s
-    writeTimeout: 3s
-  requestsTimeouts: 3s
-  backendRpcUrl: https://nodes.pancakeswap.com
+    maxIdleConns: 0
+    buffer:
+      readBufferSize: 256KiB
+      writeBufferSize: 256KiB
+    tcpKeepalive:
+      enabled: false
+      period: 15s
+  requestsTimeouts: 1s
+  backendRpcUrl: https://bsc-dataseed.binance.org
