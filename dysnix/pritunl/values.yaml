@@ -47,6 +47,9 @@ service:
   # loadBalancerSourceRanges:
   # - 10.10.10.0/24
 
+  # externalTrafficPolicy - Cluster (default) and Local. Local preserves the client source IP and avoids a second hop.
+  externalTrafficPolicy: Cluster
+
 readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 15

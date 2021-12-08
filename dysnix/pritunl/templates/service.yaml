@@ -16,10 +16,11 @@ spec:
   {{- end }}
   {{- if.Values.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
-  {{ with .Values.service.loadBalancerSourceRanges }}
-{{ toYaml . | indent 4 }}
-{{- end }}
-  {{- end }} 
+    {{- with .Values.service.loadBalancerSourceRanges }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
   ports:
     - name: openvpn
       port: {{ .Values.service.port }}
