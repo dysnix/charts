@@ -17,23 +17,23 @@ Params:
 {{/* imagePullSecrets: */}}
 {{- template "common.images.pullSecrets" (dict "images" (list $value.image) "global" $context.Values.global) }}
 
-{{- if $value.dnsPolicy }}
-dnsPolicy: {{ $value.dnsPolicy }}
+{{- with $value.dnsPolicy }}
+dnsPolicy: {{ . }}
 {{- end }}
 
-{{- if $value.priorityClassName }}
-priorityClassName: {{ $value.priorityClassName | quote }}
+{{- with $value.priorityClassName }}
+priorityClassName: {{ . }}
 {{- end }}
 
-{{- "" }}
 serviceAccountName: {{ template "base.serviceAccountName" (dict "serviceAccount" $value.serviceAccount "component" $component "context" $context) }}
 
-{{- if $value.hostAliases }}
-hostAliases: {{- include "common.tplvalues.render" (dict "value" $value.hostAliases "context" $context) | nindent 2 }}
+{{- with include "base.tpl.render" (dict "value" $value.hostAliases "context" $context) }}
+hostAliases: {{- . | nindent 2 }}
 {{- end }}
 
-{{- if $value.affinity }}
-affinity: {{- include "common.tplvalues.render" (dict "value" $value.affinity "context" $context) | nindent 2 }}
+{{- with include "base.tpl.render" (dict "value" $value.affinity "context" $context) }}
+{{- if . }}
+affinity: {{- . | nindent 2 }}
 {{- else }}
   {{- if or $value.podAffinityPreset $value.podAntiAffinityPreset $value.nodeAffinityPreset }}
 affinity:
@@ -50,25 +50,26 @@ affinity:
   {{- end }}
   {{- end }}
 {{- end }}
-
-{{- if $value.nodeSelector }}
-nodeSelector: {{- include "common.tplvalues.render" (dict "value" $value.nodeSelector "context" $context) | nindent 2 -}}
 {{- end }}
 
-{{- if $value.tolerations }}
-tolerations: {{- include "common.tplvalues.render" (dict "value" $value.tolerations "context" $context) | nindent 2 -}}
+{{- with include "base.tpl.render" (dict "value" $value.nodeSelector "context" $context) }}
+nodeSelector: {{- . | nindent 2 }}
+{{- end }}
+
+{{- with include "base.tpl.render" (dict "value" $value.tolerations "context" $context) }}
+tolerations: {{- . | nindent 2 }}
 {{- end }}
 
 {{- if $value.schedulerName }}
 schedulerName: {{ $value.schedulerName | quote -}}
 {{- end }}
 
-{{- with (include "base.securityContext" (dict "securityContext" $value.podSecurityContext)) }}
+{{- with include "base.securityContext" (dict "securityContext" $value.podSecurityContext) }}
 securityContext: {{ . | nindent 2 }}
 {{- end }}
 
-{{- if $value.initContainers }}
-initContainers: {{- include "common.tplvalues.render" (dict "value" $value.initContainers "context" $context) | nindent 2 -}}
+{{- with include "base.tpl.render" (dict "value" $value.initContainers "context" $context) }}
+initContainers: {{- . | nindent 2 }}
 {{- end }}
 
 containers: {{- include "base.containers.podContainers" (dict "value" $value "component" $component "context" $context) | nindent 2 }}
