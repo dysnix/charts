@@ -25,6 +25,7 @@ dnsPolicy: {{ . }}
 priorityClassName: {{ . }}
 {{- end }}
 
+{{- "" }}
 serviceAccountName: {{ template "base.serviceAccountName" (dict "serviceAccount" $value.serviceAccount "component" $component "context" $context) }}
 
 {{- with include "base.tpl.render" (dict "value" $value.hostAliases "context" $context) }}
@@ -72,6 +73,7 @@ securityContext: {{ . | nindent 2 }}
 initContainers: {{- . | nindent 2 }}
 {{- end }}
 
+{{- "" }}
 containers: {{- include "base.containers.podContainers" (dict "value" $value "component" $component "context" $context) | nindent 2 }}
 
 {{- with (include "base.volumes.spec" (dict "value" $value "context" $context)) }}
