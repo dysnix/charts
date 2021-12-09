@@ -61,11 +61,3 @@ no container ports!
   .servicePort or .ingress.servicePort must be provided!
 {{- end -}}
 {{- end -}}
-
-{{- define "base.validate.portsForIngressEmpty" -}}
-{{- if and (not .ports) (eq (.ingress | toString) "true") -}}
-no .service.ports!
-  
-  Ingress is enabled, but no service ports have been defined!
-{{- end -}}
-{{- end -}}
