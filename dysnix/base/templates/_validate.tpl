@@ -44,11 +44,28 @@ Unsupported controller type!
 {{- end -}}
 {{- end -}}
 
-{{- define "base.validate.failPortNotFound" -}}
-
+{{- define "base.validate.containerPortNotFound" -}}
+no container ports!
+  
   Could not find port with the name `{{ .name }}' in
     - .containerPorts
     - .podContainers.*.ports
     - .sidecar.*.ports
   Failed!
+{{- end -}}
+
+{{- define "base.validate.ingressBackendPortEmpty" -}}
+{{- if not .port -}}
+.servicePort is empty!
+
+  .servicePort or .ingress.servicePort must be provided!
+{{- end -}}
+{{- end -}}
+
+{{- define "base.validate.portsForIngressEmpty" -}}
+{{- if and (not .ports) (eq (.ingress | toString) "true") -}}
+no .service.ports!
+  
+  Ingress is enabled, but no service ports have been defined!
+{{- end -}}
 {{- end -}}

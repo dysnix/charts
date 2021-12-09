@@ -24,7 +24,9 @@ Params:
 ---
 apiVersion: v1
 kind: ConfigMap
+{{- if (semverCompare ">=1.18-0" (include "common.capabilities.kubeVersion" .)) }}
 immutable: {{ $config.immutable }}
+{{- end }}
 metadata:
   name: {{ include "base.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
