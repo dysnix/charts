@@ -66,7 +66,6 @@ spec:
         - name: take-data-dir-ownership
           image: "{{ .Values.initContainers.alpine.image }}:{{ .Values.initContainers.alpine.tag }}"
           command:
-          command:
             - chown
             - -R
             - 1000:1000
