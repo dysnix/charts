@@ -482,6 +482,13 @@ ingress:
   ##   secretName: domain.local-tls
   ##
   extraTls: []
+  ## @param ingress.extraTlsHosts Extra TLS hostname(s) added alongside to the default hostname (shares the default secret)
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTlsHosts:
+  ##   - extra.tld
+  ##
+  extraTlsHosts: []
   ## @param ingress.secrets Custom TLS certificates as secrets
   ## NOTE: 'key' and 'certificate' are expected in PEM format
   ## NOTE: 'name' should line up with a 'secretName' set further up
