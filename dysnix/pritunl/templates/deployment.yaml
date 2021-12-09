@@ -53,7 +53,7 @@ spec:
             - name: PRITUNL_MONGODB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "pritunl.fullname" . }}-mongodb
+                  name: {{ include "common.names.dependency.fullname" (dict "chartName" "mongodb" "chartValues" .Values.mongodb "context" $) }}
                   key: mongodb-passwords
           {{- end }}
           ports:
