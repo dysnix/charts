@@ -18,19 +18,18 @@ Return ingress rule paths list. Allows flexible evaluation, provides context:
 Renders all blocks with the template context available.
 
 Params
+  paths - list of maps containing path configuration
   rule:
     host - hostname
-    paths - list of maps containing path configuration
     ingress - (optional) resource
     defaultService - default service name
-  value - [dict] .Values or path to component values
   context - global template context
 */}}
 {{- define "base.ingress.rulePaths" -}}
   {{- $rule := .rule -}}
   {{- $context := .context -}}
   {{- $ingress := $rule.ingress | default dict -}}
-  {{- range $rule.paths -}}
+  {{- range .paths -}}
     {{- with . | merge dict }}
 -
   path: {{ .path }}
@@ -43,7 +42,7 @@ Params
       {{- else }}
         {{- $service := tpl (list $rule.defaultService $ingress.serviceName $rule.serviceName | compact | last | default "") $context }}
   backend:
-        {{- $port := list $ingress.servicePort $rule.servicePort | compact | last -}}
+        {{- $port := list $ingress.servicePort .servicePort | compact | last -}}
         {{- template "base.validate" (dict "template" "base.validate.ingressBackendPortEmpty" "port" $port) -}}
         {{- include "common.ingress.backend" (dict "serviceName" $service "servicePort" $port "context" $context) | nindent 4 }}
       {{- end }}
@@ -90,9 +89,9 @@ spec:
     - host: {{ $ingress.hostname }}
       http:
         paths:
-          {{- with concat (list $ingress) ($ingress.paths | default list) ($ingress.extraPaths | default list) }}
-            {{- $rule := dict "paths" . "host" $ingress.hostname "defaultService" $fullname "ingress" $ingress }}
-            {{- include "base.ingress.rulePaths" (dict "rule" $rule "value" $value "context" $context) | indent 10 }}
+          {{- with concat ($ingress.paths | default list) ($ingress.extraPaths | default list) }}
+            {{- $rule := dict "host" $ingress.hostname "defaultService" $fullname "ingress" $ingress }}
+            {{- include "base.ingress.rulePaths" (dict "paths" . "rule" $rule "context" $context) | indent 10 }}
           {{- end }}
     {{- end }}
     {{- range concat ($ingress.hosts | default list) ($ingress.extraHosts | default list) | compact -}}
@@ -101,8 +100,8 @@ spec:
       http:
         paths:
           {{- with concat (list .) (.paths | default list) }}
-            {{- $rule := dict "paths" . "host" $hostname "defaultService" $fullname "ingress" $ingress }}
-            {{- include "base.ingress.rulePaths" (dict "rule" $rule "value" $value "context" $context) | indent 10 }}
+            {{- $rule := dict "host" $ingress.hostname "defaultService" $fullname "ingress" $ingress }}
+            {{- include "base.ingress.rulePaths" (dict "paths" . "rule" $rule "context" $context) | indent 10 }}
           {{- end }}
     {{- end }}
   {{- if or (and $ingress.tls (or (include "base.ingress.certManagerRequest" $ingress.annotations) $ingress.selfSigned)) $ingress.extraTls }}

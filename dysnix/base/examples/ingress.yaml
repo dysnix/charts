@@ -8,8 +8,10 @@ ingress:
 
   paths:
     - path: /hello
-      servicePort: undefined
+      servicePort: "" # empty then the default port is used
       # serviceName: default service
+    - path: /hello1
+      # servicePort is not given then the default port is used
 
   ## Resreved for end-users 
   extraPaths:
