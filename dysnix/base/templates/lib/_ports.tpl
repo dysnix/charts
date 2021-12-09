@@ -54,7 +54,7 @@ Params
 
     {{- $found := pluck $name $ports | first -}}
     {{- if not $found -}}
-      {{- template "base.validate" (dict "template" "base.validate.failPortNotFound" "name" $name) -}}
+      {{- template "base.validate" (dict "template" "base.validate.containerPortNotFound" "name" $name) -}}
     {{- end -}}
     {{- $found -}}
   {{- end -}}
