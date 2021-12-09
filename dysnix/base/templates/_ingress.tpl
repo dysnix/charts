@@ -108,7 +108,10 @@ spec:
   tls:
     {{- if and $ingress.tls (or (include "base.ingress.certManagerRequest" $ingress.annotations) $ingress.selfSigned) }}
     - hosts:
-        - {{ $ingress.hostname | quote }}
+        - {{ $ingress.hostname }}
+      {{- range $ingress.extraTlsHosts }}
+        - {{ . }}
+      {{- end }}
       secretName: {{ printf "%s-tls" $ingress.hostname }}
     {{- end }}
     {{- if $ingress.extraTls }}

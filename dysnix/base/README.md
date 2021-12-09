@@ -248,6 +248,7 @@ service:
 | `ingress.extraHosts`                    | An array with additional hostname(s) to be covered with the ingress record                                                       | `[]`                     |
 | `ingress.extraPaths`                    | An array with additional arbitrary paths that may need to be added to the ingress under the main host                            | `[]`                     |
 | `ingress.extraTls`                      | TLS configuration for additional hostname(s) to be covered with this ingress record                                              | `[]`                     |
+| `ingress.extraTlsHosts`                 | Extra TLS hostname(s) added alongside to the default hostname (shares the default secret)                                        | `[]`                     |
 | `ingress.secrets`                       | Custom TLS certificates as secrets                                                                                               | `[]`                     |
 
 
