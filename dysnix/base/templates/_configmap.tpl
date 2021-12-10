@@ -24,7 +24,7 @@ Params:
 ---
 apiVersion: v1
 kind: ConfigMap
-{{- if (semverCompare ">=1.18-0" (include "common.capabilities.kubeVersion" .)) }}
+{{- if (semverCompare ">=1.18-0" (include "common.capabilities.kubeVersion" $context)) }}
 immutable: {{ $config.immutable }}
 {{- end }}
 metadata:
