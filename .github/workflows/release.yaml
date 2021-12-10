@@ -21,6 +21,6 @@ jobs:
         uses: helm/chart-releaser-action@v1.2.1
         with:
           charts_dir: dysnix/
-          version: v1.3.0
+          version: v1.0.0
         env:
           CR_TOKEN: "${{ secrets.CR_TOKEN }}"
