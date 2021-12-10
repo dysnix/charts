@@ -73,7 +73,7 @@ securityContext: {{ . | nindent 2 }}
 command: {{- include "common.tplvalues.render" (dict "value" $value.command "context" $context) | nindent 2 }}
 {{- end }}
 
-{{- if include "base.tpl.render" (dict "value" (list $value.args $value.extraArgs) "context" $context) }}
+{{- with include "base.tpl.render" (dict "value" (list $value.args $value.extraArgs) "context" $context) }}
 args:
   {{- . | nindent 2 }}
 {{- end }}
