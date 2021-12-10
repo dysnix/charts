@@ -325,8 +325,6 @@ sidecars: []
 ##    imagePullPolicy: Always
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
-#initContainers: |
-#  {{- include "eth-cache-proxy.initContainers" . }}
 initContainers: |
   {{- if .Values.redis.enabled -}}
   - name: check-redis-read
@@ -486,16 +484,16 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-## Set postgresql connection params for migrations and auth containers.
-redis:
-  enabled: false
-  username: ""
-  #  password: '1234567'
-  #  readAddrs: redis-replicas-1:6379,redis-replicas-2:6379
-  #  writeAddrs: redis-master-1:6379,redis-master-2:6379
-  database: 0
-#  auth:
-#    password: '1234567'
+# ## Set postgresql connection params for migrations and auth containers.
+# redis:
+#   enabled: false
+#   username: ""
+#   # password: '1234567'
+#   # readAddrs: redis-replicas-1:6379,redis-replicas-2:6379
+#   # writeAddrs: redis-master-1:6379,redis-master-2:6379
+#   database: 0
+#   # auth:
+#   #   password: '1234567'
 
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
