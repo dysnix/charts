@@ -90,7 +90,7 @@ spec:
         ports:
           {{- range $val := .Values.service.ports }}
         - containerPort: {{ $val.port }}
-          {{- if and $val.hostPort .Values.service.hostPortEnabled }}
+          {{- if and $val.hostPort $.Values.service.hostPortEnabled }}
           hostPort: {{ $val.hostPort }}
           {{- end }}
           name: "{{ $val.name }}"
