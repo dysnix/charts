@@ -110,6 +110,8 @@ bsc:
 #   failureThreshold: 2
 
 service:
+  # use hostPort with bsc container
+  hostPortEnabled: true
   type: ClusterIP
   rpcPortName: &rpcPortName jsonrpc
   rpcPort: &rpcPort 8575
