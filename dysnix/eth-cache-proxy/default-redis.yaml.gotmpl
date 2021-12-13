@@ -1,0 +1,30 @@
+{{- $password := include "eth-cache-proxy.redisPassword" . -}}
+
+redis:
+  auth:
+    password: {{ $password }}
+
+config:
+  redis:
+    password: {{ $password }}
+    requestTimeout: 1s
+    maxRedirects: 3
+    readAddrs: localhost:6379
+    writeAddrs: localhost:6379
+
+    minRetryBackoff: 8ms
+    maxRetryBackoff: 256ms
+    dialTimeout: 5s
+    readTimeout: 3s
+    writeTimeout: 3s
+    pool:
+      poolSize: 20
+      minIdleConns: 10
+      maxConnAge: 0s
+      poolTimeout: 4s
+      idleTimeout: 5m
+      idleCheckTimeout: 1m
+    maxRetries: 5
+    watch:
+      maxRetries: 3
+      intervalMilliseconds: 2s

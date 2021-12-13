@@ -2,7 +2,7 @@ apiVersion: v2
 name: eth-cache-proxy
 description: A Helm chart for Kubernetes
 type: application
-version: 0.1.5
+version: 0.1.7
 appVersion: "0.0.2"
 dependencies:
   - name: common
@@ -15,12 +15,12 @@ dependencies:
     repository: https://dysnix.github.io/charts
     tags:
       - dysnix-base
-  # - name: redis
-  #   version: 15.6.x
-  #   repository: https://charts.bitnami.com/bitnami
-  #   condition: redis.enabled
-  #   tags:
-  #     - bitnami-postgresql
+  - name: redis
+    version: 15.6.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
+    tags:
+      - bitnami-redis
 sources:
   - https://github.com/dysnix/charts
 maintainers:

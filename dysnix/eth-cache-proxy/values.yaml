@@ -44,8 +44,8 @@ extraDeploy: []
 ## @section Default Component default parameters
 ##
 defaultComponent:
-  ## @param defaultComponent.enabled Create the default Pod
-  ## @param defaultComponent.controller Default Pod controller type
+  ## @param defaultComponent.enabled [skip] Create the default Pod
+  ## @param defaultComponent.controller [skip] Default Pod controller type
   enabled: true
   controller: deployment
 
@@ -103,7 +103,9 @@ containerPorts:
 livenessProbe:
   enabled: true
   httpGet:
+    ## @param livenessProbe.httpGet.path Health-check endpoint
     path: /healthz
+    ## @param livenessProbe.httpGet.port Health-check port
     port: 8091
   initialDelaySeconds: 20
   periodSeconds: 10
@@ -120,7 +122,9 @@ livenessProbe:
 readinessProbe:
   enabled: true
   httpGet:
+    ## @param readinessProbe.httpGet.path Health-check endpoint
     path: /readyz
+    ## @param readinessProbe.httpGet.port Health-check port
     port: 8091
   initialDelaySeconds: 20
   periodSeconds: 10
@@ -152,8 +156,8 @@ customReadinessProbe: {}
 customStartupProbe: {}
 ## resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-## @param resources.limits The resources limits for the containers
-## @param resources.requests The requested resources for the containers
+## @param resources.limits [skip] The resources limits for the containers
+## @param resources.requests [skip] The requested resources for the containers
 ##
 resources:
   limits:
@@ -162,6 +166,7 @@ resources:
   requests:
     cpu: 1000m
     memory: 256Mi
+
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ##
@@ -205,11 +210,11 @@ component: ""
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
 podLabels: {}
-## @param podAnnotations Annotations for pods
+## @param podAnnotations [skip] Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
-  checksum/config: '{{ include "eth-cache-proxy.mergeConfigs" . | sha256sum }}'
+  checksum/config.yaml: '{{ include "eth-cache-proxy.config" . | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -285,7 +290,7 @@ envFromCMs: []
 ## @param envFromSecrets Array of existing Secret names containing env vars
 ##
 envFromSecrets: []
-## @param volumes Array of volumes for the pod(s)
+## @param volumes [skip] Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
 volumes:
@@ -293,7 +298,7 @@ volumes:
     configMap:
       name: '{{ include "common.names.fullname" . }}'
 extraVolumes: []
-## @param volumeMounts Array of volumeMounts for the pod(s) main container
+## @param volumeMounts [skip] Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
 volumeMounts:
@@ -316,7 +321,7 @@ podContainers: []
 ##         containerPort: 1234
 sidecars: []
 ##
-## @param initContainers Add additional init containers to the pod(s)
+## @param initContainers [skip] Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
 ## initContainers:
@@ -325,31 +330,8 @@ sidecars: []
 ##    imagePullPolicy: Always
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
-initContainers: |
-  {{- if .Values.redis.enabled -}}
-  - name: check-redis-read
-    image: alpine:3.9.2
-    command:
-      - sh
-      - -c
-      - |
-        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisReadHost" . }} 6379; do
-            sleep 2;
-        done;
-
-        echo 'Redis OK ✓'
-  - name: check-redis-write
-    image: alpine:3.9.2
-    command:
-      - sh
-      - -c
-      - |
-        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisWriteHost" . }} 6379; do
-            sleep 2;
-        done;
-
-        echo 'Redis OK ✓'
-  {{- end -}}
+initContainers: |-
+  {{- include "eth-cache-proxy.waitForRedis" . }}
 
 ## ServiceAccount configuration
 ##
@@ -384,8 +366,9 @@ configMap:
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
   data:
-    configs.yaml: |
-      {{- include "eth-cache-proxy.mergeConfigs" . | nindent 2 }}
+    config.yaml: |
+      {{- include "eth-cache-proxy.config" . | nindent 2 }}
+
 ## Secret configuration
 ##
 ## @param secret.create Specifies whether to enable the Secret (defaults to true if not set)
@@ -427,7 +410,7 @@ service:
   ## @param service.type [string] Service type (default is not set, effectively ClusterIP)
   ##
   # type: ClusterIP
-  ## @param service.ports Map or list of defining service ports
+  ## @param service.ports [skip] Map or list of defining service ports
   ##
   ports:
     http: http
@@ -484,16 +467,20 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-# ## Set postgresql connection params for migrations and auth containers.
-# redis:
-#   enabled: false
-#   username: ""
-#   # password: '1234567'
-#   # readAddrs: redis-replicas-1:6379,redis-replicas-2:6379
-#   # writeAddrs: redis-master-1:6379,redis-master-2:6379
-#   database: 0
-#   # auth:
-#   #   password: '1234567'
+## Set redis connection params for migrations and auth containers.
+## @param redis.enabled Enables bitnami redis deployment
+redis:
+  enabled: false
+  ## @param redis.global.redis.password Global Redis&trade; password (overrides `auth.password`)
+  global:
+    redis:
+      password: ""
+  auth:
+    ## @param redis.auth.enabled Enable password authentication
+    enabled: true
+    ## @param redis.auth.password Redis&trade; password
+    # Defaults to a random 10-character alphanumeric string if not set
+    password: ""
 
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
@@ -502,9 +489,13 @@ monitoring:
 
 ## Autoscaling parameters
 autoscaling:
+  ## @param autoscaling.enabled [skip] Enables HPA
   enabled: false
   # scaleDownDisabled: true
   # targetCPU: 60
   # minReplicas: 1
   # maxReplicas: 10
   # targetMemory: 50
+
+## @param cacheType Defines eth cacher storage type
+cacheType: redis
