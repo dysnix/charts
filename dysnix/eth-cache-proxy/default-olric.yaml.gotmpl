@@ -1,0 +1,10 @@
+config:
+  olric:
+    configType: lan
+    shutdownTimeout: 5s
+    startTimeout: 3s
+    mapName: test-map
+    logVerbosity: 6
+    logLevel: DEBUG
+    name: '{{ include "common.names.name" $ }}'
+    namespace: '{{ .Release.Namespace }}'

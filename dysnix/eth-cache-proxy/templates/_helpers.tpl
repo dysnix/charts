@@ -1,6 +1,13 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{/*
+Fullname (of the default component)
+*/}}
+{{- define "eth-cache-proxy.fullname" -}}
+{{- include "base.fullname" (dict "value" .Values "context" .) -}}
+{{- end -}}
+
+{{/*
 Return Redis&trade; password
 */}}
 {{- define "eth-cache-proxy.redisPassword" -}}
@@ -27,6 +34,7 @@ Return Redis&trade; password
 
 {{- define "eth-cache-proxy.config" -}}
   {{- $redis := eq .Values.cacheType "redis" | ternary (tpl (.Files.Get "default-redis.yaml.gotmpl") .) "{}" | fromYaml -}}
+  {{- $olric := eq .Values.cacheType "olric" | ternary (tpl (.Files.Get "default-olric.yaml.gotmpl") .) "{}" | fromYaml -}}
   {{- $common := tpl (.Files.Get "default-common.yaml.gotmpl") . | fromYaml -}}
-  {{- get (merge .Values $common $redis) "config" | toYaml  -}}
+  {{- get (merge .Values $common $redis $olric) "config" | toYaml  -}}
 {{- end -}}

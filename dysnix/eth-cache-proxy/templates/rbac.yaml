@@ -1,0 +1,24 @@
+{{- if eq .Values.cacheType "olric" }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ template "eth-cache-proxy.fullname" . }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "watch", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "eth-cache-proxy.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "base.serviceAccountName" (dict "serviceAccount" .Values.serviceAccount "name" .name "context" .) }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ template "eth-cache-proxy.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

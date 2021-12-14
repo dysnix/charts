@@ -101,50 +101,39 @@ containerPorts:
 ## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
 livenessProbe:
-  enabled: true
+  enabled: false
   httpGet:
     ## @param livenessProbe.httpGet.path Health-check endpoint
     path: /healthz
     ## @param livenessProbe.httpGet.port Health-check port
     port: 8091
-  initialDelaySeconds: 20
-  periodSeconds: 10
+  initialDelaySeconds: 5
+  periodSeconds: 5
   timeoutSeconds: 5
   failureThreshold: 3
   successThreshold: 1
 ## @param readinessProbe.enabled Enable readinessProbe on containers
-## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+## @param readinessProbe.initialDelaySeconds [string] Initial delay seconds for readinessProbe
 ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
 ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
 ## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
 ## @param readinessProbe.successThreshold Success threshold for readinessProbe
 ##
 readinessProbe:
-  enabled: true
+  enabled: false
   httpGet:
     ## @param readinessProbe.httpGet.path Health-check endpoint
     path: /readyz
     ## @param readinessProbe.httpGet.port Health-check port
     port: 8091
-  initialDelaySeconds: 20
-  periodSeconds: 10
+  periodSeconds: 5
   timeoutSeconds: 5
-  failureThreshold: 3
+  failureThreshold: 5
   successThreshold: 1
 ## @param startupProbe.enabled Enable startupProbe on containers
-## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-## @param startupProbe.periodSeconds Period seconds for startupProbe
-## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
-## @param startupProbe.failureThreshold Failure threshold for startupProbe
-## @param startupProbe.successThreshold Success threshold for startupProbe
 ##
 startupProbe:
   enabled: false
-  initialDelaySeconds: 20
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 3
-  successThreshold: 1
 ## @param customLivenessProbe Custom livenessProbe that overrides the default one
 ##
 customLivenessProbe: {}
@@ -197,7 +186,7 @@ command:
 ## @param args Override default container args (useful when using custom images)
 ##
 args:
-  - -conf=/etc/proxy/configs/configs.yaml
+  - -conf=/etc/eth-cache-proxy/configs/config.yaml
 
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -303,7 +292,7 @@ extraVolumes: []
 ##
 volumeMounts:
   - name: configs
-    mountPath: "/etc/proxy/configs"
+    mountPath: "/etc/eth-cache-proxy/configs"
     readOnly: true
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
@@ -498,4 +487,4 @@ autoscaling:
   # targetMemory: 50
 
 ## @param cacheType Defines eth cacher storage type
-cacheType: redis
+cacheType: olric
