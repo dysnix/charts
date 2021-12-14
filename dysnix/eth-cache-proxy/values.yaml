@@ -44,8 +44,8 @@ extraDeploy: []
 ## @section Default Component default parameters
 ##
 defaultComponent:
-  ## @param defaultComponent.enabled Create the default Pod
-  ## @param defaultComponent.controller Default Pod controller type
+  ## @param defaultComponent.enabled [skip] Create the default Pod
+  ## @param defaultComponent.controller [skip] Default Pod controller type
   enabled: true
   controller: deployment
 
@@ -88,10 +88,9 @@ replicaCount: 1
 ## Map form can be used too, in this case the default portocol will be used (which is TCP):
 ##
 containerPorts:
-  - name: http
-    containerPort: 8091
-  - name: monitoring
-    containerPort: 8097
+  http: 8091
+  monitoring: 8097
+  memberlist: 3322
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
 ## @param livenessProbe.enabled Enable livenessProbe on containers
@@ -102,46 +101,39 @@ containerPorts:
 ## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
 livenessProbe:
-  enabled: true
+  enabled: false
   httpGet:
+    ## @param livenessProbe.httpGet.path Health-check endpoint
     path: /healthz
+    ## @param livenessProbe.httpGet.port Health-check port
     port: 8091
-  initialDelaySeconds: 20
-  periodSeconds: 10
+  initialDelaySeconds: 5
+  periodSeconds: 5
   timeoutSeconds: 5
   failureThreshold: 3
   successThreshold: 1
 ## @param readinessProbe.enabled Enable readinessProbe on containers
-## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+## @param readinessProbe.initialDelaySeconds [string] Initial delay seconds for readinessProbe
 ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
 ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
 ## @param readinessProbe.failureThreshold Failure threshold for readinessProbe
 ## @param readinessProbe.successThreshold Success threshold for readinessProbe
 ##
 readinessProbe:
-  enabled: true
+  enabled: false
   httpGet:
+    ## @param readinessProbe.httpGet.path Health-check endpoint
     path: /readyz
+    ## @param readinessProbe.httpGet.port Health-check port
     port: 8091
-  initialDelaySeconds: 20
-  periodSeconds: 10
+  periodSeconds: 5
   timeoutSeconds: 5
-  failureThreshold: 3
+  failureThreshold: 5
   successThreshold: 1
 ## @param startupProbe.enabled Enable startupProbe on containers
-## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-## @param startupProbe.periodSeconds Period seconds for startupProbe
-## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
-## @param startupProbe.failureThreshold Failure threshold for startupProbe
-## @param startupProbe.successThreshold Success threshold for startupProbe
 ##
 startupProbe:
   enabled: false
-  initialDelaySeconds: 20
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 3
-  successThreshold: 1
 ## @param customLivenessProbe Custom livenessProbe that overrides the default one
 ##
 customLivenessProbe: {}
@@ -153,8 +145,8 @@ customReadinessProbe: {}
 customStartupProbe: {}
 ## resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-## @param resources.limits The resources limits for the containers
-## @param resources.requests The requested resources for the containers
+## @param resources.limits [skip] The resources limits for the containers
+## @param resources.requests [skip] The requested resources for the containers
 ##
 resources:
   limits:
@@ -163,6 +155,7 @@ resources:
   requests:
     cpu: 1000m
     memory: 256Mi
+
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ##
@@ -193,7 +186,7 @@ command:
 ## @param args Override default container args (useful when using custom images)
 ##
 args:
-  - -conf=/etc/proxy/configs/configs.yaml
+  - -conf=/etc/eth-cache-proxy/configs/config.yaml
 
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -206,11 +199,11 @@ component: ""
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
 podLabels: {}
-## @param podAnnotations Annotations for pods
+## @param podAnnotations [skip] Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
-  checksum/config: '{{ include "eth-cache-proxy.mergeConfigs" . | sha256sum }}'
+  checksum/config.yaml: '{{ include "eth-cache-proxy.config" . | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -277,16 +270,16 @@ lifecycleHooks: {}
 env:
 #  - name: BACKEND_RPC_URL
 #    value: "http://bscrpc.bsc:8575"
-extraEnv:
-  - name: CACHE_TTL
-    value: 3s
+extraEnv: []
+#  - name: CACHE_TTL
+#    value: 3s
 ## @param envFromCMs Array of existing ConfigMap names containing env vars
 ##
 envFromCMs: []
 ## @param envFromSecrets Array of existing Secret names containing env vars
 ##
 envFromSecrets: []
-## @param volumes Array of volumes for the pod(s)
+## @param volumes [skip] Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
 volumes:
@@ -294,12 +287,12 @@ volumes:
     configMap:
       name: '{{ include "common.names.fullname" . }}'
 extraVolumes: []
-## @param volumeMounts Array of volumeMounts for the pod(s) main container
+## @param volumeMounts [skip] Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
 volumeMounts:
   - name: configs
-    mountPath: "/etc/proxy/configs"
+    mountPath: "/etc/eth-cache-proxy/configs"
     readOnly: true
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
@@ -317,7 +310,7 @@ podContainers: []
 ##         containerPort: 1234
 sidecars: []
 ##
-## @param initContainers Add additional init containers to the pod(s)
+## @param initContainers [skip] Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
 ## initContainers:
@@ -326,29 +319,8 @@ sidecars: []
 ##    imagePullPolicy: Always
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
-initContainers:
-  - name: check-redis-read
-    image: alpine:3.9.2
-    command:
-      - sh
-      - -c
-      - |
-        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisReadHost" . }} 6379; do
-            sleep 2;
-        done;
-
-        echo 'Redis OK ✓'
-  - name: check-redis-write
-    image: alpine:3.9.2
-    command:
-      - sh
-      - -c
-      - |
-        until printf "." && nc -z -w 2 {{ include "eth-cache-proxy.redisWriteHost" . }} 6379; do
-            sleep 2;
-        done;
-
-        echo 'Redis OK ✓'
+initContainers: |-
+  {{- include "eth-cache-proxy.waitForRedis" . }}
 
 ## ServiceAccount configuration
 ##
@@ -383,8 +355,9 @@ configMap:
   immutable: false
   ## ConfigMap data has to be provide for the actual resource creation
   data:
-    configs.yaml: |
-      {{- include "eth-cache-proxy.mergeConfigs" . | nindent 2 }}
+    config.yaml: |
+      {{- include "eth-cache-proxy.config" . | nindent 2 }}
+
 ## Secret configuration
 ##
 ## @param secret.create Specifies whether to enable the Secret (defaults to true if not set)
@@ -426,17 +399,12 @@ service:
   ## @param service.type [string] Service type (default is not set, effectively ClusterIP)
   ##
   # type: ClusterIP
-  ## @param service.ports Map or list of defining service ports
+  ## @param service.ports [skip] Map or list of defining service ports
   ##
   ports:
-    - name: http
-      port: 8091
-      protocol: TCP
-      targetPort: http
-    - name: monitoring
-      port: 8097
-      protocol: TCP
-      targetPort: monitoring
+    http: http
+    monitoring: monitoring
+    memberlist: memberlist
   ## Node ports to expose
   ## @param service.nodePorts Map of nodePorts (effictive with type NodePort or LoadBalancer)
   ## NOTE: choose port between <30000-32767>
@@ -488,16 +456,20 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-## Set postgresql connection params for migrations and auth containers.
+## Set redis connection params for migrations and auth containers.
+## @param redis.enabled Enables bitnami redis deployment
 redis:
   enabled: false
-  username: ""
-  #  password: '1234567'
-  #  readAddrs: redis-replicas-1:6379,redis-replicas-2:6379
-  #  writeAddrs: redis-master-1:6379,redis-master-2:6379
-  database: 0
-#  auth:
-#    password: '1234567'
+  ## @param redis.global.redis.password Global Redis&trade; password (overrides `auth.password`)
+  global:
+    redis:
+      password: ""
+  auth:
+    ## @param redis.auth.enabled Enable password authentication
+    enabled: true
+    ## @param redis.auth.password Redis&trade; password
+    # Defaults to a random 10-character alphanumeric string if not set
+    password: ""
 
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
@@ -506,9 +478,13 @@ monitoring:
 
 ## Autoscaling parameters
 autoscaling:
+  ## @param autoscaling.enabled [skip] Enables HPA
   enabled: false
   # scaleDownDisabled: true
   # targetCPU: 60
   # minReplicas: 1
   # maxReplicas: 10
   # targetMemory: 50
+
+## @param cacheType Defines eth cacher storage type
+cacheType: olric

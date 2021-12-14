@@ -1,0 +1,49 @@
+config:
+  globalTtl: 3s
+  rpcObjectKey: method
+  cachedAll: false
+
+  debugMode: false
+  profiling:
+    enabled: false
+  monitoring:
+    enabled: true
+
+  single:
+    enabled: true
+    host: 0.0.0.0
+    port: 8097
+    name: pprof/monitoring server
+    concurrency: 100000
+    buffer:
+      readBufferSize: 256KiB
+      writeBufferSize: 256KiB
+    tcpKeepalive:
+      enabled: true
+      period: 1s
+    httptransport:
+      maxIdleConnDuration: 15s
+      readTimeout: 7s
+      writeTimeout: 7s
+
+  server:
+    host: 0.0.0.0
+    port: 8091
+    keepalive: true
+    requestsPause: 80ms
+    httptransport:
+      maxIdleConnDuration: 15s
+      readTimeout: 7s
+      writeTimeout: 7s
+
+  remoteClient:
+    transport:
+      maxIdleConns: 0
+      buffer:
+        readBufferSize: 256KiB
+        writeBufferSize: 256KiB
+      tcpKeepalive:
+        enabled: false
+        period: 15s
+    requestsTimeouts: 1s
+    backendRpcUrl: https://bsc-dataseed.binance.org
