@@ -89,7 +89,8 @@ spec:
     - host: {{ $ingress.hostname }}
       http:
         paths:
-          {{- with concat ($ingress.paths | default list) ($ingress.extraPaths | default list) }}
+          {{- $default_path := list (dict "path" ($ingress.path | default "/")) }}
+          {{- with concat $default_path ($ingress.paths | default list) ($ingress.extraPaths | default list) }}
             {{- $rule := dict "host" $ingress.hostname "defaultService" $fullname "ingress" $ingress }}
             {{- include "base.ingress.rulePaths" (dict "paths" . "rule" $rule "context" $context) | indent 10 }}
           {{- end }}
