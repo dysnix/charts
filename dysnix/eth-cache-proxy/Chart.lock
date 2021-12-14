@@ -4,9 +4,9 @@ dependencies:
   version: 1.10.3
 - name: base
   repository: https://dysnix.github.io/charts
-  version: 0.2.12
+  version: 0.2.13
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 15.6.4
-digest: sha256:5daa478ee1b5b59ff8ff4fd0bf2b774a8d8761f90d2615bf9f84d9bf135e0267
-generated: "2021-12-13T17:43:51.833532664+03:00"
+digest: sha256:2dbd62590cf4b0a6a8a9cd22d29b418d00821dfadb9effd4021905df67fd84c8
+generated: "2021-12-14T21:50:19.559080891+03:00"
