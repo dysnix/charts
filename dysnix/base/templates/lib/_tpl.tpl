@@ -1,34 +1,46 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{/*
-Renders object or list of objects which can be strings/maps/lists.
-
-Note: in case a list is renerered empty itemes are omittied! This enables
-      passing of two lists for example ($value.env $value.extraEnv), but finally
-      only one is rendered and the rendered content is not poluted with
-      extra empty value (such as "[]").
+Renders and performs flattening
 
 Usage:
-  {{ include "base.tpl.render" ( dict "value" .Values.path.to.the.Value "context" $) }}
+  {{ include "base.tpl.flatrender" ( dict "value" .Values.path.to.the.Value "context" $) }}
+
+Params
+  .value - a list of objects
+  .context - render context
 */}}
-{{- define "base.tpl.render" -}}
+{{- define "base.tpl.flatrender" -}}
+  {{- $result := list -}}
+  {{- range .value }}
+    {{- if kindIs "slice" . }}
 
-  {{- if typeIs "string" .value }}
-    {{- tpl .value .context }}
-  {{- else if kindIs "slice" .value }}
-
-    {{- range $i, $v := .value | compact }}
-      {{- if $v }}
-
-        {{- with (include "common.tplvalues.render" (dict "value" $v "context" $.context)) }}
-          {{- eq $i 0 | ternary "" "\n" }}{{ include "common.tplvalues.render" (dict "value" $v "context" $.context) }}
+      {{- range . }}
+        {{- with include "base.tpl.render" (dict "value" . "context" $.context) }}
+          {{- $result = append $result (printf "- %s" (. | nindent 2 | trimPrefix "\n  ")) }}
         {{- end }}
-
       {{- end }}
-    {{- end }}
 
-  {{- else }}
-    {{- include "common.tplvalues.render" (dict "value" .value "context" .context) }}
+    {{- else }}
+
+      {{- with include "base.tpl.render" (dict "value" . "context" $.context) }}
+        {{- if ne "null" . -}}
+          {{- $result = append $result . }}
+        {{- end }}
+      {{- end }}
+
+    {{- end }}
   {{- end }}
 
+  {{- with $result }}
+    {{- $result | join "\n" }}
+  {{- end }}
+{{- end -}}
+
+{{- define "base.tpl.render" -}}
+  {{- with (include "common.tplvalues.render" (dict "value" .value "context" .context)) -}}
+    {{- if not (or (eq . "{}") (eq . "[]")) }}
+      {{- . }}
+    {{- end }}
+  {{- end }}
 {{- end -}}

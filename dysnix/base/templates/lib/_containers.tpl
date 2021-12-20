@@ -29,11 +29,10 @@ Params:
 -   {{- include "base.container" (dict "container" $container "parent" $value "context" $context) | nindent 2 }}
   {{- end }}
 
-  {{- range $o := default (list) $value.sidecars }}
--
-  name: {{ $o.name }}
-    {{- include "common.tplvalues.render" (dict "value" (omit $o "name") "context" $context) | nindent 2 }}
+  {{- with include "base.tpl.flatrender" (dict "value" (list $value.sidecars) "context" $context) }}
+    {{ . | nindent 0 }}
   {{- end }}
+
 {{- end -}}
 
 {{/*
@@ -73,14 +72,12 @@ securityContext: {{ . | nindent 2 }}
 command: {{- include "common.tplvalues.render" (dict "value" $value.command "context" $context) | nindent 2 }}
 {{- end }}
 
-{{- with include "base.tpl.render" (dict "value" (list $value.args $value.extraArgs) "context" $context) }}
-args:
-  {{- . | nindent 2 }}
+{{- with include "base.tpl.flatrender" (dict "value" (list $value.args $value.extraArgs) "context" $context) }}
+args: {{- . | nindent 2 }}
 {{- end }}
 
-{{- with include "base.tpl.render" (dict "value" (list $value.env $value.extraEnv) "context" $context) }}
-env:
-  {{- . | nindent 2 }}
+{{- with include "base.tpl.flatrender" (dict "value" (list $value.env $value.extraEnv) "context" $context) }}
+env: {{- . | nindent 2 }}
 {{- end }}
 
 {{- if or $value.envFromCMs $value.envFromSecrets }}
