@@ -49,8 +49,8 @@ apiVersion: v1
 metadata:
   name: {{ include "base.fullname" (dict "value" $value "name" $name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- with $context.Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 4 }}
+  {{- with include "base.tpl.render" (dict "value" $context.Values.commonAnnotations "context" $context) }}
+  annotations: {{- . | nindent 4 }}
   {{- end }}
 spec:
   {{- include "base.pvc.spec" (dict "persistence" $persistence "context" $context) | nindent 2 }}

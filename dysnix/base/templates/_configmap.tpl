@@ -30,8 +30,8 @@ immutable: {{ $config.immutable }}
 metadata:
   name: {{ include "base.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- with (list $config.annotations $context.Values.commonAnnotations | compact)  }}
-  annotations: {{- include "base.tpl.render" (dict "value" . "context" $context) | nindent 4 }}
+  {{- with include "base.tpl.flatmap" (dict "value" (list $config.annotations $context.Values.commonAnnotations) "context" $context) }}
+  annotations: {{- . | nindent 4 }}
   {{- end }}
 {{- with $config.data }}
 data:

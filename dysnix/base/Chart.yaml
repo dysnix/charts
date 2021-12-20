@@ -3,7 +3,7 @@ annotations:
 apiVersion: v2
 name: base
 description: Generic base Helm chart for Kubernetes Applications
-version: 0.2.14
+version: 0.2.15
 appVersion: "0.1.0"
 keywords:
   - base
