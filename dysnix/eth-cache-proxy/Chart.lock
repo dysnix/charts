@@ -3,10 +3,10 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 1.10.3
 - name: base
-  repository: https://dysnix.github.io/charts
-  version: 0.2.13
+  repository: file:///home/dennybaa/code/dysnix/dysnix/charts/dysnix/base
+  version: 0.2.15
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 15.6.4
-digest: sha256:2dbd62590cf4b0a6a8a9cd22d29b418d00821dfadb9effd4021905df67fd84c8
-generated: "2021-12-14T21:50:19.559080891+03:00"
+  version: 15.6.7
+digest: sha256:6f763dac8d515dcac69b3fb975cbd0a577ba0b904a6a196d489008427bd032da
+generated: "2021-12-20T18:25:56.334440466+03:00"
