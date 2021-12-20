@@ -21,5 +21,13 @@ podContainers:
     ports:
       api: 3030
 
+initContainers: |-
+  - name: init
+    image:
+      repository: init/foo
+      tag: latest
+    cmd:
+      - /bin/bash
+
 ## Sidecars (for userland confgurations) are also welcome
 sidecars: []
