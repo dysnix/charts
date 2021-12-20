@@ -8,7 +8,7 @@ spec:
   endpoints:
     - interval: 10s
       path: /metrics
-      port: http
+      port: monitoring
   selector:
     matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
   namespaceSelector:
