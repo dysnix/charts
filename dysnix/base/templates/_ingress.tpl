@@ -79,9 +79,8 @@ kind: Ingress
 metadata:
   name: {{ $fullname }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- with list $ingress.annotations $context.Values.commonAnnotations | compact }}
-  annotations:
-    {{- include "base.tpl.render" (dict "value" . "context" $context) | nindent 4 }}
+  {{- with include "base.tpl.flatmap" (dict "value" (list $ingress.annotations $context.Values.commonAnnotations) "context" $context) }}
+  annotations: {{- . | nindent 4 }}
   {{- end }}
 spec:
   rules:

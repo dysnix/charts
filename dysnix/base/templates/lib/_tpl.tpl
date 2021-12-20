@@ -9,15 +9,21 @@ Usage:
 Params
   .value - a list of objects
   .context - render context
+  .type - map or list
 */}}
 {{- define "base.tpl.flatrender" -}}
   {{- $result := list -}}
+  {{- $type := .type | default "" -}}
+  {{- if and (ne $type "list") (ne $type "map")  -}}
+    {{- "\n==> base.tpl.flatrender\n    .type is expected, provide list or map!" | fail -}}
+  {{- end -}}
+  {{- $prefix := eq $type "list" | ternary "- " "" -}}
+
   {{- range .value }}
     {{- if kindIs "slice" . }}
-
       {{- range . }}
         {{- with include "base.tpl.render" (dict "value" . "context" $.context) }}
-          {{- $result = append $result (printf "- %s" (. | nindent 2 | trimPrefix "\n  ")) }}
+          {{- $result = append $result (printf "%s%s" $prefix (. | nindent 2 | trimPrefix "\n  ")) }}
         {{- end }}
       {{- end }}
 
@@ -43,4 +49,12 @@ Params
       {{- . }}
     {{- end }}
   {{- end }}
+{{- end -}}
+
+{{- define "base.tpl.flatlist" -}}
+  {{- include "base.tpl.flatrender" (dict "type" "list" "value" .value "context" .context) }}
+{{- end -}}
+
+{{- define "base.tpl.flatmap" -}}
+  {{- include "base.tpl.flatrender" (dict "type" "map" "value" .value "context" .context) }}
 {{- end -}}
