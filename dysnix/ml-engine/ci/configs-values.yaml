@@ -1,0 +1,8 @@
+image:
+  repository: eu.gcr.io/ai-scale-dev/ml-engine
+
+configs:
+  controller:
+    url: https://forecaster.ais.dysnix.org
+    transport:
+      timeout: 30s

@@ -10,8 +10,8 @@ single:
   name: pprof/monitoring server
   concurrency: 100000
   buffer:
-    readBufferSize: 4MiB
-    writeBufferSize: 4MiB
+    readBufferSize: 256KiB
+    writeBufferSize: 256KiB
   tcpKeepalive:
     enabled: true
     period: 1s
@@ -19,18 +19,16 @@ single:
     maxIdleConnDuration: 15s
     readTimeout: 7s
     writeTimeout: 7s
-postgres:
-  username: ai-scale
-  password: ""
-  database: ai-scale
-  host: localhost
-  port: 5432
-  schema: public
-  sslmode: disable
-  pool:
-    maxIdleConns: 1
-    maxOpenConns: 10
-    connMaxLifetime: 1m
+controller:
+  url: ""
+  transport:
+    maxIdleConns: 10
+    buffer:
+      readBufferSize: 256KiB
+      writeBufferSize: 256KiB
+    tcpKeepalive:
+      enabled: false
+      period: 15s
 grpc:
   enabled: true
   useReflection: true
@@ -40,9 +38,9 @@ grpc:
   connection:
     host: 0.0.0.0
     port: 8091
-    readBufferSize: 4MiB
-    writeBufferSize: 4MiB
-    maxMessageSize: 1MiB
+    readBufferSize: 50MiB
+    writeBufferSize: 50MiB
+    maxMessageSize: 50MiB
     insecure: true
     timeout: 15s
   keepalive:

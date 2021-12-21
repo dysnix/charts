@@ -49,7 +49,7 @@ defaultComponent:
   enabled: true
   controller: deployment
 
-## @section Pod(s) specific parameters
+## @section Component specific parameters
 ##
 ## Image version
 ## @param image.registry Image registry
@@ -60,13 +60,13 @@ defaultComponent:
 ##
 image:
   registry: ""
-  repository: alex6021710/ai-scale-auth
+  repository: foo/bar
   tag: latest
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
-  ## pullPolicy: IfNotPresent
+  pullPolicy: Always
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -180,8 +180,6 @@ containerSecurityContext:
   propogated: true
   runAsUser: 1001
   runAsNonRoot: true
-## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for
-existingConfigmap:
 ## @param command Override default container command (useful when using custom images)
 ##
 command:
@@ -189,7 +187,7 @@ command:
 ## @param args Override default container args (useful when using custom images)
 ##
 args:
-  - -conf=/etc/auth/configs/configs.yaml
+  - -conf=/etc/ml-engine/configs/configs.yaml
 ## @param hostAliases pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
@@ -204,8 +202,8 @@ podLabels: {}
 ## @param podAnnotations Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
-podAnnotations:
-  checksum/config: '{{ include "ai-auth.mergeConfigs" . | sha256sum }}'
+podAnnotations: |
+  checksum/config: '{{ deepCopy .Values.configs | mergeOverwrite (.Files.Get "default-configs.yml" | fromYaml) | toYaml | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -284,14 +282,13 @@ volumes:
   - name: configs
     configMap:
       name: '{{ include "common.names.fullname" . }}'
-
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
 volumeMounts:
   - name: configs
-    mountPath: "/etc/auth/configs"
+    mountPath: "/etc/ml-engine/configs"
     readOnly: true
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
@@ -312,39 +309,86 @@ sidecars: []
 ## @param initContainers Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
-initContainers: |
-  - name: check-postgresql
-    image: alpine:3.9.2
-    command:
-      - sh
-      - -c
-      - |
-        until printf "." && nc -z -w 2 {{ .Values.postgresql.host | default (include "ai-auth.postgresqlHost" .) }} 5432; do
-            sleep 2;
-        done;
+## initContainers:
+##  - name: your-image-name
+##    image: your-image
+##    imagePullPolicy: Always
+##    command: ['sh', '-c', 'echo "hello world"']
+##
+initContainers: []
 
-        echo 'PostgreSQL OK ✓'
-  - name: migrations
-    image: alex6021710/ai-scale-migrator:latest
-    command: ["/usr/local/bin/migrate"]
-    args:
-      - -source
-      - "file://./migrations"
-      - -database
-      - '{{ include "ai-auth.migrationString" . }}'
-      - up
+## ServiceAccount configuration
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## @param serviceAccount.annotations Annotations for the ServiceAccount
+  ##
+  annotations: {}
+  ## @param serviceAccount.name The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the base.fullname template
+  ##
+  name: ""
 
-## Oweride default service configs map.
-## ref: https://github.com/dysnix/ai-scale-auth
-## @param configs [map] auth service configs override
-configs: {}
+## ConfigMap configuration
+##
+## @param configMap.create Specifies whether to enable the ConfigMap (defaults to true if not set)
+## @param configMap.immutable Ensures that data stored in the ConfigMap cannot be updated
+## @param configMap.annotations Annotations for the configMap
+## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
+##
+configMap:
+  create: true
+  annotations: {}
+  ## When enabled only object metadata can be modified
+  immutable: false
+  ## ConfigMap data has to be provide for the actual resource creation
+  data:
+    configs.yaml: |
+      {{- deepCopy .Values.configs | mergeOverwrite (.Files.Get "default-configs.yml" | fromYaml)  | toYaml | nindent 2 }}
+
+## Secret configuration
+##
+## @param secret.create Specifies whether to enable the Secret (defaults to true if not set)
+## @param secret.immutable Ensures that data stored in the Secret cannot be updated
+## @param secret.annotations Annotations for the secret
+## @param secret.data [object] Specifies data stored in the Secret (either .data or .strigData should be provided)
+## @param secret.stringData [object] Specifies stringData stored in the Secret
+##
+secret:
+  create: true
+  annotations: {}
+  ## When enabled only object metadata can be modified
+  immutable: false
+  ## Secret .data or .stringData has to be provide for the actual resource creation
+  ##
+  ## Base64 encoded string
+  # data: Zm9vOiBiYXIKaGVsbG86IGJhcgo=
+  ##
+  # stringData:
+  #   hello: world
+  #   a: b
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+##
+## @param persistence.enabled Enable persistence, i.e. provide a volume for the default Pod
+## @param persistence.volumeName Specifies volume name for the default volume
+## @param persistence.storageClass [string] Specify a storageClassName
+## @param persistence.existingClam [string] Specify an existing Persistent Volume Claim name
+## @param persistence.accessMode Volume access mode
+## @param persistence.size Volume size
+## @param persistence.mountPath Volume mount path
+##
 
 ## Service parameters
 ##
 service:
   ## @param service.type [string] Service type (default is not set, effectively ClusterIP)
   ##
-  type: ClusterIP
+  # type: ClusterIP
   ## @param service.ports Map or list of defining service ports
   ##
   ports:
@@ -388,71 +432,107 @@ service:
   ##
   extraPorts: []
 
-## ServiceAccount configuration
-##
-serviceAccount:
-  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+ingress:
+  ## @param ingress.enabled Enable ingress record generation for %%MAIN_CONTAINER_NAME%%
   ##
-  create: true
-  ## @param serviceAccount.annotations Annotations for the ServiceAccount
+  enabled: false
+  ## @param ingress.pathType Ingress path type
+  ##
+  pathType: ImplementationSpecific
+  ## @param ingress.apiVersion Force Ingress API version (automatically detected if not set)
+  ##
+  apiVersion:
+  ## @param ingress.hostname Default host for the ingress record
+  ##
+  hostname: domain.local
+  ## @param ingress.serviceName Backend Service name (if not empty overrides the default backend)
+  ##
+  serviceName: ""
+  ## eg:
+  ## servicePort: http
+  ## @param ingress.servicePort Backend Service port ingress directs requests to
+  ##
+  servicePort: ""
+  ## eg:
+  ## servicePort: http
+  ##
+  ## @param ingress.path Default path for the ingress record
+  ## NOTE: You may need to set this to '/*' in order to use this with ALB ingress controllers
+  ##
+  path: /
+  ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
   ##
   annotations: {}
-  ## @param serviceAccount.name The name of the ServiceAccount to use.
-  ## If not set and create is true, a name is generated using the base.lib.fullname template
+  ## @param ingress.tls Enable TLS configuration for the host defined at `ingress.hostname` parameter
+  ## TLS certificates will be retrieved from a TLS secret with name: `{{- printf "%s-tls" .Values.ingress.hostname }}`
+  ## You can:
+  ##   - Use the `ingress.secrets` parameter to create this TLS secret
+  ##   - Relay on cert-manager to create it by setting the corresponding annotations
+  ##   - Relay on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
   ##
-  name: ""
-
-## ConfigMap configuration
-##
-## @param configMap.create Specifies whether to enable the ConfigMap
-## @param configMap.immutable Ensures that data stored in the ConfigMap cannot be updated
-## @param configMap.annotations Annotations for the configMap
-## @param configMap.data [object] Specifies data stored in the ConfigMap (must be provided to create the resource)
-##
-configMap:
-  create: true
-  annotations: {}
-  ## When enabled only object metadata can be modified
-  immutable: false
-  ## ConfigMap data has to be provide for the actual resource creation
-  data:
-    configs.yaml: |
-      {{- include "ai-auth.mergeConfigs" . | nindent 2 }}
-
-## Secret configuration
-##
-## @param secret.create Specifies whether to enable the Secret
-## @param secret.immutable Ensures that data stored in the Secret cannot be updated
-## @param secret.annotations Annotations for the secret
-## @param secret.data [object] Specifies data stored in the Secret (either .data or .strigData should be provided)
-## @param secret.stringData [object] Specifies stringData stored in the Secret
-##
-secret:
-  create: true
-  annotations: {}
-  ## When enabled only object metadata can be modified
-  immutable: false
-  ## Secret .data or .stringData has to be provide for the actual resource creation
+  tls: false
+  ## @param ingress.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
   ##
-  ## Base64 encoded string
-  # data: Zm9vOiBiYXIKaGVsbG86IGJhcgo=
+  selfSigned: false
+  ## @param ingress.extraHosts An array with additional hostname(s) to be covered with the ingress record
+  ## e.g:
+  ## extraHosts:
+  ##   - name: domain.local
+  ##     path: /
   ##
-  # stringData:
-  #   hello: world
-  #   a: b
+  extraHosts: []
+  ## @param ingress.extraPaths An array with additional arbitrary paths that may need to be added to the ingress under the main host
+  ## e.g:
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  ##
+  extraPaths: []
+  ## @param ingress.extraTls TLS configuration for additional hostname(s) to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTls:
+  ## - hosts:
+  ##     - domain.local
+  ##   secretName: domain.local-tls
+  ##
+  extraTls: []
+  ## @param ingress.extraTlsHosts Extra TLS hostname(s) added alongside to the default hostname (shares the default secret)
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## e.g:
+  ## extraTlsHosts:
+  ##   - extra.tld
+  ##
+  extraTlsHosts: []
+  ## @param ingress.secrets Custom TLS certificates as secrets
+  ## NOTE: 'key' and 'certificate' are expected in PEM format
+  ## NOTE: 'name' should line up with a 'secretName' set further up
+  ## If it is not set and you're using cert-manager, this is unneeded, as it will create a secret for you with valid certificates
+  ## If it is not set and you're NOT using cert-manager either, self-signed certificates will be created valid for 365 days
+  ## It is also possible to create and manage the certificates outside of this helm chart
+  ## Please see README.md for more information
+  ## e.g:
+  ## secrets:
+  ##   - name: domain.local-tls
+  ##     key: |-
+  ##       -----BEGIN RSA PRIVATE KEY-----
+  ##       ...
+  ##       -----END RSA PRIVATE KEY-----
+  ##     certificate: |-
+  ##       -----BEGIN CERTIFICATE-----
+  ##       ...
+  ##       -----END CERTIFICATE-----
+  ##
+  secrets: []
 
-## Enable persistence using Persistent Volume Claims
-## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-##
-##
-## @param persistence.enabled Enable persistence, i.e. provide a volume for the default Pod
-## @param persistence.volumeName Specifies volume name for the default volume
-## @param persistence.storageClass [string] Specify a storageClassName
-## @param persistence.existingClam [string] Specify an existing Persistent Volume Claim name
-## @param persistence.accessMode Volume access mode
-## @param persistence.size Volume size
-## @param persistence.mountPath Volume mount path
-##
 persistence:
   enabled: false
   volumeName: data
@@ -472,23 +552,13 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-## Set postgresql connection params for migrations and auth containers.
-postgresql:
-  enabled: false
-  username: ai-scale
-  #  password: '1234567'
-  #  host: postgresql
-  port: 5432
-  database: ai-scale
-  postgresqlUsername: ai-scale
-  postgresqlDatabase: ai-scale
-
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled
 monitoring:
   enabled: false
 
 ## Autoscaling parameters
+##
 autoscaling:
   enabled: false
   # scaleDownDisabled: true
@@ -496,3 +566,8 @@ autoscaling:
   # minReplicas: 1
   # maxReplicas: 10
   # targetMemory: 50
+
+## Oweride default service configs map.
+## ref: https://github.com/dysnix/ai-scale-saver
+## @param configs [map] saver service configs owerride
+configs: {}
