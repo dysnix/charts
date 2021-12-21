@@ -22,13 +22,14 @@ single:
 controller:
   url: ""
   transport:
-    maxIdleConns: 10
+    maxIdleConns: 0
     buffer:
       readBufferSize: 256KiB
       writeBufferSize: 256KiB
     tcpKeepalive:
       enabled: false
       period: 15s
+    timeout: 30s
 grpc:
   enabled: true
   useReflection: true
