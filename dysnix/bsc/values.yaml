@@ -14,12 +14,48 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# possible values:  StatefulSet CloneSet
+controller: StatefulSet
+
+# StatefulSet-specific options
 podManagementPolicy: OrderedReady
+
+# CloneSet-specific options
+minReadySeconds: 60
+scaleStrategy: {}
+# scaleStrategy:
+#  # scale up limit rate
+#  maxUnavailable: 1
+#  # selective pod deletion
+#   podsToDelete:
+#     - sample-9m4hp
+#
+# common options, default os for StatefulSet
 updateStrategy:
   type: RollingUpdate
 
-continent:
+# CloneSet options example
+# updateStrategy:
+#   type: InPlaceOnly
+#   inPlaceUpdateStrategy:
+#     gracePeriodSeconds: 10
+#   partitions: 3
+#   maxUnavailable: 20%
+#   maxSurge: 3
+# .... a lot more, check https://openkruise.io/docs/user-manuals/cloneset/#update-types
+podDeletionCost: 0
 
+continent:
 # Don't use spaces or special chars
 bsc:
   # we don't have other chains, it's just a pod label for now
@@ -44,12 +80,17 @@ bsc:
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
-  initFromSnapshotImage: dysnix/alpine-zstd:3.15
+  initFromSnapshotImage: dysnix/zstd:v3.15.1
   initFromRsync: false
   initFromRsyncImage: instrumentisto/rsync-ssh:latest
   forceInitFromSnapshot: false
   snapshotUrl:
   snapshotRsyncUrl: "rsync://192.168.8.4/snapshot/geth/node/geth"
+  podRange: 192.168.0.0/20
+  generateConfig: false
+  trustedNodesSrcUrl: "gs://bucket/trusted_nodes"
+  nodekeysSrcUrl: "gs://bucket/nodekeys"
+  nodekeysFileName: "nodekeys"
   getNodeKey: false
   staticNodeKey: false
 
@@ -163,6 +204,9 @@ rsyncd:
     port: 1873
     name: rsyncd
 
+nginx:
+  overrideBackendAddress: false
+  backendAddress:
 failback:
   enabled: false
   image:
