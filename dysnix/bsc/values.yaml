@@ -144,11 +144,18 @@ bsc:
 #   failureThreshold: 2
 
 # readinessProbe:
-#   initialDelaySeconds: 300
-#   periodSeconds: 300
-#   timeoutSeconds: 10
+#   initialDelaySeconds: 60
+#   periodSeconds: 10
+#   timeoutSeconds: 5
 #   successThreshold: 1
-#   failureThreshold: 2
+#   failureThreshold: 3
+
+startupProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 10
+  successThreshold: 1
+  failureThreshold: 12
 
 service:
   # use hostPort with bsc container
