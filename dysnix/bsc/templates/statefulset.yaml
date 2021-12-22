@@ -122,16 +122,19 @@ spec:
           mountPath: /env
         - name: bsc-pvc
           mountPath: {{ .Values.bsc.base_path }}
-        {{- if .Values.livenessProbe }}
+        {{- if .Values.startupProbe }}
         startupProbe:
           exec:
             command:
             - /bin/sh
             - -c
             - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $StartupProbeTimestampDistinct last_synced_block.txt
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.livenessProbe }}
         livenessProbe:
           exec:
             command:
@@ -143,7 +146,6 @@ spec:
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.livenessProbe.successThreshold }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-
         {{- end }}
         {{- if .Values.readinessProbe }}
         readinessProbe:
@@ -159,9 +161,17 @@ spec:
           failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
         {{- end }}
       - name: logger
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: [ "tail","-F","{{ .Values.bsc.base_path }}/bsc.log" ]
+        image: krallin/ubuntu-tini:latest
+        imagePullPolicy: IfNotPresent
+        args: [ "tail","-F","{{ .Values.bsc.base_path }}/bsc.log" ]
+        lifecycle:
+          preStop:
+            exec:
+              # just sleep a bit to tell k8s "kill the container a bit later", thus we'll be able to grab more logs
+              command:
+                - /bin/sh
+                - -c
+                - "sleep 30"
         workingDir: "{{ .Values.bsc.base_path }}"
         volumeMounts:
           - name: bsc-pvc
