@@ -11,11 +11,12 @@
 
 ### Global parameters
 
-| Name                      | Description                                     | Value |
-| ------------------------- | ----------------------------------------------- | ----- |
-| `global.imageRegistry`    | Global Docker image registry                    | `""`  |
-| `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`  |
-| `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `""`  |
+| Name                      | Description                                              | Value |
+| ------------------------- | -------------------------------------------------------- | ----- |
+| `global.imageRegistry`    | Global Docker image registry                             | `""`  |
+| `global.imagePullSecrets` | Global Docker registry secret names as an array          | `[]`  |
+| `global.storageClass`     | Global StorageClass for Persistent Volume(s)             | `""`  |
+| `global.redis.password`   | Global Redis&trade; password (overrides `auth.password`) | `""`  |
 
 
 ### Common parameters for all deployed objects
@@ -110,7 +111,10 @@
 | `serviceAccount.create`                 | Specifies whether a ServiceAccount should be created                                                                             | `true`                                               |
 | `serviceAccount.annotations`            | Annotations for the ServiceAccount                                                                                               | `{}`                                                 |
 | `serviceAccount.name`                   | The name of the ServiceAccount to use.                                                                                           | `""`                                                 |
-| `configs`                               | proxy service configs override                                                                                                   | `{}`                                                 |
+| `config`                                | Configuration of rpc-cache-proxy                                                                                                 | `{}`                                                 |
+| `config.redis.readAddrs`                | Specifies redis read addresses list (comma separated)                                                                            | `""`                                                 |
+| `config.redis.writeAddrs`               | Specifies redis write addresses list (comma separated)                                                                           | `""`                                                 |
+| `config.redis.password`                 | Specifies rpc-cache-proxy password for Redis&trade;                                                                              | `""`                                                 |
 | `configMap.create`                      | Specifies whether to enable the ConfigMap (defaults to true if not set)                                                          | `true`                                               |
 | `configMap.immutable`                   | Ensures that data stored in the ConfigMap cannot be updated                                                                      | `false`                                              |
 | `configMap.annotations`                 | Annotations for the configMap                                                                                                    | `{}`                                                 |
@@ -137,7 +141,6 @@
 | `service.annotations`                   | Additional custom annotations for service                                                                                        | `{}`                                                 |
 | `service.extraPorts`                    | Extra ports to expose in service (normally used with the `sidecars` value)                                                       | `[]`                                                 |
 | `redis.enabled`                         | Enables bitnami redis deployment                                                                                                 | `false`                                              |
-| `redis.global.redis.password`           | Global Redis&trade; password (overrides `auth.password`)                                                                         | `""`                                                 |
 | `redis.auth.enabled`                    | Enable password authentication                                                                                                   | `true`                                               |
 | `redis.auth.password`                   | Redis&trade; password                                                                                                            | `""`                                                 |
 | `monitoring.enabled`                    |                                                                                                                                  | `false`                                              |

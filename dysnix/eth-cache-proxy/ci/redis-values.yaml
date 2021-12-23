@@ -1,0 +1,10 @@
+cacheType: redis
+
+config:
+  redis:
+    password: foopass
+
+redis:
+  enabled: true
+  auth:
+    password: foopass

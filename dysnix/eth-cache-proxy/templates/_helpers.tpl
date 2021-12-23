@@ -12,7 +12,9 @@ Return Redis&trade; password
 */}}
 {{- define "eth-cache-proxy.redisPassword" -}}
   {{- if .Values.redis.enabled -}}
-    {{- include "redis.password" (dict "Values" .Values.redis) -}}
+    {{- include "redis.password" (dict "Values" (merge (dict "global" .Values.global) .Values.redis)) -}}
+  {{- else -}}
+    {{- .Values.config.redis.password -}}
   {{- end -}}
 {{- end -}}
 

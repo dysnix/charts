@@ -15,6 +15,9 @@ global:
   ##
   imagePullSecrets: []
   storageClass: ""
+  ## @param global.redis.password Global Redis&trade; password (overrides `auth.password`)
+  redis:
+    password: ""
 
 ## @section Common parameters for all deployed objects
 
@@ -337,10 +340,16 @@ serviceAccount:
   ##
   name: ""
 
-## Oweride default service configs map.
 ## ref: https://github.com/dysnix/rpc-proxy-cacher
-## @param configs [map] proxy service configs override
-configs: {}
+## @param config [object] Configuration of rpc-cache-proxy
+## @param config.redis.readAddrs [string] Specifies redis read addresses list (comma separated)
+## @param config.redis.writeAddrs [string] Specifies redis write addresses list (comma separated)
+config:
+  redis:
+    ## @param config.redis.password [string] Specifies rpc-cache-proxy password for Redis&trade;
+    password: ""
+    # readAddrs: ""
+    # writeAddrs: ""
 
 ## ConfigMap configuration
 ##
@@ -462,10 +471,6 @@ persistence:
 ## @param redis.enabled Enables bitnami redis deployment
 redis:
   enabled: false
-  ## @param redis.global.redis.password Global Redis&trade; password (overrides `auth.password`)
-  global:
-    redis:
-      password: ""
   auth:
     ## @param redis.auth.enabled Enable password authentication
     enabled: true
