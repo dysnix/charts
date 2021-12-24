@@ -344,12 +344,12 @@ serviceAccount:
 ## @param config [object] Configuration of rpc-cache-proxy
 ## @param config.redis.readAddrs [string] Specifies redis read addresses list (comma separated)
 ## @param config.redis.writeAddrs [string] Specifies redis write addresses list (comma separated)
-config:
-  redis:
-    ## @param config.redis.password [string] Specifies rpc-cache-proxy password for Redis&trade;
-    password: ""
-    # readAddrs: ""
-    # writeAddrs: ""
+## @param config.redis.password [string] Specifies rpc-cache-proxy password for Redis&trade;
+config: {}
+  # redis:
+  #   password: ""
+  #   readAddrs: ""
+  #   writeAddrs: ""
 
 ## ConfigMap configuration
 ##

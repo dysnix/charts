@@ -14,13 +14,13 @@ Return Redis&trade; password
   {{- if .Values.redis.enabled -}}
     {{- include "redis.password" (dict "Values" (merge (dict "global" .Values.global) .Values.redis)) -}}
   {{- else -}}
-    {{- .Values.config.redis.password -}}
+    {{- .Values | merge | dig "config" "redis" "password" "" -}}
   {{- end -}}
 {{- end -}}
 
 {{- define "eth-cache-proxy.redisWriteHost" -}}
 {{- if and .Values.redis.enabled (empty .Values.redis.writeAddrs) -}}
-  {{- printf "%s-redis-master:6379" (include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $)) }}
+  {{- printf "%s-master:6379" (include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $)) }}
 {{- else -}}
   {{- printf "%s:%d" (.Values.redis.writeAddrs | default "0.0.0.0") (.Values.redis.port | int | default 6379 ) }}
 {{- end }}
@@ -28,7 +28,7 @@ Return Redis&trade; password
 
 {{- define "eth-cache-proxy.redisReadHost" -}}
 {{- if and .Values.redis.enabled (empty .Values.redis.readAddrs) -}}
-  {{- printf "%s-redis-master:6379" (include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $)) }}
+  {{- printf "%s-replicas:6379" (include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $)) }}
 {{- else -}}
   {{- printf "%s:%d" (.Values.redis.readAddrs | default "0.0.0.0") (.Values.redis.port | int | default 6379 ) }}
 {{- end }}

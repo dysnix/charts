@@ -44,9 +44,9 @@
 
 | Name                                    | Description                                                                                                                      | Value                                                |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `image.registry`                        | Image registry                                                                                                                   | `""`                                                 |
-| `image.repository`                      | Image name                                                                                                                       | `dysnix/eth-cache-proxy`                             |
-| `image.tag`                             | Image tag                                                                                                                        | `latest`                                             |
+| `image.registry`                        | Image registry                                                                                                                   | `eu.gcr.io`                                          |
+| `image.repository`                      | Image name                                                                                                                       | `predictkube/rpc-proxy-cacher`                       |
+| `image.tag`                             | Image tag                                                                                                                        | `v0.1.0`                                             |
 | `image.pullPolicy`                      | Image pull policy                                                                                                                | `""`                                                 |
 | `image.pullSecrets`                     | Image pull secrets                                                                                                               | `[]`                                                 |
 | `replicaCount`                          | Number of pod replicas to deploy                                                                                                 | `1`                                                  |
