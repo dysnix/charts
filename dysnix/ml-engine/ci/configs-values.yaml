@@ -1,5 +1,5 @@
 image:
-  repository: eu.gcr.io/ai-scale-dev/ml-engine
+  repository: eu.gcr.io/predictkube/ml-engine
 
 configs:
   controller:

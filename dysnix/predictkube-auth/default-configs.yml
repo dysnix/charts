@@ -20,9 +20,9 @@ single:
     readTimeout: 7s
     writeTimeout: 7s
 postgres:
-  username: ai-scale
+  username: predictkube
   password: ""
-  database: ai-scale
+  database: predictkube
   host: localhost
   port: 5432
   schema: public

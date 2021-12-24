@@ -568,6 +568,6 @@ autoscaling:
   # targetMemory: 50
 
 ## Oweride default service configs map.
-## ref: https://github.com/dysnix/ai-scale-saver
+## ref: https://github.com/dysnix/predictkube-saver
 ## @param configs [map] saver service configs owerride
 configs: {}

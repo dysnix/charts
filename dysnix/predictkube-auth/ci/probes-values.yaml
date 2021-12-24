@@ -1,3 +1,6 @@
+image:
+  repository: eu.gcr.io/predictkube/auth
+
 postgresql:
   enabled: true
   password: "1234567"
