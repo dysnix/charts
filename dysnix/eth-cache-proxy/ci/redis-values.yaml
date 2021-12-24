@@ -8,3 +8,6 @@ redis:
   enabled: true
   auth:
     password: foopass
+
+ingress:
+  enabled: true

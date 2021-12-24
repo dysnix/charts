@@ -62,14 +62,14 @@ defaultComponent:
 ## @param image.pullSecrets [array] Image pull secrets
 ##
 image:
-  registry: ""
-  repository: dysnix/eth-cache-proxy
-  tag: latest
+  registry: eu.gcr.io
+  repository: predictkube/rpc-proxy-cacher
+  tag: v0.1.0
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   ## Optionally specify an array of imagePullSecrets.
   ## Secrets must be manually created in the namespace.
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -340,7 +340,7 @@ serviceAccount:
   ##
   name: ""
 
-## ref: https://github.com/dysnix/rpc-proxy-cacher
+## ref: https://github.com/dysnix/:proxy-cacher
 ## @param config [object] Configuration of rpc-cache-proxy
 ## @param config.redis.readAddrs [string] Specifies redis read addresses list (comma separated)
 ## @param config.redis.writeAddrs [string] Specifies redis write addresses list (comma separated)
