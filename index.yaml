@@ -1947,6 +1947,38 @@ entries:
   eth-cache-proxy:
   - apiVersion: v2
     appVersion: 0.0.2
+    created: "2021-12-24T14:32:36.253077318Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-redis
+      version: 15.6.x
+    description: A Helm chart for Kubernetes
+    digest: 4f85732302a9c9f2be0f6a19494725a383e5fb5b0f0c976c2d6df2b3b0aec404
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: eth-cache-proxy
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/eth-cache-proxy-0.1.12/eth-cache-proxy-0.1.12.tgz
+    version: 0.1.12
+  - apiVersion: v2
+    appVersion: 0.0.2
     created: "2021-12-20T12:37:28.557554766Z"
     dependencies:
     - name: common
@@ -3225,4 +3257,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/pullsecrets-0.1.0/pullsecrets-0.1.0.tgz
     version: 0.1.0
-generated: "2021-12-22T11:37:28.219324361Z"
+generated: "2021-12-24T14:32:36.253759425Z"
