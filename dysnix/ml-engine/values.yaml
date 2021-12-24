@@ -107,7 +107,7 @@ livenessProbe:
     port: 8097
   initialDelaySeconds: 20
   periodSeconds: 10
-  timeoutSeconds: 5
+  timeoutSeconds: 15
   failureThreshold: 3
   successThreshold: 1
 ## @param readinessProbe.enabled Enable readinessProbe on containers
@@ -124,7 +124,7 @@ readinessProbe:
     port: 8097
   initialDelaySeconds: 20
   periodSeconds: 10
-  timeoutSeconds: 5
+  timeoutSeconds: 15
   failureThreshold: 3
   successThreshold: 1
 ## @param startupProbe.enabled Enable startupProbe on containers
