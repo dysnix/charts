@@ -1,16 +1,13 @@
+{{/* Singleton password evaluation (in the parent eth-cache-proxy) */}}
 {{- $password := include "eth-cache-proxy.redisPassword" . -}}
-
-redis:
-  auth:
-    password: {{ $password }}
 
 config:
   redis:
     password: {{ $password }}
     requestTimeout: 1s
     maxRedirects: 3
-    readAddrs: localhost:6379
-    writeAddrs: localhost:6379
+    readAddrs: {{ include "eth-cache-proxy.redisReadHost" . }}
+    writeAddrs: {{ include "eth-cache-proxy.redisWriteHost" . }}
 
     minRetryBackoff: 8ms
     maxRetryBackoff: 256ms
