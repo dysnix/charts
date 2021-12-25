@@ -94,6 +94,8 @@ containerPorts:
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
 ## @param livenessProbe.enabled Enable livenessProbe on containers
+## @param livenessProbe.httpGet.path Route for check liveness probes by HTTP
+## @param livenessProbe.httpGet.port Port for check liveness probes by HTTP
 ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
 ## @param livenessProbe.periodSeconds Period seconds for livenessProbe
 ## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
@@ -111,6 +113,8 @@ livenessProbe:
   failureThreshold: 3
   successThreshold: 1
 ## @param readinessProbe.enabled Enable readinessProbe on containers
+## @param readinessProbe.httpGet.path Route for check readiness probes by HTTP
+## @param readinessProbe.httpGet.port Port for check readiness probes by HTTP
 ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
 ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
 ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
@@ -201,10 +205,12 @@ component: ""
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
 podLabels: {}
-## @param podAnnotations Annotations for pods
+## Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
+  ## @param podAnnotations.checksum/config Usage for upgrade chart if service configs was changed.
+  ##
   checksum/config: '{{ include "ai-auth.mergeConfigs" . | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
@@ -277,16 +283,15 @@ envFromCMs: []
 ## @param envFromSecrets Array of existing Secret names containing env vars
 ##
 envFromSecrets: []
-## @param volumes Array of volumes for the pod(s)
+## @param volumes [array] Array of volumes for the pod(s)
 ## @param extraVolumes Optionally specify extra list of additional volumes for the pod(s)
 ##
 volumes:
   - name: configs
     configMap:
       name: '{{ include "common.names.fullname" . }}'
-
 extraVolumes: []
-## @param volumeMounts Array of volumeMounts for the pod(s) main container
+## @param volumeMounts [array] Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
 ##
 volumeMounts:
@@ -309,7 +314,7 @@ podContainers: []
 ##         containerPort: 1234
 sidecars: []
 ##
-## @param initContainers Add additional init containers to the pod(s)
+## @param initContainers [array] Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
 initContainers:
@@ -345,7 +350,7 @@ service:
   ## @param service.type [string] Service type (default is not set, effectively ClusterIP)
   ##
   type: ClusterIP
-  ## @param service.ports Map or list of defining service ports
+  ## @param service.ports [array] Map or list of defining service ports
   ##
   ports:
     - name: grpc
@@ -472,15 +477,27 @@ persistence:
   size: 10Gi
   mountPath: /data
 
-## Set postgresql connection params for migrations and auth containers.
+## Set postgresql [map] connection params for migrations and auth containers.
 postgresql:
+  ## @param postgresql.enabled [bool] Enable deploy Postgresql database chart
+  ##
   enabled: false
+  ## @param postgresql.username [string] Override default Username parameter for migration container and service DB connect config
+  ##
   username: ai-scale
   #  password: '1234567'
   #  host: postgresql
+  ## @param postgresql.port [number] Override default database endpoint port
+  ##
   port: 5432
+  ## @param postgresql.database [string] Override default Database parameter for migration container and service DB connect config
+  ##
   database: ai-scale
+  ## @param postgresql.postgresqlUsername [string] Override default User name parameter
+  ##
   postgresqlUsername: ai-scale
+  ## @param postgresql.postgresqlDatabase [string] Override default database name
+  ##
   postgresqlDatabase: ai-scale
 
 ## Set servicemonitore resource enabled status.
@@ -490,6 +507,8 @@ monitoring:
 
 ## Autoscaling parameters
 autoscaling:
+  ## @param autoscaling.enabled Enable HPA resource usage
+  ##
   enabled: false
   # scaleDownDisabled: true
   # targetCPU: 60

@@ -106,6 +106,8 @@ containerPorts:
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
 ## @param livenessProbe.enabled Enable livenessProbe on containers
+## @param livenessProbe.httpGet.path Route for check liveness probes by HTTP
+## @param livenessProbe.httpGet.port Port for check liveness probes by HTTP
 ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
 ## @param livenessProbe.periodSeconds Period seconds for livenessProbe
 ## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
@@ -123,6 +125,8 @@ livenessProbe:
   failureThreshold: 3
   successThreshold: 1
 ## @param readinessProbe.enabled Enable readinessProbe on containers
+## @param readinessProbe.httpGet.path Route for check readiness probes by HTTP
+## @param readinessProbe.httpGet.port Port for check readiness probes by HTTP
 ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
 ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
 ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
@@ -202,7 +206,7 @@ command:
 args: '{{- include "ai-doer.argsWebhooks" . }}'
 # [ "while true; do sleep 30000; done;" ]
 
-## @param args Override default Doer service cmd args
+## @param overrideArgs Override default Doer service cmd args
 ##
 overrideArgs:
   - --zap-log-level=debug
@@ -218,10 +222,12 @@ component: ""
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
 podLabels: {}
-## @param podAnnotations Annotations for pods
+## Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
+  ## @param podAnnotations.checksum/config Usage for upgrade chart from helmfile if service configs was override.
+  ##
   checksum/config: '{{ deepCopy .Values.configs | mergeOverwrite (.Files.Get "default-configs.yml" | fromYaml) | toYaml | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
@@ -570,6 +576,8 @@ rbac:
 
 ## Autoscaling parameters
 autoscaling:
+  ## @param autoscaling.enabled Enable HPA resource usage
+  ##
   enabled: false
   # scaleDownDisabled: true
   # targetCPU: 60
@@ -579,22 +587,40 @@ autoscaling:
 
 ## Set configs for operator webhooks
 webhook:
+  ## @param webhook.enabled Enable operator usage webhook's
+  ##
   enabled: false
   tls:
+    ## @param webhook.tls.certDir Directory with mounted certificates for webhook's
+    ##
     certDir: "/etc/webhooks/certs"
   certs:
+    ## @param webhook.certs.secretName Name of secret with generated or load certificates
+    ##
     secretName: webhook-secret
+    ## @param webhook.certs.generate Enabled generate or not self signed certificates
+    ##
     generate: true
     ca:
+      ## @param webhook.certs.ca.crt CA certificate override
+      ##
       crt: ""
     server:
       tls:
+        ## @param webhook.certs.server.tls.crt CRT certificate override
+        ##
         crt: ""
+        ## @param webhook.certs.server.tls.key KEY certificate override
+        ##
         key: ""
 
 ## Set CR's resources
 crd:
+  ## @param crd.enabled Enable deploy CR list
+  ##
   enabled: false
+  ## @param crd.crs CR list
+  ##
   crs: []
 #  crs:
 #    - name: aipodautoscaler-apache
