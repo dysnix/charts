@@ -27,7 +27,7 @@ Container name is empty!
 {{- end -}}
 
 {{- define "base.validate.controllerSupported" -}}
-{{- $supported := list ("deployment") -}}
+{{- $supported := list ("Deployment") -}}
 {{- if not (has .controller $supported) -}}
 Unsupported controller type!
   
