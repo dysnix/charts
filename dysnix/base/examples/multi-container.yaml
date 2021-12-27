@@ -1,5 +1,5 @@
 defaultComponent:
-  controller: deployment
+  controller: Deployment
 
 ## Default PersistentVolumeClaim is created for the first replica
 ## and is automounted into the default container (first in the Pod)

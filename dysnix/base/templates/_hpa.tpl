@@ -35,7 +35,7 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" $context }}
-    kind: Deployment
+    kind: {{ include "base.component.controller" (dict "component" $component "value" $value "context" $context) }}
     name: {{ $fullname }}
   minReplicas: {{ $hpa.minReplicas }}
   maxReplicas: {{ $hpa.maxReplicas }}
@@ -45,13 +45,17 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ $hpa.targetCPU }}
+        target:
+          type: Utilization
+          averageUtilization: {{ $hpa.targetCPU }}
     {{- end }}
     {{- if $hpa.targetMemory }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ $hpa.targetMemory }}
+        target:
+          type: Utilization
+          averageUtilization: {{ $hpa.targetMemory }}
     {{- end }}
     {{- with $metrics }}
       {{- . | nindent 4 }}
