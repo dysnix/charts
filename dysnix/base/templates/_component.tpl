@@ -86,7 +86,7 @@ Params:
     {{- end -}}
 
     {{/* PersistentVolumeClaim for the default Deployment */}}
-    {{- if eq (get $pod "controller") "deployment" -}}
+    {{- if eq (get $pod "controller") "Deployment" -}}
       {{- include "base.pvc" (dict "value" $value "component" $component "context" $context) -}}
     {{- end -}}
 

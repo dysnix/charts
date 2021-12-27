@@ -311,10 +311,10 @@ autoscaling:
   minReplicas: 1
   ## @param autoscaling.minReplicas Specifies the maximum amount of replicas
   maxReplicas: 10
-  ## @param autoscaling.targetCPU [string] Specifies the maximum amount of replicas
-  ## targetCPU: 50
-  ## @param autoscaling.targetMemory [string] Specifies the maximum amount of replicas
-  ## targetMemory: 50
+  ## @param autoscaling.targetCPU Specifies the target average CPU utilization
+  targetCPU: 60
+  ## @param autoscaling.targetMemory Specifies the target average Memory utilization
+  targetMemory: 60
   ## ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#metricspec-v2beta2-autoscaling
   ## @param autoscaling.metrics Specifies a custom list of metrics
   metrics: []
