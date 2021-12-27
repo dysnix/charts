@@ -132,10 +132,10 @@ service:
 
 ### Default Component default parameters
 
-| Name                          | Description                 | Value        |
-| ----------------------------- | --------------------------- | ------------ |
-| `defaultComponent.enabled`    | Create the default Pod      | `true`       |
-| `defaultComponent.controller` | Default Pod controller type | `deployment` |
+| Name                          | Description                                  | Value        |
+| ----------------------------- | -------------------------------------------- | ------------ |
+| `defaultComponent.enabled`    | Create the default Pod                       | `true`       |
+| `defaultComponent.controller` | Default Pod controller type (case-sensetive) | `Deployment` |
 
 
 ### Component specific parameters
@@ -207,6 +207,12 @@ service:
 | `podContainers`                         | Pod containers, creates a multi-container pod(s) (`base.container` template is used)                                             | `[]`                     |
 | `sidecars`                              | Add additional sidecar containers to the pod(s) (raw definitions)                                                                | `[]`                     |
 | `initContainers`                        | Add additional init containers to the pod(s)                                                                                     | `{}`                     |
+| `autoscaling.enabled`                   | Specifies whether to enable HorizontalPodAutoscaler                                                                              | `false`                  |
+| `autoscaling.minReplicas`               | Specifies the minimum amount of replicas                                                                                         | `1`                      |
+| `autoscaling.maxReplicas`               | Specifies the maximum amount of replicas                                                                                         | `10`                     |
+| `autoscaling.targetCPU`                 | Specifies the target average CPU utilization                                                                                     | `60`                     |
+| `autoscaling.targetMemory`              | Specifies the target average Memory utilization                                                                                  | `60`                     |
+| `autoscaling.metrics`                   | Specifies a custom list of metrics                                                                                               | `[]`                     |
 | `serviceAccount.create`                 | Specifies whether a ServiceAccount should be created                                                                             | `true`                   |
 | `serviceAccount.annotations`            | Annotations for the ServiceAccount                                                                                               | `{}`                     |
 | `serviceAccount.name`                   | The name of the ServiceAccount to use.                                                                                           | `""`                     |
@@ -219,13 +225,6 @@ service:
 | `secret.annotations`                    | Annotations for the secret                                                                                                       | `{}`                     |
 | `secret.data`                           | Specifies data stored in the Secret (either .data or .strigData should be provided)                                              | `{}`                     |
 | `secret.stringData`                     | Specifies stringData stored in the Secret                                                                                        | `{}`                     |
-| `persistence.enabled`                   | Enable persistence, i.e. provide a volume for the default Pod                                                                    | `false`                  |
-| `persistence.volumeName`                | Specifies volume name for the default volume                                                                                     | `data`                   |
-| `persistence.storageClass`              | Specify a storageClassName                                                                                                       | `""`                     |
-| `persistence.existingClam`              | Specify an existing Persistent Volume Claim name                                                                                 | `""`                     |
-| `persistence.accessMode`                | Volume access mode                                                                                                               | `ReadWriteOnce`          |
-| `persistence.size`                      | Volume size                                                                                                                      | `10Gi`                   |
-| `persistence.mountPath`                 | Volume mount path                                                                                                                | `/data`                  |
 | `service.type`                          | Service type (default is not set, effectively ClusterIP)                                                                         | `""`                     |
 | `service.ports`                         | Map or list of defining service ports                                                                                            | `{}`                     |
 | `service.nodePorts`                     | Map of nodePorts (effictive with type NodePort or LoadBalancer)                                                                  | `{}`                     |
@@ -250,5 +249,14 @@ service:
 | `ingress.extraTls`                      | TLS configuration for additional hostname(s) to be covered with this ingress record                                              | `[]`                     |
 | `ingress.extraTlsHosts`                 | Extra TLS hostname(s) added alongside to the default hostname (shares the default secret)                                        | `[]`                     |
 | `ingress.secrets`                       | Custom TLS certificates as secrets                                                                                               | `[]`                     |
+| `persistence.enabled`                   | Enable persistence, i.e. provide a volume for the default Pod                                                                    | `false`                  |
+| `persistence.volumeName`                | Specifies volume name for the default volume                                                                                     | `data`                   |
+| `persistence.storageClass`              | Specify a storageClassName                                                                                                       | `""`                     |
+| `persistence.existingClam`              | Specify an existing Persistent Volume Claim name                                                                                 | `""`                     |
+| `persistence.accessMode`                | Volume access mode                                                                                                               | `ReadWriteOnce`          |
+| `persistence.size`                      | Volume size                                                                                                                      | `10Gi`                   |
+| `persistence.mountPath`                 | Volume mount path                                                                                                                | `/data`                  |
+| `persistence.ephemeral.enabled`         | Specifies whether to persist data only during Pod's lifetime                                                                     | `false`                  |
+| `persistence.ephemeral.type`            | Specifies type of the ephemeral volume                                                                                           | `emptyDir`               |
 
 
