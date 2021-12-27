@@ -321,6 +321,37 @@ entries:
       category: Infrastructure
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2021-12-27T17:31:54.485863271Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    description: Generic base Helm chart for Kubernetes Applications
+    digest: 4e7e123edd2df5747ba4443636e963c97b0714d3c04763471ee515b61da6e249
+    keywords:
+    - base
+    - common
+    - library
+    - helper
+    - template
+    - function
+    - dysnix
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: base
+    sources:
+    - https://github.com/dysnix/charts
+    type: library
+    urls:
+    - https://github.com/dysnix/charts/releases/download/base-0.3.0/base-0.3.0.tgz
+    version: 0.3.0
+  - annotations:
+      category: Infrastructure
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2021-12-20T15:43:57.230822403Z"
     dependencies:
     - name: common
@@ -3257,4 +3288,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/pullsecrets-0.1.0/pullsecrets-0.1.0.tgz
     version: 0.1.0
-generated: "2021-12-24T14:32:36.253759425Z"
+generated: "2021-12-27T17:31:54.486537307Z"
