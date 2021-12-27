@@ -39,10 +39,11 @@ Params:
 {{- $value := .value -}}
 {{- $context := .context -}}
 {{- $persistence := .value | merge dict | dig "persistence" dict -}}
+{{- $ephemeral := $persistence | merge dict | dig "ephemeral" (dict "enabled" false) -}}
 {{- $name := .name | default $persistence.volumeName -}}
 {{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
 
-{{- if and $persistence.enabled (not $persistence.existingClaim) }}
+{{- if and (not $ephemeral.enabled) $persistence.enabled (not $persistence.existingClaim) }}
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
