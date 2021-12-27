@@ -9,6 +9,38 @@ Usage:
 {{- end -}}
 
 {{/*
+Outputs the given component controller name
+
+Usage:
+  {{ include "base.component.controller" (dict "value" "component" "myComponent" .Values.path.to.component "context" $) }}
+
+Params:
+  value - dict with component values
+  context - render context (root is propogated - $)
+  component - (optional) specifies the component name (used for naming and labeling)
+*/}}
+{{- define "base.component.controller" -}}
+  {{- $value := .value -}}
+  {{- $context := .context -}}
+  {{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
+  {{- $pod := pick $value "enabled" "controller" -}}
+
+  {{/* Validations */}}
+  {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
+
+  {{- if eq $component "_default" -}}
+    {{ $pod = mergeOverwrite $pod ($value.defaultComponent | merge dict) }}
+  {{- end -}}
+
+  {{- if eq "true" (get $pod "enabled" | toString | default "true") -}}
+    {{- if get $pod "controller" -}}
+      {{- template "base.validate" (dict "template" "base.validate.controllerSupported" "controller" $pod.controller "context" $context) -}}
+      {{- get $pod "controller" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
 Get component name!
 .value.component has precedence over .component.
 
@@ -50,7 +82,7 @@ Params:
     {{/* Pod controller (ex deployment/statefulset etc) */}}
     {{- if get $pod "controller" -}}
       {{- template "base.validate" (dict "template" "base.validate.controllerSupported" "controller" $pod.controller "context" $context) -}}
-      {{- include (printf "base.%s" $pod.controller) (dict "value" $value "component" $component "context" $context) -}}
+      {{- include (printf "base.%s" $pod.controller | lower) (dict "value" $value "component" $component "context" $context) -}}
     {{- end -}}
 
     {{/* PersistentVolumeClaim for the default Deployment */}}
@@ -72,5 +104,8 @@ Params:
 
     {{/* ingress generation */}}
     {{- include "base.ingress" (dict "value" $value "component" $component "context" $context) -}}
+
+    {{/* ingress generation */}}
+    {{- include "base.hpa" (dict "value" $value "component" $component "context" $context) -}}
   {{- end -}}
 {{- end -}}

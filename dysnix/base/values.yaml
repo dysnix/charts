@@ -45,9 +45,9 @@ extraDeploy: []
 ##
 defaultComponent:
   ## @param defaultComponent.enabled Create the default Pod
-  ## @param defaultComponent.controller Default Pod controller type
+  ## @param defaultComponent.controller Default Pod controller type (case-sensetive)
   enabled: true
-  controller: deployment
+  controller: Deployment
 
 ## @section Component specific parameters
 ##
@@ -301,6 +301,23 @@ sidecars: []
 ##    command: ['sh', '-c', 'echo "hello world"']
 ##
 initContainers: {}
+
+## Autoscaling configuration
+##
+autoscaling:
+  ## @param autoscaling.enabled Specifies whether to enable HorizontalPodAutoscaler
+  enabled: false
+  ## @param autoscaling.minReplicas Specifies the minimum amount of replicas
+  minReplicas: 1
+  ## @param autoscaling.minReplicas Specifies the maximum amount of replicas
+  maxReplicas: 10
+  ## @param autoscaling.targetCPU [string] Specifies the maximum amount of replicas
+  ## targetCPU: 50
+  ## @param autoscaling.targetMemory [string] Specifies the maximum amount of replicas
+  ## targetMemory: 50
+  ## ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#metricspec-v2beta2-autoscaling
+  ## @param autoscaling.metrics Specifies a custom list of metrics
+  metrics: []
 
 ## ServiceAccount configuration
 ##
