@@ -4,6 +4,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: "{{ .Release.Name }}"
   namespace: "{{ .Release.Namespace }}"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

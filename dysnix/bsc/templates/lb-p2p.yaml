@@ -4,9 +4,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-lb-p2p
-  labels:
-    chain: eth
-{{ include "bsc.labels" . | indent 4 }}
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 spec:
   type: LoadBalancer
   {{ if .Values.externalLBp2pIP }}

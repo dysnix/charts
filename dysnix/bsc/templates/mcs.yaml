@@ -7,8 +7,7 @@ metadata:
   annotations:
     beta.cloud.google.com/backend-config: '{"ports": {"{{ .Values.multicluster.service.port }}":"{{ .Release.Name }}"}}'
   {{- end }}
-  labels:
-{{ include "bsc.labels" . | indent 4 }}
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 spec:
   template:
     spec:

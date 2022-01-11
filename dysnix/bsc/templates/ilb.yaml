@@ -5,9 +5,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-ilb
-  labels:
-    chain: eth
-{{ include "bsc.labels" . | indent 4 }}
+  labels: {{ include "bsc.labels" . | nindent 4 }}
   annotations:
     cloud.google.com/load-balancer-type: "Internal"
     cloud.google.com/network-tier: "PREMIUM"

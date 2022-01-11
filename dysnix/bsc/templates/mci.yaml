@@ -3,8 +3,7 @@ apiVersion: networking.gke.io/v1
 kind: MultiClusterIngress
 metadata:
   name: {{ .Release.Name }}
-  labels:
-{{ include "bsc.labels" . | indent 4 }}
+  labels: {{ include "bsc.labels" . | nindent 4 }}
   {{- if .Values.multicluster.ingress.ip }}
   annotations:
     networking.gke.io/static-ip: {{ .Values.multicluster.ingress.ip }}

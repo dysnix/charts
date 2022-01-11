@@ -3,6 +3,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "bsc.fullname" . }}
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 spec:
   endpoints:
   - interval: 1m

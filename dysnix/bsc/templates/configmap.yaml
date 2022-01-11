@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ .Release.Name }}-config"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 data:
   config.toml: |-
   {{- include (print $.Template.BasePath "/configs/_config.txt") . | nindent 4 }}
@@ -11,6 +12,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ .Release.Name }}-rsyncd-config"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 data:
   rsyncd.conf: |-
   {{- include (print $.Template.BasePath "/configs/_rsyncd.txt") . | nindent 4 }}
@@ -20,6 +22,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ .Release.Name }}-env"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 data:
   {{- include (print $.Template.BasePath "/configs/_env.txt") . | nindent 2 }}
 ---
@@ -27,6 +30,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ .Release.Name }}-probe-env"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 data:
   env.txt: |-
   {{- include (print $.Template.BasePath "/configs/_probe-env.txt") . | nindent 4 }}
@@ -35,6 +39,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ .Release.Name }}-scripts"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 data:
   check_node_health.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_check_node_health.tpl") . | nindent 4 }}
@@ -56,6 +61,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: "{{ .Release.Name }}-nginx-config"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 data:
   nginx.conf: |-
   {{- include (print $.Template.BasePath "/configs/_nginx.txt") . | nindent 4 }}
