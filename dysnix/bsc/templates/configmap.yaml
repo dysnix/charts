@@ -54,7 +54,17 @@ data:
   init_from_snaphot.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_init_from_snaphot.tpl") . | nindent 4 }}
   init_from_rsync.sh: |-
-  {{- include (print $.Template.BasePath "/scripts/_init_from_rsync.tpl") . | nindent 4 }}
+    {{- include (print $.Template.BasePath "/scripts/_init_from_rsync.tpl") . | nindent 4 }}
+  init_from_gcs.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_init_from_gcs.tpl") . | nindent 4 }}
+  sync_to_gcs.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_sync_to_gcs.tpl") . | nindent 4 }}
+  gcs_cleanup.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_gcs_cleanup.tpl") . | nindent 4 }}
+  prune.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_prune.tpl") . | nindent 4 }}
+  cron.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_cron.tpl") . | nindent 4 }}
 ---
 {{- if .Values.failback.enabled }}
 apiVersion: v1
