@@ -52,7 +52,7 @@ data:
   generate_node_config.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_generate_node_config.tpl") . | nindent 4 }}
   init_from_snaphot.sh: |-
-  {{- include (print $.Template.BasePath "/scripts/_init_from_snaphot.tpl") . | nindent 4 }}
+    {{- include (print $.Template.BasePath "/scripts/_init_from_snaphot.tpl") . | nindent 4 }}
   init_from_rsync.sh: |-
   {{- include (print $.Template.BasePath "/scripts/_init_from_rsync.tpl") . | nindent 4 }}
 ---
