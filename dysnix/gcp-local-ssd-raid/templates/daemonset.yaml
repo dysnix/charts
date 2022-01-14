@@ -12,7 +12,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "gcp-local-ssd-raid.fullname" . }}
+      app.kubernetes.io/name: {{ include "gcp-local-ssd-raid.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
@@ -105,7 +105,7 @@ spec:
                     echo "$devs" | while read -r dev ; do
                       if ! findmnt -n -a -l --nofsroot | grep "$dev" ; then
                         if ! uuid=$(blkid -s UUID -o value "$dev") ; then
-                          mkfs.ext4 "$dev"
+                          mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} "$dev"
                           uuid=$(blkid -s UUID -o value "$dev")
                         fi
                         mnt_dir="/mnt/disks/$uuid"
@@ -128,7 +128,7 @@ spec:
                 if test -e $raid_dev || (test -x /sbin/mdadm && test -z "$USE_LVM") ; then
                   if ! test -e $raid_dev ; then
                     echo "$devs" | xargs /sbin/mdadm --create $raid_dev --level=0 --raid-devices=$(echo "$devs" | wc -l)
-                    sudo mkfs.ext4 -F $raid_dev
+                    sudo mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} -F $raid_dev
                     new_dev=$raid_dev
                   fi
                 else
@@ -148,7 +148,7 @@ spec:
                 fi
 
                 if ! uuid=$(blkid -s UUID -o value $new_dev) ; then
-                  mkfs.ext4 $new_dev
+                  mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} $new_dev
                   uuid=$(blkid -s UUID -o value $new_dev)
                 fi
 
