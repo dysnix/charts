@@ -25,11 +25,11 @@ fi
 
 set +e
 # remove missing files to cleanup
-rsync -av --delete-before ${SNAPSHOT_URL}/ ${DATA_DIR}/
+rsync -av --inplace --delete-before ${SNAPSHOT_URL}/ ${DATA_DIR}/
 # add more times to catch up
-rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
-rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
-rsync -av ${SNAPSHOT_URL}/ ${DATA_DIR}/
+rsync -av --inplace ${SNAPSHOT_URL}/ ${DATA_DIR}/
+rsync -av --inplace ${SNAPSHOT_URL}/ ${DATA_DIR}/
+rsync -av --inplace ${SNAPSHOT_URL}/ ${DATA_DIR}/
 set -e
 
 # Mark data dir as initialized

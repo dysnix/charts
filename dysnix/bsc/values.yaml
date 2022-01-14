@@ -77,12 +77,29 @@ bsc:
   graphQlVhosts: "*"
   maxpeers: 50
   cache: 8192
+  snapshot: false
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
   initFromSnapshotImage: dysnix/zstd:v3.15.1
   initFromRsync: false
   initFromRsyncImage: instrumentisto/rsync-ssh:latest
+  initFromGCS:
+    enabled: false
+    image: peakcom/s5cmd:v1.4.0
+    endpoint: "https://storage.googleapis.com"
+    keyID: "AWS_ACCESS_KEY_ID"
+    accessKey: "AWS_SECRET_ACCESS_KEY"
+    indexUrl: "bucket/path/to/file"
+  syncToGCS:
+    enabled: false
+    image: peakcom/s5cmd:v1.4.0
+    endpoint: "https://storage.googleapis.com"
+    keyID: "AWS_ACCESS_KEY_ID"
+    accessKey: "AWS_SECRET_ACCESS_KEY"
+    baseUrl: "bucket/path/to/dir"
+  prune:
+    enabled: false
   forceInitFromSnapshot: false
   snapshotUrl:
   snapshotRsyncUrl: "rsync://192.168.8.4/snapshot/geth/node/geth"
@@ -210,7 +227,24 @@ rsyncd:
   service:
     port: 1873
     name: rsyncd
-
+# clean up GCS using a list from sync-to-gcs
+# workload identity is used
+gcsCleanup:
+  enabled: false
+  image: google/cloud-sdk:alpine
+  rmlist: rmlist.txt
+# cronjobs to initiate sync-to-gcs and prune via pod restart
+cronjobs:
+  sync:
+    enabled: false
+    image: dysnix/kubectl:v1.20
+    resources: {}
+    schedule: "*/20 * * * *"
+  prune:
+    enabled: false
+    image: dysnix/kubectl:v1.20
+    resources: {}
+    schedule: "5 3 * * 2"
 nginx:
   overrideBackendAddress: false
   backendAddress:
