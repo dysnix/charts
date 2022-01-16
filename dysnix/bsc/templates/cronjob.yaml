@@ -46,7 +46,7 @@ spec:
           {{- end }}
           serviceAccountName: {{ .Release.Name }}-cronjob
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml .Values.cronjobs.sync.securityContext | nindent 12 }}
           {{- with .Values.nodeSelector }}
           nodeSelector:
             {{- toYaml . | nindent 12 }}
@@ -109,7 +109,7 @@ spec:
           {{- end }}
           serviceAccountName: {{ .Release.Name }}-cronjob
           securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- toYaml .Values.cronjobs.prune.securityContext | nindent 12 }}
           {{- with .Values.nodeSelector }}
           nodeSelector:
           {{- toYaml . | nindent 12 }}
