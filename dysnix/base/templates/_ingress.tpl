@@ -83,6 +83,9 @@ metadata:
   annotations: {{- . | nindent 4 }}
   {{- end }}
 spec:
+  {{- if and $ingress.ingressClassName (include "common.ingress.supportsIngressClassname" .) }}
+  ingressClassName: {{ $ingress.ingressClassName }}
+  {{- end }}
   rules:
     {{- if $ingress.hostname }}
     - host: {{ $ingress.hostname }}
