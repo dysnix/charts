@@ -30,17 +30,17 @@ jobs:
       -
         name: Changes chart-testing
         id: charts
+        # 1. get library chart list - /tmp/_library_charts
+        # 2. get list of the charts changed (striping ct control output) - /tmp/_changed_charts
+        # 3. create list of charts to test (excluding library charts) - $test_list
+        # 4. exclude library charts list, a comma separated list of library charts - $exclude_list
         run: |
-          # Get library chart list
           ls -1 dysnix/*/Chart.yaml | xargs grep -E "type:\s+library" | sed 's/\/Chart.yaml.*//' > /tmp/_library_charts || /bin/true
-          # Get ct detailed output (excluding control output)
           ct list-changed | sed '/^>>>.*/d' > /tmp/_changed_charts
-          # Create list of charts to test
-          test_charts=$(grep -v -x -f /tmp/_library_charts /tmp/_changed_charts 2>/dev/null || /bin/true)
-          # Exclude library charts (comma separated list)
-          exclude_charts=$(cat /tmp/_library_charts | sed '/^ *$/d;N;s/\n/,/')
+          test_list=$(grep -v -x -f /tmp/_library_charts /tmp/_changed_charts 2>/dev/null || /bin/true)
+          exclude_list=$(cat /tmp/_library_charts | sed '/^ *$/d;N;s/\n/,/' | sed 's/dysnix\///g')
 
-          if [[ -n "$test_charts" ]]; then
+          if [[ -n "$test_list" ]]; then
             echo "::set-output name=testing::true"
           fi
           if [[ -n "$exclude_list" ]]; then
