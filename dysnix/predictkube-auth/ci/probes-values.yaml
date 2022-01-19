@@ -1,0 +1,9 @@
+image:
+  repository: eu.gcr.io/predictkube/auth
+  tag: kratos
+  migratorTag: latest-dev
+
+postgresql:
+  enabled: true
+  password: "1234567"
+  postgresqlPassword: "1234567"

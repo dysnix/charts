@@ -60,7 +60,7 @@ defaultComponent:
 ##
 image:
   registry: ""
-  repository: alex6021710/ai-scale-auth
+  repository: foo/bar
   tag: latest
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -75,6 +75,7 @@ image:
   ##   - myRegistryKeySecretName
   ##
   pullSecrets: []
+  migratorTag: latest
 
 ## @param replicaCount Number of pod replicas to deploy
 replicaCount: 1
@@ -90,6 +91,7 @@ replicaCount: 1
 containerPorts:
   grpc: 8091
   monitoring: 8097
+  rest: 8098
 
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
@@ -205,7 +207,7 @@ podLabels: {}
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations:
-  checksum/config: '{{ include "ai-auth.mergeConfigs" . | sha256sum }}'
+  checksum/config: '{{ include "predictkube-auth.mergeConfigs" . | sha256sum }}'
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -312,30 +314,30 @@ sidecars: []
 ## @param initContainers Add additional init containers to the pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
-initContainers:
+initContainers: |
   - name: check-postgresql
     image: alpine:3.9.2
     command:
       - sh
       - -c
       - |
-        until printf "." && nc -z -w 2 {{ include "ai-auth.postgresqlHost" . }} 5432; do
+        until printf "." && nc -z -w 2 {{ .Values.postgresql.host | default (include "predictkube-auth.postgresqlHost" .) }} 5432; do
             sleep 2;
         done;
 
         echo 'PostgreSQL OK ✓'
   - name: migrations
-    image: alex6021710/ai-scale-migrator:latest
+    image: eu.gcr.io/predictkube/migrator:{{ .Values.image.migratorTag | default "latest" }}
     command: ["/usr/local/bin/migrate"]
     args:
       - -source
       - "file://./migrations"
       - -database
-      - '{{ include "ai-auth.migrationString" . }}'
+      - '{{ include "predictkube-auth.migrationString" . }}'
       - up
 
 ## Oweride default service configs map.
-## ref: https://github.com/dysnix/ai-scale-auth
+## ref: https://github.com/dysnix/predictkube-auth
 ## @param configs [map] auth service configs override
 configs: {}
 
@@ -348,6 +350,10 @@ service:
   ## @param service.ports Map or list of defining service ports
   ##
   ports:
+    - name: rest
+      port: 8098
+      protocol: TCP
+      targetPort: rest
     - name: grpc
       port: 8091
       protocol: TCP
@@ -417,7 +423,7 @@ configMap:
   ## ConfigMap data has to be provide for the actual resource creation
   data:
     configs.yaml: |
-      {{- include "ai-auth.mergeConfigs" . | nindent 2 }}
+      {{- include "predictkube-auth.mergeConfigs" . | nindent 2 }}
 
 ## Secret configuration
 ##
@@ -475,13 +481,13 @@ persistence:
 ## Set postgresql connection params for migrations and auth containers.
 postgresql:
   enabled: false
-  username: ai-scale
+  username: predictkube
   #  password: '1234567'
   #  host: postgresql
   port: 5432
-  database: ai-scale
-  postgresqlUsername: ai-scale
-  postgresqlDatabase: ai-scale
+  database: predictkube
+  postgresqlUsername: predictkube
+  postgresqlDatabase: predictkube
 
 ## Set servicemonitore resource enabled status.
 ## @param monitoring.enabled

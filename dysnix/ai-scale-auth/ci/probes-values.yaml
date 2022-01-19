@@ -1,4 +1,0 @@
-postgresql:
-  enabled: true
-  password: "1234567"
-  postgresqlPassword: "1234567"
