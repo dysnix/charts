@@ -75,6 +75,7 @@ image:
   ##   - myRegistryKeySecretName
   ##
   pullSecrets: []
+  migratorTag: latest
 
 ## @param replicaCount Number of pod replicas to deploy
 replicaCount: 1
@@ -90,6 +91,7 @@ replicaCount: 1
 containerPorts:
   grpc: 8091
   monitoring: 8097
+  rest: 8098
 
 ## Configure extra options for containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
@@ -325,7 +327,7 @@ initContainers: |
 
         echo 'PostgreSQL OK ✓'
   - name: migrations
-    image: eu.gcr.io/predictkube/migrator:latest
+    image: eu.gcr.io/predictkube/migrator:{{ .Values.image.migratorTag | default "latest" }}
     command: ["/usr/local/bin/migrate"]
     args:
       - -source
@@ -348,6 +350,10 @@ service:
   ## @param service.ports Map or list of defining service ports
   ##
   ports:
+    - name: rest
+      port: 8098
+      protocol: TCP
+      targetPort: rest
     - name: grpc
       port: 8091
       protocol: TCP

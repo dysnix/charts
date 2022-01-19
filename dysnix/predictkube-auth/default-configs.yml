@@ -33,7 +33,7 @@ postgres:
     connMaxLifetime: 1m
 grpc:
   enabled: true
-  useReflection: true
+  useReflection: false
   compression:
     enabled: false
     type: Zstd
@@ -51,3 +51,19 @@ grpc:
     enforcementPolicy:
       minTime: 20m
       permitWithoutStream: false
+httpServer:
+  enabled: true
+  host: 0.0.0.0
+  port: 8098
+  name: auth api server
+  concurrency: 100000
+  buffer:
+    readBufferSize: 256KiB
+    writeBufferSize: 256KiB
+  tcpKeepalive:
+    enabled: true
+    period: 1s
+  httptransport:
+    maxIdleConnDuration: 15s
+    readTimeout: 7s
+    writeTimeout: 7s

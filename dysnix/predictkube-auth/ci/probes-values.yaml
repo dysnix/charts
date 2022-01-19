@@ -1,5 +1,7 @@
 image:
   repository: eu.gcr.io/predictkube/auth
+  tag: kratos
+  migratorTag: latest-dev
 
 postgresql:
   enabled: true
