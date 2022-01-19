@@ -2777,6 +2777,33 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/local-path-provisioner-0.0.20/local-path-provisioner-0.0.20.tgz
     version: 0.0.20
+  ml-engine:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-01-19T09:59:57.157736424Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    description: A Helm chart for Kubernetes
+    digest: 28fc6643a7a3b51e64a96d79bdc417ab597316a7f4f8e690e303a42888667156
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: ml-engine
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/ml-engine-0.1.0/ml-engine-0.1.0.tgz
+    version: 0.1.0
   nginx:
   - annotations:
       category: Infrastructure
@@ -3006,6 +3033,39 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.0/nifi-registry-0.1.0.tgz
     version: 0.1.0
+  predictkube-auth:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-01-19T10:00:00.52083672Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-postgresql
+      version: 10.x
+    description: A Helm chart for Kubernetes
+    digest: 58b046a88f4c92117832ae3c7007cb59b907c6ea3422f139e62cfd9633801c52
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: predictkube-auth
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/predictkube-auth-0.1.1/predictkube-auth-0.1.1.tgz
+    version: 0.1.1
   pritunl:
   - apiVersion: v2
     appVersion: "1.29"
@@ -3447,4 +3507,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/pullsecrets-0.1.0/pullsecrets-0.1.0.tgz
     version: 0.1.0
-generated: "2022-01-17T11:43:14.972291809Z"
+generated: "2022-01-19T10:00:00.521679826Z"
