@@ -1,0 +1,125 @@
+{{- if .Values.cronjobs.sync.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ .Release.Name }}-sync"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.cronjobs.sync.schedule }}"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    metadata:
+      name: "{{ .Release.Name }}-sync"
+    spec:
+      activeDeadlineSeconds: 60
+      backoffLimit: 0
+      template:
+        metadata:
+          labels: {{ include "bsc.labels" . | nindent 12 }}
+        spec:
+          containers:
+            - name: "sync"
+              image: "{{ .Values.cronjobs.sync.image }}"
+              command:
+                - /bin/sh
+                - /scripts/cron.sh
+                - sync
+                - 5s
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: "{{ .Release.Name }}-env"
+              resources:
+              {{- toYaml .Values.cronjobs.sync.resources | nindent 16 }}
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: scripts
+              configMap:
+                name: "{{ .Release.Name }}-scripts"
+          restartPolicy: Never
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ .Release.Name }}-cronjob
+          securityContext:
+            {{- toYaml .Values.cronjobs.sync.securityContext | nindent 12 }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
+---
+{{- if .Values.cronjobs.prune.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ .Release.Name }}-prune"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.cronjobs.prune.schedule }}"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    metadata:
+      name: "{{ .Release.Name }}-prune"
+    spec:
+      activeDeadlineSeconds: 900
+      backoffLimit: 0
+      template:
+        metadata:
+          labels: {{ include "bsc.labels" . | nindent 12 }}
+        spec:
+          containers:
+            - name: "prune"
+              image: "{{ .Values.cronjobs.prune.image }}"
+              command:
+                - /bin/sh
+                - /scripts/cron.sh
+                - prune
+                - 600s
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: "{{ .Release.Name }}-env"
+              resources:
+              {{- toYaml .Values.cronjobs.prune.resources | nindent 16 }}
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: scripts
+              configMap:
+                name: "{{ .Release.Name }}-scripts"
+          restartPolicy: Never
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ .Release.Name }}-cronjob
+          securityContext:
+          {{- toYaml .Values.cronjobs.prune.securityContext | nindent 12 }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+          {{- toYaml . | nindent 12 }}
+  {{- end }}
+{{- end }}

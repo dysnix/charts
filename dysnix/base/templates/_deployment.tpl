@@ -20,6 +20,10 @@ Note:
 {{- $value := .value -}}
 {{- $context := .context -}}
 {{- $component := include "base.component.name" (dict "value" $value "component" .component) -}}
+{{- $checksums := dict -}}
+{{- range $value.checksums | default list -}}
+  {{- $checksums = set $checksums (. | trimPrefix "/" | printf "%s") (include (print $context.Template.BasePath "/" (. | trimPrefix "/")) $context | sha256sum) -}}
+{{- end -}}
 
 {{/* Validations */}}
 {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) }}
@@ -29,8 +33,8 @@ kind: Deployment
 metadata:
   name: {{ include "base.fullname" (dict "value" $value "name" .name "component" $component "context" $context) }}
   labels: {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 4 }}
-  {{- with $context.Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 4 }}
+  {{- with include "base.tpl.render" (dict "value" $context.Values.commonAnnotations "context" $context) }}
+  annotations: {{- . | nindent 4 }}
   {{- end }}
 spec:
   replicas: {{ $value.replicaCount }}
@@ -41,14 +45,8 @@ spec:
     matchLabels: {{- include "base.labels.matchLabels" (dict "value" $value "component" $component "context" $context) | nindent 6 }}
   template:
     metadata:
-      {{- if or $value.checksums $value.podAnnotations }}
-      annotations:
-        {{- range $value.checksums }}
-        checksum/{{ . | trimPrefix "/" }}: {{ include (print $context.Template.BasePath "/" (. | trimPrefix "/")) $context | sha256sum }}
-        {{- end }}
-        {{- with $value.podAnnotations }}
-          {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 8 }}
-        {{- end }}
+      {{- with include "base.tpl.flatmap" (dict "value" (list $checksums $value.podAnnotations) "context" $context) }}
+      annotations: {{- . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 8 }}

@@ -45,9 +45,9 @@ extraDeploy: []
 ##
 defaultComponent:
   ## @param defaultComponent.enabled Create the default Pod
-  ## @param defaultComponent.controller Default Pod controller type
+  ## @param defaultComponent.controller Default Pod controller type (case-sensetive)
   enabled: true
-  controller: deployment
+  controller: Deployment
 
 ## @section Component specific parameters
 ##
@@ -302,6 +302,23 @@ sidecars: []
 ##
 initContainers: {}
 
+## Autoscaling configuration
+##
+autoscaling:
+  ## @param autoscaling.enabled Specifies whether to enable HorizontalPodAutoscaler
+  enabled: false
+  ## @param autoscaling.minReplicas Specifies the minimum amount of replicas
+  minReplicas: 1
+  ## @param autoscaling.maxReplicas Specifies the maximum amount of replicas
+  maxReplicas: 10
+  ## @param autoscaling.targetCPU Specifies the target average CPU utilization
+  targetCPU: 60
+  ## @param autoscaling.targetMemory Specifies the target average Memory utilization
+  targetMemory: 60
+  ## ref: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#metricspec-v2beta2-autoscaling
+  ## @param autoscaling.metrics Specifies a custom list of metrics
+  metrics: []
+
 ## ServiceAccount configuration
 ##
 serviceAccount:
@@ -354,19 +371,6 @@ secret:
   # stringData:
   #   hello: world
   #   a: b
-
-## Enable persistence using Persistent Volume Claims
-## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-##
-##
-## @param persistence.enabled Enable persistence, i.e. provide a volume for the default Pod
-## @param persistence.volumeName Specifies volume name for the default volume
-## @param persistence.storageClass [string] Specify a storageClassName
-## @param persistence.existingClam [string] Specify an existing Persistent Volume Claim name
-## @param persistence.accessMode Volume access mode
-## @param persistence.size Volume size
-## @param persistence.mountPath Volume mount path
-##
 
 ## Service parameters
 ##
@@ -510,6 +514,20 @@ ingress:
   ##
   secrets: []
 
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+##
+## @param persistence.enabled Enable persistence, i.e. provide a volume for the default Pod
+## @param persistence.volumeName Specifies volume name for the default volume
+## @param persistence.storageClass [string] Specify a storageClassName
+## @param persistence.existingClam [string] Specify an existing Persistent Volume Claim name
+## @param persistence.accessMode Volume access mode
+## @param persistence.size Volume size
+## @param persistence.mountPath Volume mount path
+## @param persistence.ephemeral.enabled Specifies whether to persist data only during Pod's lifetime
+## @param persistence.ephemeral.type Specifies type of the ephemeral volume
+##
 persistence:
   enabled: false
   volumeName: data
@@ -528,3 +546,6 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
   mountPath: /data
+  ephemeral:
+    enabled: false
+    type: emptyDir

@@ -48,14 +48,19 @@ Params:
   {{- $value := .value -}}
   {{- $context := .context -}}
   {{- $persistence := .value | merge dict | dig "persistence" dict -}}
+  {{- $ephemeral := $persistence | merge dict | dig "ephemeral" (dict "enabled" false) -}}
   {{- $component := .component | default "" -}}
   {{- $name := .name | default $persistence.volumeName -}}
   {{- template "base.validate" (dict "template" "base.validate.context" "context" $context) -}}
 
   {{- if $persistence.enabled }}
 - name: {{ $name }}
+  {{- if and $ephemeral.enabled (eq $ephemeral.type "emptyDir") }}
+  emptyDir: {}
+  {{- else }}
   persistentVolumeClaim:
     claimName: {{ include "base.fullname" (dict "value" $value "name" $name "component" $component "context" $context) }}
+  {{- end }}
   {{- end }}
 
   {{- with $value.volumes }}

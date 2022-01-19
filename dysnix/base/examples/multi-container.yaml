@@ -1,5 +1,5 @@
 defaultComponent:
-  controller: deployment
+  controller: Deployment
 
 ## Default PersistentVolumeClaim is created for the first replica
 ## and is automounted into the default container (first in the Pod)
@@ -20,6 +20,14 @@ podContainers:
       - /bin/bash
     ports:
       api: 3030
+
+initContainers: |-
+  - name: init
+    image:
+      repository: init/foo
+      tag: latest
+    cmd:
+      - /bin/bash
 
 ## Sidecars (for userland confgurations) are also welcome
 sidecars: []

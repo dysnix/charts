@@ -4,8 +4,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}-jsonrpc
-  labels:
-{{ include "bsc.labels" . | indent 4 }}
+  labels: {{ include "bsc.labels" . | nindent 4 }}
   {{- with .Values.ingress.rpc.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

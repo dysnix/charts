@@ -1,15 +1,27 @@
+{{- if eq .Values.controller "StatefulSet" }}
 apiVersion: apps/v1
 kind: StatefulSet
+{{- end }}
+{{- if eq .Values.controller "CloneSet" }}
+apiVersion: apps.kruise.io/v1alpha1
+kind: CloneSet
+{{- end }}
 metadata:
   name: {{ include "bsc.fullname" . }}
-  labels:
-{{ include "bsc.labels" . | indent 4 }}
+  labels: {{ include "bsc.labels" . | nindent 4 }}
 spec:
-  serviceName: "{{ .Release.Name }}-service"
   replicas: {{ .Values.replicaCount }} # by default is 1
   updateStrategy:
     {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- if eq .Values.controller "StatefulSet" }}
+  serviceName: "{{ .Release.Name }}-service"
   podManagementPolicy: {{ .Values.podManagementPolicy }}
+  {{- end }}
+  {{- if eq .Values.controller "CloneSet" }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  scaleStrategy:
+    {{- toYaml .Values.scaleStrategy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "bsc.name" . }}
@@ -24,7 +36,11 @@ spec:
         manualstatus: {{ .Values.bsc.manualStatus }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if eq .Values.controller "CloneSet" }}
+        controller.kubernetes.io/pod-deletion-cost: {{ .Values.podDeletionCost | quote }}
+        {{- end }}
     spec:
+      serviceAccountName: {{ include "bsc.serviceAccountName" . }}
       {{- with .Values.securityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -60,7 +76,7 @@ spec:
           - --gcmode={{ .Values.bsc.gcmode }}
           - --maxpeers={{ .Values.bsc.maxpeers }}
           - --cache={{ .Values.bsc.cache }}
-          - --snapshot=false
+          - --snapshot={{ .Values.bsc.snapshot }}
           - --port={{ .Values.service.p2pPort0 }}
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0
@@ -97,7 +113,7 @@ spec:
           protocol: {{ $val.protocol | default "TCP" }}
           {{- end }}
         volumeMounts:
-        - name: bsc-config
+        - name: generated-bsc-config
           mountPath: /config
         - name: scripts
           mountPath: /scripts
@@ -105,16 +121,19 @@ spec:
           mountPath: /env
         - name: bsc-pvc
           mountPath: {{ .Values.bsc.base_path }}
-        {{- if .Values.livenessProbe }}
+        {{- if .Values.startupProbe }}
         startupProbe:
           exec:
             command:
             - /bin/sh
             - -c
             - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $StartupProbeTimestampDistinct last_synced_block.txt
-          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.livenessProbe }}
         livenessProbe:
           exec:
             command:
@@ -126,7 +145,6 @@ spec:
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
           successThreshold: {{ .Values.livenessProbe.successThreshold }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-
         {{- end }}
         {{- if .Values.readinessProbe }}
         readinessProbe:
@@ -142,9 +160,17 @@ spec:
           failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
         {{- end }}
       - name: logger
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: [ "tail","-F","{{ .Values.bsc.base_path }}/bsc.log" ]
+        image: krallin/ubuntu-tini:latest
+        imagePullPolicy: IfNotPresent
+        args: [ "tail","-F","{{ .Values.bsc.base_path }}/bsc.log" ]
+        lifecycle:
+          preStop:
+            exec:
+              # just sleep a bit to tell k8s "kill the container a bit later", thus we'll be able to grab more logs
+              command:
+                - /bin/sh
+                - -c
+                - "sleep 30"
         workingDir: "{{ .Values.bsc.base_path }}"
         volumeMounts:
           - name: bsc-pvc
@@ -202,6 +228,25 @@ spec:
           - name: rsyncd-config
             mountPath: /config
       {{- end }}
+      {{- if .Values.gcsCleanup.enabled }}
+      - name: gcs-cleanup
+        image: {{ .Values.gcsCleanup.image }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /scripts/gcs_cleanup.sh
+        env:
+          - name: HOME
+            value: "/tmp"
+        envFrom:
+          - secretRef:
+              name: "{{ .Release.Name }}-gcs-creds-sync-to"
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.rsyncd.bsc_path }}
+          - name: scripts
+            mountPath: /scripts
+      {{- end }}
       initContainers:
       {{- if .Values.bsc.initGenesis }}
       - name: init-genesis
@@ -222,6 +267,22 @@ spec:
         command:
           - /bin/sh
           - /scripts/init_from_snaphot.sh
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
+      {{- end }}
+      {{- if .Values.bsc.initFromGCS.enabled }}
+      - name: init-from-gcs
+        image: {{ .Values.bsc.initFromGCS.image }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /scripts/init_from_gcs.sh
+        envFrom:
+          - secretRef:
+              name: "{{ .Release.Name }}-gcs-creds-init-from"
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -259,11 +320,41 @@ spec:
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
-      {{- if .Values.bsc.getNodeKey }}
+      - name: generate-bsc-config
+        command:
+          - sh
+          - /scripts/generate_node_config.sh
+        env:
+          - name: GENERATE_CONFIG
+            value: {{ .Values.bsc.generateConfig | quote }}
+          - name: HOME
+            value: "/tmp"
+        image: google/cloud-sdk:alpine
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: bsc-config
+            mountPath: /config
+          - name: generated-bsc-config
+            mountPath: /generated-config
+          - name: scripts
+            mountPath: /scripts
+        {{- if .Values.bsc.getNodeKey }}
       - name: get-nodekey
+        {{- if eq .Values.controller "StatefulSet" }}
         command:
           - python
           - /scripts/get_nodekey.py
+        {{ end }}
+        {{- if eq .Values.controller "CloneSet" }}
+        command:
+          - python
+          - /scripts/get_nodekey_ip.py
+        {{ end }}
+        env:
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
         image: python:slim
         imagePullPolicy: IfNotPresent
         volumeMounts:
@@ -271,6 +362,8 @@ spec:
             mountPath: {{ .Values.bsc.base_path }}
           - name: scripts
             mountPath: /scripts
+          - name: generated-bsc-config
+            mountPath: /generated-config
       {{- end }}
       {{- if .Values.bsc.staticNodeKey }}
       - name: set-nodekey
@@ -284,10 +377,48 @@ spec:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
       {{- end }}
+      {{- if .Values.bsc.syncToGCS.enabled }}
+      - name: sync-to-gcs
+        image: {{ .Values.bsc.syncToGCS.image }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /scripts/sync_to_gcs.sh
+        envFrom:
+          - secretRef:
+              name: "{{ .Release.Name }}-gcs-creds-sync-to"
+          - configMapRef:
+              name: "{{ .Release.Name }}-env"
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
+      {{- end }}
+      {{- if .Values.bsc.prune.enabled }}
+      - name: bsc-prune
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /scripts/prune.sh
+        envFrom:
+        - configMapRef:
+            name: "{{ .Release.Name }}-env"
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
+          - name: generated-bsc-config
+            mountPath: /config
+      {{- end }}
       volumes:
         - name: bsc-config
           configMap:
             name: "{{ .Release.Name }}-config"
+        - name: generated-bsc-config
+          emptyDir: {}
         {{- if .Values.rsyncd.enabled }}
         - name: rsyncd-config
           configMap:
@@ -308,10 +439,8 @@ spec:
           configMap:
             name: "{{ .Release.Name }}-nginx-config"
         {{- end }}
-  {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
-        creationTimestamp: null
         name: bsc-pvc
         labels:
           app: bsc
@@ -329,4 +458,3 @@ spec:
           requests:
             storage: {{ .Values.persistence.size }}
         volumeMode: Filesystem
-  {{- end }}

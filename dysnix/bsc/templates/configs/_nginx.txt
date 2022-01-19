@@ -32,7 +32,11 @@ http {
     }
 
     upstream bsc {
+        {{- if and .Values.nginx.overrideBackendAddress .Values.nginx.backendAddress }}
+        server {{ .Values.nginx.backendAddress }} max_fails=0;
+        {{- else }}
         server {{ .Release.Name }}:{{ .Values.service.rpcPort }} max_fails=0;
+        {{- end }}
         keepalive 16;
     }
 

@@ -1,5 +1,7 @@
 configMap:
-  annotations: {}
+  annotations:
+    hello: world
+
   data:
     FOO: bar
     JOJOBA: jojoba

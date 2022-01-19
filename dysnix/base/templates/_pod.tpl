@@ -69,7 +69,7 @@ schedulerName: {{ $value.schedulerName | quote -}}
 securityContext: {{ . | nindent 2 }}
 {{- end }}
 
-{{- with include "base.tpl.render" (dict "value" $value.initContainers "context" $context) }}
+{{- with include "base.tpl.flatlist" (dict "value" (list $value.initContainers) "context" $context) }}
 initContainers: {{- . | nindent 2 }}
 {{- end }}
 

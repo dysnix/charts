@@ -20,7 +20,7 @@ rm -rf ${DATA_DIR}/geth
 # Download & extract snapshot
 # special handling of zstd
 if [[ "${SNAPSHOT_URL}" =~ "\.zst$" ]]; then
-  wget ${SNAPSHOT_URL} -O - | tar --zstd --overwrite -x -C ${DATA_DIR}
+  wget ${SNAPSHOT_URL} -O - | mbuffer -m5% -q -l /tmp/m1.log | zstd -d -T0 | mbuffer -m5% -q -l /tmp/m2.log | tar -b 2048 --overwrite -x -C ${DATA_DIR}
 else
   wget ${SNAPSHOT_URL} -O - | tar --overwrite -x -C ${DATA_DIR}
 fi

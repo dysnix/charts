@@ -14,12 +14,48 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# possible values:  StatefulSet CloneSet
+controller: StatefulSet
+
+# StatefulSet-specific options
 podManagementPolicy: OrderedReady
+
+# CloneSet-specific options
+minReadySeconds: 60
+scaleStrategy: {}
+# scaleStrategy:
+#  # scale up limit rate
+#  maxUnavailable: 1
+#  # selective pod deletion
+#   podsToDelete:
+#     - sample-9m4hp
+#
+# common options, default os for StatefulSet
 updateStrategy:
   type: RollingUpdate
 
-continent:
+# CloneSet options example
+# updateStrategy:
+#   type: InPlaceOnly
+#   inPlaceUpdateStrategy:
+#     gracePeriodSeconds: 10
+#   partitions: 3
+#   maxUnavailable: 20%
+#   maxSurge: 3
+# .... a lot more, check https://openkruise.io/docs/user-manuals/cloneset/#update-types
+podDeletionCost: 0
 
+continent:
 # Don't use spaces or special chars
 bsc:
   # we don't have other chains, it's just a pod label for now
@@ -41,15 +77,37 @@ bsc:
   graphQlVhosts: "*"
   maxpeers: 50
   cache: 8192
+  snapshot: false
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
-  initFromSnapshotImage: dysnix/alpine-zstd:3.15
+  initFromSnapshotImage: dysnix/zstd:v3.15.1
   initFromRsync: false
   initFromRsyncImage: instrumentisto/rsync-ssh:latest
+  initFromGCS:
+    enabled: false
+    image: peakcom/s5cmd:v1.4.0
+    endpoint: "https://storage.googleapis.com"
+    keyID: "AWS_ACCESS_KEY_ID"
+    accessKey: "AWS_SECRET_ACCESS_KEY"
+    indexUrl: "bucket/path/to/file"
+  syncToGCS:
+    enabled: false
+    image: peakcom/s5cmd:v1.4.0
+    endpoint: "https://storage.googleapis.com"
+    keyID: "AWS_ACCESS_KEY_ID"
+    accessKey: "AWS_SECRET_ACCESS_KEY"
+    baseUrl: "bucket/path/to/dir"
+  prune:
+    enabled: false
   forceInitFromSnapshot: false
   snapshotUrl:
   snapshotRsyncUrl: "rsync://192.168.8.4/snapshot/geth/node/geth"
+  podRange: 192.168.0.0/20
+  generateConfig: false
+  trustedNodesSrcUrl: "gs://bucket/trusted_nodes"
+  nodekeysSrcUrl: "gs://bucket/nodekeys"
+  nodekeysFileName: "nodekeys"
   getNodeKey: false
   staticNodeKey: false
 
@@ -103,11 +161,18 @@ bsc:
 #   failureThreshold: 2
 
 # readinessProbe:
-#   initialDelaySeconds: 300
-#   periodSeconds: 300
-#   timeoutSeconds: 10
+#   initialDelaySeconds: 60
+#   periodSeconds: 10
+#   timeoutSeconds: 5
 #   successThreshold: 1
-#   failureThreshold: 2
+#   failureThreshold: 3
+
+startupProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 10
+  successThreshold: 1
+  failureThreshold: 12
 
 service:
   # use hostPort with bsc container
@@ -162,7 +227,36 @@ rsyncd:
   service:
     port: 1873
     name: rsyncd
-
+# clean up GCS using a list from sync-to-gcs
+# workload identity is used
+gcsCleanup:
+  enabled: false
+  image: google/cloud-sdk:alpine
+  rmlist: rmlist.txt
+  rmlog: rmlog.txt
+# cronjobs to initiate sync-to-gcs and prune via pod restart
+cronjobs:
+  sync:
+    enabled: false
+    image: dysnix/kubectl:v1.20
+    resources: {}
+    schedule: "*/20 * * * *"
+    securityContext:
+      fsGroup: 1001
+      runAsGroup: 1001
+      runAsUser: 1001
+  prune:
+    enabled: false
+    image: dysnix/kubectl:v1.20
+    resources: {}
+    schedule: "5 3 * * 2"
+    securityContext:
+      fsGroup: 1001
+      runAsGroup: 1001
+      runAsUser: 1001
+nginx:
+  overrideBackendAddress: false
+  backendAddress:
 failback:
   enabled: false
   image:

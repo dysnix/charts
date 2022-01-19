@@ -1,10 +1,19 @@
 config:
   olric:
-    configType: lan
+    configType: local
     shutdownTimeout: 5s
     startTimeout: 3s
     mapName: test-map
     logVerbosity: 6
     logLevel: DEBUG
+    keepAlivePeriod: 0s
+    client:
+      dialTimeout: 0s
+      readTimeout: 0s
+      writeTimeout: 0s
+      keepAlive: 0s
+      minConn: 1
+      maxConn: 10
+      poolTimeout: 15s
     name: '{{ include "common.names.name" $ }}'
     namespace: '{{ .Release.Namespace }}'
