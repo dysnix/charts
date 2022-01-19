@@ -146,6 +146,25 @@ entries:
     version: 0.1.0
   app:
   - apiVersion: v2
+    created: "2022-01-19T13:58:32.000535119Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    description: Generic application Helm chart
+    digest: 89489a925bd1a6fa050352e077d4692d8e753d077364cebc36118d49e64c885e
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: app
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/app-0.3.10/app-0.3.10.tgz
+    version: 0.3.10
+  - apiVersion: v2
     created: "2021-11-08T09:31:10.954754162Z"
     dependencies:
     - name: common
@@ -317,6 +336,37 @@ entries:
     - https://github.com/dysnix/charts/releases/download/app-0.3.1/app-0.3.1.tgz
     version: 0.3.1
   base:
+  - annotations:
+      category: Infrastructure
+    apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-01-19T13:58:32.166061702Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    description: Generic base Helm chart for Kubernetes Applications
+    digest: f748198ddae12c4de5d520f47b43e4c5e88c1938899f9f216ce569ee4fbb787b
+    keywords:
+    - base
+    - common
+    - library
+    - helper
+    - template
+    - function
+    - dysnix
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: base
+    sources:
+    - https://github.com/dysnix/charts
+    type: library
+    urls:
+    - https://github.com/dysnix/charts/releases/download/base-0.3.4/base-0.3.4.tgz
+    version: 0.3.4
   - annotations:
       category: Infrastructure
     apiVersion: v2
@@ -3507,4 +3557,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/pullsecrets-0.1.0/pullsecrets-0.1.0.tgz
     version: 0.1.0
-generated: "2022-01-19T10:00:00.521679826Z"
+generated: "2022-01-19T13:58:32.166869096Z"
