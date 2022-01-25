@@ -54,3 +54,11 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "bsc.scaleTriggerName" -}}
+{{- printf "%s-%s" (include "bsc.fullname" .) "s-t" -}}
+{{- end }}
+
+{{- define "bsc.scaleHelperrName" -}}
+{{- printf "%s-%s" (include "bsc.fullname" .) "s-h" -}}
+{{- end }}

@@ -55,6 +55,34 @@ updateStrategy:
 # .... a lot more, check https://openkruise.io/docs/user-manuals/cloneset/#update-types
 podDeletionCost: 0
 
+# Additional controller to trigger cluster autoscaler to scale up
+# https://github.com/kubernetes/autoscaler/issues/2145
+# w/o this there will be no scale up with [local SSD PV enabled] BSC pods hanging in Pending forever
+# another option is to use hostPath volumes instead of PV & PVC
+autoScaleTrigger:
+  enabled: false
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              bsc/role: "auto-scale-trigger"
+          topologyKey: kubernetes.io/hostname
+  containers:
+  - name: main
+    command:
+      - /bin/sh
+      - -c
+      - sleep infinity
+    image: busybox
+    resources: {}
+#    securityContext:
+#      runAsGroup: 1001
+#      runAsUser: 1001
+autoScaleHelper:
+  enabled: false
+  image: dysnix/shell-operator:v0.0.2
+
 continent:
 # Don't use spaces or special chars
 bsc:
@@ -234,6 +262,15 @@ gcsCleanup:
   image: google/cloud-sdk:alpine
   rmlist: rmlist.txt
   rmlog: rmlog.txt
+# updates pod annotation controller.kubernetes.io/pod-deletion-cost
+updatePodDeletionCost:
+  enabled: false
+  image: dysnix/kubectl:v1.20
+  resources: {}
+  securityContext:
+    runAsGroup: 1001
+    runAsUser: 1001
+
 # cronjobs to initiate sync-to-gcs and prune via pod restart
 cronjobs:
   sync:

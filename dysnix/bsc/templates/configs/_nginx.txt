@@ -24,6 +24,12 @@ http {
     proxy_send_timeout 1s;
     client_max_body_size 100m;
 
+    gzip on;
+    gzip_comp_level 2;
+    gzip_min_length 100;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_types text/plain application/json;
+
     map $connection $fallback {
       default bsc-dataseed.binance.org;
       "~[0-3]$" bsc-dataseed1.ninicoin.io;
