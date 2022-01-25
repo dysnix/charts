@@ -1,0 +1,67 @@
+{{- if .Values.autoScaleTrigger.enabled }}
+{{- if eq .Values.controller "StatefulSet" }}
+apiVersion: apps/v1
+kind: StatefulSet
+{{- end }}
+{{- if eq .Values.controller "CloneSet" }}
+apiVersion: apps.kruise.io/v1alpha1
+kind: CloneSet
+{{- end }}
+metadata:
+  name: {{ include "bsc.scaleTriggerName" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "bsc.scaleTriggerName" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }} # by default is 1
+  updateStrategy:
+  {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- if eq .Values.controller "StatefulSet" }}
+  serviceName: {{ include "bsc.scaleTriggerName" . }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  {{- end }}
+  {{- if eq .Values.controller "CloneSet" }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  scaleStrategy:
+  {{- toYaml .Values.scaleStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bsc.scaleTriggerName" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "bsc.scaleTriggerName" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        bsc/role: "auto-scale-trigger"
+      annotations:
+        {{- if eq .Values.controller "CloneSet" }}
+        controller.kubernetes.io/pod-deletion-cost: {{ .Values.podDeletionCost | quote }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "bsc.serviceAccountName" . }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.autoScaleTrigger.affinity }}
+      affinity:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 60
+      containers:
+        {{- toYaml .Values.autoScaleTrigger.containers | nindent 8 }}
+{{- end }}

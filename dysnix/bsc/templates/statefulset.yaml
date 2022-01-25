@@ -9,6 +9,10 @@ kind: CloneSet
 metadata:
   name: {{ include "bsc.fullname" . }}
   labels: {{ include "bsc.labels" . | nindent 4 }}
+  annotations:
+    {{- if .Values.autoScaleTrigger.enabled }}
+    additionalControllerName: {{ include "bsc.scaleTriggerName" . }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }} # by default is 1
   updateStrategy:
@@ -243,7 +247,40 @@ spec:
               name: "{{ .Release.Name }}-gcs-creds-sync-to"
         volumeMounts:
           - name: bsc-pvc
-            mountPath: {{ .Values.rsyncd.bsc_path }}
+            mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
+      {{- end }}
+      {{- if and (eq .Values.controller "CloneSet") .Values.updatePodDeletionCost.enabled }}
+      - name: update-pod-deletion-cost
+        image: "{{ .Values.updatePodDeletionCost.image }}"
+        command:
+          - /bin/sh
+          - /scripts/update-pod-deletion-cost.sh
+          - "/data"
+          - "60"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        resources:
+        {{- toYaml .Values.updatePodDeletionCost.resources | nindent 10 }}
+        securityContext:
+        {{- toYaml .Values.updatePodDeletionCost.securityContext | nindent 10 }}
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: /data
+            readOnly: true
           - name: scripts
             mountPath: /scripts
       {{- end }}
