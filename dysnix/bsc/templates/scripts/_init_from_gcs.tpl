@@ -84,7 +84,7 @@ set +x
 while true;do
   INODES=$(df -Phi ${DATA_DIR} | tail -n 1 | awk '{print $3}')
   SIZE=$(df -P -BG ${DATA_DIR} | tail -n 1 | awk '{print $3}')G
-  echo -e "$(date -Iseconds) | DST USED Inodes:\t${INODES} Size:\t${SIZE} | SOURCE TOTAL ${REMOTE_STATS}"
+  echo -e "$(date -Iseconds) | SOURCE TOTAL ${REMOTE_STATS} | DST USED Inodes:\t${INODES} Size:\t${SIZE}"
   sleep 2
 done &
 MON_PID=$!
