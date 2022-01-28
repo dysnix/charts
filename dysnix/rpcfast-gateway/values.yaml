@@ -285,7 +285,7 @@ volumes:
   - name: configs
     configMap:
       name: '{{ include "common.names.fullname" . }}'
-      
+
 extraVolumes: []
 ## @param volumeMounts Array of volumeMounts for the pod(s) main container
 ## @param extraVolumeMounts Optionally specify extra mount list for the pod(s) main container
@@ -294,7 +294,7 @@ volumeMounts:
   - name: configs
     mountPath: "/etc/gateway/configs"
     readOnly: true
-    
+
 extraVolumeMounts: []
 ## @param podContainers [array] Pod containers, creates a multi-container pod(s) (`base.container` template is used)
 ## e.g:
