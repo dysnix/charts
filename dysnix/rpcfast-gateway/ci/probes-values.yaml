@@ -1,0 +1,9 @@
+livenessProbe:
+  enabled: false
+
+readinessProbe:
+  enabled: false
+
+image:
+  repository: eu.gcr.io/predictkube/rpcfast-gateway
+  tag: test
