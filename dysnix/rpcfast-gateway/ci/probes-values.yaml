@@ -7,3 +7,14 @@ readinessProbe:
 image:
   repository: eu.gcr.io/predictkube/rpcfast-gateway
   tag: test
+
+sidecars:
+  - name: auth-mock
+    image: eu.gcr.io/predictkube/rpcfast-gateway-auth-mock:test
+    imagePullPolicy: Always
+    ports:
+      - name: auth
+        containerPort: 8095
+
+configs:
+  backendAuthUrl: http://localhost:8095
