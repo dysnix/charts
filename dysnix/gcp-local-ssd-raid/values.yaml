@@ -16,6 +16,10 @@ fullnameOverride: ""
 
 localSsd:
   mkfsOpts: ""
+  # override mount dir to use with hostPath. Use with combined SSDs only ( raid or LVM ) to get a single device
+  mntDirOverride:
+    enabled: false
+    value: ""
 
 serviceAccount:
   # Specifies whether a service account should be created

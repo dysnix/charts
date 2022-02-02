@@ -108,7 +108,11 @@ spec:
                           mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} "$dev"
                           uuid=$(blkid -s UUID -o value "$dev")
                         fi
+                        {{- if .Values.localSsd.mntDirOverride.enabled }}
+                        mnt_dir={{ .Values.localSsd.mntDirOverride.value }}
+                        {{- else }}
                         mnt_dir="/mnt/disks/$uuid"
+                        {{- end }}
                         mkdir -p "$mnt_dir"
                         if ! grep "$uuid" /etc/fstab ; then
                           echo "UUID=$uuid $mnt_dir ext4 $mnt_opts" >> /etc/fstab
@@ -152,7 +156,11 @@ spec:
                   uuid=$(blkid -s UUID -o value $new_dev)
                 fi
 
+                {{- if .Values.localSsd.mntDirOverride.enabled }}
+                mnt_dir={{ .Values.localSsd.mntDirOverride.value }}
+                {{- else }}
                 mnt_dir="/mnt/disks/$uuid"
+                {{- end }}
                 mkdir -p "$mnt_dir"
 
                 if ! grep "$uuid" /etc/fstab ; then
