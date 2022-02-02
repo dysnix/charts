@@ -469,13 +469,20 @@ spec:
             name: "{{ .Release.Name }}-probe-env"
         {{- if not .Values.persistence.enabled }}
         - name: bsc-pvc
+          {{- if .Values.hostPath.enabled }}
+          hostPath:
+            path: {{ .Values.hostPath.path }}
+            type: {{ .Values.hostPath.type }}
+          {{- else }}
           emptyDir: {}
+          {{- end }}
         {{- end }}
         {{- if .Values.failback.enabled }}
         - name: nginx-config-volume
           configMap:
             name: "{{ .Release.Name }}-nginx-config"
         {{- end }}
+  {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: bsc-pvc
@@ -495,3 +502,4 @@ spec:
           requests:
             storage: {{ .Values.persistence.size }}
         volumeMode: Filesystem
+  {{- end }}
