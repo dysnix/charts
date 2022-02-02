@@ -344,6 +344,13 @@ persistence:
   accessMode: ReadWriteOnce
   size: "1000Gi"
 
+# hostPath is used only when persistence is disabled
+hostPath:
+  # emptyDir is used when both persistence and hostPath are disabled
+  enabled: false
+  path: /mnt/disks/raid0
+  type: Directory
+
 ingress:
   rpc:
     enabled: false
