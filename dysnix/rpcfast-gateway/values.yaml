@@ -456,12 +456,12 @@ ingress:
   hostname: domain.local
   ## @param ingress.serviceName Backend Service name (if not empty overrides the default backend)
   ##
-  serviceName: ""
+  serviceName: http
   ## eg:
   ## servicePort: http
   ## @param ingress.servicePort Backend Service port ingress directs requests to
   ##
-  servicePort: ""
+  servicePort: http
   ## eg:
   ## servicePort: http
   ##
