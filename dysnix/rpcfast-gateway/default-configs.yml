@@ -1,0 +1,58 @@
+debugMode: false
+profiling:
+  enabled: false
+monitoring:
+  enabled: true
+single:
+  enabled: true
+  host: 0.0.0.0
+  port: 8097
+  name: pprof/monitoring server
+  concurrency: 100000
+  buffer:
+    readBufferSize: 256KiB
+    writeBufferSize: 256KiB
+  tcpKeepalive:
+    enabled: true
+    period: 1s
+  httptransport:
+    maxIdleConnDuration: 15s
+    readTimeout: 7s
+    writeTimeout: 7s
+internalToken: ""
+backendRpcUrl: ""
+backendAuthUrl: ""
+rpcObjectKey: method
+server:
+  host: 0.0.0.0
+  port: 8091
+  keepalive: true
+  requestsPause: 0s
+  httptransport:
+    maxIdleConnDuration: 15s
+    readTimeout: 7s
+    writeTimeout: 7s
+remoteClient:
+  maxIdleConnDuration: 0s
+  readTimeout: 7s
+  writeTimeout: 7s
+  netTransport:
+    keepAlive: 15s
+    tlsHandshakeTimeout: 0s
+    dialTimeout: 0s
+    responseHeaderTimeout: 0s
+    expectContinueTimeout: 0s
+    disableKeepAlives: false
+    disableCompression: false
+    maxResponseHeaderBytes: 0B
+    buffer:
+      readBufferSize: 256KiB
+      writeBufferSize: 256KiB
+rateLimiter:
+  frequency: 1m
+authWorker:
+  cache:
+    ttl: 15s
+    memory:
+      cleanupInterval: 15s
+  tickInterval: 30s
