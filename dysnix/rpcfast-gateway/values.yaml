@@ -59,9 +59,9 @@ defaultComponent:
 ## @param image.pullSecrets [array] Image pull secrets
 ##
 image:
-  registry: ""
-  repository: foo/bar
-  tag: latest
+  registry: eu.gcr.io
+  repository: predictkube/rpcfast-gateway
+  tag: v0.1.0
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
