@@ -30,9 +30,6 @@ if [ -f "${INITIALIZED_FILE}" ]; then
     exit 0
 fi
 
-# Cleanup
-rm -rf ${DATA_DIR}/geth
-
 # we need to create temp files
 cd /tmp
 
@@ -101,7 +98,16 @@ TIMESTAMP_0="$(${S5CMD} cat s3://${TIMESTAMP_URL})"
 # 1) start and stop timestamps did not changed during data sync - no process started or finished updating the cloud
 # 2) 0 objects copied
 SYNC=2
+CLEANUP=1
 while [ "${SYNC}" -gt 0 ] ; do
+
+    # Cleanup
+    if [ ${CLEANUP} -eq 1 ];then
+      echo "$(date -Iseconds) Cleaning up local dir ..."
+      mkdir -p ${DATA_DIR}/geth
+      mv ${DATA_DIR}/geth ${DATA_DIR}/geth.old && rm -rf ${DATA_DIR}/geth.old &
+      CLEANUP=0
+    fi
 
     # sync from cloud to local disk, without removing existing [missing in the cloud] files
     # run multiple syncs in background
@@ -115,12 +121,6 @@ while [ "${SYNC}" -gt 0 ] ; do
     # wait for all syncs to complete
     # TODO any errors handling here?
     wait ${STATE_CP_PID} ${ANCIENT_CP_PID}
-
-    # stop monitoring
-    if [ ${MON_PID} -ne 0 ];then
-      kill ${MON_PID}
-      MON_PID=0
-    fi
 
     # get start and stop timestamps from the cloud after sync
     UPDATING_1="$(${S5CMD} cat s3://${UPDATING_URL})"
@@ -138,7 +138,17 @@ while [ "${SYNC}" -gt 0 ] ; do
       UPDATING_0=${UPDATING_1}
       TIMESTAMP_0=${TIMESTAMP_1}
       SYNC=2
+      {{- if .Values.bsc.initFromGCS.fullResyncOnSrcUpdate }}
+      # hack until we resolve sync up without full destination cleanup
+      CLEANUP=1
+      {{- end }}
       continue
+    fi
+
+    # stop monitoring
+    if [ ${MON_PID} -ne 0 ];then
+      kill ${MON_PID}
+      MON_PID=0
     fi
 
     # get number of objects copied
