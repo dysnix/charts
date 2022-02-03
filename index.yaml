@@ -340,6 +340,37 @@ entries:
       category: Infrastructure
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2022-02-03T17:36:25.63671965Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    description: Generic base Helm chart for Kubernetes Applications
+    digest: 9c987fc3c82b89a4356ac14819c7a599654e2088673e39143c181204a6665f2b
+    keywords:
+    - base
+    - common
+    - library
+    - helper
+    - template
+    - function
+    - dysnix
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: base
+    sources:
+    - https://github.com/dysnix/charts
+    type: library
+    urls:
+    - https://github.com/dysnix/charts/releases/download/base-0.3.5/base-0.3.5.tgz
+    version: 0.3.5
+  - annotations:
+      category: Infrastructure
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2022-01-19T13:58:32.166061702Z"
     dependencies:
     - name: common
@@ -3625,6 +3656,32 @@ entries:
     version: 0.1.0
   rpcfast-gateway:
   - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2022-02-03T17:36:25.743240795Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    description: A Helm chart for Kubernetes
+    digest: f65605453d65db016b2306188903b9cd4aeaf25c6ff208c6cc3b76bff25b1c30
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: rpcfast-gateway
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.1/rpcfast-gateway-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2022-02-03T12:57:56.406433192Z"
     dependencies:
@@ -3650,4 +3707,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-03T12:57:56.407133197Z"
+generated: "2022-02-03T17:36:25.744395594Z"
