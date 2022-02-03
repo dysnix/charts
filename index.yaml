@@ -3623,4 +3623,31 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/pullsecrets-0.1.0/pullsecrets-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-02T15:28:45.066202394Z"
+  rpcfast-gateway:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-02-03T12:57:56.406433192Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.2.x
+    description: A Helm chart for Kubernetes
+    digest: d4f87aef951f97c1eda77a4c408a1e4b62901d5bc3d81d0fc6efc1d385fad2d3
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: rpcfast-gateway
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-02-03T12:57:56.407133197Z"
