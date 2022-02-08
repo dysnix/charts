@@ -106,6 +106,7 @@ bsc:
   maxpeers: 50
   cache: 8192
   snapshot: false
+  pipecommit: false
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
@@ -292,6 +293,17 @@ cronjobs:
       fsGroup: 1001
       runAsGroup: 1001
       runAsUser: 1001
+  rotate:
+    enabled: false
+    image: dysnix/kubectl:v1.20
+    resources: {}
+    schedule: "5 3 * * 2"
+    securityContext:
+      fsGroup: 1001
+      runAsGroup: 1001
+      runAsUser: 1001
+    # specify controller and name we'll need to scale down to 0
+    oldController: "statefulset/old-bootnode"
 nginx:
   overrideBackendAddress: false
   backendAddress:

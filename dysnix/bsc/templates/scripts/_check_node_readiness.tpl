@@ -4,6 +4,7 @@ set -ex
 public_bsc_node=$3
 allowed_number_of_distinct_between_blocks=$2
 allowed_number_of_time_gap_between_blocks=$2
+local_node_endpoint=${4:-}
 
 # Retrieving latest block timestamp from public bsc node
 function get_public_block {
@@ -12,12 +13,12 @@ function get_public_block {
 
 # Retrieving latest local block number
 function get_local_block {
-    geth --config=/config/config.toml --datadir={{ .Values.bsc.base_path }} attach --exec "eth.blockNumber"
+    geth --config=/config/config.toml --datadir={{ .Values.bsc.base_path }} attach $local_node_endpoint --exec "eth.blockNumber"
 }
 
 # Retrieving latest block timestamp of a local bsc node
 function get_local_timestamp {
-    geth --config=/config/config.toml --datadir={{ .Values.bsc.base_path }} attach --exec "eth.getBlock(eth.blockNumber).timestamp"
+    geth --config=/config/config.toml --datadir={{ .Values.bsc.base_path }} attach $local_node_endpoint --exec "eth.getBlock(eth.blockNumber).timestamp"
 }
 
 case "$1" in
@@ -44,7 +45,7 @@ case "$1" in
             fi
             ;;
         *)
-            echo "Usage: $0 {--distinct-blocks|--timestamp-distinct} {blocks-distinct,|time-range-distinin-seconds} {public-bsc-node-endpoint}
+            echo "Usage: $0 {--distinct-blocks|--timestamp-distinct} {blocks-distinct,|time-range-distinct-seconds} {public-bsc-node-endpoint}
                   Blocks check:
                           $0 --distinct-blocks 10 https://bsc-dataseed1.binance.org
                   Timestamp check:

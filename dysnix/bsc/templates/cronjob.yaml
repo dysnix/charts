@@ -123,3 +123,69 @@ spec:
           {{- toYaml . | nindent 12 }}
   {{- end }}
 {{- end }}
+---
+{{- if .Values.cronjobs.rotate.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ .Release.Name }}-rotate"
+  labels: {{ include "bsc.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.cronjobs.rotate.schedule }}"
+  successfulJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    metadata:
+      name: "{{ .Release.Name }}-rotate"
+    spec:
+      activeDeadlineSeconds: 10000
+      backoffLimit: 0
+      template:
+        metadata:
+          labels: {{ include "bsc.labels" . | nindent 12 }}
+        spec:
+          containers:
+            - name: "rotate"
+              image: "{{ .Values.cronjobs.rotate.image }}"
+              command:
+                - /bin/sh
+                - /scripts/rotate.sh
+                - {{ .Values.controller }}/{{ include "bsc.fullname" . }}
+                - {{ .Values.cronjobs.rotate.oldController }}
+                - {{ .Release.Name }}:{{ .Values.service.rpcPort }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: "{{ .Release.Name }}-env"
+              resources:
+              {{- toYaml .Values.cronjobs.rotate.resources | nindent 16 }}
+              volumeMounts:
+                - name: scripts
+                  mountPath: /scripts
+          volumes:
+            - name: scripts
+              configMap:
+                name: "{{ .Release.Name }}-scripts"
+                defaultMode: 0755
+          restartPolicy: Never
+          {{- with .Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ .Release.Name }}-cronjob-rotate
+          securityContext:
+          {{- toYaml .Values.cronjobs.rotate.securityContext | nindent 12 }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+  {{- toYaml . | nindent 12 }}
+  {{- end }}
+{{- end }}

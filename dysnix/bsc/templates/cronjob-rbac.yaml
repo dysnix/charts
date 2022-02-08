@@ -44,3 +44,54 @@ roleRef:
   name: {{ .Release.Name }}-cronjob
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
+{{- if .Values.cronjobs.rotate.enabled -}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-cronjob-rotate
+  labels: {{ include "bsc.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-cronjob-rotate
+  labels: {{ include "bsc.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["apps"]
+    resources:
+      - statefulsets
+      - statefulsets/scale
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+  - apiGroups: ["apps.kruise.io"]
+    resources:
+      - clonesets
+      - clonesets/scale
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-cronjob-rotate
+  labels: {{ include "bsc.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-cronjob-rotate
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Release.Name }}-cronjob-rotate
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

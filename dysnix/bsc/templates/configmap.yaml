@@ -69,6 +69,8 @@ data:
     {{- include (print $.Template.BasePath "/scripts/_update_pod_deletion_cost.tpl") . | nindent 4 }}
   controller-hook.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_controller_hook.tpl") . | nindent 4 }}
+  rotate.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_rotate.tpl") . | nindent 4 }}
 ---
 {{- if .Values.failback.enabled }}
 apiVersion: v1

@@ -81,6 +81,7 @@ spec:
           - --maxpeers={{ .Values.bsc.maxpeers }}
           - --cache={{ .Values.bsc.cache }}
           - --snapshot={{ .Values.bsc.snapshot }}
+          - --pipecommit={{ .Values.bsc.pipecommit }}
           - --port={{ .Values.service.p2pPort0 }}
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0

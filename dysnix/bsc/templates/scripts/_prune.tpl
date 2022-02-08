@@ -18,6 +18,8 @@ if [ "${BSC_PRUNE}" == "True" ] ; then
   # background logging
   tail -F "${DATA_DIR}/bsc.log" &
   $GETH --config=/config/config.toml --datadir=${DATA_DIR} --cache {{ .Values.bsc.cache }} snapshot prune-state
+  # prune-block will turn our full node into light one actually
+  # $GETH --config=/config/config.toml --datadir=${DATA_DIR} --datadir.ancient=${DATA_DIR}/geth/chaindata/ancient --cache {{ .Values.bsc.cache }} snapshot prune-block
   ret=$?
   if [ "${ret}" -eq "0" ];then
     # update timestamp
