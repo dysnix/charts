@@ -82,6 +82,8 @@ spec:
           - --cache={{ .Values.bsc.cache }}
           - --snapshot={{ .Values.bsc.snapshot }}
           - --pipecommit={{ .Values.bsc.pipecommit }}
+          - --persistdiff={{ .Values.bsc.persistdiff }}
+          - --diffblock={{ .Values.bsc.diffblock }}
           - --port={{ .Values.service.p2pPort0 }}
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0

@@ -107,6 +107,9 @@ bsc:
   cache: 8192
   snapshot: false
   pipecommit: false
+  persistdiff: false
+  # ignored w/o persistdiff enabled
+  diffblock: 86400
   noDiscovery: false
   initGenesis: false
   initFromSnapshot: false
