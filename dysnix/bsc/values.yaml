@@ -309,6 +309,7 @@ cronjobs:
     oldController: "statefulset/old-bootnode"
 nginx:
   overrideBackendAddress: false
+  corsUrl: "*"
   backendAddress:
 failback:
   enabled: false
