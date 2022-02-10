@@ -132,7 +132,7 @@ metadata:
   labels: {{ include "bsc.labels" . | nindent 4 }}
 spec:
   schedule: "{{ .Values.cronjobs.rotate.schedule }}"
-  successfulJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 300
   jobTemplate:

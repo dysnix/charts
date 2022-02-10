@@ -14,7 +14,9 @@ metadata:
     additionalControllerName: {{ include "bsc.scaleTriggerName" . }}
     {{- end }}
 spec:
+  {{- if ge (.Values.replicaCount|int) 0 }}
   replicas: {{ .Values.replicaCount }} # by default is 1
+  {{- end }}
   updateStrategy:
     {{- toYaml .Values.updateStrategy | nindent 4 }}
   {{- if eq .Values.controller "StatefulSet" }}
