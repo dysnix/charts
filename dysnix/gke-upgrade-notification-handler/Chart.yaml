@@ -1,6 +1,9 @@
 apiVersion: v2
 name: gke-upgrade-notification-handler
 description: A Helm chart for Kubernetes
+maintainers:
+  - name: killmeplz
+    email: petr.shilo@dysnix.com
 
 # A chart can be either an 'application' or a 'library' chart.
 #

@@ -63,5 +63,5 @@ terminationGracePeriodSeconds: 30
 
 ## updateStrategy
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
-#updateStrategy:
+# updateStrategy:
 #  type: RollingUpdate
