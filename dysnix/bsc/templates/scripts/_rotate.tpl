@@ -47,7 +47,7 @@ sleep ${WAIT_TIME}
 echo "$(date -Iseconds) check node readinnes"
 
 # health check
-# cannot use existing check_node_readiness.sh as there is no bsc binary in this docker image
+# cannot use existing check_node_readiness.sh as there is no bsc binary in kubectl docker image
 # get latest block and parse it's timestamp via jq
 JSON_RPC_REQUEST='{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["latest",false],"id":1}'
 LATEST_BLOCK_TIMESTAMP_HEX=$(${CURL} -s --data-binary ${JSON_RPC_REQUEST} -H 'Content-Type: application/json' "${RPC_ENDPOINT}"|${JQ} -r .result.timestamp)
