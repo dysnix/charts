@@ -45,17 +45,19 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           serviceAccountName: {{ .Release.Name }}-cronjob
+          {{- with .Values.cronjobs.sync.securityContext }}
           securityContext:
-            {{- toYaml .Values.cronjobs.sync.securityContext | nindent 12 }}
-          {{- with .Values.nodeSelector }}
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
+          {{- with .Values.cronjobs.sync.nodeSelector }}
           nodeSelector:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.affinity }}
+          {{- with .Values.cronjobs.sync.affinity }}
           affinity:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.tolerations }}
+          {{- with .Values.cronjobs.sync.tolerations }}
           tolerations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -105,23 +107,25 @@ spec:
           restartPolicy: Never
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
-          {{- toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           serviceAccountName: {{ .Release.Name }}-cronjob
+          {{- with .Values.cronjobs.prune.securityContext }}
           securityContext:
-          {{- toYaml .Values.cronjobs.prune.securityContext | nindent 12 }}
-          {{- with .Values.nodeSelector }}
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
+          {{- with .Values.cronjobs.prune.nodeSelector }}
           nodeSelector:
-          {{- toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.affinity }}
+          {{- with .Values.cronjobs.prune.affinity }}
           affinity:
-          {{- toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.tolerations }}
+          {{- with .Values.cronjobs.prune.tolerations }}
           tolerations:
-          {{- toYaml . | nindent 12 }}
-  {{- end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}
 ---
 {{- if .Values.cronjobs.rotate.enabled }}
@@ -171,21 +175,23 @@ spec:
           restartPolicy: Never
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
-          {{- toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           serviceAccountName: {{ .Release.Name }}-cronjob-rotate
+          {{- with .Values.cronjobs.rotate.securityContext }}
           securityContext:
-          {{- toYaml .Values.cronjobs.rotate.securityContext | nindent 12 }}
-          {{- with .Values.nodeSelector }}
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
+          {{- with .Values.cronjobs.rotate.nodeSelector }}
           nodeSelector:
-          {{- toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.affinity }}
+          {{- with .Values.cronjobs.rotate.affinity }}
           affinity:
-          {{- toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.tolerations }}
+          {{- with .Values.cronjobs.rotate.tolerations }}
           tolerations:
-  {{- toYaml . | nindent 12 }}
-  {{- end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}

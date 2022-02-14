@@ -287,6 +287,9 @@ cronjobs:
       fsGroup: 1001
       runAsGroup: 1001
       runAsUser: 1001
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
   prune:
     enabled: false
     image: dysnix/kubectl:v1.20
@@ -296,6 +299,10 @@ cronjobs:
       fsGroup: 1001
       runAsGroup: 1001
       runAsUser: 1001
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  # bootnode rotation
   rotate:
     enabled: false
     image: dysnix/kubectl:v1.20
@@ -305,6 +312,9 @@ cronjobs:
       fsGroup: 1001
       runAsGroup: 1001
       runAsUser: 1001
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
     # specify controller and name we'll need to scale down to 0
     oldController: "statefulset/old-bootnode"
 nginx:
