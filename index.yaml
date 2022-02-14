@@ -2909,6 +2909,20 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/geth-0.1.5/geth-0.1.5.tgz
     version: 0.1.5
+  gke-upgrade-notification-handler:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-02-14T17:50:59.724971737Z"
+    description: A Helm chart for Kubernetes
+    digest: 235df353bca97009d707a9c1dbd7ab380402087041228ed552fcce59905cfe06
+    maintainers:
+    - email: petr.shilo@dysnix.com
+      name: killmeplz
+    name: gke-upgrade-notification-handler
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/gke-upgrade-notification-handler-0.1.0/gke-upgrade-notification-handler-0.1.0.tgz
+    version: 0.1.0
   grafana-dashboards:
   - apiVersion: v2
     appVersion: 7.3.x
@@ -3839,4 +3853,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-14T07:19:30.269893215Z"
+generated: "2022-02-14T17:50:59.726445546Z"
