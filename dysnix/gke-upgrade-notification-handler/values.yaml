@@ -1,0 +1,67 @@
+# Default values.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: dysnix/gke-upgrade-notification-handler
+  pullPolicy: Always
+  tag: "latest"
+
+## Environment variables
+env: {}
+
+## Secret environment variables from a config map
+secretEnv: {}
+
+imagePullSecrets: []
+
+# nameOverride:
+# fullnameOverride:
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podLabels: {}
+
+podAnnotations: {}
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+# runAsUser: 1000
+
+resources: {}
+#  limits:
+#    cpu: 7000m
+#    memory: 5Gi
+#  requests:
+#    cpu: 7000m
+#    memory: 5Gi
+
+nodeSelector: {}
+# node_pool: default-pool
+
+tolerations: []
+
+affinity: {}
+
+terminationGracePeriodSeconds: 30
+
+## updateStrategy
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+# updateStrategy:
+#  type: RollingUpdate

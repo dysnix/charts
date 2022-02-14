@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fullname" . }}
+  labels:
+{{- include "labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations: {{- toYaml .Values.podAnnotations | nindent 8 }}
+      labels:
+        {{- include "selectorLabels" . | nindent 8 }}
+        {{- if .Values.podLabels }}
+        {{- .Values.podLabels | toYaml | nindent 8 }}
+        {{- end }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | indent 8 }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | indent 8 }}
+      affinity:
+        {{- toYaml .Values.affinity | indent 8 }}
+      tolerations:
+        {{- toYaml .Values.tolerations | indent 8 }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | indent 8 }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | indent 10 }}
+          resources:
+            {{- toYaml .Values.resources | default dict | indent 10 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "fullname" . }}-env
+            - secretRef:
+                name: {{ include "fullname" . }}-env
