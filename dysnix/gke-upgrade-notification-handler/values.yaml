@@ -52,8 +52,8 @@ resources: {}
 #    cpu: 7000m
 #    memory: 5Gi
 
-# nodeSelector: {}
-#   node_pool: default-pool
+nodeSelector: {}
+# node_pool: default-pool
 
 tolerations: []
 
