@@ -15,12 +15,22 @@
   {{- end }}
 {{- end }}
 
-{{- range $resources }}
----
-  {{- merge . $metadata | toYaml | nindent 0 }}
+{{- $templates := list -}}
+{{- range .Values.templates }}
+  {{/* Handle multi-part */}}
+  {{- range . | splitList "---\n" }}
+    {{- if . | fromYaml }}
+      {{- $templates = append $templates . }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 
-{{- range $i, $t := .Values.templates }}
+{{- range $resources }}
 ---
-{{ toYaml (merge (tpl $t $ | fromYaml) $metadata) -}}
+{{- merge . $metadata | toYaml }}
+{{- end }}
+
+{{- range $templates }}
+---
+{{- merge (tpl . $ | fromYaml) $metadata | toYaml }}
 {{- end }}
