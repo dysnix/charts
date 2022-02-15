@@ -1,0 +1,15 @@
+apiVersion: v2
+description: A place for all the Kubernetes resources which don't already have a home
+name: raw
+version: v0.3.0
+kubeVersion: ">=1.16.0-0"
+home: https://github.com/dysnix/charts/blob/master/dysnix/raw
+keywords:
+  - raw
+  - incubator
+  - incubator-raw
+sources:
+  - https://github.com/dysnix/charts/blob/master/dysnix/raw
+maintainers:
+  - email: services@dysnix.com
+    name: Dysnix
