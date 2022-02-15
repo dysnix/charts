@@ -1,0 +1,26 @@
+{{/* vim: set filetype=mustache: */}}
+{{- $metadata := fromYaml (include "raw.metadata" .) -}}
+
+{{- $resources := list -}}
+{{- range .Values.resources }}
+  {{- if typeIs "string" . }}
+    {{/* Handle multi-part */}}
+    {{- range . | splitList "---\n" }}
+      {{- with . | fromYaml }}
+        {{- $resources = append $resources . }}
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    {{- $resources = append $resources . }}
+  {{- end }}
+{{- end }}
+
+{{- range $resources }}
+---
+  {{- merge . $metadata | toYaml | nindent 0 }}
+{{- end }}
+
+{{- range $i, $t := .Values.templates }}
+---
+{{ toYaml (merge (tpl $t $ | fromYaml) $metadata) -}}
+{{- end }}
