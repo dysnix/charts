@@ -3813,6 +3813,27 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/pullsecrets-0.1.0/pullsecrets-0.1.0.tgz
     version: 0.1.0
+  raw:
+  - apiVersion: v2
+    created: "2022-02-15T13:35:02.872844763Z"
+    description: A place for all the Kubernetes resources which don't already have
+      a home
+    digest: 2151808b7da7cb40ce708d4443513ac696770c53a4d28b45a656e0094009d9cc
+    home: https://github.com/dysnix/charts/blob/master/dysnix/raw
+    keywords:
+    - raw
+    - incubator
+    - incubator-raw
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: raw
+    sources:
+    - https://github.com/dysnix/charts/blob/master/dysnix/raw
+    urls:
+    - https://github.com/dysnix/charts/releases/download/raw-v0.3.0/raw-v0.3.0.tgz
+    version: v0.3.0
   rpcfast-gateway:
   - apiVersion: v2
     appVersion: v0.1.0
@@ -3866,4 +3887,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-14T18:53:43.992808426Z"
+generated: "2022-02-15T13:35:02.87346776Z"
