@@ -63,6 +63,8 @@ data:
     {{- include (print $.Template.BasePath "/scripts/_gcs_cleanup.tpl") . | nindent 4 }}
   prune.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_prune.tpl") . | nindent 4 }}
+  prune_block.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_prune_block.tpl") . | nindent 4 }}
   cron.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_cron.tpl") . | nindent 4 }}
   update-pod-deletion-cost.sh: |-

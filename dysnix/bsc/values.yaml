@@ -133,6 +133,8 @@ bsc:
     baseUrl: "bucket/path/to/dir"
   prune:
     enabled: false
+  pruneBlock:
+    enabled: false
   forceInitFromSnapshot: false
   snapshotUrl:
   snapshotRsyncUrl: "rsync://192.168.8.4/snapshot/geth/node/geth"
