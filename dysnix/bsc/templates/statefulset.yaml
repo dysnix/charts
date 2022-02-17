@@ -455,6 +455,21 @@ spec:
           - name: generated-bsc-config
             mountPath: /config
       {{- end }}
+      {{- if .Values.bsc.pruneBlock.enabled }}
+      - name: bsc-prune-block
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - /scripts/prune_block.sh
+        volumeMounts:
+          - name: bsc-pvc
+            mountPath: {{ .Values.bsc.base_path }}
+          - name: scripts
+            mountPath: /scripts
+          - name: generated-bsc-config
+            mountPath: /config
+      {{- end }}
       volumes:
         - name: bsc-config
           configMap:
