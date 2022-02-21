@@ -207,6 +207,7 @@ service:
 | `podContainers`                         | Pod containers, creates a multi-container pod(s) (`base.container` template is used)                                             | `[]`                     |
 | `sidecars`                              | Add additional sidecar containers to the pod(s) (raw definitions)                                                                | `[]`                     |
 | `initContainers`                        | Add additional init containers to the pod(s)                                                                                     | `{}`                     |
+| `matchLabels`                           | Specifies additional matchLabels labels both for the controller metadata and the service                                         | `{}`                     |
 | `autoscaling.enabled`                   | Specifies whether to enable HorizontalPodAutoscaler                                                                              | `false`                  |
 | `autoscaling.minReplicas`               | Specifies the minimum amount of replicas                                                                                         | `1`                      |
 | `autoscaling.maxReplicas`               | Specifies the maximum amount of replicas                                                                                         | `10`                     |

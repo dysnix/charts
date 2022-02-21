@@ -302,6 +302,14 @@ sidecars: []
 ##
 initContainers: {}
 
+## @param matchLabels Specifies additional matchLabels labels both for the controller metadata and the service
+##
+matchLabels: {}
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
+## e.g:
+## matchLabels:
+##   release/tenant: "{{ .Values.tenant }}"
+
 ## Autoscaling configuration
 ##
 autoscaling:
