@@ -49,7 +49,7 @@ spec:
       annotations: {{- . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "base.labels.standard" (dict "value" $value "component" $component "context" $context) | nindent 8 }}
+        {{- include "base.labels.matchLabels" (dict "value" $value "component" $component "context" $context) | nindent 8 }}
         {{- with $value.podLabels }}
           {{- include "common.tplvalues.render" (dict "value" . "context" $context) | nindent 8 }}
         {{- end }}
