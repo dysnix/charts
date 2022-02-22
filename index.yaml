@@ -340,6 +340,37 @@ entries:
       category: Infrastructure
     apiVersion: v2
     appVersion: 0.1.0
+    created: "2022-02-22T20:38:28.926623885Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    description: Generic base Helm chart for Kubernetes Applications
+    digest: e99bb0a40350738e96567a50b884a031b51866c75d4c8adcbf5a6890be5e78ed
+    keywords:
+    - base
+    - common
+    - library
+    - helper
+    - template
+    - function
+    - dysnix
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: base
+    sources:
+    - https://github.com/dysnix/charts
+    type: library
+    urls:
+    - https://github.com/dysnix/charts/releases/download/base-0.3.7/base-0.3.7.tgz
+    version: 0.3.7
+  - annotations:
+      category: Infrastructure
+    apiVersion: v2
+    appVersion: 0.1.0
     created: "2022-02-21T19:33:51.694288987Z"
     dependencies:
     - name: common
@@ -3960,4 +3991,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-21T19:33:51.695029997Z"
+generated: "2022-02-22T20:38:28.92835024Z"
