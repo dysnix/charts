@@ -41,21 +41,27 @@ Params
 */}}
 {{- define "base.ports.targetPort" -}}
   {{- $name := .name -}}
-  {{- if or (typeIs "float64" .name) (typeIs "int" .name) -}}
-    {{- printf "%d" (.name | int) -}}
+  {{- $port := .port -}}
 
-  {{- else -}}
-    {{/* Build up ports dict containing all containers ports */}}
-    {{- $ports := (.value.containerPorts | default dict) | deepCopy -}}
-    {{- range concat (.value.podContainers | default (list dict)) (.value.sidecars | default (list dict)) -}}
-      {{/* No container port name should overlap between containers */}}
-      {{- $ports = mustMerge $ports (get . "ports" | default dict) -}}
-    {{- end -}}
-
-    {{- $found := pluck $name $ports | first -}}
-    {{- if not $found -}}
-      {{- template "base.validate" (dict "template" "base.validate.containerPortNotFound" "name" $name) -}}
-    {{- end -}}
-    {{- tpl ($found | toString) $.context -}}
+  {{/* Build up ports dict containing all containers ports */}}
+  {{- $ports := (.value.containerPorts | default dict) | deepCopy -}}
+  {{- range concat (.value.podContainers | default (list dict)) (.value.sidecars | default (list dict)) -}}
+    {{/* No container port name should overlap between containers */}}
+    {{- $ports = mustMerge $ports (get . "ports" | default dict) -}}
   {{- end -}}
+
+  {{- if or (typeIs "float64" .port) (typeIs "int" .port) }}
+    {{- $containerPort := pluck $name $ports | first -}}
+port: {{ .port }}
+    {{- with $containerPort }}
+targetPort: {{ tpl ($containerPort | toString) $.context }}
+    {{- end }}
+  {{- else }}
+    {{- $containerPort := pluck $port $ports | first }}
+    {{- if not $containerPort -}}
+      {{- template "base.validate" (dict "template" "base.validate.containerPortNotFound" "name" $port) }}
+    {{- end -}}
+port: {{ tpl ($containerPort | toString) $.context }}
+  {{- end }}
+
 {{- end -}}

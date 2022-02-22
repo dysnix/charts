@@ -47,9 +47,9 @@ spec:
   {{- end }}
   ports:
     {{- if kindIs "map" $service.ports }}
-      {{- range $name, $port_or_target := $service.ports }}
+      {{- range $name, $port := $service.ports }}
     - name: {{ $name }}
-      port: {{ include "base.ports.targetPort" (dict "name" $port_or_target "value" $value "context" $context) }}
+      {{- include "base.ports.targetPort" (dict "name" $name "port" $port "value" $value "context" $context) | nindent 6 }}
       {{- if and (hasKey $nodePorts $name) (or (eq $service_type "NodePort") (eq $service_type "LoadBalancer")) }}
       nodePort: {{ get $nodePorts $name }}
       {{- end }}
