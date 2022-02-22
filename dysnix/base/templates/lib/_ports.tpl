@@ -22,7 +22,7 @@ Note: for finegrained controll use the list form (for e.g to specify protocol or
   {{- if and .ports (kindIs "map" .ports) -}}
     {{- range $name, $port := .ports }}
 - name: {{ $name }}
-  containerPort: {{ $port | int }}
+  containerPort: {{ tpl ($port | toString) $.context | int }}
     {{- end }}
   {{- else if .ports -}}
     {{- range .ports }}
@@ -56,6 +56,6 @@ Params
     {{- if not $found -}}
       {{- template "base.validate" (dict "template" "base.validate.containerPortNotFound" "name" $name) -}}
     {{- end -}}
-    {{- $found -}}
+    {{- tpl ($found | toString) $.context -}}
   {{- end -}}
 {{- end -}}
