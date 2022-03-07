@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "allure-ee.gateway.fullname" . }}
+  labels:
+    app: {{ template "allure-ee.gateway.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.gateway.replicaCount }}
+  strategy:
+{{ toYaml .Values.gateway.strategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "allure-ee.gateway.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "allure-ee.gateway.fullname" . }}
+    spec:
+{{- if .Values.rbac.enabled }}
+      serviceAccountName:  {{ template "allure-ee.name" . }}
+{{- end }}
+{{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecret }}
+{{- end }}
+      tolerations:
+{{ toYaml .Values.gateway.tolerations | indent 8 }}
+{{- if .Values.gateway.affinity }}
+      affinity:
+{{ toYaml .Values.gateway.affinity | indent 8 }}
+{{- end }}
+{{- if .Values.gateway.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.gateway.nodeSelector | indent 8 }}
+{{- end }}
+      containers:
+      - name: {{ template "allure-ee.gateway.fullname" . }}
+        image: {{ .Values.gateway.image.repository }}:{{ .Values.version }}
+        imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8080
+        env:
+{{- range $name, $value := .Values.gateway.env.open }}
+        - name: {{ $name | quote }}
+          value: {{ $value | quote }}
+{{- end }}
+{{- if .Values.redis.enabled }}
+        - name: SPRING_REDIS_HOST
+          value: {{ template "allure-ee.redis.fullname" . }}
+        - name: SPRING_REDIS_PASSWORD
+          value: {{ .Values.redis.password }}
+{{- end }}
+{{- $secret_name := include "allure-ee.fullname" . }}
+        - name: ALLURE_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: "jwtSecret"
+{{- range $name, $value := .Values.gateway.env.secret }}
+{{- if not (empty $value) }}
+        - name: {{ $name | quote }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: {{ printf "%s.%s" "gateway" $name | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.gateway.probes.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /management/health
+            port: http
+{{ toYaml .Values.gateway.probes.liveness.probe | indent 10 }}
+        readinessProbe:
+          httpGet:
+            path: /management/health
+            port: http
+{{ toYaml .Values.gateway.probes.readiness.probe | indent 10 }}
+{{- end }}
+{{- with .Values.gateway.resources }}
+        resources:
+{{ toYaml . | indent 10 }}
+{{- end }}

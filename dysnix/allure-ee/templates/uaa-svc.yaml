@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "allure-ee.uaa.fullname" . }}
+  labels:
+    app: {{ template "allure-ee.uaa.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{- if .Values.uaa.service.annotations }}
+  annotations:
+{{ toYaml .Values.uaa.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "allure-ee.uaa.fullname" . }}
+  ports:
+  - name: http
+    targetPort: 8082
+    port: {{ .Values.uaa.service.port }}
+  type: {{ .Values.uaa.service.type }}
+{{- if .Values.uaa.service.loadBalancerIp -}}
+  loadBalancerIP: {{ .Values.uaa.service.loadBalancerIp }}
+{{- end -}}
+{{- if .Values.uaa.service.externalTrafficPolicy -}}
+  externalTrafficPolicy: {{ .Values.uaa.service.externalTrafficPolicy }}
+{{- end -}}

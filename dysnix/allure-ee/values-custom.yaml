@@ -1,0 +1,23 @@
+rabbitmq:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+
+ui:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+
+uaa:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 500m
+
+report:
+  resources:
+    requests:
+      memory: 1024Mi
+      cpu: 1000m

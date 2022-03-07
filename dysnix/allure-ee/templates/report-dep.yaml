@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "allure-ee.report.fullname" . }}
+  labels:
+    app: {{ template "allure-ee.report.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.report.replicaCount }}
+  strategy:
+{{ toYaml .Values.report.strategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "allure-ee.report.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "allure-ee.report.fullname" . }}
+    spec:
+{{- if .Values.rbac.enabled }}
+      serviceAccountName: {{ template "allure-ee.name" . }}
+{{- end }}
+{{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecret }}
+{{- end }}
+      tolerations:
+{{ toYaml .Values.report.tolerations | indent 8 }}
+{{- if .Values.report.affinity }}
+      affinity:
+{{ toYaml .Values.report.affinity | indent 8 }}
+{{- end }}
+{{- if .Values.report.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.report.nodeSelector | indent 8 }}
+{{- end }}
+      containers:
+      - name: {{ template "allure-ee.report.fullname" . }}
+        image: {{ .Values.report.image.repository }}:{{ .Values.version }}
+        imagePullPolicy: {{ .Values.report.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8081
+{{- if .Values.secretEnv }}
+        envFrom:
+        - secretRef:
+            name: {{ template "allure-ee.fullname" . }}-env
+{{- end }}
+        env:
+{{- if .Values.rabbitmq.enabled }}
+        - name: SPRING_RABBITMQ_HOST
+          value: {{ template "allure-ee.rabbitmq.fullname" . }}
+        - name: SPRING_RABBITMQ_USERNAME
+          value: {{ .Values.rabbitmq.rabbitmq.username }}
+        - name: SPRING_RABBITMQ_PASSWORD
+          value: {{ .Values.rabbitmq.rabbitmq.password }}
+{{- end }}
+{{- if .Values.postgresql.enabled }}
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://{{ template "allure-ee.postgresql.fullname" . }}/report
+        - name: SPRING_DATASOURCE_USERNAME
+          value: {{ .Values.postgresql.postgresqlUsername }}
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: {{ .Values.postgresql.postgresqlPassword }}
+        - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+          value: org.postgresql.Driver
+        - name: SPRING_JPA_DATABASE_PLATFORM
+          value: org.hibernate.dialect.PostgreSQL9Dialect
+        - name: SPRING_JPA_PROPERTIES_HIBERNATE_GLOBALLY_QUOTED_IDENTIFIERS
+          value: 'true'
+{{- end }}
+{{- range $name, $value := .Values.report.env.open }}
+        - name: {{ $name | quote }}
+          value: {{ tpl $value $ | quote }}
+{{- end }}
+{{- $secret_name := include "allure-ee.fullname" . }}
+        - name: "ALLURE_CRYPTO_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: "password"
+{{- range $name, $value := .Values.report.env.secret }}
+{{- if not (empty $value) }}
+        - name: {{ $name | quote }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: {{ printf "%s.%s" "report" $name | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.report.probes.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /rs/management/health
+            port: http
+{{ toYaml .Values.report.probes.liveness.probe | indent 10 }}
+        readinessProbe:
+          httpGet:
+            path: /rs/management/health
+            port: http
+{{ toYaml .Values.report.probes.readiness.probe | indent 10 }}
+{{- end }}
+{{- if eq .Values.report.env.open.ALLURE_BLOBSTORAGE_TYPE "FILE_SYSTEM" }}
+        volumeMounts:
+        - mountPath: "{{ .Values.report.env.open.ALLURE_BLOBSTORAGE_FILESYSTEM_DIRECTORY }}"
+          name: storage-volume
+{{- end }}
+{{- with .Values.report.resources }}
+        resources:
+{{ toYaml . | indent 10 }}
+{{- end }}
+      volumes:
+      - name: storage-volume
+{{- if .Values.report.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.report.persistence.existingClaim | default (include "allure-ee.report.fullname" .) }}
+{{- else }}
+        emptyDir: {}
+{{- end -}}

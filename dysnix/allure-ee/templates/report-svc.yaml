@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "allure-ee.report.fullname" . }}
+  labels:
+    app: {{ template "allure-ee.report.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{- if .Values.report.service.annotations }}
+  annotations:
+{{ toYaml .Values.report.service.annotations | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    app: {{ template "allure-ee.report.fullname" . }}
+  ports:
+  - name: http
+    targetPort: 8081
+    port: {{ .Values.report.service.port }}
+  type: {{ .Values.report.service.type }}
+{{- if .Values.report.service.loadBalancerIp -}}
+  loadBalancerIP: {{ .Values.report.service.loadBalancerIp }}
+{{- end -}}
+{{- if .Values.report.service.externalTrafficPolicy -}}
+  externalTrafficPolicy: {{ .Values.report.service.externalTrafficPolicy }}
+{{- end -}}
