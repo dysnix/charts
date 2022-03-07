@@ -1,0 +1,16 @@
+{{- if .Values.rbac.enabled -}}
+# create rbac role with permission for discovery
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "allure-ee.name" . }}-namespace-reader
+  labels:
+    app: {{ template "allure-ee.name" . }}
+    chart: {{ template "allure-ee.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+rules:
+ - apiGroups: [""]
+   resources: ["endpoints", "services", "pods", "configmaps", "secrets"]
+   verbs: ["get", "list", "watch"]
+{{- end -}}

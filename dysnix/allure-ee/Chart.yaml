@@ -1,0 +1,20 @@
+apiVersion: v1
+
+name: allure-ee
+version: 1.9.9
+
+appVersion: 3.188.3
+
+description: Allure TestOps
+
+home: https://qameta.io
+sources:
+  - https://hub.docker.com/r/allure/allure-ui
+  - https://hub.docker.com/r/allure/allure-uaa
+  - https://hub.docker.com/r/allure/allure-report
+
+maintainers:
+  - name: eroshenkoam
+    email: eroshenkoam@qameta.io
+  - name: Andrey-Ryoo
+    email: andrey.ryoo@qameta.io

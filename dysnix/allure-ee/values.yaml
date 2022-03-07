@@ -1,0 +1,153 @@
+version: 3.188.3
+
+username: admin
+password: admin
+
+# imagePullSecret: allure-server
+
+rbac:
+  enabled: true
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+
+ingress:
+#  host: allure.local
+  host:
+  className:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  tls:
+  # - secretName: allure.local
+  #   hosts:
+  #     - allure.local
+
+redis:
+  enabled: true
+  password: allure
+
+rabbitmq:
+  enabled: true
+  rabbitmq:
+    username: allure
+    password: allure
+  resources: {}
+
+postgresql:
+  enabled: true
+  postgresqlUsername: allure
+  postgresqlPassword: allure
+  initdbScripts:
+    init.sql: |
+      CREATE DATABASE uaa TEMPLATE template0 ENCODING 'utf8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
+      CREATE DATABASE report TEMPLATE template0 ENCODING 'utf8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
+  persistence:
+    size: 20Gi
+
+gateway:
+  replicaCount: 1
+  image:
+    repository: allure/allure-gateway
+  tolerations: []
+  affinity: {}
+  nodeSelector: {}
+  service:
+    port: 8080
+    type: NodePort
+  env:
+    open:
+      SPRING_SESSION_STORE_TYPE: REDIS
+      SPRING_PROFILES_ACTIVE: kubernetes
+      JAVA_TOOL_OPTIONS: >
+        -Xss256k -Xms256m -Xmx256m
+        -XX:+UseStringDeduplication
+        -XX:+UseG1GC
+  resources: {}
+  probes:
+    enabled: true
+    liveness:
+      probe:
+        initialDelaySeconds: 60
+        failureThreshold: 10
+        periodSeconds: 30
+    readiness:
+      probe:
+        initialDelaySeconds: 60
+        failureThreshold: 5
+        periodSeconds: 30
+
+uaa:
+  replicaCount: 1
+  image:
+    repository: allure/allure-uaa
+  tolerations: []
+  affinity: {}
+  nodeSelector: {}
+  service:
+    port: 8082
+    type: NodePort
+  env:
+    open:
+      SPRING_PROFILES_ACTIVE: kubernetes
+      JAVA_TOOL_OPTIONS: >
+        -Xss256k -Xms256m -Xmx256m
+        -XX:+UseStringDeduplication
+        -XX:+UseG1GC
+  resources: {}
+  probes:
+    enabled: true
+    liveness:
+      probe:
+        initialDelaySeconds: 60
+        failureThreshold: 10
+        periodSeconds: 30
+    readiness:
+      probe:
+        initialDelaySeconds: 60
+        failureThreshold: 5
+        periodSeconds: 30
+
+report:
+  replicaCount: 1
+  image:
+    repository: allure/allure-report
+  tolerations: []
+  affinity: {}
+  nodeSelector: {}
+  service:
+    port: 8081
+    type: NodePort
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    # existingClaim: ""
+    size: 10Gi
+    annotations: {}
+    finalizers:
+      - kubernetes.io/pvc-protection
+  env:
+    open:
+      SPRING_PROFILES_ACTIVE: kubernetes
+      ALLURE_BLOBSTORAGE_TYPE: FILE_SYSTEM
+      ALLURE_BLOBSTORAGE_FILESYSTEM_DIRECTORY: /opt/allure/report/storage
+      JAVA_TOOL_OPTIONS: >
+        -Xss256k -Xms256m -Xmx1g
+        -XX:+UseStringDeduplication
+        -XX:+UseG1GC
+  resources: {}
+  probes:
+    enabled: true
+    liveness:
+      probe:
+        initialDelaySeconds: 60
+        failureThreshold: 10
+        periodSeconds: 30
+    readiness:
+      probe:
+        initialDelaySeconds: 60
+        failureThreshold: 5
+        periodSeconds: 30

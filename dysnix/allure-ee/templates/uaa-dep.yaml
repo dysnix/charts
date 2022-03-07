@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "allure-ee.uaa.fullname" . }}
+  labels:
+    app: {{ template "allure-ee.uaa.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.uaa.replicaCount }}
+  strategy:
+{{ toYaml .Values.uaa.strategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "allure-ee.uaa.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "allure-ee.uaa.fullname" . }}
+    spec:
+{{- if .Values.rbac.enabled }}
+      serviceAccountName:  {{ template "allure-ee.name" . }}
+{{- end }}
+{{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecret }}
+{{- end }}
+      tolerations:
+{{ toYaml .Values.uaa.tolerations | indent 8 }}
+{{- if .Values.uaa.affinity }}
+      affinity:
+{{ toYaml .Values.uaa.affinity | indent 8 }}
+{{- end }}
+{{- if .Values.uaa.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.uaa.nodeSelector | indent 8 }}
+{{- end }}
+      containers:
+      - name: {{ template "allure-ee.uaa.fullname" . }}
+        image: {{ .Values.uaa.image.repository }}:{{ .Values.version }}
+        imagePullPolicy: {{ .Values.uaa.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8082
+{{- if .Values.secretEnv }}
+        envFrom:
+        - secretRef:
+            name: {{ template "allure-ee.fullname" . }}-env
+{{- end }}
+        env:
+{{- if .Values.postgresql.enabled }}
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://{{ template "allure-ee.postgresql.fullname" . }}/uaa
+        - name: SPRING_DATASOURCE_USERNAME
+          value: {{ .Values.postgresql.postgresqlUsername }}
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: {{ .Values.postgresql.postgresqlPassword }}
+        - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+          value: org.postgresql.Driver
+        - name: SPRING_JPA_DATABASE_PLATFORM
+          value: org.hibernate.dialect.PostgreSQL9Dialect
+        - name: SPRING_JPA_PROPERTIES_HIBERNATE_GLOBALLY_QUOTED_IDENTIFIERS
+          value: 'true'
+{{- end }}
+{{- range $name, $value := .Values.uaa.env.open }}
+        - name: {{ $name | quote }}
+          value: {{ tpl $value $ | quote }}
+{{- end }}
+{{- $secret_name := include "allure-ee.fullname" . }}
+        - name: ALLURE_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: "jwtSecret"
+        - name: "ALLURE_SECURITY_USER_NAME"
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: "username"
+        - name: "ALLURE_CRYPTO_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: "password"
+        - name: "ALLURE_SECURITY_USER_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: "password"
+{{- range $name, $value := .Values.uaa.env.secret }}
+{{- if not (empty $value) }}
+        - name: {{ $name | quote }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: {{ printf "%s.%s" "uaa" $name | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.uaa.probes.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /uaa/management/health
+            port: http
+{{ toYaml .Values.uaa.probes.liveness.probe | indent 10 }}
+        readinessProbe:
+          httpGet:
+            path: /uaa/management/health
+            port: http
+{{ toYaml .Values.uaa.probes.readiness.probe | indent 10 }}
+{{- end }}
+{{- with .Values.uaa.resources }}
+        resources:
+{{ toYaml . | indent 10 }}
+{{- end }}

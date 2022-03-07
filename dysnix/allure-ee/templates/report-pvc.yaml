@@ -1,0 +1,33 @@
+{{- if and .Values.report.persistence.enabled (not .Values.report.persistence.existingClaim) -}}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "allure-ee.report.fullname" . }}
+  labels:
+    app: {{ template "allure-ee.report.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+{{- with .Values.report.persistence.annotations  }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.report.persistence.finalizers  }}
+  finalizers:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+  - {{ .Values.report.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.report.persistence.size | quote }}
+{{- if .Values.report.persistence.storageClass }}
+{{- if (eq "-" .Values.report.persistence.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.report.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
