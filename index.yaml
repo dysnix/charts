@@ -144,6 +144,39 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/ai-scale-saver-0.1.0/ai-scale-saver-0.1.0.tgz
     version: 0.1.0
+  allure-ee:
+  - apiVersion: v1
+    appVersion: 3.188.3
+    created: "2022-03-07T23:33:36.730282721Z"
+    dependencies:
+    - condition: rabbitmq.enabled
+      name: rabbitmq
+      repository: https://charts.helm.sh/stable
+      version: ~6.18.0
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.helm.sh/stable
+      version: ~8.4.0
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.helm.sh/stable
+      version: ~10.5.6
+    description: Allure TestOps
+    digest: 3d6dba50dead9f5685bf7598d208a1289cd23587d28b35c9ad68e67a5f2b720d
+    home: https://qameta.io
+    maintainers:
+    - email: eroshenkoam@qameta.io
+      name: eroshenkoam
+    - email: andrey.ryoo@qameta.io
+      name: Andrey-Ryoo
+    name: allure-ee
+    sources:
+    - https://hub.docker.com/r/allure/allure-ui
+    - https://hub.docker.com/r/allure/allure-uaa
+    - https://hub.docker.com/r/allure/allure-report
+    urls:
+    - https://github.com/dysnix/charts/releases/download/allure-ee-1.9.9/allure-ee-1.9.9.tgz
+    version: 1.9.9
   app:
   - apiVersion: v2
     created: "2022-01-19T13:58:32.000535119Z"
@@ -4022,4 +4055,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-02-22T22:35:26.528330347Z"
+generated: "2022-03-07T23:33:36.730976732Z"
