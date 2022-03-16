@@ -50,6 +50,7 @@ command: []
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
 hostAliases: []
+hostNetwork: false
 
 serviceAccount:
   ## Specifies whether a service account should be created
