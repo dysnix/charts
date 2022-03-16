@@ -179,6 +179,25 @@ entries:
     version: 1.9.9
   app:
   - apiVersion: v2
+    created: "2022-03-16T21:03:57.625600284Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    description: Generic application Helm chart
+    digest: 698d7dff6219563c0790b8f6fb1d16095d180708af4d6e5c0ae2241e0fa6e176
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: app
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/app-0.3.11/app-0.3.11.tgz
+    version: 0.3.11
+  - apiVersion: v2
     created: "2022-01-19T13:58:32.000535119Z"
     dependencies:
     - name: common
@@ -4055,4 +4074,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-03-07T23:33:36.730976732Z"
+generated: "2022-03-16T21:03:57.626476622Z"
