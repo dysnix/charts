@@ -53,7 +53,7 @@ Geth args
 {{- $args = concat $args (list "--http.corsdomain" "*" "--ws" "--ws.addr" "0.0.0.0" "--ws.port" .Values.ws.port) -}}
 {{- $args = concat $args (list "--ws.api" .Values.ws.api "--ws.origins" .Values.ws.origins) -}}
 
-{{- range $testnet := list "ropsten" "rinkeby" -}}
+{{- range $testnet := list "ropsten" "rinkeby" "goerli" -}}
   {{- if eq ($testnet | get $.Values | toString) "true"  -}}
     {{- $args = prepend $args ($testnet | printf "--%s") -}}
   {{- end -}}
