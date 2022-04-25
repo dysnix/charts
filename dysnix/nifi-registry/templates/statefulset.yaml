@@ -28,7 +28,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.certManager.enabled }}
       {{/* Need to restart pod when TLS certificate is updated */}}
-      shareProcessNamespace: true  
+      shareProcessNamespace: true
       {{- /* if .Values.certManager.enabled */}}{{ end }}
       initContainers:
         {{- if .Values.flowProvider.git.enabled }}
@@ -44,9 +44,9 @@ spec:
               chown -R 1000:1000 /tmp/flow_storage /ssh-dest
           env:
             - name: NIFI_REGISTRY_GIT_URL
-              value: {{ .Values.flowProvider.git.url }}          
+              value: {{ .Values.flowProvider.git.url }}
             - name: NIFI_REGISTRY_GIT_USER
-              value: {{ .Values.flowProvider.git.user }}          
+              value: {{ .Values.flowProvider.git.user }}
             - name: NIFI_REGISTRY_GIT_PASSWORD
               value: {{ .Values.flowProvider.git.password }}
           {{- if .Values.initContainers.extraEnvs }}
@@ -124,7 +124,7 @@ spec:
               xmlstarlet ed --inplace --update "//authorizers/accessPolicyProvider/property[@name='Initial Admin Identity']" -v '{{ .Values.security.admin }}' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
               xmlstarlet ed --inplace --update "//authorizers/userGroupProvider/property[@name='Initial User Identity 1']" -v '{{ .Values.security.admin }}' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
 
-           {{- /* if .Values.security.enabled */}}{{ end }}  
+           {{- /* if .Values.security.enabled */}}{{ end }}
 
            {{- if .Values.certManager.enabled }}
               # Note opportunity here to inject additional trusted certs named ca.crt in other
@@ -164,7 +164,7 @@ spec:
                       -deststorepass "{{ .Values.certManager.keystorePasswd }}"
               keytool -list -keystore "${NIFI_REGISTRY_HOME}/tls/keystore.jks" \
                             -storepass "{{ .Values.certManager.keystorePasswd }}"
-  
+
           {{- /* if .Values.certManager.enabled */}}{{ end }}
           {{ if .Values.security.enabled }}
               # Shamelessly stolen from $NIFI_REGISTRY_BASE_DIR/scripts/secure.sh
@@ -182,7 +182,7 @@ spec:
               prop_replace 'nifi.registry.security.truststore'         "${TRUSTSTORE_PATH}"
               prop_replace 'nifi.registry.security.truststoreType'     "${TRUSTSTORE_TYPE}"
               prop_replace 'nifi.registry.security.truststorePasswd'   "${TRUSTSTORE_PASSWORD}"
-              
+
               # Disable HTTP and enable HTTPS
               prop_replace 'nifi.registry.web.http.port'   ''
               prop_replace 'nifi.registry.web.http.host'   ''
@@ -213,9 +213,9 @@ spec:
             - name: NIFI_REGISTRY_GIT_REMOTE
               value: {{ .Values.flowProvider.git.remote }}
             - name: NIFI_REGISTRY_GIT_USER
-              value: {{ .Values.flowProvider.git.user }}          
+              value: {{ .Values.flowProvider.git.user }}
             - name: NIFI_REGISTRY_GIT_PASSWORD
-              value: {{ .Values.flowProvider.git.password }} 
+              value: {{ .Values.flowProvider.git.password }}
           {{- end }}
           {{- if .Values.flowProvider.postgres.enabled }}
             - name: NIFI_REGISTRY_FLOW_PROVIDER
@@ -254,7 +254,7 @@ spec:
               value: {{ .Values.security.admin | quote }}
             - name: AUTH
               value: "tls"
-          {{- /* if .Values.security.enabled */}}{{ end }}  
+          {{- /* if .Values.security.enabled */}}{{ end }}
           {{- if .Values.extraEnvs }}
             {{ toYaml .Values.extraEnvs | nindent 12 }}
           {{- end }}
@@ -300,7 +300,7 @@ spec:
             {{ end }}
             - name: "run"
               mountPath: /opt/nifi-registry/nifi-registry-current/run
-            {{- /* if .Values.certManager.enabled */}}{{ end }}  
+            {{- /* if .Values.certManager.enabled */}}{{ end }}
             {{- if .Values.security.enabled }}
             - name: "auth-conf"
               mountPath: /opt/nifi-registry/nifi-registry-current/auth-conf
@@ -330,7 +330,7 @@ spec:
           - |
             trap "exit 0" TERM
 
-            cp /opt/nifi-registry/nifi-registry-current/tls/cert-manager/tls.crt /tmp/tls.crt            
+            cp /opt/nifi-registry/nifi-registry-current/tls/cert-manager/tls.crt /tmp/tls.crt
 
             while :
             do

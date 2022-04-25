@@ -161,7 +161,7 @@ tests:
 
 # Configuration to run NiFi Registry securely
 # c.f. https://nifi.apache.org/docs/nifi-registry-docs/html/administration-guide.html#security_configuration
-# TLS keystores and truststores must be configured to run secure; 
+# TLS keystores and truststores must be configured to run secure;
 # see (e.g.) certManager (below)
 
 security:
@@ -175,13 +175,12 @@ security:
   # storageClass: "-"
     accessMode: ReadWriteOnce
     size: 1Gi
-    
 
 # cert-manager support
 # Setting this true will have cert-manager create a private CA just for NiFi Registry,
 # including certificates for each NiFi Registry node.
 certManager:
-  # If true, use cert-manager to create and rotate intra-NiFi-Registry-cluster 
+  # If true, use cert-manager to create and rotate intra-NiFi-Registry-cluster
   # TLS keys (note that cert-manager is a Kubernetes cluster-wide resource, so
   # is not installed automatically by this chart); c.f. https://cert-manager.io
   enabled: false
@@ -196,13 +195,13 @@ certManager:
   keystorePasswd: changeme
   # Java Key Store (JKS) password for NiFi Registry truststore
   truststorePasswd: changeme
-  # Additional DNS names to incorporate into TLS certificates (e.g. where users 
+  # Additional DNS names to incorporate into TLS certificates (e.g. where users
   # point browsers to access the NiFi Registry UI)
-  additionalDnsNames: 
+  additionalDnsNames:
     - localhost
   # Names of Kubernetes secrets containing ca.crt keys to add to the
   # NiFi Registry truststore (e.g. CAs of NiFi Registry clients)
-  caSecrets: 
+  caSecrets:
   # How often the sidecar refreshes the NiFi keystore and truststore from
   # the cert-manager Kubernetes secrets (and other caSecrets)
   refreshSeconds: 300
@@ -215,11 +214,11 @@ certManager:
       cpu: 100m
       memory: 128Mi
   # cert-manager takes care of rotating the TLS certificates, so default
-  # their lifetime to 90 days.  But when the CA expires you may need to 
-  # 'helm delete' the cluster, delete all the TLS certificates and secrets, 
+  # their lifetime to 90 days.  But when the CA expires you may need to
+  # 'helm delete' the cluster, delete all the TLS certificates and secrets,
   # and then 'helm install' the NiFi Registry cluster again.  If a site-to-site trusted
-  # CA or a NiFi Registry CA certificate expires, you'll need to restart all 
-  # pods to pick up the new version of the CA certificate.  So default the CA 
+  # CA or a NiFi Registry CA certificate expires, you'll need to restart all
+  # pods to pick up the new version of the CA certificate.  So default the CA
   # lifetime to 10 years to avoid that happening very often.
   # c.f. https://github.com/cert-manager/cert-manager/issues/2478#issuecomment-1095545529
   certDuration: 2160h
