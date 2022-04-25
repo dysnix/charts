@@ -28,6 +28,8 @@ ws:
 networkId: 1
 ropsten: false
 rinkeby: false
+goerli: false
+
 ## Snapshot database mode (if not set, not passed)
 ## true/false
 # snapshot:
