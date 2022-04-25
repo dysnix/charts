@@ -1,0 +1,82 @@
+name: NiFi Registry
+
+on:
+  push:
+    paths:
+      - '.github/workflows/nifi-registry-tests.yaml'
+      - 'dysnix/nifi-registry/**'
+
+jobs:
+  test-cert-manager-initial-administrator:
+    name: Test NiFi Registry cert-manager with Initial Administrator and Certificate Renewal
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Minikube.
+        uses: manusa/actions-setup-minikube@v2.4.1
+        with:
+          minikube version: 'v1.20.0'
+          kubernetes version: 'v1.20.2'
+      - name: Install SOCKS5 Proxy
+        run: |
+          cd dysnix/nifi-registry
+          kubectl apply -f tests/01-oidc-test-framework/socks5.yaml
+          kubectl rollout status --watch --timeout=600s statefulset/socks5
+      - name: Install cert-manager
+        run: |
+          cd dysnix/nifi-registry
+          tests/00-install-cert-manager.bash
+      - name: Install NiFi Registry
+        run: |
+          cd dysnix/nifi-registry
+          helm install nifi-registry . -f tests/00-cert-manager-values.yaml
+          kubectl rollout status --watch --timeout=600s statefulset/nifi-registry
+      - name: Confirm Initial Administrator Configuration
+        run: |
+          cd dysnix/nifi-registry
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.key"' | base64 -d > /tmp/tls.key
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.crt"' | base64 -d > /tmp/tls.crt
+          export K8SNODEIP=$(kubectl get node -o json | jq -r '.items[0].status.addresses[0].address')
+          export K8SSOCKS5PORT=$(kubectl get svc socks5 -o json | jq -r '.spec.ports[0].nodePort')
+          curl --insecure \
+               --url https://nifi-registry:18443/nifi-registry-api/access \
+               --cert /tmp/tls.crt \
+               --key /tmp/tls.key \
+               --socks5-hostname "$K8SNODEIP":"$K8SSOCKS5PORT" | \
+            jq | \
+            diff -c tests/00-initial-administrator-results.json -
+      - name: Confirm Restart on Certificate Renewal
+        run: |
+          cd dysnix/nifi-registry
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.key"' | base64 -d > /tmp/tls.key
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.crt"' | base64 -d > /tmp/tls.crt
+          export K8SNODEIP=$(kubectl get node -o json | jq -r '.items[0].status.addresses[0].address')
+          export K8SSOCKS5PORT=$(kubectl get svc socks5 -o json | jq -r '.spec.ports[0].nodePort')
+          OLDCERTSTART=$(curl --insecure \
+                              --verbose \
+                              --url https://nifi-registry:18443/nifi-registry-api/access \
+                              --cert /tmp/tls.crt \
+                              --key /tmp/tls.key \
+                              --socks5-hostname "$K8SNODEIP":"$K8SSOCKS5PORT" 2>&1 | \
+                         /bin/grep start)
+          echo Old Certificate "$OLDCERTSTART"
+          cmctl renew nifi-registry-0
+          for n in [ 0 1 2 3 4 5 6 7 8 9 ]
+          do
+            sleep 30
+            NEWCERTSTART=$(curl --insecure \
+                              --verbose \
+                              --url https://nifi-registry:18443/nifi-registry-api/access \
+                              --cert /tmp/tls.crt \
+                              --key /tmp/tls.key \
+                              --socks5-hostname "$K8SNODEIP":"$K8SSOCKS5PORT" 2>&1 | \
+                           /bin/grep start || echo NiFi Registry connect failure)
+            echo New Certificate "$NEWCERTSTART"
+              if [ \""$OLDCERTSTART"\" != \""$NEWCERTSTART"\" ]
+              then
+                exit 0
+              fi
+          done
+          echo Certificate did not update for 300 seconds!
+          exit 1
