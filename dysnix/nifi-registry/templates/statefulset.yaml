@@ -88,6 +88,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["bin/nifi-registry.sh", "stop"]
           command:
             - bash
             - -ce
@@ -116,15 +120,6 @@ spec:
               versions don't break things and have to be back ported.
           */}}
               . ${NIFI_REGISTRY_BASE_DIR}/scripts/common.sh
-
-          {{ if .Values.security.enabled }}
-              prop_replace nifi.registry.security.needClientAuth "{{ .Values.security.needClientAuth }}"
-              xmlstarlet ed --inplace --update "//authorizers/userGroupProvider/property[@name='Users File']" -v './auth-conf/users.xml' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
-              xmlstarlet ed --inplace --update "//authorizers/accessPolicyProvider/property[@name='Authorizations File']" -v './auth-conf/authorizations.xml' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
-              xmlstarlet ed --inplace --update "//authorizers/accessPolicyProvider/property[@name='Initial Admin Identity']" -v '{{ .Values.security.admin }}' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
-              xmlstarlet ed --inplace --update "//authorizers/userGroupProvider/property[@name='Initial User Identity 1']" -v '{{ .Values.security.admin }}' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
-
-           {{- /* if .Values.security.enabled */}}{{ end }}
 
            {{- if .Values.certManager.enabled }}
               # Note opportunity here to inject additional trusted certs named ca.crt in other
@@ -164,9 +159,25 @@ spec:
                       -deststorepass "{{ .Values.certManager.keystorePasswd }}"
               keytool -list -keystore "${NIFI_REGISTRY_HOME}/tls/keystore.jks" \
                             -storepass "{{ .Values.certManager.keystorePasswd }}"
-
           {{- /* if .Values.certManager.enabled */}}{{ end }}
+
+          {{ if .Values.oidc.enabled }}
+              prop_replace nifi.registry.security.identity.provider ""
+              prop_replace nifi.registry.security.user.oidc.discovery.url {{ .Values.oidc.discoveryUrl }}
+              prop_replace nifi.registry.security.user.oidc.client.id {{ .Values.oidc.clientId }}
+              prop_replace nifi.registry.security.user.oidc.client.secret {{ .Values.oidc.clientSecret }}
+              prop_replace nifi.registry.security.user.oidc.claim.identifying.user {{ .Values.oidc.claimIdentifyingUser }}
+              prop_replace nifi.registry.security.user.oidc.connect.timeout "{{ .Values.oidc.connectTimeout }}"
+              prop_replace nifi.registry.security.user.oidc.read.timeout "{{ .Values.oidc.readTimeout }}"
+          {{- /* if .Values.oidc.enabled */}}{{ end }}
+
           {{ if .Values.security.enabled }}
+              prop_replace nifi.registry.security.needClientAuth "{{ .Values.security.needClientAuth }}"
+              xmlstarlet ed --inplace --update "//authorizers/userGroupProvider/property[@name='Users File']" -v './auth-conf/users.xml' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
+              xmlstarlet ed --inplace --update "//authorizers/accessPolicyProvider/property[@name='Authorizations File']" -v './auth-conf/authorizations.xml' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
+              xmlstarlet ed --inplace --update "//authorizers/accessPolicyProvider/property[@name='Initial Admin Identity']" -v '{{ .Values.security.admin }}' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
+              xmlstarlet ed --inplace --update "//authorizers/userGroupProvider/property[@name='Initial User Identity 1']" -v '{{ .Values.security.admin }}' "${NIFI_REGISTRY_HOME}/conf/authorizers.xml"
+
               # Shamelessly stolen from $NIFI_REGISTRY_BASE_DIR/scripts/secure.sh
               # and $NIFI_REGISTRY_BASE_DIR/scripts/start.sh
 
@@ -189,12 +200,14 @@ spec:
               prop_replace 'nifi.registry.web.https.port'  "${NIFI_REGISTRY_WEB_HTTPS_PORT:-18443}"
               prop_replace 'nifi.registry.web.https.host'  "${NIFI_REGISTRY_WEB_HTTPS_HOST:-$HOSTNAME}"
           {{- /* if .Values.security.enabled */}}{{ end }}
+
               # Log everything to the console, not to files
               xmlstarlet ed --inplace --delete "//configuration/logger/appender-ref[@ref='CONSOLE']" "${NIFI_REGISTRY_HOME}/conf/logback.xml"
               xmlstarlet ed --inplace --update "//configuration/logger/appender-ref[@ref='BOOTSTRAP_FILE']/@ref" -v CONSOLE "${NIFI_REGISTRY_HOME}/conf/logback.xml"
               xmlstarlet ed --inplace --update "//configuration/logger/appender-ref[@ref='EVENTS_FILE']/@ref" -v CONSOLE "${NIFI_REGISTRY_HOME}/conf/logback.xml"
               xmlstarlet ed --inplace --update "//configuration/logger/appender-ref[@ref='APP_FILE']/@ref" -v CONSOLE "${NIFI_REGISTRY_HOME}/conf/logback.xml"
               xmlstarlet ed --inplace --update "//configuration/root/appender-ref[@ref='APP_FILE']/@ref" -v CONSOLE "${NIFI_REGISTRY_HOME}/conf/logback.xml"
+
               exec ${NIFI_REGISTRY_HOME}/bin/nifi-registry.sh run
           ports:
           {{ if .Values.security.enabled }}
@@ -324,11 +337,17 @@ spec:
         - name: cert-manager
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash",
+                          "/opt/nifi-registry/nifi-registry-current/run/cert-manager-loop-stop.sh"]
           command:
           - bash
           - -ce
           - |
             trap "exit 0" TERM
+            echo kill -TERM $BASHPID > /opt/nifi-registry/nifi-registry-current/run/cert-manager-loop-stop.sh
 
             cp /opt/nifi-registry/nifi-registry-current/tls/cert-manager/tls.crt /tmp/tls.crt
 
@@ -342,7 +361,8 @@ spec:
                 exit 0
               fi
               echo Starting to sleep for {{ .Values.certManager.refreshSeconds }} seconds at $(date)
-              sleep {{ .Values.certManager.refreshSeconds }}
+              sleep {{ .Values.certManager.refreshSeconds }} &
+              echo kill -TERM $BASHPID $! > /opt/nifi-registry/nifi-registry-current/run/cert-manager-loop-stop.sh && wait $!
             done
           volumeMounts:
               # FIXME - cert-manager support limited to a single pod statefulset

@@ -223,3 +223,20 @@ certManager:
   # c.f. https://github.com/cert-manager/cert-manager/issues/2478#issuecomment-1095545529
   certDuration: 2160h
   caDuration: 87660h
+
+# oidc support
+oidc:
+  # If true, use OIDC for authentication.
+  enabled: false
+  # URL for NiFi to discover the OIDC provider
+  discoveryURL: "https://oidc.server.example.com:8080/auth/realms/nifi/.well-known/openid-configuration"
+  # Client ID
+  clientId: nifi
+  # Client Secret
+  clientSecret: "SomeRandomKeySetOnOIDCProvider"
+  # OIDC Claim that identifies the user
+  claimIdentifyingUser: email
+  # OIDC Connection Timeout
+  connectTimeout: "5 secs"
+  # OIDC Read Timeout
+  readTimeout: "5 secs"

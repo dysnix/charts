@@ -1,0 +1,21 @@
+image:
+  tag: "1.15.3"
+
+service:
+  type: ClusterIP
+  port: 18443
+
+certManager:
+  enabled: true
+
+security:
+  enabled: true
+  needClientAuth: false
+  admin: "nifi@example.com"
+
+oidc:
+  enabled: true
+  discoveryUrl: http://keycloak.default.svc.cluster.local:8080/auth/realms/nifi/.well-known/openid-configuration
+  clientId: nifi-registry
+  clientSecret: Dlh86339JJNInG03zG7DJoxiiYZteITb
+  claimIdentifyingUser: email

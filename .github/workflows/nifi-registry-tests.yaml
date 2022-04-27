@@ -80,3 +80,46 @@ jobs:
           done
           echo Certificate did not update for 300 seconds!
           exit 1
+
+  oidc-login:
+    name: OIDC Login
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.4.1
+        with:
+          minikube version: 'v1.20.0'
+          kubernetes version: 'v1.20.2'
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Install dependencies
+        run: |
+          curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
+          sudo bash nodesource_setup.sh
+          sudo apt-get install -y jq yarn
+          yarn add puppeteer-core --cwd $HOME
+          yarn add chai --cwd $HOME
+          yarn add mocha --cwd $HOME
+      - name: Install test framework components
+        run: |
+          cd dysnix/nifi-registry
+          kubectl apply -f tests/01-oidc-test-framework
+          kubectl wait --for=condition=Ready pod/keycloak-0 --timeout=5m
+          tests/01-oidc-keycloak-setup.bash
+          kubectl wait --for=condition=Ready pod/browserless-0 --timeout=5m
+          kubectl wait --for=condition=Ready pod/socks5-0 --timeout=5m
+      - name: Install Nifi Registry
+        run: |
+          cd dysnix/nifi-registry
+          helm install nifi-registry . -f tests/01-oidc-values.yaml
+          kubectl rollout status --timeout=20m --watch statefulset/nifi-registry
+      - name: Check that OIDC login works
+        run: |
+          cd dysnix/nifi-registry
+          tests/01-oidc-login-test-script.sh
+      - name: Archive screenshots
+        if: ${{ success() || failure() || cancelled() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: oidc-login
+          path: ~/screenshots/
