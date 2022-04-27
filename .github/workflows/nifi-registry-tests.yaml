@@ -103,15 +103,16 @@ jobs:
       - name: Install test framework components
         run: |
           cd dysnix/nifi-registry
+          tests/00-install-cert-manager.bash
           kubectl apply -f tests/01-oidc-test-framework
-          kubectl wait --for=condition=Ready pod/keycloak-0 --timeout=5m
+          kubectl rollout status --timeout=20m --watch statefulset/keycloak
           tests/01-oidc-keycloak-setup.bash
-          kubectl wait --for=condition=Ready pod/browserless-0 --timeout=5m
-          kubectl wait --for=condition=Ready pod/socks5-0 --timeout=5m
+          kubectl rollout status --timeout=20m --watch statefulset/browserless
+          kubectl rollout status --timeout=20m --watch statefulset/socks5
       - name: Install Nifi Registry
         run: |
           cd dysnix/nifi-registry
-          helm install nifi-registry . -f tests/01-oidc-values.yaml
+          helm install nifi-registry . -f tests/01-oidc-registry-values.yaml
           kubectl rollout status --timeout=20m --watch statefulset/nifi-registry
       - name: Check that OIDC login works
         run: |
