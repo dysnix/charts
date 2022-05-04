@@ -1,0 +1,5 @@
+#docker build . -f tests/02-dockerfile-nifi-registry-with-git -t <repository>/nifi-registry:1.16.1git
+FROM apache/nifi-registry:1.16.1
+USER root
+RUN apt-get update ; apt-get install -y git
+USER nifi

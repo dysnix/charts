@@ -95,33 +95,51 @@ tolerations: []
 
 affinity: {}
 
-
 flowProvider:
   git:
     enabled: false
+    # Repository to be cloned at pod startup
     url:
+    # Sets NIFI_REGISTRY_GIT_REMOTE for update_flow_provider.sh
     remote: origin
+    # Sets NIFI_REGISTRY_GIT_USER for update_flow_provider.sh
     user:
+    # Sets NIFI_REGISTRY_GIT_PASSWORD for update_flow_provider.sh
     password:
-    # The secret name can be used to supply your own SSH key:
-    # 1. Generate a SSH key named id_rsa:
-    #      ssh-keygen -q -N "" -f ./id_rsa
-    # 2. Create a Kubernetes secret:
-    #      kubectl -n nifi-registry create secret generic nifi-registry-git-deploy --from-file=./id_rsa
-    # 3. Don't check these key files into your Git repository! Once you've created
-    #    the Kubernetes secret, Delete the private key:
-    #      rm ./id_rsa
-    # 4. Add ./id_rsa.pub as a deployment key with write access in your Git repo
-    # 5. Set the secret name (default: nifi-registry-git-deploy) below
-    secretName:
     # Global Git configuration See https://git-scm.com/docs/git-config for more details.
     config:
       enabled: false
-      secretName: ""
       data: ""
       # data: |
       #   [credential "https://github.com"]
       #           username = foo
+    ssh:
+      # To use an SSH public/private keypair as a Kubernetes secret:
+      # 1. Generate a SSH key named id_rsa:
+      #      ssh-keygen -q -N "" -f ./id_rsa
+      # 2. Create a Kubernetes secret:
+      #      kubectl -n nifi-registry create secret generic nifi-registry-git-ssh --from-file=./id_rsa
+      # 3. Don't check these key files into your Git repository! Once you've created
+      #    the Kubernetes secret, Delete the private key:
+      #      rm ./id_rsa
+      # 4. Add ./id_rsa.pub as a deployment key with write access in your Git repo
+      # 5. Set the secret name (e.g., nifi-registry-git-ssh) here:
+      secretName:
+      # 6. Provide the public key(s) of the SSH server(s) for $HOME/.ssh/known_hosts
+      known_hosts:
+      # 7. Set the GIT_SSH_COMMAND
+      gitSshCommand: "ssh -v"
+      # 8. specify the config which would go in $HOME/.ssh/config file, for e.g.
+      # config: |
+      #   Host github.com
+      #   ProxyCommand socat STDIO PROXY:<proxyIP>:%h:%p,proxyport=<proxyPort>,proxyauth=<username:password>
+      #   User git
+      #   Hostname ssh.github.com
+      #   Port 443
+      #   IdentityFile /etc/fluxd/ssh/identity
+      # or, if using an SSH public/private keypair:
+      config: |
+        StrictHostKeyChecking accept-new
   postgres:
     enabled: false
     driverURL: https://jdbc.postgresql.org/download/
@@ -131,27 +149,11 @@ flowProvider:
     username: nifireg
     password: nifireg
 
-
 # Additional environment variables to set
 extraEnvs: []
 # extraEnvs:
 #   - name: FOO
 #     value: bar
-
-ssh:
-  # Overrides for git over SSH. If you use your own git server, you
-  # will likely need to provide a host key for it in this field.
-  known_hosts: ""
-  config: ""
-    # specify the config which would go in /home/nifi/.ssh/config file
-    # for e.g.
-  # config: |
-  #   Host github.com
-  #   ProxyCommand socat STDIO PROXY:<proxyIP>:%h:%p,proxyport=<proxyPort>,proxyauth=<username:password>
-  #   User git
-  #   Hostname ssh.github.com
-  #   Port 443
-  #   IdentityFile /etc/fluxd/ssh/identity
 
 tests:
   images:
@@ -175,6 +177,9 @@ security:
   # storageClass: "-"
     accessMode: ReadWriteOnce
     size: 1Gi
+  # ConfigMap with users.xml and authorizations.xml keys; note that these
+  # settings will override the admin: key above if present
+  authConf:
 
 # cert-manager support
 # Setting this true will have cert-manager create a private CA just for NiFi Registry,

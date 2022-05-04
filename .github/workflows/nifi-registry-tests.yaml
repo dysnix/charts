@@ -84,6 +84,7 @@ jobs:
   oidc-login:
     name: OIDC Login
     runs-on: ubuntu-latest
+    needs: test-cert-manager-initial-administrator
     steps:
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.4.1
@@ -103,8 +104,8 @@ jobs:
       - name: Install test framework components
         run: |
           cd dysnix/nifi-registry
-          tests/00-install-cert-manager.bash
           kubectl apply -f tests/01-oidc-test-framework
+          tests/00-install-cert-manager.bash
           kubectl rollout status --timeout=20m --watch statefulset/keycloak
           tests/01-oidc-keycloak-setup.bash
           kubectl rollout status --timeout=20m --watch statefulset/browserless
@@ -123,4 +124,77 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: oidc-login
+          path: ~/screenshots/
+
+  oidc-ssh-git-nifi:
+    name: OIDC Login, SSH Git, with NiFi
+    runs-on: ubuntu-latest
+    needs: oidc-login
+    steps:
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.4.1
+        with:
+          minikube version: 'v1.20.0'
+          kubernetes version: 'v1.20.2'
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Install dependencies
+        run: |
+          curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
+          sudo bash nodesource_setup.sh
+          sudo apt-get install -y jq yarn
+          yarn add puppeteer-core --cwd $HOME
+          yarn add chai --cwd $HOME
+          yarn add mocha --cwd $HOME
+      - name: Install test framework components
+        run: |
+          cd dysnix/nifi-registry
+          tests/02-configmaps.sh
+          tests/02-ssh-keygen.sh
+          kubectl apply -f tests/02-git-repository.yaml
+          kubectl apply -f tests/01-oidc-test-framework
+          tests/00-install-cert-manager.bash
+          kubectl rollout status --timeout=20m --watch statefulset/keycloak
+          minikube addons enable ingress
+          kubectl apply -f tests/02-increase-webhook-timeout.yaml
+          tests/01-oidc-keycloak-setup.bash
+          kubectl rollout status --timeout=20m --watch statefulset/browserless
+          kubectl rollout status --timeout=20m --watch statefulset/socks5
+          kubectl rollout status --timeout=20m --watch statefulset/git
+      - name: Get NiFi Helm Chart
+        run: |
+          cd $HOME
+          # CHART_UPSTREAM_REPO="https://github.com/cetic/helm-nifi.git"
+          # CHART_UPSTREAM_CHECKOUT="1.0.4"
+          # Replace the below with above when https://github.com/cetic/helm-nifi/pull/218 is merged
+          CHART_UPSTREAM_REPO="https://github.com/wknickless/helm-nifi.git"
+          CHART_UPSTREAM_CHECKOUT="7f4dda59f1aa4f9918018d6c8dd5ec6fc3da9a28"
+          git clone "$CHART_UPSTREAM_REPO" helm-nifi
+          cd helm-nifi
+          git checkout "$CHART_UPSTREAM_CHECKOUT"
+          helm dep update
+      - name: Install Nifi Registry and NiFi
+        run: |
+          cd dysnix/nifi-registry
+          helm install nifi-registry . -f tests/02-registry-values.yaml
+          helm install nifi $HOME/helm-nifi -f tests/02-nifi-values.yaml
+          kubectl rollout status --timeout=20m --watch statefulset/nifi-registry
+          kubectl rollout status --timeout=20m --watch statefulset/nifi
+      - name: Create NiFi Registry Bucket
+        run: |
+          cd dysnix/nifi-registry
+          tests/02-registry-create-bucket-script.sh
+      - name: Put NiFi Process Group Under Version Control
+        run: |
+          cd dysnix/nifi-registry
+          tests/02-nifi-version-control-script.sh
+      - name: Confirm Flow was checked in to git
+        run: |
+          kubectl exec git-0 -- git clone /home/git/nifi-flows.git /root/nifi-flows
+          kubectl exec git-0 -- cat /root/nifi-flows/foo/bucket.yml | grep 'at least not much'
+      - name: Archive screenshots
+        if: ${{ success() || failure() || cancelled() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: oidc-ssh-git-nifi
           path: ~/screenshots/

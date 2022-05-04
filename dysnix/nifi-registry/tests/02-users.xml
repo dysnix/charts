@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tenants>
+    <groups>
+        <group identifier="108622ec-64a0-400a-94a6-bf68ce43d6ee" name="nifi">
+            <user identifier="c2655f13-cabd-493d-b12c-8b53c878b86e"/>
+            <user identifier="834048db-bcf1-4faf-86a5-acda8a70a878"/>
+            <user identifier="4f19d214-7474-4182-94aa-7499b6d7be65"/>
+        </group>
+    </groups>
+    <users>
+        <user identifier="5b700f98-9177-3635-8612-01fe0d219d1f" identity="nifi@example.com"/>
+        <user identifier="c2655f13-cabd-493d-b12c-8b53c878b86e" identity="CN=nifi-0.nifi-headless.default.svc.cluster.local, OU=NIFI"/>
+        <user identifier="834048db-bcf1-4faf-86a5-acda8a70a878" identity="CN=nifi-1.nifi-headless.default.svc.cluster.local, OU=NIFI"/>
+        <user identifier="4f19d214-7474-4182-94aa-7499b6d7be65" identity="CN=nifi-2.nifi-headless.default.svc.cluster.local, OU=NIFI"/>
+    </users>
+</tenants>

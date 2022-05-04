@@ -8,4 +8,4 @@ OLDPWD=$PWD
 cd $HOME
 
 mkdir -p $HOME/screenshots
-node_modules/mocha/bin/_mocha $OLDPWD/tests/01-oidc-login-test.js --timeout 30000
+node_modules/mocha/bin/_mocha $OLDPWD/tests/02-registry-create-bucket.js --timeout 30000
