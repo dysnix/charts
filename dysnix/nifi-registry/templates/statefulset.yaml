@@ -92,6 +92,21 @@ spec:
               versions don't break things and have to be back ported.
           */}}
               . ${NIFI_REGISTRY_BASE_DIR}/scripts/common.sh
+          {{/*
+              Provide an improved prop_replace() that will add a property to the
+              configuration file even if it doesn't already exist.  Also, sadly,
+              nifi-registry.properties sometimes doesn't have a final newline.
+          */}}
+              prop_replace () {
+                target_file=${NIFI_REGISTRY_HOME}/conf/${3:-nifi-registry.properties}
+                echo "updating ${1} in ${target_file}"
+                if egrep "^${1}=" ${target_file} &> /dev/null; then
+                  sed -i -e "s|^$1=.*$|$1=$2|"  ${target_file}
+                else
+                  echo ${1}=${2} >> ${target_file}
+                fi
+              }
+              echo >> ${NIFI_REGISTRY_HOME}/conf/nifi-registry.properties
 
            {{- if .Values.certManager.enabled }}
               # Note opportunity here to inject additional trusted certs named ca.crt in other

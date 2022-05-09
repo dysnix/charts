@@ -61,7 +61,7 @@ describe('NiFi Registry Login via OIDC', () => {
         })
     })
 
-    it('nifi@example.com shown as logged in user', async () => {
+    it('NiFi User shown as logged in user', async () => {
         await page.type('input[id="username"]','nifi')
         await page.type('input[id="password"]','reallychangeme')
         await Promise.all([
@@ -71,10 +71,10 @@ describe('NiFi Registry Login via OIDC', () => {
         ])
         const currentUser = await page.waitForSelector('div[id="current-user"]')
         const userName = await currentUser.evaluate(el => el.textContent)
-        expect(userName).to.include('nifi@example.com')
+        expect(userName).to.include('NiFi User')
     }).timeout(300000)
 
-    it('Get screenshot of nifi@example.com logged in', async () => {
+    it('Get screenshot of NiFi User logged in', async () => {
         await page.screenshot({
             path: process.env.HOME+"/screenshots/0103-logged-in-user.png",
             fullPage: true
