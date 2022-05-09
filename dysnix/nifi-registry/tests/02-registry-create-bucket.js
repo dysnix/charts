@@ -38,7 +38,7 @@ describe('NiFi Registry Create Bucket', () => {
 
     it('Get screenshot of anonymous user', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/01-anonymous-user.png",
+            path: process.env.HOME+"/screenshots/0201-anonymous-user.png",
             fullPage: true
         })
     })
@@ -56,7 +56,7 @@ describe('NiFi Registry Create Bucket', () => {
 
     it('Get screenshot of Keycloak login page', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/02-keycloak-redirect.png",
+            path: process.env.HOME+"/screenshots/0202-keycloak-redirect.png",
             fullPage: true
         })
     })
@@ -76,7 +76,7 @@ describe('NiFi Registry Create Bucket', () => {
 
     it('Get screenshot of logged in user', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/03-logged-in-user.png",
+            path: process.env.HOME+"/screenshots/0203-logged-in-user.png",
             fullPage: true
         })
     })
@@ -112,7 +112,7 @@ describe('NiFi Registry Create Bucket', () => {
 
     it('Get screenshot after filling in', async() => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/04-filling-in.png",
+            path: process.env.HOME+"/screenshots/0204-filling-in.png",
             fullPage: true
         })
     })
@@ -126,7 +126,7 @@ describe('NiFi Registry Create Bucket', () => {
 
     it('Get screenshot after creating new bucket', async() => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/05-created-new-bucket.png",
+            path: process.env.HOME+"/screenshots/0205-created-new-bucket.png",
             fullPage: true
         })
     })

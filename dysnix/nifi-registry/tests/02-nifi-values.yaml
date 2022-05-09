@@ -40,6 +40,10 @@ ingress:
   path: /
   hosts:
   - ingress-nginx-controller.ingress-nginx.svc.cluster.local
+  tls:
+  - hosts:
+    - ingress-nginx-controller.ingress-nginx.svc.cluster.local
+    secretName: keycloak-ingress-cert
 
 configmaps:
 - name: nifi-tester-flow

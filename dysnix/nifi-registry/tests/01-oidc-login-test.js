@@ -38,7 +38,7 @@ describe('NiFi Registry Login via OIDC', () => {
 
     it('Get screenshot of anonymous logged in', async() => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/01-anonymous-logged-in.png",
+            path: process.env.HOME+"/screenshots/0101-anonymous-logged-in.png",
             fullPage: true
         })
     })
@@ -56,7 +56,7 @@ describe('NiFi Registry Login via OIDC', () => {
 
     it('Get screenshot of Keycloak login screen', async() => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/02-keycloak-login-screen.png",
+            path: process.env.HOME+"/screenshots/0102-keycloak-login-screen.png",
             fullPage: true
         })
     })
@@ -76,7 +76,7 @@ describe('NiFi Registry Login via OIDC', () => {
 
     it('Get screenshot of nifi@example.com logged in', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/03-logged-in-user.png",
+            path: process.env.HOME+"/screenshots/0103-logged-in-user.png",
             fullPage: true
         })
     })

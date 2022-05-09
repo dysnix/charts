@@ -207,6 +207,9 @@ certManager:
   # Names of Kubernetes secrets containing ca.crt keys to add to the
   # NiFi Registry truststore (e.g. CAs of NiFi Registry clients)
   caSecrets:
+  # If your (e.g.) OIDC server is using TLS with a private CA, then set this
+  # to true so that Java will use the cert-manager-derived TrustStore:
+  replaceDefaultTrustStore: true
   # How often the sidecar refreshes the NiFi keystore and truststore from
   # the cert-manager Kubernetes secrets (and other caSecrets)
   refreshSeconds: 300
@@ -228,6 +231,8 @@ certManager:
   # c.f. https://github.com/cert-manager/cert-manager/issues/2478#issuecomment-1095545529
   certDuration: 2160h
   caDuration: 87660h
+
+
 
 # oidc support
 oidc:

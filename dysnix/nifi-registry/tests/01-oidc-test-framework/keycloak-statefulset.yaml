@@ -27,6 +27,8 @@ spec:
                 secretKeyRef:
                   key: adminpassword
                   name: keycloak
+            - name: KEYCLOAK_FRONTEND_URL
+              value: "https://ingress-nginx-controller.ingress-nginx.svc.cluster.local/auth/"
           ports:
             - name: tcp-keycloak
               containerPort: 8080

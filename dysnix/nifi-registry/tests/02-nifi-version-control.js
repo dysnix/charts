@@ -37,7 +37,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot of Keycloak login page', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/06-keycloak-redirect.png",
+            path: process.env.HOME+"/screenshots/0211-keycloak-redirect.png",
             fullPage: true
         })
     })
@@ -74,7 +74,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot of logged in user', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/07-logged-in-user.png",
+            path: process.env.HOME+"/screenshots/0212-logged-in-user.png",
             fullPage: true
         })
     })
@@ -104,7 +104,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot of all nodes connected', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/08-all-nodes-connected.png",
+            path: process.env.HOME+"/screenshots/0213-all-nodes-connected.png",
             fullPage: true
         })
     })
@@ -124,7 +124,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot of context menu', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/09-context-menu.png",
+            path: process.env.HOME+"/screenshots/0214-context-menu.png",
             fullPage: true
         })
     })
@@ -136,7 +136,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot of version menu item', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/10-version-menu-item.png",
+            path: process.env.HOME+"/screenshots/0215-version-menu-item.png",
             fullPage: true
         })
     })
@@ -148,7 +148,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot of Save Flow Version', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/11-save-flow-version.png",
+            path: process.env.HOME+"/screenshots/0216-save-flow-version.png",
             fullPage: true
         })
     })
@@ -162,7 +162,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot of Filled In Save Flow Version', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/12-filled-save-flow-version.png",
+            path: process.env.HOME+"/screenshots/0217-filled-save-flow-version.png",
             fullPage: true
         })
     })
@@ -176,7 +176,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot after Save Clicked', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/13-post-save-flow-version.png",
+            path: process.env.HOME+"/screenshots/0218-post-save-flow-version.png",
             fullPage: true
         })
     })
@@ -200,7 +200,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Get screenshot after Process Group Confirmed Updated', async () => {
         await page.screenshot({
-            path: process.env.HOME+"/screenshots/14-process-group-count-updated.png",
+            path: process.env.HOME+"/screenshots/0219-process-group-count-updated.png",
             fullPage: true
         })
     })

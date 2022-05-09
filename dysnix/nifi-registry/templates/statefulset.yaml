@@ -131,6 +131,11 @@ spec:
                       -deststorepass "{{ .Values.certManager.keystorePasswd }}"
               keytool -list -keystore "${NIFI_REGISTRY_HOME}/tls/keystore.jks" \
                             -storepass "{{ .Values.certManager.keystorePasswd }}"
+          {{ if .Values.certManager.replaceDefaultTrustStore }}
+              echo >> conf/bootstrap.conf
+              echo "# Something basic like OIDC needs to trust a non-standard Certificate Authority"
+              echo "java.arg.7=-Djavax.net.ssl.trustStore=/opt/nifi-registry/nifi-registry-current/tls/truststore.jks" >> conf/bootstrap.conf
+          {{- /* if .Values.certManager.replaceDefaultTrustStore */}}{{ end }}
           {{- /* if .Values.certManager.enabled */}}{{ end }}
 
           {{ if .Values.oidc.enabled }}
@@ -179,6 +184,8 @@ spec:
               xmlstarlet ed --inplace --update "//configuration/logger/appender-ref[@ref='EVENTS_FILE']/@ref" -v CONSOLE "${NIFI_REGISTRY_HOME}/conf/logback.xml"
               xmlstarlet ed --inplace --update "//configuration/logger/appender-ref[@ref='APP_FILE']/@ref" -v CONSOLE "${NIFI_REGISTRY_HOME}/conf/logback.xml"
               xmlstarlet ed --inplace --update "//configuration/root/appender-ref[@ref='APP_FILE']/@ref" -v CONSOLE "${NIFI_REGISTRY_HOME}/conf/logback.xml"
+
+              mkdir -p ./flow_storage
 
               exec ${NIFI_REGISTRY_HOME}/bin/nifi-registry.sh run
               # ${NIFI_REGISTRY_HOME}/bin/nifi-registry.sh run

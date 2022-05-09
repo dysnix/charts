@@ -1,0 +1,62 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/issuer: keycloak-issuer-ca
+  name: keycloak
+  namespace: default
+spec:
+  rules:
+  - host: ingress-nginx-controller.ingress-nginx.svc.cluster.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: /auth/
+        backend:
+          service:
+            name: keycloak
+            port:
+              number: 8080
+  tls:
+  - hosts:
+    - ingress-nginx-controller.ingress-nginx.svc.cluster.local
+    secretName: keycloak-ingress-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: keycloak-issuer
+  namespace: default
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keycloak-issuer-ca
+  namespace: default
+spec:
+  isCA: true
+  commonName: keycloak
+  subject:
+    organizationalUnits:
+    - Registry
+    - NiFi
+  secretName: keycloak-issuer-ca
+  privateKey:
+    algorithm: RSA
+    size: 2048
+    rotationPolicy: Always
+  issuerRef:
+    name: keycloak-issuer
+    kind: Issuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: keycloak-issuer-ca
+  namespace: default
+spec:
+  ca:
+    secretName: keycloak-issuer-ca
