@@ -232,8 +232,6 @@ certManager:
   certDuration: 2160h
   caDuration: 87660h
 
-
-
 # oidc support
 oidc:
   # If true, use OIDC for authentication.
