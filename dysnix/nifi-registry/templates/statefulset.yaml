@@ -215,10 +215,10 @@ spec:
               containerPort: 18080
               protocol: TCP
           {{/* if .Values.security.enabled */}}{{ end }}
-          {{- if eq .Values.extensionPersistence.s3.credentialsProvider "DEFAULT_CHAIN" }}
+          {{- if eq .Values.bundleProvider.s3.credentialsProvider "DEFAULT_CHAIN" }}
           envFrom:
             - secretRef: 
-              name: {{ .Values.extensionPersistence.s3.accessSecret.name }}
+              name: {{ .Values.bundleProvider.s3.accessSecret.name }}
           {{- end }}
           env:
           {{- if .Values.bundleProvider.s3.enabled }}
