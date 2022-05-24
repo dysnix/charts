@@ -1,0 +1,24 @@
+image:
+  tag: "1.16.1"
+
+service:
+  type: ClusterIP
+  port: 18443
+
+certManager:
+  enabled: true
+  replaceDefaultTrustStore: true
+  caSecrets:
+  - keycloak-issuer-ca
+
+security:
+  enabled: true
+  needClientAuth: false
+  admin: "NiFi User"
+
+oidc:
+  enabled: true
+  discoveryUrl: https://ingress-nginx-controller.ingress-nginx.svc.cluster.local/auth/realms/nifi/.well-known/openid-configuration
+  clientId: nifi-registry
+  clientSecret: Dlh86339JJNInG03zG7DJoxiiYZteITb
+  claimIdentifyingUser: name

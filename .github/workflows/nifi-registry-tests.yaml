@@ -1,0 +1,174 @@
+name: NiFi Registry
+
+on:
+  push:
+    paths:
+      - '.github/workflows/nifi-registry-tests.yaml'
+      - 'dysnix/nifi-registry/**'
+
+jobs:
+  test-cert-manager:
+    name: Test NiFi Registry with cert-manager
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Minikube.
+        uses: manusa/actions-setup-minikube@v2.4.1
+        with:
+          minikube version: 'v1.20.0'
+          kubernetes version: 'v1.20.2'
+      - name: Install dependencies/framework (Phase 00)
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          kubectl apply -f tests/00-socks5.yaml
+          tests/00-install-cert-manager.bash
+          kubectl rollout status --watch --timeout=600s statefulset/socks5
+      - name: Install NiFi Registry (Phase 00)
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          helm install nifi-registry . -f tests/00-cert-manager-values.yaml
+          kubectl rollout status --watch --timeout=600s statefulset/nifi-registry
+      - name: Confirm Initial Administrator Configuration
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.key"' | base64 -d > /tmp/tls.key
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.crt"' | base64 -d > /tmp/tls.crt
+          export K8SNODEIP=$(kubectl get node -o json | jq -r '.items[0].status.addresses[0].address')
+          export K8SSOCKS5PORT=$(kubectl get svc socks5 -o json | jq -r '.spec.ports[0].nodePort')
+          curl --insecure \
+               --url https://nifi-registry:18443/nifi-registry-api/access \
+               --cert /tmp/tls.crt \
+               --key /tmp/tls.key \
+               --socks5-hostname "$K8SNODEIP":"$K8SSOCKS5PORT" | \
+            jq | \
+            diff -c tests/00-initial-administrator-results.json -
+      - name: Confirm Restart on Certificate Renewal
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.key"' | base64 -d > /tmp/tls.key
+          kubectl get secret nifi-registry-client -o json | jq -r '.data."tls.crt"' | base64 -d > /tmp/tls.crt
+          export K8SNODEIP=$(kubectl get node -o json | jq -r '.items[0].status.addresses[0].address')
+          export K8SSOCKS5PORT=$(kubectl get svc socks5 -o json | jq -r '.spec.ports[0].nodePort')
+          OLDCERTSTART=$(curl --insecure \
+                              --verbose \
+                              --url https://nifi-registry:18443/nifi-registry-api/access \
+                              --cert /tmp/tls.crt \
+                              --key /tmp/tls.key \
+                              --socks5-hostname "$K8SNODEIP":"$K8SSOCKS5PORT" 2>&1 | \
+                         /bin/grep start)
+          echo Old Certificate "$OLDCERTSTART"
+          cmctl renew nifi-registry-0
+          for n in [ 0 1 2 3 4 5 6 7 8 9 ]
+          do
+            sleep 30
+            NEWCERTSTART=$(curl --insecure \
+                              --verbose \
+                              --url https://nifi-registry:18443/nifi-registry-api/access \
+                              --cert /tmp/tls.crt \
+                              --key /tmp/tls.key \
+                              --socks5-hostname "$K8SNODEIP":"$K8SSOCKS5PORT" 2>&1 | \
+                           /bin/grep start || echo NiFi Registry connect failure)
+            echo New Certificate "$NEWCERTSTART"
+              if [ \""$OLDCERTSTART"\" != \""$NEWCERTSTART"\" ]
+              then
+                exit 0
+              fi
+          done
+          echo Certificate did not update for 300 seconds!
+          exit 1
+      - name: Delete nifi-registry and wait for pod to terminate
+        run: |
+          set -ex
+          helm delete nifi-registry
+          kubectl wait pod nifi-registry-0 --for=delete --timeout=300s
+          kubectl delete pvc auth-conf-nifi-registry-0 database-nifi-registry-0 flow-storage-nifi-registry-0
+      - name: Install additional dependencies/framework (Phase 01)
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
+          sudo bash nodesource_setup.sh
+          sudo apt-get install -y jq yarn
+          yarn add puppeteer-core --cwd $HOME
+          yarn add chai --cwd $HOME
+          yarn add mocha --cwd $HOME
+          minikube addons enable ingress
+          kubectl apply -f tests/01-increase-webhook-timeout.yaml
+          kubectl apply -f tests/01-oidc-test-framework
+          kubectl rollout status --timeout=20m --watch statefulset/keycloak
+          tests/01-oidc-keycloak-setup.bash
+          kubectl rollout status --timeout=20m --watch statefulset/browserless
+      - name: Install Nifi Registry (Phase 01)
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          helm install nifi-registry . -f tests/01-oidc-registry-values.yaml
+          kubectl rollout status --timeout=20m --watch statefulset/nifi-registry
+      - name: Check that OIDC login works
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          tests/01-oidc-login-test-script.sh
+      - name: Delete nifi-registry and wait for pod to terminate
+        run: |
+          set -ex
+          helm delete nifi-registry
+          kubectl wait pod nifi-registry-0 --for=delete --timeout=300s
+          kubectl delete pvc auth-conf-nifi-registry-0 database-nifi-registry-0 flow-storage-nifi-registry-0
+      - name: Install additional dependencies/framework (Phase 02)
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          tests/02-configmaps.sh
+          tests/02-ssh-keygen.sh
+          kubectl apply -f tests/02-git-repository.yaml
+          kubectl rollout status --timeout=20m --watch statefulset/git
+      - name: Get NiFi Helm Chart
+        run: |
+          set -ex
+          cd $HOME
+          mkdir -p src
+          cd src
+          # CHART_UPSTREAM_REPO="https://github.com/cetic/helm-nifi.git"
+          # CHART_UPSTREAM_CHECKOUT="1.0.4"
+          # Replace the below with above when https://github.com/cetic/helm-nifi/pull/218 is merged
+          CHART_UPSTREAM_REPO="https://github.com/wknickless/helm-nifi.git"
+          CHART_UPSTREAM_CHECKOUT="7f4dda59f1aa4f9918018d6c8dd5ec6fc3da9a28"
+          git clone "$CHART_UPSTREAM_REPO" helm-nifi
+          cd helm-nifi
+          git checkout "$CHART_UPSTREAM_CHECKOUT"
+          helm dep update
+      - name: Install Nifi Registry and NiFi
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          helm install nifi-registry . -f tests/02-registry-values.yaml
+          helm install nifi $HOME/src/helm-nifi -f tests/02-nifi-values.yaml
+          kubectl rollout status --timeout=20m --watch statefulset/nifi-registry
+          kubectl rollout status --timeout=20m --watch statefulset/nifi
+      - name: Create NiFi Registry Bucket
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          tests/02-registry-create-bucket-script.sh
+      - name: Put NiFi Process Group Under Version Control
+        run: |
+          set -ex
+          cd dysnix/nifi-registry
+          tests/02-nifi-version-control-script.sh
+      - name: Confirm Flow was checked in to git
+        run: |
+          set -ex
+          kubectl exec git-0 -- git clone /home/git/nifi-flows.git /root/nifi-flows
+          kubectl exec git-0 -- cat /root/nifi-flows/foo/bucket.yml | grep 'at least not much'
+      - name: Archive screenshots
+        if: ${{ success() || failure() || cancelled() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: oidc-login
+          path: ~/screenshots/

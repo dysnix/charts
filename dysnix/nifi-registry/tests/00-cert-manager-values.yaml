@@ -1,0 +1,13 @@
+image:
+  tag: "1.16.1"
+
+security:
+  enabled: true
+  admin: "CN=Initial Administrator, OU=NiFi Registry"
+
+certManager:
+  enabled: true
+  refreshSeconds: 10
+
+service:
+  port: 18443

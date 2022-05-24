@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flowController encoding-version="1.4">
+  <maxTimerDrivenThreadCount>10</maxTimerDrivenThreadCount>
+  <maxEventDrivenThreadCount>5</maxEventDrivenThreadCount>
+  <registries>
+    <flowRegistry>
+      <id>808c2e60-0180-1000-ffff-ffff9f932789</id>
+      <name>git</name>
+      <url>https://nifi-registry.default.svc.cluster.local:18443</url>
+      <description/>
+    </flowRegistry>
+  </registries>
+  <parameterContexts/>
+  <rootGroup>
+    <id>52beffb0-66eb-41b9-9ed7-87da47dd68ae</id>
+    <name>Registry Tester</name>
+    <position x="0.0" y="0.0"/>
+    <comment/>
+    <flowfileConcurrency>UNBOUNDED</flowfileConcurrency>
+    <flowfileOutboundPolicy>STREAM_WHEN_AVAILABLE</flowfileOutboundPolicy>
+    <defaultFlowFileExpiration>0 sec</defaultFlowFileExpiration>
+    <defaultBackPressureObjectThreshold>10000</defaultBackPressureObjectThreshold>
+    <defaultBackPressureDataSizeThreshold>1 GB</defaultBackPressureDataSizeThreshold>
+    <processGroup>
+      <id>81055991-0180-1000-0000-00000212b56a</id>
+      <name>Not Much</name>
+      <position x="280.0" y="112.0"/>
+      <comment/>
+      <flowfileConcurrency>UNBOUNDED</flowfileConcurrency>
+      <flowfileOutboundPolicy>STREAM_WHEN_AVAILABLE</flowfileOutboundPolicy>
+      <defaultFlowFileExpiration>0 sec</defaultFlowFileExpiration>
+      <defaultBackPressureObjectThreshold>10000</defaultBackPressureObjectThreshold>
+      <defaultBackPressureDataSizeThreshold>1 GB</defaultBackPressureDataSizeThreshold>
+      <processor>
+        <id>823c55e3-0180-1000-0000-00003c71bdaa</id>
+        <name>GenerateFlowFile</name>
+        <position x="536.0" y="128.0"/>
+        <styles/>
+        <comment/>
+        <class>org.apache.nifi.processors.standard.GenerateFlowFile</class>
+        <bundle>
+          <group>org.apache.nifi</group>
+          <artifact>nifi-standard-nar</artifact>
+          <version>1.14.0</version>
+        </bundle>
+        <maxConcurrentTasks>1</maxConcurrentTasks>
+        <schedulingPeriod>1 sec</schedulingPeriod>
+        <penalizationPeriod>30 sec</penalizationPeriod>
+        <yieldPeriod>1 sec</yieldPeriod>
+        <bulletinLevel>WARN</bulletinLevel>
+        <lossTolerant>false</lossTolerant>
+        <scheduledState>RUNNING</scheduledState>
+        <schedulingStrategy>TIMER_DRIVEN</schedulingStrategy>
+        <executionNode>ALL</executionNode>
+        <runDurationNanos>0</runDurationNanos>
+        <property>
+          <name>File Size</name>
+          <value>0B</value>
+        </property>
+        <property>
+          <name>Batch Size</name>
+          <value>1</value>
+        </property>
+        <property>
+          <name>Data Format</name>
+          <value>Text</value>
+        </property>
+        <property>
+          <name>Unique FlowFiles</name>
+          <value>false</value>
+        </property>
+        <property>
+          <name>generate-ff-custom-text</name>
+        </property>
+        <property>
+          <name>character-set</name>
+          <value>UTF-8</value>
+        </property>
+        <property>
+          <name>mime-type</name>
+        </property>
+      </processor>
+      <funnel>
+        <id>823d2789-0180-1000-ffff-ffffc613a58d</id>
+        <position x="690.5" y="378.5"/>
+      </funnel>
+      <connection>
+        <id>823d59fd-0180-1000-0000-0000092bf814</id>
+        <name/>
+        <bendPoints/>
+        <labelIndex>1</labelIndex>
+        <zIndex>0</zIndex>
+        <sourceId>823c55e3-0180-1000-0000-00003c71bdaa</sourceId>
+        <sourceGroupId>81055991-0180-1000-0000-00000212b56a</sourceGroupId>
+        <sourceType>PROCESSOR</sourceType>
+        <destinationId>823d2789-0180-1000-ffff-ffffc613a58d</destinationId>
+        <destinationGroupId>81055991-0180-1000-0000-00000212b56a</destinationGroupId>
+        <destinationType>FUNNEL</destinationType>
+        <relationship>success</relationship>
+        <maxWorkQueueSize>10000</maxWorkQueueSize>
+        <maxWorkQueueDataSize>1 GB</maxWorkQueueDataSize>
+        <flowFileExpiration>20 sec</flowFileExpiration>
+        <loadBalanceStrategy>DO_NOT_LOAD_BALANCE</loadBalanceStrategy>
+        <partitioningAttribute/>
+        <loadBalanceCompression>DO_NOT_COMPRESS</loadBalanceCompression>
+      </connection>
+    </processGroup>
+  </rootGroup>
+  <controllerServices/>
+  <reportingTasks/>
+</flowController>

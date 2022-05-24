@@ -1,0 +1,33 @@
+{
+  "anonymous": false,
+  "identity": "CN=Initial Administrator, OU=NiFi Registry",
+  "loginSupported": false,
+  "oidcloginSupported": false,
+  "resourcePermissions": {
+    "anyTopLevelResource": {
+      "canDelete": true,
+      "canRead": true,
+      "canWrite": true
+    },
+    "buckets": {
+      "canDelete": true,
+      "canRead": true,
+      "canWrite": true
+    },
+    "policies": {
+      "canDelete": true,
+      "canRead": true,
+      "canWrite": true
+    },
+    "proxy": {
+      "canDelete": true,
+      "canRead": true,
+      "canWrite": true
+    },
+    "tenants": {
+      "canDelete": true,
+      "canRead": true,
+      "canWrite": true
+    }
+  }
+}

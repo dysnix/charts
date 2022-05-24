@@ -1,0 +1,38 @@
+image:
+  tag: "1.16.1"
+
+service:
+  type: ClusterIP
+  port: 18443
+
+certManager:
+  enabled: true
+  caSecrets:
+  - nifi-ca
+  - keycloak-issuer-ca
+
+security:
+  enabled: true
+  replaceDefaultTrustStore: true
+  needClientAuth: false
+  admin: "nifi@example.com"
+  authConf: nifi-registry-auth-conf
+
+oidc:
+  enabled: true
+  discoveryUrl: https://ingress-nginx-controller.ingress-nginx.svc.cluster.local/auth/realms/nifi/.well-known/openid-configuration
+  clientId: nifi-registry
+  clientSecret: Dlh86339JJNInG03zG7DJoxiiYZteITb
+  claimIdentifyingUser: email
+
+persistence:
+  enabled: false
+
+flowProvider:
+  git:
+    enabled: true
+    user: git
+    password: notUsed
+    url: git@git-0.git-headless.default.svc.cluster.local:nifi-flows.git
+    ssh:
+      secretName: nifi-registry-git-ssh
