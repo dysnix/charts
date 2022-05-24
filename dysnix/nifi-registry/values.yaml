@@ -102,7 +102,7 @@ bundleProvider:
     bucketName: nifi-registry-bucket
     keyPrefix: ""
     # -- valid credentialProvider values are STATIC, DEFAULT_CHAIN.
-    credentialsProvider: DEFAULT_CHAIN
+    credentialsProvider: STATIC
     # -- If credentialsProvider is STATIC, must specify access key and secret access key
     accessKey: ""
     secretAccessKey: ""
