@@ -111,7 +111,7 @@ bundleProvider:
       name: nifi-registry-s3-creds
     endpoint: s3://s3.us-east-1.amazonaws.com
 
-  fileSystem:
+  file:
     enabled: true
     # -- the path in the running pod where the git repo will be cloned into
     # either absolute or relative to the container working directory, which is NIFI_REGISTRY_HOME
