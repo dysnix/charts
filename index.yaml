@@ -3408,6 +3408,21 @@ entries:
   nifi-registry:
   - apiVersion: v2
     appVersion: 0.8.0
+    created: "2022-06-06T11:25:52.527021197Z"
+    description: A subproject of Apache NiFi to store and manage shared resources.
+    digest: 58641a3cc21565b48406a6f12c5c1cf0a554b0440a4f2ec59db32eb43f781017
+    home: https://github.com/dysnix/charts/tree/master/dysnix/nifi-registry
+    icon: https://svn.apache.org/repos/asf/nifi/site/trunk/images/niFi-logo-horizontal-scaled.png
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    name: nifi-registry
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/nifi-registry-1.1.0/nifi-registry-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
+    appVersion: 0.8.0
     created: "2022-05-24T10:30:17.40912027Z"
     description: A subproject of Apache NiFi to store and manage shared resources.
     digest: 4dda260f867c9a4941b7072496d2b69287fddad45ad64f87020adb8950fad9ab
@@ -4154,4 +4169,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-06-01T13:00:38.236871542Z"
+generated: "2022-06-06T11:25:52.527866814Z"
