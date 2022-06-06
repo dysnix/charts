@@ -95,6 +95,29 @@ tolerations: []
 
 affinity: {}
 
+bundleProvider:
+  s3:
+    enabled: false
+    region: us-east-1
+    bucketName: nifi-registry-bucket
+    keyPrefix: ""
+    # -- valid credentialProvider values are STATIC, DEFAULT_CHAIN.
+    credentialsProvider: STATIC
+    # -- If credentialsProvider is STATIC, must specify access key and secret access key
+    accessKey: ""
+    secretAccessKey: ""
+    # -- If credentialsProvider is DEFAULT_CHAIN, configure a secret containing AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to mount into nifi registry pod env variables
+    accessSecret:
+      name: nifi-registry-s3-creds
+    endpoint: s3://s3.us-east-1.amazonaws.com
+
+  file:
+    enabled: true
+    # -- the path in the running pod where the git repo will be cloned into
+    # either absolute or relative to the container working directory, which is NIFI_REGISTRY_HOME
+    # If you elect to use a non-default location, you must also update the property associated.
+    storageDirectory: ./extension_bundles
+
 flowProvider:
   git:
     enabled: false
