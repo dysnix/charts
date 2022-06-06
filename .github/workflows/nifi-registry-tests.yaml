@@ -1,12 +1,12 @@
 name: NiFi Registry
 
 on:
-  repository_dispatch:
-    types: [disabled-until-a-soultion-suggested]
-  # push:
-  #   paths:
-  #     - '.github/workflows/nifi-registry-tests.yaml'
-  #     - 'dysnix/nifi-registry/**'
+  # repository_dispatch:
+  #   types: [disabled-until-a-soultion-suggested]
+  push:
+    paths:
+      - '.github/workflows/nifi-registry-tests.yaml'
+      - 'dysnix/nifi-registry/**'
 
 jobs:
   test-cert-manager:
