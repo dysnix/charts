@@ -140,7 +140,7 @@ jobs:
           # CHART_UPSTREAM_CHECKOUT="1.0.4"
           # Replace the below with above when https://github.com/cetic/helm-nifi/pull/218 is merged
           CHART_UPSTREAM_REPO="https://github.com/wknickless/helm-nifi.git"
-          CHART_UPSTREAM_CHECKOUT="7f4dda59f1aa4f9918018d6c8dd5ec6fc3da9a28"
+          CHART_UPSTREAM_CHECKOUT="62b602486507151da92cf889e59bef431952a03b"
           git clone "$CHART_UPSTREAM_REPO" helm-nifi
           cd helm-nifi
           git checkout "$CHART_UPSTREAM_CHECKOUT"
