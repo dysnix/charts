@@ -130,27 +130,14 @@ jobs:
           tests/02-ssh-keygen.sh
           kubectl apply -f tests/02-git-repository.yaml
           kubectl rollout status --timeout=20m --watch statefulset/git
-      - name: Get NiFi Helm Chart
-        run: |
-          set -ex
-          cd $HOME
-          mkdir -p src
-          cd src
-          # CHART_UPSTREAM_REPO="https://github.com/cetic/helm-nifi.git"
-          # CHART_UPSTREAM_CHECKOUT="1.0.4"
-          # Replace the below with above when https://github.com/cetic/helm-nifi/pull/218 is merged
-          CHART_UPSTREAM_REPO="https://github.com/wknickless/helm-nifi.git"
-          CHART_UPSTREAM_CHECKOUT="62b602486507151da92cf889e59bef431952a03b"
-          git clone "$CHART_UPSTREAM_REPO" helm-nifi
-          cd helm-nifi
-          git checkout "$CHART_UPSTREAM_CHECKOUT"
-          helm dep update
       - name: Install Nifi Registry and NiFi
         run: |
           set -ex
           cd dysnix/nifi-registry
           helm install nifi-registry . -f tests/02-registry-values.yaml
-          helm install nifi $HOME/src/helm-nifi -f tests/02-nifi-values.yaml
+          helm repo add cetic https://cetic.github.io/helm-charts
+          helm repo update
+          helm install nifi cetic/nifi --version 1.1.0 -f tests/02-nifi-values.yaml
           kubectl rollout status --timeout=20m --watch statefulset/nifi-registry
           kubectl rollout status --timeout=20m --watch statefulset/nifi
       - name: Create NiFi Registry Bucket
