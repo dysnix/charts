@@ -52,9 +52,10 @@ Labels to use on deploy.spec.selector.matchLabels and svc.spec.selector
 
 app.kubernetes.io/name: {{ include "common.names.name" $context }}
 app.kubernetes.io/instance: {{ $context.Release.Name }}
-
+{{- if $value.matchLabels -}}
 {{- with include "base.tpl.render" (dict "value" $value.matchLabels "context" $context) }}
   {{- . | nindent 0 }}
 {{- end }}
+{{- end -}}
 
 {{- end -}}
