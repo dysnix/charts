@@ -83,7 +83,7 @@ metadata:
   annotations: {{- . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and $ingress.ingressClassName (include "common.ingress.supportsIngressClassname" $context.Values) }}
+  {{- if and $ingress.ingressClassName (include "common.ingress.supportsIngressClassname" $context) }}
   ingressClassName: {{ $ingress.ingressClassName }}
   {{- end }}
   rules:
