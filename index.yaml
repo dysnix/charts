@@ -4212,6 +4212,32 @@ entries:
   rpcfast-gateway:
   - apiVersion: v2
     appVersion: v0.1.0
+    created: "2022-07-12T18:09:07.092310435Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.16.x
+    - name: base
+      repository: https://dysnix.github.io/charts
+      tags:
+      - dysnix-base
+      version: 0.3.12
+    description: A Helm chart for Kubernetes
+    digest: 8b1ec046f2720cea008d4983e6231752c64c44fa0de6d2cbb468ed42a2f0f366
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: rpcfast-gateway
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.7/rpcfast-gateway-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: v0.1.0
     created: "2022-07-12T17:01:37.086134857Z"
     dependencies:
     - name: common
@@ -4392,4 +4418,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-07-12T18:06:00.80891966Z"
+generated: "2022-07-12T18:09:07.093180159Z"
