@@ -47,7 +47,7 @@ defaultComponent:
   ## @param defaultComponent.enabled Create the default Pod
   ## @param defaultComponent.controller Default Pod controller type (case-sensetive)
   enabled: true
-  controller: deployment
+  controller: Deployment
 
 ## @section Component specific parameters
 ##
@@ -587,3 +587,5 @@ configs: {}
 ## @param monitoring.enabled
 monitoring:
   enabled: false
+  ## Additional labels to service monitor
+  labels: {}
