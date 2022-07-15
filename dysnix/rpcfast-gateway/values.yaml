@@ -84,7 +84,7 @@ containerPorts:
   - name: http
     containerPort: 8091
     protocol: TCP
-  - name: metrics
+  - name: monitoring
     containerPort: 8097
     protocol: TCP
 ##
