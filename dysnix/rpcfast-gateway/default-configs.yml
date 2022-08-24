@@ -21,6 +21,7 @@ single:
     writeTimeout: 7s
 internalToken: ""
 backendRpcUrl: ""
+WSBackendRPCURL: ""
 backendAuthUrl: ""
 rpcObjectKey: method
 server:
@@ -32,6 +33,15 @@ server:
     maxIdleConnDuration: 15s
     readTimeout: 7s
     writeTimeout: 7s
+WSServer:
+  host: 0.0.0.0
+  httptransport:
+    maxIdleConnDuration: 15s
+    readTimeout: 7s
+    writeTimeout: 7s
+  keepalive: true
+  port: 8092
+  requestsPause: 0s
 remoteClient:
   maxIdleConnDuration: 0s
   readTimeout: 7s
