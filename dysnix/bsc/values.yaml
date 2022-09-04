@@ -352,7 +352,7 @@ multicluster:
       affinityType: GENERATED_COOKIE
 
 bscCmdOverride: false
-bscCmd: ""
+bscCmd: ["geth"]
 
 externalLB: false
 externalLBIP: ""

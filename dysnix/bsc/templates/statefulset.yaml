@@ -73,7 +73,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.bscCmdOverride }}
-        command: [ "{{ .Values.bscCmd }}" ]
+        command: {{ .Values.bscCmd }}
         {{- end }}
         args:
           - --config=/config/config.toml
@@ -440,7 +440,7 @@ spec:
       {{- if .Values.bsc.prune.enabled }}
       - name: bsc-prune
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
           - /bin/sh
           - /scripts/prune.sh
@@ -458,7 +458,7 @@ spec:
       {{- if .Values.bsc.pruneBlock.enabled }}
       - name: bsc-prune-block
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         command:
           - /bin/sh
           - /scripts/prune_block.sh
