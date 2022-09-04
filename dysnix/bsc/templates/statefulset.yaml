@@ -73,7 +73,10 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.bscCmdOverride }}
-        command: {{ .Values.bscCmd }}
+        {{- with .Values.bscCmd }}
+        command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- end }}
         args:
           - --config=/config/config.toml
