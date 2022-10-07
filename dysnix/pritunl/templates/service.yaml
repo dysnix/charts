@@ -10,20 +10,23 @@ metadata:
 {{ tpl (toYaml .) $ | indent 4 }}
 {{- end }}
 spec:
-  type: LoadBalancer
-  {{- if .Values.service.loadBalancerIP }}
-  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  type: {{ .Values.service.type }}
+  {{- if eq .Values.service.type "LoadBalancer" }}
+  {{- with .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
   {{- end }}
-  {{- if.Values.service.loadBalancerSourceRanges }}
+  {{- with .Values.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
-  {{ with .Values.service.loadBalancerSourceRanges }}
-{{ toYaml . | indent 4 }}
-{{- end }}
+    {{- toYaml . | nindent 4 }}
   {{- end }} 
+  {{- end }}
   ports:
     - name: openvpn
       port: {{ .Values.service.port }}
       targetPort: openvpn
+      {{- with .Values.service.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
       protocol: {{ .Values.service.protocol }}
   selector:
     app: {{ include "pritunl.name" . }}

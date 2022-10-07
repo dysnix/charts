@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: "1.29"
 description: A Helm chart for Kubernetes
 name: pritunl
-version: 0.2.1
+version: 0.2.2
 home: https://pritunl.com/
 sources:
   - https://github.com/dysnix/charts
@@ -11,6 +11,8 @@ sources:
 maintainers:
   - name: dennybaa
     email: dennybaa@gmail.com
+  - name: vladstarr
+    email: vladstarrr@icloud.com
 
 dependencies:
   - name: common

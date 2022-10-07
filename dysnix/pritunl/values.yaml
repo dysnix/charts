@@ -28,10 +28,13 @@ securityContext:
 
 ## Pritunl service configuration
 service:
-  ## LoadBalancer is fixed
-  # type: LoadBalancer
+  ## Can be either "LoadBalancer" or "NodePort"
+  type: LoadBalancer
+  ## TCP by default, UDP if your cloud provider's LB has support for it
   protocol: TCP
+  ## When service.type is "NodePort", we recommend service.port == service.nodePort for proper .ovpn config
   port: 1194
+  # nodePort: 30194
 
   ## Provide any additional annotations which may be required.
   ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart

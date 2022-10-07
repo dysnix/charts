@@ -60,7 +60,7 @@ spec:
             - name: https
               containerPort: 443
             - name: openvpn
-              containerPort: 1194
+              containerPort: {{ .Values.service.port }}
               protocol: {{ .Values.service.protocol }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
