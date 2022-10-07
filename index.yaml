@@ -3774,6 +3774,34 @@ entries:
   pritunl:
   - apiVersion: v2
     appVersion: "1.29"
+    created: "2022-10-07T13:35:23.936879288Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: ~10.30.x
+    description: A Helm chart for Kubernetes
+    digest: e1136b0df4897a501c7fdf7aca05132c27f174c58bda1655b7e5a8fb14a2efa1
+    home: https://pritunl.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    - email: vladstarrr@icloud.com
+      name: vladstarr
+    name: pritunl
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pritunl/pritunl
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pritunl-0.2.2/pritunl-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: "1.29"
     created: "2021-12-07T21:48:54.840886071Z"
     dependencies:
     - name: common
@@ -4592,4 +4620,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2022-09-04T08:22:56.729515386Z"
+generated: "2022-10-07T13:35:23.937955082Z"
