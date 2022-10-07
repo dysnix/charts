@@ -3,3 +3,5 @@ mongodb:
   auth:
     enabled: true
     password: foobartest
+service:
+  type: NodePort
