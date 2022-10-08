@@ -7,7 +7,7 @@ replicaCount: 1
 terminationGracePeriodSeconds: 180
 
 image:
-  repository: dysnix/bsc
+  repository: ghcr.io/bnb-chain/bsc
   tag: latest
   pullPolicy: Always
 
@@ -351,7 +351,8 @@ multicluster:
       affinityCookieTtlSec: 50
       affinityType: GENERATED_COOKIE
 
-bscCmdOverride: false
+# override is required with upstream image
+bscCmdOverride: true
 bscCmd: ["geth"]
 
 externalLB: false
