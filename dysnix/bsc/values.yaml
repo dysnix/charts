@@ -118,15 +118,15 @@ bsc:
   initFromRsyncImage: instrumentisto/rsync-ssh:latest
   initFromGCS:
     enabled: false
-    image: peakcom/s5cmd:v1.4.0
+    image: peakcom/s5cmd:v2.0.0
     endpoint: "https://storage.googleapis.com"
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
     indexUrl: "bucket/path/to/file"
-    fullResyncOnSrcUpdate: true
+    fullResyncOnSrcUpdate: false
   syncToGCS:
     enabled: false
-    image: peakcom/s5cmd:v1.4.0
+    image: peakcom/s5cmd:v2.0.0
     endpoint: "https://storage.googleapis.com"
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
