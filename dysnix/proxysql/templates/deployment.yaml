@@ -40,6 +40,9 @@ spec:
             - "/etc/proxysql/proxysql.cnf"
             - "-f"
             - "--idle-threads"
+            {{- if .Values.proxysql_cluster.satellite.exit_on_error }}
+            - "--exit-on-error"
+            {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ template "proxysql.image" . }}
