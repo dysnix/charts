@@ -169,7 +169,7 @@ describe('Put NiFi Process Group Under Version Control', () => {
 
     it('Click on Save Button', async() => {
         const dialog = await page.waitForSelector('div[id="save-flow-version-dialog"]')
-        const buttonList = await dialog.$x('//div[@id="save-flow-version-dialog"]//div[@class="dialog-buttons"]//div[@class="button"]')
+        const buttonList = await dialog.$x('//div[@class="dialog-buttons"]//div[@class="button"]')
         await buttonList[0].click()
         await page.waitForNetworkIdle()
     })
