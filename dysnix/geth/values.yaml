@@ -24,6 +24,13 @@ ws:
   port: 8546
   api: "net,eth,personal,web3"
   origins: "*"
+authrpc:
+  enabled: false
+  port: 8551
+  # Use a utility like OpenSSL to create the token via command: openssl rand -hex 32 | tr -d "\n" > "jwt.hex".
+  jwtsecret: ""
+  jwtpath: /root/jwt/jwt.hex
+  vhosts: "*"
 
 networkId: 1
 ropsten: false
@@ -33,7 +40,7 @@ goerli: false
 ## Snapshot database mode (if not set, not passed)
 ## true/false
 # snapshot:
-syncMode: "fast"
+syncMode: "snap"
 
 maxPeers: 50
 cache: 4096

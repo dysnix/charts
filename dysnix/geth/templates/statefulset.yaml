@@ -77,6 +77,10 @@ spec:
           containerPort: {{ .Values.http.port }}
         - name: ws
           containerPort: {{ .Values.ws.port }}
+        {{- if .Values.authrpc.enabled }}
+        - name: authrpc
+          containerPort: {{ .Values.authrpc.port }}
+        {{- end }}
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
           {{- if and .Values.livenessProbe.exec (kindIs "string" .Values.livenessProbe.exec.command) }}
@@ -102,8 +106,19 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /root
+        {{- if .Values.authrpc.enabled }}
+        - name: jwtsecret
+          mountPath: /root/jwt
+          readOnly: true
+        {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+      {{- if .Values.authrpc.enabled }}
+      volumes:
+        - name: jwtsecret
+          secret:
+            secretName: "{{ .Release.Name }}-jwt"
+      {{- end }}
   volumeClaimTemplates:
   - metadata:
       name: data

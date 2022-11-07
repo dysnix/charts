@@ -52,6 +52,11 @@ Geth args
 {{- $args = concat $args (list "--http.addr" "0.0.0.0" "--http.port" .Values.http.port "--http.vhosts" .Values.http.vhosts) -}}
 {{- $args = concat $args (list "--http.corsdomain" "*" "--ws" "--ws.addr" "0.0.0.0" "--ws.port" .Values.ws.port) -}}
 {{- $args = concat $args (list "--ws.api" .Values.ws.api "--ws.origins" .Values.ws.origins) -}}
+{{- if .Values.authrpc.enabled }}
+{{- $args = concat $args (list "--authrpc.addr=0.0.0.0"  "--authrpc.port" .Values.authrpc.port ) -}}
+{{- $args = concat $args (list "--authrpc.vhosts" .Values.authrpc.vhosts ) -}}
+{{- $args = concat $args (list "--authrpc.jwtsecret" .Values.authrpc.jwtpath ) -}}
+{{- end -}}
 
 {{- range $testnet := list "ropsten" "rinkeby" "goerli" -}}
   {{- if eq ($testnet | get $.Values | toString) "true"  -}}
