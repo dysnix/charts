@@ -7,7 +7,7 @@ replicas: 1
 image:
   registry: docker.io
   repository: proxysql/proxysql
-  tag: "2.0.9"
+  tag: "2.4.4"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -236,6 +236,9 @@ proxysql_cluster:
     #   It is recommended to use one of the following number of replicas: 3, 5, 7, or 9.
     replicas: 3
 
+    # Restart ProxySQL if crashes
+    exit_on_error: false
+
     statefullset:
       nodeSelector: {}
       tolerations: []
@@ -259,6 +262,9 @@ proxysql_cluster:
 
     # Only applies if kind=Deployment
     replicas: 3
+
+    # Restart ProxySQL if crashes
+    exit_on_error: false
 
     daemonset:
       nodeSelector: {}
