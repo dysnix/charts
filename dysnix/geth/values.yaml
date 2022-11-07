@@ -40,7 +40,7 @@ goerli: false
 ## Snapshot database mode (if not set, not passed)
 ## true/false
 # snapshot:
-syncMode: "fast"
+syncMode: "snap"
 
 maxPeers: 50
 cache: 4096
