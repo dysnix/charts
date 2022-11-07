@@ -20,6 +20,11 @@ spec:
     - name: ws
       port: {{ .Values.ws.port }}
       targetPort: ws
+    {{- if .Values.authrpc.enabled }}
+    - name: authrpc
+      port: {{ .Values.authrpc.port }}
+      targetPort: authrpc
+    {{- end }}
     - name: proxy-rpc
       port: {{ .Values.proxy.http.port }}
       targetPort: proxy-rpc
