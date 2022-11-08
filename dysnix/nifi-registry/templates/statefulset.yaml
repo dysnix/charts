@@ -191,7 +191,10 @@ spec:
               prop_replace 'nifi.registry.web.http.host'   ''
               prop_replace 'nifi.registry.web.https.port'  "${NIFI_REGISTRY_WEB_HTTPS_PORT:-18443}"
               prop_replace 'nifi.registry.web.https.host'  "${NIFI_REGISTRY_WEB_HTTPS_HOST:-$HOSTNAME}"
-          {{- /* if .Values.security.enabled */}}{{ end }}
+          {{- else if .Values.flowProvider.git.enabled }}
+              scripts_dir='/opt/nifi-registry/scripts'
+              . "${scripts_dir}/update_flow_provider.sh"
+          {{- /* if .Values.security.enabled */}}{{- end }}
 
               # Log everything to the console, not to files
               xmlstarlet ed --inplace --delete "//configuration/logger/appender-ref[@ref='CONSOLE']" "${NIFI_REGISTRY_HOME}/conf/logback.xml"
