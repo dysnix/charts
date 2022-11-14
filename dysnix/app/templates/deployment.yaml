@@ -110,6 +110,13 @@ spec:
             {{- if .Values.volumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.volumeMounts "context" $) | nindent 12 }}
             {{- end }}
+        {{- range $name, $values := .Values.extraContainers }}
+        - name: {{ $name }}
+          {{- with $values}}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+        {{- end }}
+
       volumes:
         {{- if .Values.persistence.enabled }}
         - name: data
