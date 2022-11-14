@@ -92,6 +92,17 @@ initContainers: []
 # - name: portname
 #   containerPort: 1234
 
+## Add extra containers to the pod
+##
+extraContainers: {}
+## e.g.
+# containerName:
+#   image: your-image
+#   imagePullPolicy: Always
+#   ports:
+#   - name: portname
+#     containerPort: 1234
+
 
 ## priorityClassName
 ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
