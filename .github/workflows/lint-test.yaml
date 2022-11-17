@@ -2,6 +2,20 @@ name: Lint and Test Charts
 on: pull_request
 
 jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      -
+        name: Run quintush/helm-unittest
+        uses: docker://quintush/helm-unittest:3.10.1-0.2.10
+        with:
+          entrypoint: ./.github/scripts/ut.sh
+          args: dysnix/
+
   lint-test:
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,22 @@
+app:
+  name: alpine
+
+image:
+  repository: alpine
+
+command:
+  - /bin/sh
+  - -c
+  - sleep 60
+
+containerPorts:
+  http: 80
+
+service:
+  ports:
+    http:
+      port: 8080
+      targetPort: http
+
+ingress:
+  enabled: true

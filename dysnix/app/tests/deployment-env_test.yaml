@@ -1,0 +1,126 @@
+suite: deployment
+templates:
+  - deployment.yaml
+tests:
+  -
+    it: default container .env and .extraEnvVars
+    values:
+      - ./values/app.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: VARIABLE
+            value: DEFAULT_CONTAINER
+      - equal:
+          path: spec.template.spec.containers[0].env[1]
+          value:
+            name: ADDED_AFTER
+            value: ".env"
+  -
+    it: additional container .env and .extraEnvVars
+    values:
+      - ./values/app.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].env[0]
+          value:
+            name: FOO
+            value: BAR
+      - equal:
+          path: spec.template.spec.containers[1].env[1]
+          value:
+            name: YET
+            value: ANOTHER
+      - equal:
+          path: spec.template.spec.containers[1].env[2]
+          value:
+            name: ZOO
+            value: "1"
+      - equal:
+          path: spec.template.spec.containers[1].env[3]
+          value:
+            name: ADDED_AFTER
+            value: ".env"
+  -
+    it: default and additional containers .env and .extraEnvVars is unset
+    values:
+      - ./values/app.yaml
+    set:
+      env: null
+      extraEnvVars: null
+      containers:
+        additional:
+          env: null
+          extraEnvVars: null
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].env
+      - isNull:
+          path: spec.template.spec.containers[1].env
+  -
+    it: initContainer .env and .extraEnvVars
+    values:
+      - ./values/app.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[1].env[0]
+          value:
+            name: FOO
+            value: BAR
+      - equal:
+          path: spec.template.spec.containers[1].env[1]
+          value:
+            name: YET
+            value: ANOTHER
+      - equal:
+          path: spec.template.spec.containers[1].env[2]
+          value:
+            name: ZOO
+            value: "1"
+      - equal:
+          path: spec.template.spec.containers[1].env[3]
+          value:
+            name: ADDED_AFTER
+            value: ".env"
+  -
+    it: default and additional containers .envFrom
+    values:
+      - ./values/app.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: RELEASE-NAME-app-foo
+              optional: false
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: RELEASE-NAME-app-bar
+      - contains:
+          path: spec.template.spec.containers[1].envFrom
+          content:
+            configMapRef:
+              name: foo
+      - contains:
+          path: spec.template.spec.containers[1].envFrom
+          content:
+            secretRef:
+              name: bar
+  -
+    it: initContainers .envFrom
+    values:
+      - ./values/app.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[1].envFrom
+          content:
+            configMapRef:
+              name: foo
+      - contains:
+          path: spec.template.spec.initContainers[1].envFrom
+          content:
+            secretRef:
+              name: bar

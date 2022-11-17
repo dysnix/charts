@@ -1,0 +1,73 @@
+suite: deployment
+templates:
+  - deployment.yaml
+tests:
+  -
+    it: additional container is disabled (app.containers set to null)
+    values:
+      - ./values/app.yaml
+    set:
+      containers:
+        additional: null
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[1]
+  -
+    it: app initContainers
+    values:
+      - ./values/app.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: first
+      - equal:
+          path: spec.template.spec.initContainers[1].name
+          value: second
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: goes-first
+      - equal:
+          path: spec.template.spec.initContainers[1].image
+          value: goes-second
+  -
+    it: default and additional containers have probes enabled
+    values:
+      - ./values/app.yaml
+    asserts:
+      - isSubset:
+          path: spec.template.spec.containers[0].livenessProbe
+          content: {}
+      - isSubset:
+          path: spec.template.spec.containers[0].readinessProbe
+          content: {}
+      - isSubset:
+          path: spec.template.spec.containers[0].startupProbe
+          content: {}
+      - isSubset:
+          path: spec.template.spec.containers[0].lifecycle
+          content: {}
+      - isSubset:
+          path: spec.template.spec.containers[1].livenessProbe
+          content: {}
+      - isSubset:
+          path: spec.template.spec.containers[1].readinessProbe
+          content: {}
+      - isSubset:
+          path: spec.template.spec.containers[1].startupProbe
+          content: {}
+      - isSubset:
+          path: spec.template.spec.containers[1].lifecycle
+          content: {}
+  -
+    it: app initContainers don't get livenessProbe, startupProbe etc
+    values:
+      - ./values/app.yaml
+    asserts:
+      - isNull:
+          path: spec.template.spec.initContainers[0].livenessProbe
+      - isNull:
+          path: spec.template.spec.initContainers[0].readinessProbe
+      - isNull:
+          path: spec.template.spec.initContainers[0].startupProbe
+      - isNull:
+          path: spec.template.spec.initContainers[0].lifecycle

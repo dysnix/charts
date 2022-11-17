@@ -1,0 +1,17 @@
+app:
+  initContainers:
+    use:
+      - skip
+      - foo
+      - bar
+    values:
+      skip: ~
+      bar:
+        image: docker.io/bar
+        imagePullPolicy: IfNotPresent
+      foo:
+        image: docker.io/foo
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits: {}
+          requests: {}

@@ -1,0 +1,11 @@
+ingress:
+  enabled: true
+  hostname: host.fqdn
+  tls: true
+  selfSigned: true
+  extraPaths:
+    - path: /foo
+
+service:
+  ports:
+    http: 8080

@@ -1,0 +1,60 @@
+suite: deployment
+templates:
+  - deployment.yaml
+tests:
+  -
+    it: chart naming
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: deployment
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-app-name
+  -
+    it: .namespaceOverride
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: deployment
+      namespaceOverride: foo
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.namespace
+          value: foo
+  -
+    it: release name is equal to .name
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: deployment
+    release:
+      name: app
+    asserts:
+      - equal:
+          path: metadata.name
+          value: app
+  -
+    it: image naming
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: deployment
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: foo/alpine:bar
+  -
+    it: selector matchLabels
+    values:
+      - ./values/common.yaml
+    asserts:
+      - isSubset:
+          path: spec.selector.matchLabels
+          content:
+            tenant: foo

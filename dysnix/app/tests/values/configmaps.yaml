@@ -1,0 +1,8 @@
+configMaps:
+  default:
+    sample.txt: |-
+      some text file for release "{{ .Release.Name }}".
+      interpolation works.
+  env:
+    RENDERED_FOUR: "{{ mul 2 2 }}"
+    FOUR: 4

@@ -1,0 +1,205 @@
+## Application name
+##
+app:
+  name: app-name
+
+templateChecksums:
+  - configmaps.yaml
+  - secrets.yaml
+
+## An arbitary configMap can be deployed
+## Note: the configMap name is prefixed with the "release name"
+##
+configMaps:
+  default:
+    ## Many keys support interpolation!
+    ##
+    sample.txt: |-
+      some text file for release "{{ .Release.Name }}".
+      interpolation works.
+  env:
+    FOUR: 4
+    ## Note: the last-leaf rendered data is always string, since
+    ## there's no way to dect it's. RENDER_FOURED will be "4"
+    ##
+    RENDERED_FOUR: '{{ mul 2 2 }}'
+
+## Additional application containers spawned together with the main one
+##
+containers:
+  additional:
+    env:
+      FOO: BAR
+      YET: ANOTHER
+    envFrom:
+      - configMapRef:
+          name: foo
+      - secretRef:
+          name: bar
+    extraEnvVars:
+      - name: ADDED_AFTER
+        value: .env
+    image:
+      pullPolicy: IfNotPresent
+      repository: hello-world
+    lifecycleHooks:
+      postStart:
+        exec:
+          command:
+            - /bin/sh
+            - '-c'
+            - echo sample hook
+    livenessProbe:
+      enabled: true
+    readinessProbe:
+      enabled: true
+    startupProbe:
+      enabled: true
+    volumeMounts:
+      ebs:
+        mountPath: /ebs
+
+## Environment variables (main container)
+##
+env:
+  VARIABLE: DEFAULT_CONTAINER
+
+## Environment variables mounted from configMaps and secrets (main container)
+##
+envFrom:
+  - configMapRef:
+      name: '{{ template "common.names.fullname" . }}-foo'
+      optional: false
+  - secretRef:
+      name: '{{ template "common.names.fullname" . }}-bar'
+
+## extra* parameters are the most low-level parameters they are rendered as-is (though not always).
+## More likely they originate from bitnami template parameter
+##
+extraEnvVars:
+  - name: ADDED_AFTER
+    value: .env
+
+## Image parameters
+##
+image:
+  registry: docker.io
+  repository: alpine
+  tag: latest
+
+## Ingress parameters
+##
+ingress:
+  enabled: true
+  ## The bellow is not required for a single port service (this not our example case)
+  ##
+  servicePort: http
+  extraPaths:
+    - path: /foo
+    ## Feel free to provide extra configuration (even with a custom backend)
+    ##
+    - backend:
+        serviceName: another-service
+        servicePort: its-port
+      path: /custom
+  hostname: host.fqdn
+  selfSigned: true
+  tls: true
+
+## initContainers (main Pod) consist of two keys:
+##    use    - list which defines the order of init containers
+##    values - the actual data for init containers
+##
+## Approach is used to separate definition and inclusion, which gives
+## an evident flexibility when extending the configuration.
+##
+initContainers:
+  use:
+    - first
+    - second
+  values:
+    first:
+      image:
+        pullPolicy: IfNotPresent
+        repository: goes-first
+      volumeMounts:
+        ebs:
+          mountPath: /ebs
+    second:
+      env:
+        FOO: BAR
+        YET: ANOTHER
+      envFrom:
+        - configMapRef:
+            name: foo
+        - secretRef:
+            name: bar
+      extraEnvVars:
+        - name: ADDED_AFTER
+          value: .env
+      image:
+        pullPolicy: IfNotPresent
+        repository: goes-second
+
+## LifeCycle hooks (main container)
+##
+lifecycleHooks:
+  postStart:
+    exec:
+      command:
+        - /bin/sh
+        - '-c'
+        - echo sample hook
+
+## Don't enable probes without defining actual body (main container)
+##
+livenessProbe:
+  enabled: false
+
+readinessProbe:
+  enabled: false
+
+startupProbe:
+  enabled: false
+
+## Creates a PVC
+##
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: custom
+
+## An arbitary secret can be deployed
+## Note: the secret name is prefixed with the "release name"
+##
+secrets:
+  b64:
+    data:
+      sample.txt: ZW5jb2RlZA==
+  default:
+    stringData:
+      sample.txt: |-
+        some text file for release "{{ .Release.Name }}".
+        interpolation works.
+
+## Ports map is flexible
+##
+service:
+  ports:
+    http: 8080
+    custom:
+      name: overrides-custom
+      nodePort: null
+      port: 6000
+
+## Manage persistence
+##
+volumeMounts:
+  ebs:
+    mountPath: /ebs
+
+volumes:
+  ebs:
+    awsElasticBlockStore:
+      fsType: ext4
+      volumeID: <volume id>
