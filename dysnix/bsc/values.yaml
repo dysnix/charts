@@ -369,6 +369,8 @@ externalLBp2pIP: ""
 externalLBp2pDiscovery: false
 externalLBp2pDiscoveryIP: ""
 
+p2pPublishNotReadyAddresses: true
+
 internalLB: false
 internalLBIP: ""
 

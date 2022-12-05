@@ -10,6 +10,9 @@ spec:
   {{ if .Values.externalLBp2pDiscoveryIP }}
   loadBalancerIP: {{ .Values.externalLBp2pDiscoveryIP }}
   {{ end }}
+  {{ if .Values.p2pPublishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ .Values.p2pPublishNotReadyAddresses }}
+  {{ end }}
   ports:
     - name: {{ .Values.service.p2pPortName1 }}
       port: {{ .Values.service.p2pPort1 }}
