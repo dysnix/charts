@@ -1,8 +1,8 @@
 apiVersion: v2
 name: bsc
 description: Binance Smart Chain chart for Kubernetes
-version: "0.6.15"
-appVersion: "v1.1.16"
+version: "0.6.16"
+appVersion: "v1.1.18"
 
 keywords:
   - geth
