@@ -107,6 +107,10 @@ bsc:
   cache: 8192
   snapshot: false
   pipecommit: false
+  diffsync: true
+  # https://github.com/bnb-chain/bsc/issues/1193
+  # valid values are local, full, insecure, none
+  triesVerifyMode: local
   persistdiff: false
   # ignored w/o persistdiff enabled
   diffblock: 86400
@@ -364,6 +368,8 @@ externalLBp2pIP: ""
 
 externalLBp2pDiscovery: false
 externalLBp2pDiscoveryIP: ""
+
+p2pPublishNotReadyAddresses: true
 
 internalLB: false
 internalLBIP: ""

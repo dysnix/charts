@@ -93,7 +93,12 @@ spec:
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0
           - --cache.preimages
+          {{- if .Values.bsc.diffsync }}
           - --diffsync
+          {{- end }}
+          {{- if .Values.bsc.triesVerifyMode }}
+          - --tries-verify-mode={{ .Values.bsc.triesVerifyMode }}
+          {{- end }}
           {{- if and .Values.externalLBp2p .Values.externalLBp2pIP }}
           - --nat=extip:{{- .Values.externalLBp2pIP -}}
           {{- end }}
