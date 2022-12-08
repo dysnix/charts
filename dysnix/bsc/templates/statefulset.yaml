@@ -177,8 +177,8 @@ spec:
           failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
         {{- end }}
       - name: logger
-        image: krallin/ubuntu-tini:latest
-        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.logger.image.repository }}:{{ .Values.logger.image.tag }}"
+        imagePullPolicy: {{ .Values.logger.image.pullPolicy }}
         args: [ "tail","-F","{{ .Values.bsc.base_path }}/bsc.log" ]
         lifecycle:
           preStop:
@@ -188,6 +188,8 @@ spec:
                 - /bin/sh
                 - -c
                 - "sleep 30"
+        resources:
+          {{- toYaml .Values.logger.resources | nindent 10 }}
         workingDir: "{{ .Values.bsc.base_path }}"
         volumeMounts:
           - name: bsc-pvc
@@ -200,6 +202,8 @@ spec:
         args:
           - -url
           - http://127.0.0.1:{{ .Values.service.rpcPort }}
+        resources:
+          {{- toYaml .Values.metrics.resources | nindent 10 }}
       {{- end }}
       {{- if .Values.failback.enabled }}
       - name: nginx
@@ -209,6 +213,8 @@ spec:
           - containerPort: {{ .Values.failback.port }}
             name: nginx
             protocol: TCP
+        resources:
+          {{- toYaml .Values.failback.resources | nindent 10 }}
         volumeMounts:
           - mountPath: /etc/nginx/
             name: nginx-config-volume
@@ -219,6 +225,8 @@ spec:
         imagePullPolicy: {{ .Values.failback.metrics.image.pullPolicy }}
         args:
           - -nginx.scrape-uri=http://localhost:{{ .Values.failback.port }}/metrics
+        resources:
+          {{- toYaml .Values.failback.metrics.resources | nindent 10 }}
         ports:
           - containerPort: {{ .Values.failback.metrics.service.port }}
             name: {{ .Values.failback.metrics.service.name }}
@@ -234,6 +242,8 @@ spec:
           - --config=/config/rsyncd.conf
           - --no-detach
           - --port={{ .Values.rsyncd.service.port }}
+        resources:
+          {{- toYaml .Values.rsyncd.resources | nindent 10 }}
         ports:
           - containerPort: {{ .Values.rsyncd.service.port }}
             name: {{ .Values.rsyncd.service.name }}
@@ -258,6 +268,8 @@ spec:
         envFrom:
           - secretRef:
               name: "{{ .Release.Name }}-gcs-creds-sync-to"
+        resources:
+          {{- toYaml .Values.gcsCleanup.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -306,6 +318,8 @@ spec:
         https://github.com/binance-chain/bsc/releases/download/{{ $.Chart.AppVersion }}/mainnet.zip &&
         cd /tmp && unzip mainnet.zip &&
         geth --datadir={{ .Values.bsc.base_path }} init /tmp/genesis.json"]
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -317,6 +331,8 @@ spec:
         command:
           - /bin/sh
           - /scripts/init_from_snaphot.sh
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -333,6 +349,8 @@ spec:
         envFrom:
           - secretRef:
               name: "{{ .Release.Name }}-gcs-creds-init-from"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -354,6 +372,8 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -367,6 +387,8 @@ spec:
           - {{ .Values.bsc.base_path }}/geth/LOCK
         image: busybox
         imagePullPolicy: IfNotPresent
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -381,6 +403,8 @@ spec:
             value: "/tmp"
         image: google/cloud-sdk:alpine
         imagePullPolicy: IfNotPresent
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-config
             mountPath: /config
@@ -407,6 +431,8 @@ spec:
                 fieldPath: status.podIP
         image: python:slim
         imagePullPolicy: IfNotPresent
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -423,6 +449,8 @@ spec:
           - "echo -n {{ .Values.bsc.staticNodeKey }} > {{ .Values.bsc.base_path }}/geth/nodekey"
         image: busybox:latest
         imagePullPolicy: IfNotPresent
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -439,6 +467,8 @@ spec:
               name: "{{ .Release.Name }}-gcs-creds-sync-to"
           - configMapRef:
               name: "{{ .Release.Name }}-env"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -455,6 +485,8 @@ spec:
         envFrom:
         - configMapRef:
             name: "{{ .Release.Name }}-env"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
@@ -470,6 +502,8 @@ spec:
         command:
           - /bin/sh
           - /scripts/prune_block.sh
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - name: bsc-pvc
             mountPath: {{ .Values.bsc.base_path }}
