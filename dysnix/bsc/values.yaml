@@ -130,7 +130,8 @@ bsc:
     fullResyncOnSrcUpdate: false
   syncToGCS:
     enabled: false
-    image: peakcom/s5cmd:v2.0.0
+    # v2.0.0 may lead to OOM issues during uploads
+    image: peakcom/s5cmd:v1.4.0
     endpoint: "https://storage.googleapis.com"
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
@@ -255,6 +256,9 @@ logger:
     tag: latest
     pullPolicy: IfNotPresent
   resources:
+    requests:
+      cpu: 0m
+      memory: 128Mi
     limits:
       cpu: 300m
       memory: 128Mi
@@ -266,6 +270,9 @@ metrics:
     tag: v1.2.0
     pullPolicy: IfNotPresent
   resources:
+    requests:
+      cpu: 0m
+      memory: 128Mi
     limits:
       cpu: 500m
       memory: 256Mi
@@ -279,6 +286,9 @@ rsyncd:
   image: instrumentisto/rsync-ssh:latest
   bsc_path: /data
   resources:
+    requests:
+      cpu: 0m
+      memory: 128Mi
     limits:
       cpu: 2
       memory: 1024Mi
@@ -293,14 +303,20 @@ gcsCleanup:
   rmlist: rmlist.txt
   rmlog: rmlog.txt
   resources:
+    requests:
+      cpu: 0m
+      memory: 128Mi
     limits:
       cpu: 2
-      memory: 1024Mi
+      memory: 3072Mi
 # updates pod annotation controller.kubernetes.io/pod-deletion-cost
 updatePodDeletionCost:
   enabled: false
   image: dysnix/kubectl:v1.20
   resources:
+    requests:
+      cpu: 0m
+      memory: 128Mi
     limits:
       cpu: 100m
       memory: 300Mi
@@ -314,6 +330,9 @@ cronjobs:
     enabled: false
     image: dysnix/kubectl:v1.20
     resources:
+      requests:
+        cpu: 0m
+        memory: 128Mi
       limits:
         cpu: 100m
         memory: 300Mi
@@ -329,6 +348,9 @@ cronjobs:
     enabled: false
     image: dysnix/kubectl:v1.20
     resources:
+      requests:
+        cpu: 0m
+        memory: 128Mi
       limits:
         cpu: 100m
         memory: 300Mi
@@ -345,6 +367,9 @@ cronjobs:
     enabled: false
     image: dysnix/kubectl:v1.20
     resources:
+      requests:
+        cpu: 0m
+        memory: 128Mi
       limits:
         cpu: 100m
         memory: 300Mi
@@ -365,6 +390,9 @@ nginx:
 failback:
   enabled: false
   resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
     limits:
       cpu: 2
       memory: 256Mi
@@ -380,6 +408,9 @@ failback:
       tag: "0.9.0"
       pullPolicy: IfNotPresent
     resources:
+      requests:
+        cpu: 0m
+        memory: 128Mi
       limits:
         cpu: 300m
         memory: 256Mi
