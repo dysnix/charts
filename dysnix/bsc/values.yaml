@@ -249,12 +249,27 @@ service:
     - port: *metricsPort
       name: *metricsPortName
 
+logger:
+  image:
+    repository: krallin/ubuntu-tini
+    tag: latest
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 300m
+      memory: 128Mi
+
 metrics:
   enabled: false
-  # image:
-  #   repository: 31z4/ethereum-prometheus-exporter
-  #   tag: v1.2.0
-  #   pullPolicy: IfNotPresent
+  image:
+    repository: 31z4/ethereum-prometheus-exporter
+    tag: v1.2.0
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
 prometheus:
   rules:
     enabled: false
@@ -263,6 +278,10 @@ rsyncd:
   enabled: false
   image: instrumentisto/rsync-ssh:latest
   bsc_path: /data
+  resources:
+    limits:
+      cpu: 2
+      memory: 1024Mi
   service:
     port: 1873
     name: rsyncd
@@ -273,11 +292,18 @@ gcsCleanup:
   image: google/cloud-sdk:alpine
   rmlist: rmlist.txt
   rmlog: rmlog.txt
+  resources:
+    limits:
+      cpu: 2
+      memory: 1024Mi
 # updates pod annotation controller.kubernetes.io/pod-deletion-cost
 updatePodDeletionCost:
   enabled: false
   image: dysnix/kubectl:v1.20
-  resources: {}
+  resources:
+    limits:
+      cpu: 100m
+      memory: 300Mi
   securityContext:
     runAsGroup: 1001
     runAsUser: 1001
@@ -287,7 +313,10 @@ cronjobs:
   sync:
     enabled: false
     image: dysnix/kubectl:v1.20
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 300Mi
     schedule: "*/20 * * * *"
     securityContext:
       fsGroup: 1001
@@ -299,7 +328,10 @@ cronjobs:
   prune:
     enabled: false
     image: dysnix/kubectl:v1.20
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 300Mi
     schedule: "5 3 * * 2"
     securityContext:
       fsGroup: 1001
@@ -312,7 +344,10 @@ cronjobs:
   rotate:
     enabled: false
     image: dysnix/kubectl:v1.20
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 300Mi
     schedule: "5 3 * * 2"
     securityContext:
       fsGroup: 1001
@@ -329,6 +364,10 @@ nginx:
   backendAddress:
 failback:
   enabled: false
+  resources:
+    limits:
+      cpu: 2
+      memory: 256Mi
   image:
     repository: nginxinc/nginx-unprivileged
     tag: "1.20-alpine"
@@ -340,6 +379,10 @@ failback:
       repository: nginx/nginx-prometheus-exporter
       tag: "0.9.0"
       pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 300m
+        memory: 256Mi
     service:
       port: 9113
       name: nginx-metrics
@@ -421,13 +464,13 @@ ingress:
       #     - *wssHostName
       #   secretName: ssd-tls-cert
 
-# resources:
-#   requests:
-#     cpu: "8"
-#     memory: 32Gi
-#   limits:
-#     cpu: "16"
-#     memory: 48Gi
+# to pass CI tests w/o resourse requests
+resources: {}
+#  requests:
+#    cpu: "3"
+#    memory: 16Gi
+#  limits:
+#    memory: 16Gi
 
 ## Autoscaling parameters
 autoscaling:
