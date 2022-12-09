@@ -13,6 +13,7 @@ if [ "${SYNC_TO_GCS}" != "True" ];then
 fi
 
 DATA_DIR="{{ .Values.bsc.base_path }}"
+INITIALIZED_FILE="${DATA_DIR}/.initialized"
 CHAINDATA_DIR="${DATA_DIR}/geth/chaindata"
 #without gs:// or s3://, just a bucket name and path
 GCS_BASE_URL="{{ .Values.bsc.syncToGCS.baseUrl }}"
@@ -39,6 +40,17 @@ if [ "${GCS_BASE_URL}" == "" ];then
   exit 1
 fi
 
+# find a file older than 30 minutes.
+# 0 - file not found, it means that file is fresh or missing in the filesystem or some find error
+# other value - file is found and is older than 30 minutes
+
+IS_INITIALIZED_FILE_OLD=$(find "${INITIALIZED_FILE}" -type f -mmin +30|wc -l)
+
+if [ "${IS_INITIALIZED_FILE_OLD}" == "0" ]; then
+    echo "Blockchain initialized recently, skipping the upload. Exiting..."
+    exit 0
+fi
+
 # we need to create temp files
 cd /tmp
 
@@ -63,10 +75,13 @@ ${S5CMD} cp updating "s3://${UPDATING_URL}"
 # run multiple syncs in background
 # cp is recursive by default, thus we need to exclude ancient data here
 time ${S5CMD} cp -n -s -u ${EXCLUDE_ANCIENT} "${CHAINDATA_DIR}/" "s3://${STATE_DST}/"  > cplist_state.txt &
+STATE_CP_PID=$!
 time nice ${S5CMD} cp -n -s -u --part-size 200 --concurrency 2 ${EXCLUDE_STATE} "${CHAINDATA_DIR}/ancient/" "s3://${ANCIENT_DST}/"  > cplist_ancient.txt &
-# wait for all syncs to complete
-# TODO any errors handling here?
-wait
+ANCIENT_CP_PID=$!
+# Wait for each specified child process and return its termination status
+# errors are "handled" by "set -e"
+wait ${STATE_CP_PID}
+wait ${ANCIENT_CP_PID}
 
 # update timestamp
 # TODO store timestamp inside readinnes check and use it instead of now()
