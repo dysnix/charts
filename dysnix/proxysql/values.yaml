@@ -57,6 +57,14 @@ service:
   ##
   # adminNodePort:
 
+  ## Admin Web UI port
+  webPort: 6080
+
+  ## Specify the >web< NodePort value for the LoadBalancer and NodePort service types.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ##
+  # webNodePort:
+
   ## Provide any additional annotations which may be required.
   ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
   annotations: {}
