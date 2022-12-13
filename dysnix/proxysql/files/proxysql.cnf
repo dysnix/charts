@@ -3,6 +3,11 @@ datadir="/var/lib/proxysql"
 admin_variables=
 {
   @include "/etc/proxysql/admin_credentials.cnf"
+  {{- if .Values.admin_variables.mysql_ifaces }}
+  interfaces={{ .Values.admin_variables.mysql_ifaces | quote }}
+  {{- else }}
+  mysql_ifaces={{ printf "0.0.0.0:%d" (.Values.service.adminPort | int) | quote }}
+  {{- end }}
   {{- range $key, $value := .Values.admin_variables }}
   {{ $key }}={{ $value | toJson }}
   {{- end }}
@@ -20,6 +25,11 @@ mysql_variables=
   ssl_p2s_cert="{{ include "proxysql.sslDir" . }}/cert.pem"
   ssl_p2s_key="{{ include "proxysql.sslDir" . }}/key.pem"
   {{- end -}}
+  {{- if .Values.mysql_variables.interfaces }}
+  interfaces={{ .Values.mysql_variables.interfaces | quote }}
+  {{- else }}
+  interfaces={{ printf "0.0.0.0:%d" (.Values.service.proxyPort | int) | quote }}
+  {{- end }}
   {{- range $key, $value := .Values.mysql_variables }}
   {{ $key }}={{ $value | toJson }}
   {{- end }}
