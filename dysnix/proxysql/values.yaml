@@ -97,9 +97,21 @@ tolerations: []
 # Will be applied if not specified otherwise.
 affinity: {}
 
+# Common annotations to add to all resources (sub-charts are not considered).
+# Evaluated as a template
+commonAnnotations: {}
+
+# Common labels to add to all resources (sub-charts are not considered).
+# Evaluated as a template
+commonLabels: {}
+
 # Default pod annotations.
 # Will be applied if not specified otherwise.
 podAnnotations: {}
+
+# Default pod labels.
+# If labels are same as commonLabels , this will take precedence
+podLabels: {}
 
 ## Specify pod disruption budget
 ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/

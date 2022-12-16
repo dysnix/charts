@@ -3,11 +3,17 @@ kind: Service
 metadata:
   name: {{ include "proxysql.fullname" . }}
   labels:
-{{ include "proxysql.labels" . | indent 4 }}
-{{- with .Values.service.annotations }}
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
   annotations:
-{{ tpl (toYaml .) $ | indent 4 }}
-{{- end }}
+    {{- if .Values.commonAnnotations }}
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+    {{- end }}
+    {{- with .Values.service.annotations }}
+    {{- tpl (toYaml .) $ | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.service.type }}
   {{- if and .Values.service.loadBalancerIP (eq .Values.service.type "LoadBalancer") }}
@@ -45,11 +51,17 @@ kind: Service
 metadata:
   name: {{ include "proxysql.fullname" . }}-core
   labels:
-{{ include "proxysql.labels" . | indent 4 }}
-{{- with .Values.service.annotations }}
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
   annotations:
-{{ tpl (toYaml .) $ | indent 4 }}
-{{- end }}
+    {{- if .Values.commonAnnotations }}
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+    {{- end }}
+    {{- with .Values.service.annotations }}
+    {{- tpl (toYaml .) $ | nindent 4 }}
+    {{- end }}
 spec:
   ports:
     - name: admin

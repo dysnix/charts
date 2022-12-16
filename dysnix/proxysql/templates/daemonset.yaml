@@ -4,24 +4,35 @@ kind: DaemonSet
 metadata:
   name: {{ include "proxysql.fullname" . }}
   labels:
-{{ include "proxysql.labels" . | indent 4 }}
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
-      app: {{ include "proxysql.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "proxysql.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         # Automatically Roll Deployments
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-      {{- with (default .Values.podAnnotations .Values.proxysql_cluster.satellite.daemonset.podAnnotations) }}
+        {{- with (mergeOverwrite .Values.podAnnotations .Values.proxysql_cluster.satellite.daemonset.podAnnotations) }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
-        app: {{ include "proxysql.name" . }}
-        release: {{ .Release.Name }}
+        {{- if .Values.commonLabels }}
+        {{- toYaml .Values.commonLabels | nindent 8 }}
+        {{- end }}
+        {{- include "proxysql.selectorLabels" . | nindent 8 }}
+        {{- if .Values.podLabels }}
+        {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
