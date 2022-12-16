@@ -45,8 +45,16 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "proxysql.selectorLabels" -}}
+{{- define "proxysql.satellite.selectorLabels" -}}
 app: {{ include "proxysql.name" . }}
+release: {{ .Release.Name }}
+{{- end }}
+{{- define "proxysql.core.selectorLabels" -}}
+app: {{ include "proxysql.name" . }}-core
+release: {{ .Release.Name }}
+{{- end }}
+{{- define "proxysql.job.selectorLabels" -}}
+app: {{ include "proxysql.name" . }}-core-job
 release: {{ .Release.Name }}
 {{- end }}
 
