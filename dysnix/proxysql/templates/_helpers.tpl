@@ -45,6 +45,14 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/*
+Selector labels
+*/}}
+{{- define "proxysql.selectorLabels" -}}
+app: {{ include "proxysql.name" . }}
+release: {{ .Release.Name }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "proxysql.serviceAccountName" -}}
