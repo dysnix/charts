@@ -38,9 +38,7 @@ Common labels
 app: {{ include "proxysql.name" . }}
 release: {{ .Release.Name }}
 helm.sh/chart: {{ include "proxysql.chart" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
