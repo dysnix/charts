@@ -12,7 +12,7 @@ metadata:
     {{- if .Values.commonAnnotations }}
     {{- toYaml .Values.commonAnnotations | nindent 4 }}
     {{- end }}
-    {{- with (mergeOverwrite .Values.podAnnotations .Values.proxysql_cluster.job.podAnnotations) }}
+    {{- with .Values.proxysql_cluster.job.podAnnotations }}
       {{- toYaml . | nindent 8 }}
     {{- end }}
     {{/* execute job on install, upgrade and rollback actions */}}
@@ -33,10 +33,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        {{- include "proxysql.selectorLabels" . | nindent 8 }}
         {{- if .Values.commonLabels }}
         {{- toYaml .Values.commonLabels | nindent 8 }}
         {{- end }}
-        {{- include "proxysql.selectorLabels" . | nindent 8 }}
         {{- if .Values.podLabels }}
         {{- toYaml .Values.podLabels | nindent 8 }}
         {{- end }}
