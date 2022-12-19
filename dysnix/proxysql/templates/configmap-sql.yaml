@@ -1,4 +1,4 @@
-{{- if .Values.proxysql_cluster.enabled and .Values.proxysql_cluster.core.enabled }}
+{{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.core.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
