@@ -45,7 +45,7 @@ spec:
     app: {{ include "proxysql.name" . }}
     release: {{ .Release.Name }}
 ---
-{{ if .Values.proxysql_cluster.enabled }}
+{{ if .Values.proxysql_cluster.enabled and .Values.proxysql_cluster.core.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
