@@ -265,6 +265,10 @@ proxysql_cluster:
       #    cpu: 100m
       #    memory: 128Mi
 
+    service:
+      # Override default core service name
+      name:
+
   satellite:
     # Select the Kubernetes Resource type for the Satellite nodes,
     #   either "DaemonSet" or "Deployment"
@@ -300,6 +304,10 @@ proxysql_cluster:
       #  requests:
       #    cpu: 100m
       #    memory: 128Mi
+
+    service:
+      # Override default satellite service name
+      name:
 
   # Cluster Init job
   #   Execute SQL operations/transactions to force proxysql
