@@ -335,10 +335,10 @@ proxysql_cluster:
       config:
         psql_user: monitor
         psql_pass: monitor
-        psql_host: 127.0.0.1 # The listening core host/pod
-        psql_host_port: 6032 # The admin port
+        psql_host: 127.0.0.1  # The listening core host/pod
+        psql_host_port: 6032  # The admin port
 
-        diff_check_limit: 10 # How many diff_check errors are tolerated before the healthcheck fails
+        diff_check_limit: 10  # How many diff_check errors are tolerated before the healthcheck fails
         kill_if_healthcheck_failed: true  # Kill proxysql daemon if the healthcheck fails the test
       securityContext:
         runAsUser: 999
