@@ -325,15 +325,37 @@ proxysql_cluster:
     #    cpu: 100m
     #    memory: 128Mi
 
+  healthcheck:
+    sidecar:
+      # inject a healthcheck sidecar container to all proxysql clustering Pods
+      enabled: false
+      image: mysql:debian
+      command:
+        - /usr/local/bin/proxysql_cluster_healthcheck.sh
+      config:
+        psql_user: monitor
+        psql_pass: monitor
+        psql_host: 127.0.0.1 # The listening core host/pod
+        psql_host_port: 6032 # The admin port
+
+        diff_check_limit: 10 # How many diff_check errors are tolerated before the healthcheck fails
+        kill_if_healthcheck_failed: true  # Kill proxysql daemon if the healthcheck fails the test
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+
 # Enable debugging container along the proxysql instance
 #   It may be usefull to access the proxysql admin interface locally to debug issues
 debug:
   sidecar:
     # inject a debug sidecar container to all proxysql Pods
     enabled: false
-    image: mysql
+    image: mysql:debian
     command:
       - /bin/sleep
       - infinity
+    securityContext:
+      runAsUser: 999
+      runAsGroup: 999
 
 terminationGracePeriodSeconds: 60
