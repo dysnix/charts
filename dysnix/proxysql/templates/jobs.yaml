@@ -1,4 +1,5 @@
 {{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.job.enabled .Values.proxysql_cluster.core.enabled }}
+{{- $coreServiceName := printf "%s-core" (include "proxysql.fullname" .) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -38,10 +39,17 @@ spec:
       dnsPolicy: ClusterFirst
       # Set restartPolicy = "Never" for debugging the Job or using a logging system to ensure output from failed Jobs is not lost inadvertently.
       restartPolicy: "Never"
+      initContainers:
+        {{/* Wait for proxysql admin DB to show up */}}
+        - name: wait-for-proxysql-admin
+          image: busybox:latest
+          imagePullPolicy: Always
+          command: ["/bin/sh" ]
+          args: ["-c",
+                 "until nc -vz {{ $coreServiceName }} 6032; do echo 'Waiting for DB...'; sleep 3s; done;"]
       containers:
         - name: "psql-init-cluster"
           {{/* Connect to the ProxySQL console and execute the SQL script `/data/update-cluster-checksums.sql` */}}
-          {{- $coreServiceName := printf "%s-core" (include "proxysql.fullname" .) }}
           command: ["/bin/sh" ]
           args: [ "-c",
                   "mysql --user=${PSQL_USER} --password=${PSQL_PASSWORD} --host={{ $coreServiceName }} --port=6032 --wait -vv < /data/update-cluster-checksums.sql" ]
