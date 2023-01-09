@@ -82,6 +82,7 @@ volumeMounts:
   {{- $values := dict -}}
   {{- $containers := list -}}
   {{- $containerDefaults := .top.Files.Get "container-values.yaml" | fromYaml -}}
+  {{- $reuseKeys := list "image" "containerSecurityContext" "command" "args" "env" "envFrom" "volumeMounts" -}}
 
   {{- if .initContainers -}}
     {{- $order = .values.use -}}
@@ -92,20 +93,29 @@ volumeMounts:
   {{- end -}}
 
   {{- range $_, $name := $order -}}
-    {{- $containerValues := get $values $name -}}
-    {{- if $containerValues -}}
-      {{- $containerValues := merge $containerValues (dict "name" $name) -}}
+    {{- $container := get $values $name -}}
+    {{- if $container -}}
+      {{- $container := merge $container (dict "name" $name) -}}
 
-      {{/* Reuse/merge parent component values */}}
-      {{- if $containerValues.reuse -}}
-        {{- range without (keys $containerDefaults) "reuse" "resources" -}}
-          {{- $containerValues = merge $containerValues (pick $.top._include.Values .) -}}
+      {{/* Reuse(merge) container values from the parent component */}}
+      {{- if $container.reuse -}}
+
+        {{- range $reuseKeys -}}
+          {{- if and (hasKey $container .) (typeIs "<nil>" (get $container .)) -}}
+            {{/*
+              Container undoes the reuse by setting the value to null, which is
+              effectively equal to the default value (from container-values.yaml)
+            */}}
+          {{- else -}}
+            {{- $container = merge $container (pick $.top._include.Values .) -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
 
-      {{- $containerValues = merge $containerValues $containerDefaults -}}
-      {{- $container := include "app.resources.include" (dict "resource" "container" "initContainer" $.initContainers "values" $containerValues "top" $.top) -}}
-      {{- $containers = append $containers ($container | fromYaml) -}}
+      {{- $container = merge $container $containerDefaults -}}
+      {{- $containerYaml := include "app.resources.include" (dict "resource" "container" "initContainer" $.initContainers "values" $container "top" $.top) -}}
+      {{- $containers = append $containers ($containerYaml | fromYaml) -}}
+
     {{- end -}}
   {{- end -}}
 

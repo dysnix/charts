@@ -281,7 +281,7 @@ containers:
       - Hello the command and other parameters are reused!
 ```
 
-**Note**: reuse omits container resources
+**Note**: reuse uses only specific container keys such as image, command, env and others (i.e. not everything is reused)
 
 ## Source Code
 
