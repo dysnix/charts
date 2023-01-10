@@ -17,6 +17,18 @@ tests:
           path: spec.tls[0].hosts[0]
           value: host.fqdn
   -
+    it: ingress customName support
+    values:
+      - ./values/ingress.yaml
+    release:
+      name: ingress
+    set:
+      ingress.customName: 'foo-{{ template "app.fullname" . }}'
+    asserts:
+      - equal:
+          path: metadata.name
+          value: foo-ingress-app
+  -
     it: ingress.servicePort
     values:
       - ./values/ingress.yaml

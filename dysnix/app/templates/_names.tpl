@@ -22,8 +22,8 @@ If release name contains chart name it will be used as a full name.
     {{- $fullname = append $fullname .Values.fullnameOverride -}}
   {{- else -}}
     {{- $name := default (include "app.chart.name" .) .Values.nameOverride -}}
-    {{- if contains .Release.Name $name -}}
-      {{- $fullname = append $fullname .Release.Name -}}
+    {{- if contains $name .Release.Name -}}
+      {{- $fullname = append $fullname $name -}}
     {{- else -}}
       {{- $fullname = append $fullname (printf "%s-%s" .Release.Name $name) -}}
     {{- end -}}
@@ -33,7 +33,15 @@ If release name contains chart name it will be used as a full name.
   {{- join "-" $fullname -}}
 {{- end -}}
 
-{{/* Alias for common.names.fullname */}}
+{{/* Extended common.names.fullname with custom name overrides */}}
 {{- define "app.fullname" -}}
-{{- template "common.names.fullname" . -}}
+{{- if .context -}}
+    {{- if .customName -}}
+      {{- include "common.tplvalues.render" (dict "value" .customName "context" .context) -}}
+    {{- else -}}
+      {{- template "common.names.fullname" .context -}}
+  {{- end -}}
+{{- else -}}
+  {{- template "common.names.fullname" . -}}
+{{- end -}}
 {{- end -}}

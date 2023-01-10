@@ -444,7 +444,8 @@ containers:
 | `service.sessionAffinity`          | Control where client requests go, to the same pod or round-robin                                                                 | `None`                   |
 | `service.sessionAffinityConfig`    | Additional settings for the sessionAffinity                                                                                      | `{}`                     |
 | `ingress.enabled`                  | Enable ingress record generation                                                                                                 | `false`                  |
-| `ingress.namespace`                | Specify a different namespace for the ingress (has priority both over this release namespace and namespaceOverride)              | `""`                     |
+| `ingress.namespace`                | Specify custom namespace for the ingress (has priority both over the release namespace and namespaceOverride)                    | `""`                     |
+| `ingress.customName`               | Specify custom name for the Ingress                                                                                              | `""`                     |
 | `ingress.serviceName`              | Specify service ingress points too (uses the main service by default)                                                            | `""`                     |
 | `ingress.servicePort`              | Specifies the service port (must be provided)                                                                                    | `nil`                    |
 | `ingress.pathType`                 | Ingress path type                                                                                                                | `ImplementationSpecific` |

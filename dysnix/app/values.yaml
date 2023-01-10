@@ -576,9 +576,15 @@ ingress:
   ## @param ingress.enabled Enable ingress record generation
   ##
   enabled: false
-  ## @param ingress.namespace Specify a different namespace for the ingress (has priority both over this release namespace and namespaceOverride)
+  ## @param ingress.namespace Specify custom namespace for the ingress (has priority both over the release namespace and namespaceOverride)
   ##
   namespace: ""
+  ## @param ingress.customName Specify custom name for the Ingress
+  ##
+  ## e.g.
+  ## customName: 'foo-{{ template "app.fullname" . }}'
+  ##
+  customName: ""
   ## @param ingress.serviceName Specify service ingress points too (uses the main service by default)
   ##
   serviceName: ""
