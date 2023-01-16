@@ -22,7 +22,12 @@ metadata:
     {{- end }}
 {{- if ._include.data }}
 data:
-  {{- include "common.tplvalues.render" (dict "value" ._include.data "context" $) | nindent 2 }}
+  {{- $dict := dict -}}
+  {{- range $key, $value := ._include.data | default dict -}}
+    {{/* Render value first, since it's possible to pass a complex type (i.e map) */}}
+    {{- $_ := set $dict $key (include "common.tplvalues.render" (dict "value" $value "context" $)) -}}
+  {{- end -}}
+  {{- $dict | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}
 {{- end -}}
