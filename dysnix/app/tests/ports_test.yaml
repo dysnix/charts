@@ -1,12 +1,11 @@
-suite: service
+suite: ports
 templates:
   - service.yaml
 tests:
   -
     it: service ports
     values:
-      - ./values/common.yaml
-      - ./values/service-ports.yaml
+      - ./values/ports.yaml
     asserts:
       - isKind:
           of: Service
@@ -28,21 +27,3 @@ tests:
             name: zdisabled
             nodePort: null
             port: null
-      - isSubset:
-          path: spec.selector
-          content:
-            tenant: foo
-  -
-    it: check extended port configuration
-    values:
-      - ./values/service-ports-ext.yaml
-    asserts:
-      - equal:
-          path: spec.ports[0].name
-          value: http
-      - equal:
-          path: spec.ports[0].targetPort
-          value: foo
-      - equal:
-          path: spec.ports[0].nodePort
-          value: null

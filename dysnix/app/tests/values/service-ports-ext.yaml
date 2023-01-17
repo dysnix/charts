@@ -1,0 +1,7 @@
+containerPorts:
+  foo: 3000
+
+service:
+  ports:
+    http:
+      targetPort: foo

@@ -10,25 +10,33 @@ Usage:
   {{/* render maps */}}
   {{- if kindIs "map" .value -}}
     {{- $dict := dict -}}
-
     {{- range $key, $val := .value -}}
       {{- $result := list -}}
 
       {{/* directly processed types can not be unmarshaled back fromYaml  */}}
       {{- if has (kindOf $val) (list "float64" "slice") -}}
         {{- $result = append $result $val -}}
-      {{- else -}}
+      {{- else if kindIs "map" $val -}}
         {{- $rendered := include "common.tplvalues.render" (dict "value" $val "context" $.context) -}}
         {{- $unmarshalled := $rendered | fromYaml -}}
 
-        {{/* Met the final string value which can not be unmarshalled */}}
-        {{- if hasKey $unmarshalled "Error" -}}
-          {{- $source := dict "key" $val -}}
-          {{- $unmarshalled = tpl (dict "key" $val | toYaml) $.context | fromYaml -}}
-          {{- $result = append $result (get $unmarshalled "key") -}}
+        {{- if kindIs "map" $unmarshalled -}}
+          {{- if hasKey $unmarshalled "Error" -}}
+            {{- $source := dict "key" $val -}}
+            {{- $unmarshalled = tpl (dict "key" $val | toYaml) $.context | fromYaml -}}
+            {{- $result = append $result (get $unmarshalled "key") -}}
+          {{- else -}}
+            {{- $result = append $result $unmarshalled  -}}
+          {{- end -}}
+
         {{- else -}}
-          {{- $result = append $result $unmarshalled -}}
+          {{- $result = append $result $rendered -}}
         {{- end -}}
+
+      {{- else if kindIs "string" $val -}}
+        {{- $result = append $result (tpl $val $.context) -}}
+      {{- else -}}
+        {{- $result = append $result $val -}}
       {{- end -}}
 
       {{- $_ := set $dict $key ($result | first) -}}
