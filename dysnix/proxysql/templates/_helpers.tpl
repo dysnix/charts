@@ -38,11 +38,25 @@ Common labels
 app: {{ include "proxysql.name" . }}
 release: {{ .Release.Name }}
 helm.sh/chart: {{ include "proxysql.chart" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{/*
+Selector labels
+*/}}
+{{- define "proxysql.satellite.selectorLabels" -}}
+app: {{ include "proxysql.name" . }}
+release: {{ .Release.Name }}
+{{- end }}
+{{- define "proxysql.core.selectorLabels" -}}
+app: {{ include "proxysql.name" . }}-core
+release: {{ .Release.Name }}
+{{- end }}
+{{- define "proxysql.job.selectorLabels" -}}
+app: {{ include "proxysql.name" . }}-core-job
+release: {{ .Release.Name }}
+{{- end }}
 
 {{/*
 Create the name of the service account to use

@@ -5,12 +5,18 @@ metadata:
   name: {{ include "proxysql.fullname" . }}-core
   labels:
     {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.proxysql_cluster.core.replicas }}
   selector:
     matchLabels:
-      app: {{ include "proxysql.name" . }}-core
-      release: {{ .Release.Name }}
+      {{- include "proxysql.core.selectorLabels" . | nindent 6 }}
   serviceName: {{ include "proxysql.fullname" . }}-core
   template:
     metadata:
@@ -18,12 +24,17 @@ spec:
         # Automatically Roll Deployments
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-      {{- with (default .Values.podAnnotations .Values.proxysql_cluster.core.statefullset.podAnnotations) }}
+        {{- with (mergeOverwrite .Values.podAnnotations .Values.proxysql_cluster.core.statefullset.podAnnotations) }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
-        app: {{ include "proxysql.name" . }}-core
-        release: {{ .Release.Name }}
+        {{- include "proxysql.core.selectorLabels" . | nindent 8 }}
+        {{- if .Values.commonLabels }}
+        {{- toYaml .Values.commonLabels | nindent 8 }}
+        {{- end }}
+        {{- if .Values.podLabels }}
+        {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -33,6 +44,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       dnsPolicy: ClusterFirst
+      shareProcessNamespace: true
       containers:
         - name: {{ .Chart.Name }}
           command:
@@ -50,18 +62,18 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: proxy
-              containerPort: 6033
+              containerPort: {{ .Values.service.proxyPort }}
               protocol: TCP
             - name: admin
-              containerPort: 6032
+              containerPort: {{ .Values.service.adminPort }}
               protocol: TCP
             - name: web
-              containerPort: 6080
+              containerPort: {{ .Values.service.webPort }}
               protocol: TCP
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
-              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/6033"]
+              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"]
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -104,9 +116,29 @@ spec:
           image: {{ .Values.debug.sidecar.image }}
           command:
             {{- toYaml .Values.debug.sidecar.command | nindent 14 }}
+          {{- with .Values.debug.sidecar.securityContext }}
           securityContext:
-            runAsGroup: 1001
-            runAsUser: 1001
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
+        {{- end }}
+        {{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.healthcheck.sidecar.enabled }}
+        - name: healthcheck
+          image: {{ .Values.proxysql_cluster.healthcheck.sidecar.image }}
+          command:
+            {{- toYaml .Values.proxysql_cluster.healthcheck.sidecar.command | nindent 14 }}
+          envFrom:
+            - configMapRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+            - secretRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+          volumeMounts:
+            - name: healthcheck-scripts
+              mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
+              subPath: proxysql_cluster_healthcheck.sh
+          {{- with .Values.proxysql_cluster.healthcheck.sidecar.securityContext }}
+          securityContext:
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
         {{- end }}
       {{- with (default .Values.nodeSelector .Values.proxysql_cluster.core.statefullset.nodeSelector) }}
       nodeSelector:
@@ -137,4 +169,11 @@ spec:
             secretName: {{ . }}
             defaultMode: 0640
         {{- end }}
+        - name: healthcheck-scripts
+          configMap:
+            name: {{ include "proxysql.fullname" . }}-healthcheck-scripts
+            items:
+              - key: proxysql_cluster_healthcheck.sh
+                path: proxysql_cluster_healthcheck.sh
+                mode: 0777
 {{- end }}
