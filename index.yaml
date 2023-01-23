@@ -4286,6 +4286,22 @@ entries:
   proxysql:
   - apiVersion: v1
     appVersion: 2.4.4
+    created: "2023-01-23T19:26:10.895730132Z"
+    description: ProxySQL Helm chart for Kubernetes
+    digest: 9468aacaa77e7b8de1a0ff96d841763f21934aec32339b87110df74b8b16d4eb
+    home: https://www.proxysql.com/
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: proxysql
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/sysown/proxysql
+    urls:
+    - https://github.com/dysnix/charts/releases/download/proxysql-0.7.0/proxysql-0.7.0.tgz
+    version: 0.7.0
+  - apiVersion: v1
+    appVersion: 2.4.4
     created: "2023-01-23T19:14:01.079334491Z"
     description: ProxySQL Helm chart for Kubernetes
     digest: 14c38e411174d32b4a44c73efd7de2ca7952ef901034a0632e2fe92b9d6d9cef
@@ -4973,4 +4989,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-23T19:14:01.080983892Z"
+generated: "2023-01-23T19:26:10.896784503Z"
