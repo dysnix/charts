@@ -3,6 +3,11 @@ datadir="/var/lib/proxysql"
 admin_variables=
 {
   @include "/etc/proxysql/admin_credentials.cnf"
+  {{- if .Values.admin_variables.mysql_ifaces }}
+  interfaces={{ .Values.admin_variables.mysql_ifaces | quote }}
+  {{- else }}
+  mysql_ifaces={{ printf "0.0.0.0:%d" (.Values.service.adminPort | int) | quote }}
+  {{- end }}
   {{- range $key, $value := .Values.admin_variables }}
   {{ $key }}={{ $value | toJson }}
   {{- end }}
@@ -12,14 +17,19 @@ mysql_variables=
 {
   {{/* ProxySQL SSL config */}}
   {{- if .Values.ssl.fromSecret }}
-  ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/ca.pem"
+  ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/{{ .Values.ssl.ca_file }}"
   {{- else if .Values.ssl.ca }}
-  ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/ca.pem"
+  ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/{{ .Values.ssl.ca_file }}"
   {{- end -}}
   {{- if or (and .Values.ssl.cert .Values.ssl.key) .Values.ssl.fromSecret }}
-  ssl_p2s_cert="{{ include "proxysql.sslDir" . }}/cert.pem"
-  ssl_p2s_key="{{ include "proxysql.sslDir" . }}/key.pem"
+  ssl_p2s_cert="{{ include "proxysql.sslDir" . }}/{{ .Values.ssl.cert_file }}"
+  ssl_p2s_key="{{ include "proxysql.sslDir" . }}/{{ .Values.ssl.key_file }}"
   {{- end -}}
+  {{- if .Values.mysql_variables.interfaces }}
+  interfaces={{ .Values.mysql_variables.interfaces | quote }}
+  {{- else }}
+  interfaces={{ printf "0.0.0.0:%d" (.Values.service.proxyPort | int) | quote }}
+  {{- end }}
   {{- range $key, $value := .Values.mysql_variables }}
   {{ $key }}={{ $value | toJson }}
   {{- end }}

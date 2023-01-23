@@ -4,6 +4,13 @@ metadata:
   name: {{ include "proxysql.fullname" . }}
   labels:
     {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+  {{- end }}
 data: 
   proxysql.cnf: |
     {{- tpl (.Files.Get "files/proxysql.cnf") . | nindent 4 }}

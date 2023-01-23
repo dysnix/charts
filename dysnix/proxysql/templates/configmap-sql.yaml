@@ -1,8 +1,17 @@
-{{- if .Values.proxysql_cluster.enabled }}
+{{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.core.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "proxysql.fullname" . }}-sql-files
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+  {{- end }}
 data:
   update-cluster-checksums.sql: |
     {{- tpl (.Files.Get "files/update-cluster-checksums.sql") . | nindent 4 }}
