@@ -43,6 +43,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       dnsPolicy: ClusterFirst
+      shareProcessNamespace: true
       containers:
         - name: {{ .Chart.Name }}
           command:
@@ -114,9 +115,29 @@ spec:
           image: {{ .Values.debug.sidecar.image }}
           command:
             {{- toYaml .Values.debug.sidecar.command | nindent 14 }}
+          {{- with .Values.debug.sidecar.securityContext }}
           securityContext:
-            runAsGroup: 1001
-            runAsUser: 1001
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
+        {{- end }}
+        {{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.healthcheck.sidecar.enabled }}
+        - name: healthcheck
+          image: {{ .Values.proxysql_cluster.healthcheck.sidecar.image }}
+          command:
+            {{- toYaml .Values.proxysql_cluster.healthcheck.sidecar.command | nindent 14 }}
+          envFrom:
+            - configMapRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+            - secretRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+          volumeMounts:
+            - name: healthcheck-scripts
+              mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
+              subPath: proxysql_cluster_healthcheck.sh
+          {{- with .Values.proxysql_cluster.healthcheck.sidecar.securityContext }}
+          securityContext:
+            {{- toYaml .| nindent 12 }}
+          {{- end }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -147,4 +168,11 @@ spec:
             secretName: {{ . }}
             defaultMode: 0640
         {{- end }}
+        - name: healthcheck-scripts
+          configMap:
+            name: {{ include "proxysql.fullname" . }}-healthcheck-scripts
+            items:
+              - key: proxysql_cluster_healthcheck.sh
+                path: proxysql_cluster_healthcheck.sh
+                mode: 0777
 {{- end }}
