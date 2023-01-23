@@ -105,9 +105,21 @@ tolerations: []
 # Will be applied if not specified otherwise.
 affinity: {}
 
+# Common annotations to add to all resources (sub-charts are not considered).
+# Evaluated as a template
+commonAnnotations: {}
+
+# Common labels to add to all resources (sub-charts are not considered).
+# Evaluated as a template
+commonLabels: {}
+
 # Default pod annotations.
 # Will be applied if not specified otherwise.
 podAnnotations: {}
+
+# Default pod labels.
+# If labels are same as commonLabels , this will take precedence
+podLabels: {}
 
 ## Specify pod disruption budget
 ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
@@ -268,6 +280,10 @@ proxysql_cluster:
       #    cpu: 100m
       #    memory: 128Mi
 
+    service:
+      # Override default core service name
+      name:
+
   satellite:
     # Select the Kubernetes Resource type for the Satellite nodes,
     #   either "DaemonSet" or "Deployment"
@@ -303,6 +319,10 @@ proxysql_cluster:
       #  requests:
       #    cpu: 100m
       #    memory: 128Mi
+
+    service:
+      # Override default satellite service name
+      name:
 
   # Cluster Init job
   #   Execute SQL operations/transactions to force proxysql
