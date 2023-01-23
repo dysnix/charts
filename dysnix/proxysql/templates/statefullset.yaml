@@ -61,18 +61,18 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: proxy
-              containerPort: 6033
+              containerPort: {{ .Values.service.proxyPort }}
               protocol: TCP
             - name: admin
-              containerPort: 6032
+              containerPort: {{ .Values.service.adminPort }}
               protocol: TCP
             - name: web
-              containerPort: 6080
+              containerPort: {{ .Values.service.webPort }}
               protocol: TCP
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
-              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/6033"]
+              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"]
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}

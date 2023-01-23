@@ -41,6 +41,12 @@ spec:
       {{- if .Values.service.adminNodePort }}
       nodePort: {{ .Values.service.adminNodePort }}
       {{- end }}
+    - name: web
+      port: {{ .Values.service.webPort }}
+      targetPort: web
+      {{- if .Values.service.webNodePort }}
+      nodePort: {{ .Values.service.webNodePort }}
+      {{- end }}
   selector:
     app: {{ include "proxysql.name" . }}
     release: {{ .Release.Name }}
@@ -69,6 +75,12 @@ spec:
       targetPort: admin
       {{- if .Values.service.adminNodePort }}
       nodePort: {{ .Values.service.adminNodePort }}
+      {{- end }}
+    - name: web
+      port: {{ .Values.service.webPort }}
+      targetPort: web
+      {{- if .Values.service.webNodePort }}
+      nodePort: {{ .Values.service.webNodePort }}
       {{- end }}
   clusterIP: None
   selector:

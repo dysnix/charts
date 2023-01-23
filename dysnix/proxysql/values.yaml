@@ -57,6 +57,14 @@ service:
   ##
   # adminNodePort:
 
+  ## Admin Web UI port
+  webPort: 6080
+
+  ## Specify the >web< NodePort value for the LoadBalancer and NodePort service types.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ##
+  # webNodePort:
+
   ## Provide any additional annotations which may be required.
   ## The value is evaluated as a template, so, for example, the value can depend on .Release or .Chart
   annotations: {}
@@ -161,7 +169,10 @@ admin_variables:
   debug: false
 
   # admin/clustering listening interfaces
-  mysql_ifaces: "0.0.0.0:6032"
+  # NOTE:
+  #   The mysql_ifaces parameter (e.g. interfaces="0.0.0.0:6032") is
+  #   configured by default based on `.Values.service.adminPort`
+  # mysql_ifaces: "0.0.0.0:6032"
 
   # refresh_interval: 2000
 
@@ -170,7 +181,11 @@ mysql_variables:
   #
 
   # Listening IP and port for proxy connections
-  interfaces: "0.0.0.0:6033"
+  # NOTE:
+  #   The interfaces parameter (e.g. interfaces="0.0.0.0:6033") is
+  #   configured by default based on `.Values.service.proxyPort`
+  # interfaces: "0.0.0.0:6033"
+
   ## The number of background threads that ProxySQL uses in order to process MySQL traffic
   threads: 4
   ## The maximum number of client connections that the proxy can handle.
