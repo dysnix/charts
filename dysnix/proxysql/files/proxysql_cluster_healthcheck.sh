@@ -29,13 +29,15 @@ function run_diff_check_count() {
       echo "[$(date -Ins)] [ERROR] Terminating proxysql process..."
       kill -s SIGTERM "$(pidof proxysql)"
     fi
-    echo "[$(date -Ins)] ProxySQL health check exiting..."
+    BACKOFF_SLEEP_TIME=$[ ( $RANDOM % 60 )  + 30 ]
+    echo "[$(date -Ins)] [WARN] ProxySQL health check exiting in ${BACKOFF_SLEEP_TIME} seconds..."
+    sleep ${BACKOFF_SLEEP_TIME}s
     exit 1
   fi
 }
 
 echo "[$(date -Ins)] [INFO] ProxySQL health check start..."
 while true; do
+  sleep $[ ( $RANDOM % 7 )  + 3 ]s
   run_diff_check_count
-  sleep $[ ( $RANDOM % 6 )  + 3 ]s
 done
