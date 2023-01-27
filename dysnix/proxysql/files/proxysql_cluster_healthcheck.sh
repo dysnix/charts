@@ -23,10 +23,10 @@ function run_diff_check_count() {
     echo "[$(date -Ins)] [INFO] ProxySQL Cluster diff_check OK. diff_check < ${PROXYSQL_DIFF_CHECK_LIMIT}"
   else
     RESULT=$(mysql_cli "SELECT hostname, port, name, version, FROM_UNIXTIME(epoch) epoch, checksum, FROM_UNIXTIME(changed_at) changed_at, FROM_UNIXTIME(updated_at) updated_at, diff_check, DATETIME('NOW') FROM stats_proxysql_servers_checksums WHERE diff_check > ${PROXYSQL_DIFF_CHECK_LIMIT} ORDER BY name;")
-    echo "[$(date -Ins)] ProxySQL Cluster diff_check WARNING. diff_check >= ${PROXYSQL_DIFF_CHECK_LIMIT}"
+    echo "[$(date -Ins)] [WARN] ProxySQL Cluster diff_check WARNING. diff_check >= ${PROXYSQL_DIFF_CHECK_LIMIT}"
     echo "${RESULT}"
     if [[ "${PROXYSQL_KILL_IF_HEALTCHECK_FAILED}" == "true" ]]; then
-      echo "[$(date -Ins)] Terminating proxysql process..."
+      echo "[$(date -Ins)] [ERROR] Terminating proxysql process..."
       kill -s SIGTERM "$(pidof proxysql)"
     fi
     echo "[$(date -Ins)] ProxySQL health check exiting..."
@@ -34,7 +34,7 @@ function run_diff_check_count() {
   fi
 }
 
-echo "[$(date -Ins)] ProxySQL health check start..."
+echo "[$(date -Ins)] [INFO] ProxySQL health check start..."
 while true; do
   run_diff_check_count
   sleep $[ ( $RANDOM % 6 )  + 3 ]s
