@@ -19,8 +19,8 @@ function mysql_cli() {
 function run_diff_check_count() {
   DIFF_CHECK_COUNT=$(mysql_cli "SELECT COUNT(diff_check) FROM stats_proxysql_servers_checksums WHERE diff_check > ${PROXYSQL_DIFF_CHECK_LIMIT};")
 
-  if [[ "${DIFF_CHECK_COUNT}" -lt "${PROXYSQL_DIFF_CHECK_LIMIT}" ]]; then
-    echo "[$(date -Ins)] ProxySQL Cluster diff_check OK. diff_check < ${PROXYSQL_DIFF_CHECK_LIMIT}"
+  if [[ "${DIFF_CHECK_COUNT}" -ge 1 ]]; then
+    echo "[$(date -Ins)] [INFO] ProxySQL Cluster diff_check OK. diff_check < ${PROXYSQL_DIFF_CHECK_LIMIT}"
   else
     RESULT=$(mysql_cli "SELECT hostname, port, name, version, FROM_UNIXTIME(epoch) epoch, checksum, FROM_UNIXTIME(changed_at) changed_at, FROM_UNIXTIME(updated_at) updated_at, diff_check, DATETIME('NOW') FROM stats_proxysql_servers_checksums WHERE diff_check > ${PROXYSQL_DIFF_CHECK_LIMIT} ORDER BY name;")
     echo "[$(date -Ins)] ProxySQL Cluster diff_check WARNING. diff_check >= ${PROXYSQL_DIFF_CHECK_LIMIT}"
