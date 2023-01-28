@@ -13,7 +13,7 @@ jobs:
         name: Run quintush/helm-unittest
         uses: docker://quintush/helm-unittest:3.10.1-0.2.10
         with:
-          entrypoint: ./.github/scripts/ut.sh
+          entrypoint: ./.github/scripts/unit-test.sh
           args: dysnix/
 
   lint-test:

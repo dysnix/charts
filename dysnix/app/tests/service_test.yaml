@@ -17,7 +17,6 @@ tests:
           path: spec.ports[2]
           value:
             name: x11
-            nodePort: null
             port: 6000
 
       ## Note: ports map is alphabitical ordered thus we use z prefix to
@@ -26,8 +25,6 @@ tests:
           path: spec.ports
           content:
             name: zdisabled
-            nodePort: null
-            port: null
       - isSubset:
           path: spec.selector
           content:

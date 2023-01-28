@@ -52,11 +52,6 @@ Return service ports
   {{- $yaml := printf "ports:\n%s" (include "app.tplvalues.named-list" (dict "value" .Values.service.ports "valueKey" "port" "context" $)) -}}
 
   {{- range $_, $val := get ($yaml | fromYaml) "ports" -}}
-    {{/* Set nodePort to null for type ClusterIP */}}
-    {{- if eq $.Values.service.type "ClusterIP" -}}
-      {{- $val = set $val "nodePort" nil -}}
-    {{- end -}}
-
     {{/* Set unset the targetPort for clusterIP == "None" */}}
     {{- if eq $.Values.service.clusterIP "None" -}}
       {{- $val = unset $val "targetPort" -}}
