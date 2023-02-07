@@ -194,6 +194,7 @@ spec:
           {{- else if .Values.flowProvider.git.enabled }}
               scripts_dir='/opt/nifi-registry/scripts'
               . "${scripts_dir}/update_flow_provider.sh"
+              xmlstarlet ed --inplace --subnode "/providers/flowPersistenceProvider" --type elem -n property -v "${NIFI_REGISTRY_GIT_REPO:-}" -i \$prev --type attr -n name -v "Remote Clone Repository" "${NIFI_REGISTRY_HOME}/conf/providers.xml"
           {{- /* if .Values.security.enabled */}}{{- end }}
 
               # Log everything to the console, not to files
