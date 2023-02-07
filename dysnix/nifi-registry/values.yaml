@@ -129,6 +129,9 @@ flowProvider:
     user:
     # Sets NIFI_REGISTRY_GIT_PASSWORD for update_flow_provider.sh
     password:
+    # passwordSecret(Name|Key) is the name and key of the k8s secret holding the password (can be used instead of password)
+    # passwordSecretName:
+    # passwordSecretKey:
     # Global Git configuration See https://git-scm.com/docs/git-config for more details.
     config:
       enabled: false

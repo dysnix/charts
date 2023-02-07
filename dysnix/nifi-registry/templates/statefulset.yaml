@@ -258,7 +258,14 @@ spec:
             - name: NIFI_REGISTRY_GIT_USER
               value: {{ .Values.flowProvider.git.user }}
             - name: NIFI_REGISTRY_GIT_PASSWORD
+            {{- if .Values.flowProvider.git.passwordSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.flowProvider.git.passwordSecretName }}
+                  key: {{ .Values.flowProvider.git.passwordSecretKey }}
+            {{- else }}
               value: {{ .Values.flowProvider.git.password }}
+            {{- end }}
             - name: NIFI_REGISTRY_GIT_REPO
               value: {{ .Values.flowProvider.git.url }}
           {{- end }}
