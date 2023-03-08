@@ -3220,6 +3220,29 @@ entries:
   geth:
   - apiVersion: v2
     appVersion: v1.10.26
+    created: "2023-03-08T11:01:36.324163511Z"
+    description: Official Go implementation of the Ethereum protocol
+    digest: c478781fc67a18253830387c9c5ceaff5c7f1f46783a82ece7feae4229ee91f0
+    home: https://geth.ethereum.org
+    icon: https://geth.ethereum.org/static/images/ethereum.png
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/ethereum/go-ethereum
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-0.4.7/geth-0.4.7.tgz
+    version: 0.4.7
+  - apiVersion: v2
+    appVersion: v1.10.26
     created: "2022-11-14T20:20:00.760378117Z"
     description: Official Go implementation of the Ethereum protocol
     digest: 7f3107bca152e003c9edeb08d4524234e1fd9674b675db75a4387202927ae363
@@ -5021,4 +5044,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-23T19:43:21.901793557Z"
+generated: "2023-03-08T11:01:36.325283321Z"
