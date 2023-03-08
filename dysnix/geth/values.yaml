@@ -4,6 +4,8 @@ image:
   # tag: ""
   pullPolicy: IfNotPresent
 
+imagePullSecrets: []
+
 proxy:
   enabled: false
   http:
