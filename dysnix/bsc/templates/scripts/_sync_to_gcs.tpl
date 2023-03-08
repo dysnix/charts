@@ -101,7 +101,8 @@ cat cplist_state.txt cplist_ancient.txt > "${CPLIST}"
 CP_OBJ_NUMBER=$(wc -l < "${CPLIST}")
 echo "$(date -Iseconds) Uploaded objects: ${CP_OBJ_NUMBER}" | tee -a "${CPLOG}"
 set +e
-if [ "${CP_OBJ_NUMBER}" -gt 1000 ] ;then
+FORCE_CLEANUP=$(echo "{{ .Values.bsc.syncToGCS.forceCleanup }}" | tr '[:upper:]' '[:lower:]')
+if [ "${CP_OBJ_NUMBER}" -gt 1000 ] || [ "${FORCE_CLEANUP}" == "true" ] ;then
   set -e
   # s5cmd doesn't support GCS object removal, just generate a list of files to remove via gsutil
   # removal should be done in another sidecar

@@ -136,6 +136,8 @@ bsc:
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
     baseUrl: "bucket/path/to/dir"
+    # should we run the cleanup every time or we may skip it sometimes? true / false
+    forceCleanup: false
   prune:
     enabled: false
   pruneBlock:
@@ -307,12 +309,12 @@ gcsCleanup:
       cpu: 0m
       memory: 128Mi
     limits:
-      cpu: 2
-      memory: 3072Mi
+      cpu: 4
+      memory: 5120Mi
 # updates pod annotation controller.kubernetes.io/pod-deletion-cost
 updatePodDeletionCost:
   enabled: false
-  image: dysnix/kubectl:v1.20
+  image: dysnix/kubectl:v1.24
   resources:
     requests:
       cpu: 0m
@@ -328,7 +330,7 @@ updatePodDeletionCost:
 cronjobs:
   sync:
     enabled: false
-    image: dysnix/kubectl:v1.20
+    image: dysnix/kubectl:v1.24
     resources:
       requests:
         cpu: 0m
@@ -346,7 +348,7 @@ cronjobs:
     affinity: {}
   prune:
     enabled: false
-    image: dysnix/kubectl:v1.20
+    image: dysnix/kubectl:v1.24
     resources:
       requests:
         cpu: 0m
@@ -365,7 +367,7 @@ cronjobs:
   # bootnode rotation
   rotate:
     enabled: false
-    image: dysnix/kubectl:v1.20
+    image: dysnix/kubectl:v1.24
     resources:
       requests:
         cpu: 0m
