@@ -44,7 +44,7 @@ spec:
       dnsPolicy: ClusterFirst
       shareProcessNamespace: true
       containers:
-        - name: {{ .Chart.Name }}
+        - name: proxysql
           command:
             - "proxysql"
             - "-c"
