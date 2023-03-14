@@ -200,8 +200,12 @@ spec:
         image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
         imagePullPolicy: {{ .Values.metrics.image.pullPolicy }}
         args:
-          - -url
+          - --execution-url
           - http://127.0.0.1:{{ .Values.service.rpcPort }}
+          - --metrics-port
+          - "{{ .Values.service.metricsPort }}"
+          - --execution-modules
+          - eth,net,rpc,web3,txpool
         resources:
           {{- toYaml .Values.metrics.resources | nindent 10 }}
       {{- end }}
