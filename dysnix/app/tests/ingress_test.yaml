@@ -29,6 +29,17 @@ tests:
           path: metadata.name
           value: foo-ingress-app
   -
+    it: ingress labels
+    values:
+      - ./values/ingress.yaml
+      - ./values/common.yaml
+    asserts:
+    -
+      isSubset:
+        path: metadata.labels
+        content:
+          common: label
+  -
     it: ingress.servicePort
     values:
       - ./values/ingress.yaml

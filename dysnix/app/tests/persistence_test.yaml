@@ -77,3 +77,15 @@ tests:
           content:
             name: data
             emptyDir: {}
+  -
+    it: pvc labels
+    values:
+      - ./values/persistence.yaml
+      - ./values/common.yaml
+    asserts:
+    -
+      template: pvc.yaml
+      isSubset:
+        path: metadata.labels
+        content:
+          common: label

@@ -17,3 +17,8 @@ tests:
           any: true
           content:
             port: metrics
+      -
+        isSubset:
+          path: metadata.labels
+          content:
+            common: label

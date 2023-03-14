@@ -9,3 +9,9 @@ image:
 selector:
   matchLabels:
     tenant: foo
+
+commonLabels:
+  common: label
+
+podLabels:
+  pod: label

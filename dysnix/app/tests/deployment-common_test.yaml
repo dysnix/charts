@@ -58,3 +58,17 @@ tests:
           path: spec.selector.matchLabels
           content:
             tenant: foo
+  -
+    it: deployment labels
+    values:
+      - ./values/common.yaml
+    asserts:
+     - isSubset:
+        path: metadata.labels
+        content:
+          common: label
+     - isSubset:
+        path: spec.template.metadata.labels
+        content:
+          common: label
+          pod: label

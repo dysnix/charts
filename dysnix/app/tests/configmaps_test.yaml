@@ -48,3 +48,15 @@ tests:
           value: |-
               description: content is rendered as string
               foo: foo.yaml is passed as a map
+  -
+    it: configmap labels
+    documentIndex: 1
+    values:
+      - ./values/configmaps.yaml
+      - ./values/common.yaml
+    asserts:
+    -
+      isSubset:
+        path: metadata.labels
+        content:
+          common: label

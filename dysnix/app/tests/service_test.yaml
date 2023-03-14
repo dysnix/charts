@@ -3,6 +3,16 @@ templates:
   - service.yaml
 tests:
   -
+    it: service labels
+    values:
+      - ./values/common.yaml
+      - ./values/service-ports.yaml
+    asserts:
+     - isSubset:
+        path: metadata.labels
+        content:
+          common: label
+  -
     it: service ports
     values:
       - ./values/common.yaml
