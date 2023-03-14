@@ -191,6 +191,8 @@ bsc:
   startupProbeTimestampDistinct: 300
   metrics:
     enabled: true
+    # interval: 30s
+    # scrapeTimeout: 15s
     service:
       port: 6060
       name: bsc-metrics
@@ -267,6 +269,8 @@ logger:
 
 metrics:
   enabled: false
+  # interval: 30s
+  # scrapeTimeout: 15s
   image:
     repository: ethpandaops/ethereum-metrics-exporter
     tag: 0.21.0
@@ -419,6 +423,8 @@ failback:
     service:
       port: 9113
       name: nginx-metrics
+    # interval: 30s
+    # scrapeTimeout: 15s
 
 multicluster:
   enabled: false
