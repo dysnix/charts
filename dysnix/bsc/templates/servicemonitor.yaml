@@ -6,23 +6,23 @@ metadata:
   labels: {{ include "bsc.labels" . | nindent 4 }}
 spec:
   endpoints:
-  - interval: {{ .Values.metrics.interval | default "1m" }}
-    scrapeTimeout: {{ .Values.metrics.scrapeTimeout | default "30s" }}
+  - interval: {{ .Values.metrics.interval }}
+    scrapeTimeout: {{ .Values.metrics.scrapeTimeout }}
     honorLabels: true
     port: {{ .Values.service.metricsPortName }}
     path: /metrics
     scheme: http
   {{- if .Values.failback.metrics.enabled }}
-  - interval: {{ .Values.failback.metrics.interval | default "1m" }}
-    scrapeTimeout: {{ .Values.failback.metrics.scrapeTimeout | default "30s" }}
+  - interval: {{ .Values.failback.metrics.interval }}
+    scrapeTimeout: {{ .Values.failback.metrics.scrapeTimeout }}
     honorLabels: true
     port: {{ .Values.failback.metrics.service.name }}
     path: /metrics
     scheme: http
   {{- end }}
   {{- if .Values.bsc.metrics.enabled }}
-  - interval: {{ .Values.bsc.metrics.interval | default "1m" }}
-    scrapeTimeout: {{ .Values.bsc.metrics.scrapeTimeout | default "30s" }}
+  - interval: {{ .Values.bsc.metrics.interval }}
+    scrapeTimeout: {{ .Values.bsc.metrics.scrapeTimeout }}
     honorLabels: true
     port: {{ .Values.bsc.metrics.service.name }}
     path: /debug/metrics/prometheus
