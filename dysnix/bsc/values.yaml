@@ -268,8 +268,8 @@ logger:
 metrics:
   enabled: false
   image:
-    repository: 31z4/ethereum-prometheus-exporter
-    tag: v1.2.0
+    repository: ethpandaops/ethereum-metrics-exporter
+    tag: 0.21.0
     pullPolicy: IfNotPresent
   resources:
     requests:
