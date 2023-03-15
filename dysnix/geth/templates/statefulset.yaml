@@ -47,6 +47,7 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /root
+      {{- if .Values.init.removeNodeKey }}
       - name: remove-nodekey
         command:
         - rm
@@ -57,6 +58,7 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /root
+      {{- end }}
       containers:
       {{- if .Values.proxy.enabled }}
       - name: {{ template "geth.fullname" . }}-proxy
@@ -81,6 +83,20 @@ spec:
           containerPort: {{ .Values.http.port }}
         - name: ws
           containerPort: {{ .Values.ws.port }}
+        - name: monitoring
+          containerPort: 6060
+        - name: p2p
+          containerPort: {{ .Values.p2p.port }}
+          {{- if .Values.p2p.useHostPort }}
+          hostPort: {{ .Values.p2p.port }}
+          {{- end }}
+          protocol: TCP
+        - name: p2p-discovery
+          containerPort: {{ .Values.p2p.discoveryPort }}
+          {{- if .Values.p2p.useHostPort }}
+          hostPort: {{ .Values.p2p.discoveryPort }}
+          {{- end }}
+          protocol: UDP
         {{- if .Values.authrpc.enabled }}
         - name: authrpc
           containerPort: {{ .Values.authrpc.port }}
@@ -130,9 +146,7 @@ spec:
         "helm.sh/resource-policy": keep
       labels:
         app: {{ template "geth.name" . }}
-        chart: {{ template "geth.chart" . }}
         release: {{ .Release.Name }}
-        heritage: {{ .Release.Service }}
         {{- if .Values.persistence.snapshotValue }}
         snapshot: {{ .Values.persistence.snapshotValue }}
         {{- end }}

@@ -1,21 +1,21 @@
 apiVersion: v2
-name: geth
+appVersion: v1.11.4
 description: Official Go implementation of the Ethereum protocol
-
-version: 0.4.7
-appVersion: v1.10.26
-
-keywords:
-  - geth
-  - cryptocurrency
-  - blockchain
 home: https://geth.ethereum.org
 icon: https://geth.ethereum.org/static/images/ethereum.png
-sources:
-  - https://github.com/dysnix/charts
-  - https://github.com/ethereum/go-ethereum
+keywords:
+- geth
+- cryptocurrency
+- blockchain
 maintainers:
-  - name: daniel-yavorovich
-    email: daniel@dysnix.com
-  - name: voron
-    email: av@dysnix.com
+- email: daniel@dysnix.com
+  name: daniel-yavorovich
+- email: av@dysnix.com
+  name: voron
+- email: vd@dysnix.com
+  name: vladstarr
+name: geth
+sources:
+- https://github.com/dysnix/charts
+- https://github.com/ethereum/go-ethereum
+version: 0.5.0

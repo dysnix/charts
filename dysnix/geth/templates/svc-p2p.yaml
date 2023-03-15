@@ -1,0 +1,37 @@
+{{- if and .Values.p2p.service.enabled (not .Values.p2p.useHostPort) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "geth.fullname" . }}-p2p
+  {{- if .Values.p2p.service.annotations }}
+  annotations:
+    {{- .Values.p2p.service.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    app: {{ template "geth.name" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.p2p.service.type }}
+  {{- if .Values.p2p.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.p2p.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - name: p2p-discovery
+      port: {{ .Values.p2p.discoveryPort }}
+      targetPort: p2p-discovery
+      protocol: UDP
+      {{- if .Values.p2p.service.discoveryNodePort }}
+      nodePort: {{ .Values.p2p.service.discoveryNodePort }}
+      {{- end }}
+    - name: p2p-tcp
+      port: {{ .Values.p2p.port }}
+      targetPort: p2p-tcp
+      protocol: TCP
+      {{- if .Values.p2p.service.nodePort }}
+      nodePort: {{ .Values.p2p.service.nodePort }}
+      {{- end }}
+  selector:
+    app: {{ template "geth.name" . }}
+    release: {{ .Release.Name }}
+{{- end }}

@@ -2,9 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ template "geth.fullname" . }}
-  {{- if .Values.service.annotations }}
+  {{- with .Values.service.annotations }}
   annotations:
-    {{- .Values.service.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     app: {{ template "geth.name" . }}
@@ -25,12 +25,17 @@ spec:
       port: {{ .Values.authrpc.port }}
       targetPort: authrpc
     {{- end }}
+    {{- if .Values.proxy.enabled }}
     - name: proxy-rpc
       port: {{ .Values.proxy.http.port }}
       targetPort: proxy-rpc
     - name: proxy-ws
       port: {{ .Values.proxy.ws.port }}
       targetPort: proxy-ws
+    {{- end }}
+    - name: monitoring
+      port: 6060
+      targetPort: monitoring
   selector:
     app: {{ template "geth.name" . }}
     release: {{ .Release.Name }}

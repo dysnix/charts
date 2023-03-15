@@ -6,6 +6,9 @@ image:
 
 imagePullSecrets: []
 
+init:
+  removeNodeKey: false
+
 proxy:
   enabled: false
   http:
@@ -17,6 +20,21 @@ proxy:
     pullPolicy: IfNotPresent
     repository: dysnix/protected-proxy
     tag: latest
+
+p2p:
+  service:
+    enabled: false
+    # can be NodePort or LoadBalancer
+    type: LoadBalancer
+    loadBalancerIP: ""
+    nodePort: ""
+    discoveryNodePort: ""
+  discoveryPort: 30303
+  port: 30303
+  # improves p2p connection if autodetection fails. i.e., nat: "extip:1.2.3.4"
+  nat: ""
+  # if specified, hostPort will be allocated instead of creating k8s service
+  useHostPort: false
 
 http:
   port: 8545
@@ -45,6 +63,7 @@ goerli: false
 syncMode: "snap"
 
 maxPeers: 50
+maxPendPeers: 0
 cache: 4096
 customArgs: {}
 
@@ -54,14 +73,25 @@ service:
     # service.beta.kubernetes.io/aws-load-balancer-internal: ...
 
 ingress:
-  certmanagerClusterIssuer: letsencrypt-prod
+  certmanagerClusterIssuer: ""
+  class: nginx
   enabled: false
   rpc:
+    annotations:
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, PATCH, OPTIONS, DELETE"
+      nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+      nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+      nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+      nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+      nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+      nginx.ingress.kubernetes.io/session-cookie-name: route
     proxyHosts:
     - rpc.example.com
     hosts:
     - secret-rpc.example.com
   ws:
+    annotations: []
     proxyHosts:
     - ws.example.com
     hosts:
@@ -124,3 +154,11 @@ affinity: {}
 nodeSelector: {}
 
 tolerations: []
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 30s
+  honorLabels: true
+  relabelings: []
+  metricRelabelings: []
