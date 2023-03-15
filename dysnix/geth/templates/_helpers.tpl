@@ -61,7 +61,7 @@ Geth args
 {{- if .Values.p2p.nat }}
 {{- $args = concat $args (list "--nat" .Values.p2p.nat ) -}}
 {{- end }}
-{{- if gt .Values.maxPendPeers 0 }}
+{{- if .Values.maxPendPeers }}
 {{- $args = concat $args (list "--maxpendpeers" .Values.maxPendPeers) -}}
 {{- end }}
 
