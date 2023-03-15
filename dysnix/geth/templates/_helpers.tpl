@@ -46,7 +46,7 @@ Geth args
 {{- define "geth.args" -}}
 
 {{- $customArgs := list -}}
-{{- $args := list "--maxpeers" .Values.maxPeers "--maxpendpeers" .Values.maxPendPeers "--cache" .Values.cache -}}
+{{- $args := list "--maxpeers" .Values.maxPeers "--cache" .Values.cache -}}
 {{- $args = concat $args (list "--syncmode" .Values.syncMode "--pprof" "--pprof.addr=0.0.0.0") -}}
 {{- $args = concat $args (list "--pprof.port=6060" "--metrics" "--http" "--http.api" .Values.http.api) -}}
 {{- $args = concat $args (list "--http.addr" "0.0.0.0" "--http.port" .Values.http.port "--http.vhosts" .Values.http.vhosts) -}}
@@ -60,6 +60,9 @@ Geth args
 {{- end -}}
 {{- if .Values.p2p.nat }}
 {{- $args = concat $args (list "--nat" .Values.p2p.nat ) -}}
+{{- end }}
+{{- if gt .Values.maxPendPeers 0 }}
+{{- $args = concat $args (list "--maxpendpeers" .Values.maxPendPeers) -}}
 {{- end }}
 
 {{- range $testnet := list "ropsten" "rinkeby" "goerli" -}}
