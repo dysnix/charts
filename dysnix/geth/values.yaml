@@ -134,7 +134,7 @@ livenessProbe:
     command: |
       - sh
       - -c
-      - "echo -e 'POST / HTTP/1.1\nHost: localhost:8545\nUser-Agent: curl/7.61.1\nAccept: */*\nContent-Type: application/json\nContent-Length: 60\n\n{\"jsonrpc\":\"2.0\",\"method\":\"net_version\",\"params\":[],\"id\":67}' | nc localhost 8545 | grep -q 'HTTP/1.1 200 OK' && echo -e 'GET / HTTP/1.1\nHost: localhost:8546\nUpgrade: websocket\nConnection: Upgrade\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\nSec-WebSocket-Version: 13\n' | nc localhost 8546 | grep -q 'HTTP/1.1 101'"
+      - "echo -e 'POST / HTTP/1.1\nHost: localhost:{{ .Values.http.port }}\nUser-Agent: curl/7.61.1\nAccept: */*\nContent-Type: application/json\nContent-Length: 60\n\n{\"jsonrpc\":\"2.0\",\"method\":\"net_version\",\"params\":[],\"id\":67}' | nc localhost {{ .Values.http.port }} | grep -q 'HTTP/1.1 200 OK' && echo -e 'GET / HTTP/1.1\nHost: localhost:{{ .Values.ws.port }}\nUpgrade: websocket\nConnection: Upgrade\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\nSec-WebSocket-Version: 13\n' | nc localhost {{ .Values.ws.port }} | grep -q 'HTTP/1.1 101'"
 
 readinessProbe:
   enabled: false
