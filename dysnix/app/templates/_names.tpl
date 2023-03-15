@@ -23,14 +23,14 @@ If release name contains chart name it will be used as a full name.
   {{- else -}}
     {{- $name := default (include "app.chart.name" .) .Values.nameOverride -}}
     {{- if contains $name .Release.Name -}}
-      {{- $fullname = append $fullname $name -}}
+      {{- $fullname = append $fullname .Release.Name -}}
     {{- else -}}
       {{- $fullname = append $fullname (printf "%s-%s" .Release.Name $name) -}}
     {{- end -}}
   {{- end -}}
   {{- $fullname = append $fullname ._include.component | compact -}}
 
-  {{- join "-" $fullname -}}
+  {{- join "-" $fullname | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/* Extended common.names.fullname with custom name overrides */}}
