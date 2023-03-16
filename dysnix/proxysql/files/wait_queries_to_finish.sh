@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# For all proxysql processes iterate over all tcp connection
-# and search for established connection to port ${PROXYSQL_SERVICE_PORT_PROXY:-6033}.
-# If more than one connection if found, randomly slepp up to 3 seconds,
+# For all proxysql processes iterate over all tcp connections
+# and search for any established connection to port ${PROXYSQL_SERVICE_PORT_PROXY:-6033}.
+# If more than one connection is found, randomly sleep up to 3 seconds,
 # otherwise exit 0.
 
 set -u
