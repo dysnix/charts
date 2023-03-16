@@ -62,26 +62,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command:
-                  - "/bin/bash"
-                  - "-c"
-                  - |
-                      while true; do \
-                      CONNECTED_IPS=$(for pid in $(pidof proxysql); do cat /proc/${pid}/net/tcp \
-                        | awk '{print $3}' \
-                        | grep -i $(printf ":%x" ${PROXYSQL_SERVICE_PORT_PROXY:-3306}) \
-                        | sort -u \
-                        | cut -f1 -d':' \
-                        | awk '{gsub(/../,"0x& ")} OFS="." {for(i=NF;i>0;i--) printf "%d%s", $i, (i == 1 ? ORS : OFS)}'; \
-                        done )
-                      if [[ -z ${CONNECTED_IPS} ]]; then
-                        echo "Exiting...";
-                        sleep 1s;
-                      else
-                        echo "Sleeping... ${CONNECTED_IPS}";
-                        sleep 1s;
-                      fi;
-                      done
+                command: ["/bin/sh", "-c", "/usr/local/bin/wait_queries_to_finish.sh > /proc/1/fd/1"]
           ports:
             - name: proxy
               containerPort: {{ .Values.service.proxyPort }}
@@ -113,6 +94,9 @@ spec:
             - name: secrets
               mountPath: /etc/proxysql/admin_credentials.cnf
               subPath: admin_credentials.cnf
+            - name: scripts
+              mountPath: /usr/local/bin/wait_queries_to_finish.sh
+              subPath: wait_queries_to_finish.sh
           {{- if .Values.ssl.fromSecret }}
             - name: ssl
               mountPath: /etc/proxysql/ssl
@@ -154,7 +138,7 @@ spec:
             - secretRef:
                 name: '{{ include "proxysql.fullname" . }}-healthcheck'
           volumeMounts:
-            - name: healthcheck-scripts
+            - name: scripts
               mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
               subPath: proxysql_cluster_healthcheck.sh
           {{- with .Values.proxysql_cluster.healthcheck.sidecar.securityContext }}
@@ -191,10 +175,13 @@ spec:
             secretName: {{ . }}
             defaultMode: 0640
         {{- end }}
-        - name: healthcheck-scripts
+        - name: scripts
           configMap:
-            name: {{ include "proxysql.fullname" . }}-healthcheck-scripts
+            name: {{ include "proxysql.fullname" . }}-scripts
             items:
+              - key: wait_queries_to_finish.sh
+                path: wait_queries_to_finish.sh
+                mode: 0777
               - key: proxysql_cluster_healthcheck.sh
                 path: proxysql_cluster_healthcheck.sh
                 mode: 0777
