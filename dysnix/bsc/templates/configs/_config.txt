@@ -43,6 +43,7 @@ InsecureUnlockAllowed = false
 HTTPPort = {{ .Values.service.rpcPort }}
 HTTPVirtualHosts = ["{{ join "\",\"" .Values.bsc.rpcVhosts }}"]
 HTTPModules = ["{{ join "\",\"" .Values.bsc.rpcApi }}"]
+WSHost = "0.0.0.0"
 WSPort = {{ .Values.service.wsPort }}
 WSOrigins = ["{{ join "\",\"" .Values.bsc.wsOrigins }}"]
 WSModules = ["{{ join "\",\"" .Values.bsc.wsApi }}"]
