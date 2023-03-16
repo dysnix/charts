@@ -98,16 +98,18 @@ bsc:
   # Blockchain garbage collection mode ("full", "archive") (default: "full")
   gcmode: "full"
   base_path: "/data"
-  rpcApi: "eth,net,web3,txpool,parlia"
-  rpcVhosts: "*"
-  wsApi: "net,web3,eth"
-  wsOrigins: "*"
-  graphQlVhosts: "*"
+  rpcApi: ["eth", "net", "web3", "txpool", "parlia"]
+  rpcVhosts: ["*"]
+  wsEnabled: false
+  wsApi: ["net", "web3", "eth"]
+  wsOrigins: ["*"]
   maxpeers: 50
   cache: 8192
   snapshot: false
   pipecommit: false
   diffsync: true
+  # extra arguments to pass to container
+  extraArgs: []
   # https://github.com/bnb-chain/bsc/issues/1193
   # valid values are local, full, insecure, none
   triesVerifyMode: local

@@ -93,6 +93,9 @@ spec:
           - --rpc.allow-unprotected-txs
           - --txlookuplimit=0
           - --cache.preimages
+          {{- if .Values.bsc.wsEnabled }}
+          - --ws
+          {{- end }}
           {{- if .Values.bsc.diffsync }}
           - --diffsync
           {{- end }}
@@ -113,6 +116,9 @@ spec:
           - --pprof
           - --pprof.addr=0.0.0.0
           - --pprof.port={{ .Values.bsc.metrics.service.port }}
+          {{- end }}
+          {{- range .Values.bsc.extraArgs }}
+          - {{ . }}
           {{- end }}
         envFrom:
           - configMapRef:

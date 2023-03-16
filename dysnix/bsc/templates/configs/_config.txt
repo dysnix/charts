@@ -41,11 +41,11 @@ HTTPHost = "0.0.0.0"
 NoUSB = true
 InsecureUnlockAllowed = false
 HTTPPort = {{ .Values.service.rpcPort }}
-HTTPVirtualHosts = ["*"]
-HTTPModules = ["eth", "net", "web3", "txpool", "parlia"]
+HTTPVirtualHosts = ["{{ join "\",\"" .Values.bsc.rpcVhosts }}"]
+HTTPModules = ["{{ join "\",\"" .Values.bsc.rpcApi }}"]
 WSPort = {{ .Values.service.wsPort }}
-WSOrigins = ["*"]
-WSModules = ["net", "web3", "eth"]
+WSOrigins = ["{{ join "\",\"" .Values.bsc.wsOrigins }}"]
+WSModules = ["{{ join "\",\"" .Values.bsc.wsApi }}"]
 
 [Node.HTTPTimeouts]
 ReadTimeout = 30000000000
