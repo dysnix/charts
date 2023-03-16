@@ -23,6 +23,7 @@ spec:
       annotations:
         # Automatically Roll Deployments
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/config.scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- with (mergeOverwrite .Values.podAnnotations .Values.proxysql_cluster.core.statefullset.podAnnotations) }}
         {{- toYaml . | nindent 8 }}
