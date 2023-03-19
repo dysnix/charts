@@ -1,0 +1,157 @@
+suite: ingress
+templates:
+  - ingress.yaml
+tests:
+  -
+    it: ingress enabled
+    values:
+      - ./values/ingress.yaml
+    asserts:
+      -
+        isKind:
+          of: Ingress
+      - equal:
+          path: spec.rules[0].host
+          value: host.fqdn
+      - equal:
+          path: spec.tls[0].hosts[0]
+          value: host.fqdn
+  -
+    it: ingress customName support
+    values:
+      - ./values/ingress.yaml
+    release:
+      name: ingress
+    set:
+      ingress.customName: 'foo-{{ template "app.fullname" . }}'
+    asserts:
+      - equal:
+          path: metadata.name
+          value: foo-ingress-app
+  -
+    it: ingress labels
+    values:
+      - ./values/ingress.yaml
+      - ./values/common.yaml
+    asserts:
+    -
+      isSubset:
+        path: metadata.labels
+        content:
+          common: label
+  -
+    it: ingress.servicePort
+    values:
+      - ./values/ingress.yaml
+    set:
+      ingress.servicePort: port-is-set
+      service.ports.http: 8080
+    asserts:
+      -
+        equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.name
+          value: port-is-set
+  -
+    it: ingress uses the default service port (if only one is present)
+    values:
+      - ./values/ingress.yaml
+    asserts:
+      -
+        equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.name
+          value: http
+  -
+    it: .ingress.namespace has priority over .namespaceOverride
+    values:
+      - ./values/ingress.yaml
+    set:
+      ingress.namespace: foo
+      namespaceOverride: override
+    asserts:
+      -
+        equal:
+          path: metadata.namespace
+          value: foo
+  -
+    it: .ingress.namespace is set
+    values:
+      - ./values/ingress.yaml
+    set:
+      ingress.namespace: foo
+    asserts:
+      -
+        equal:
+          path: metadata.namespace
+          value: foo
+  -
+    it: .ingress.path is set
+    values:
+      - ./values/ingress.yaml
+    set:
+      ingress.path: /foo
+    asserts:
+      -
+        equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /foo
+
+  -
+    it: .ingress.extraPaths
+    values:
+      - ./values/ingress.yaml
+    set:
+      ingress.extraPaths:
+        - path: /foo
+    asserts:
+      -
+        equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /foo
+      -
+        equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.name
+          value: http
+      -
+        equal:
+          path: spec.rules[0].http.paths[1].path
+          value: /
+  -
+    it: .ingress.extraPaths with backend
+    values:
+      - ./values/ingress.yaml
+    set:
+      ingress.extraPaths:
+        - path: /foo
+          backend:
+            serviceName: hello
+            servicePort: world
+    asserts:
+      -
+        equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: hello
+      -
+        equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.name
+          value: world
+  -
+    it: .ingress.extraHosts with backend
+    values:
+      - ./values/ingress.yaml
+    set:
+      ingress.extraHosts:
+        - name: extra-host.local
+          path: /foo
+    asserts:
+      -
+        equal:
+          path: spec.rules[1].host
+          value: extra-host.local
+      -
+        equal:
+          path: spec.rules[1].http.paths[0].path
+          value: /foo
+      -
+        equal:
+          path: spec.rules[1].http.paths[0].backend.service.port.name
+          value: http

@@ -1,0 +1,24 @@
+suite: metrics
+templates:
+  - servicemonitor.yaml
+tests:
+  -
+    it: service-monitor
+    values:
+      - ./values/common.yaml
+      - ./values/servicemonitor.yaml
+    asserts:
+      -
+        isKind:
+          of: ServiceMonitor
+      -
+        contains:
+          path: spec.endpoints
+          any: true
+          content:
+            port: metrics
+      -
+        isSubset:
+          path: metadata.labels
+          content:
+            common: label

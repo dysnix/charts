@@ -1,0 +1,113 @@
+containers:
+  additional:
+    image:
+      repository: hello-world
+      pullPolicy: IfNotPresent
+    env:
+      FOO: BAR
+      YET: ANOTHER
+      ZOO: 1.0
+    extraEnvVars:
+      - name: ADDED_AFTER
+        value: .env
+    envFrom:
+      - configMapRef:
+          name: foo
+      - secretRef:
+          name: bar
+    livenessProbe:
+      enabled: true
+    readinessProbe:
+      enabled: true
+    startupProbe:
+      enabled: true
+    lifecycleHooks:
+      postStart:
+        exec:
+          command:
+            - /bin/sh
+            - -c
+            - echo sample hook
+    volumeMounts:
+      ebs:
+        mountPath: /ebs
+
+initContainers:
+  use:
+    - first
+    - second
+  values:
+    second:
+      image:
+        repository: goes-second
+        pullPolicy: IfNotPresent
+      env:
+        FOO: BAR
+        YET: ANOTHER
+      extraEnvVars:
+        - name: ADDED_AFTER
+          value: .env
+      envFrom:
+        - configMapRef:
+            name: foo
+        - secretRef:
+            name: bar
+    first:
+      image:
+        repository: goes-first
+        pullPolicy: IfNotPresent
+      ## probes must be ignored
+      ##
+      livenessProbe:
+        enabled: true
+      readinessProbe:
+        enabled: true
+      startupProbe:
+        enabled: true
+      lifecycleHooks:
+        postStart:
+          exec:
+            command:
+              - /bin/sh
+              - -c
+              - echo sample hook
+      volumeMounts:
+        ebs:
+          mountPath: /ebs
+
+env:
+  VARIABLE: DEFAULT_CONTAINER
+
+envFromPrefix: KEY_
+envFrom:
+  - configMapRef:
+      name: '{{ template "common.names.fullname" . }}-foo'
+      optional: false
+  - secretRef:
+      name: '{{ template "common.names.fullname" . }}-bar'
+
+extraEnvVars:
+  - name: ADDED_AFTER
+    value: .env
+
+livenessProbe:
+  enabled: true
+readinessProbe:
+  enabled: true
+startupProbe:
+  enabled: true
+
+lifecycleHooks:
+  postStart:
+    exec:
+      command: ["/bin/sh", "-c", "echo sample hook"]
+
+volumes:
+  ebs:
+    awsElasticBlockStore:
+      volumeID: "<volume id>"
+      fsType: ext4
+
+volumeMounts:
+  ebs:
+    mountPath: /ebs

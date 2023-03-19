@@ -1,0 +1,32 @@
+app:
+  name: app
+
+image:
+  repository: alpine
+
+command:
+  - /bin/sh
+  - -c
+args:
+  - sleep 10
+
+env:
+  FOO: REUSED
+
+configMaps:
+  env:
+    HELLO: WORLD
+
+envFrom:
+- configMapRef:
+    name: '{{ template "app.fullname" . }}-env'
+
+resources:
+  limits:
+    memory: 128Mi
+
+containers:
+  worker:
+    reuse: true
+    args:
+      - Hello the command and other parameters are reused!

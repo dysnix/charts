@@ -1,0 +1,12 @@
+configMaps:
+  default:
+    sample.txt: |-
+      some text file for release "{{ .Release.Name }}".
+      interpolation works.
+  env:
+    RENDERED_FOUR: "{{ mul 2 2 }}"
+    FOUR: 4
+  yaml-map:
+    foo.yaml:
+      foo: foo.yaml is passed as a map
+      description: content is rendered as string

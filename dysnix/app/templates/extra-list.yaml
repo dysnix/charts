@@ -1,3 +1,4 @@
+{{/* vim: set filetype=helm: */}}
 {{- range .Values.extraDeploy }}
 ---
 {{ include "common.tplvalues.render" (dict "value" . "context" $) }}

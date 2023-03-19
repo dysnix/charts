@@ -1,0 +1,55 @@
+suite: service
+templates:
+  - service.yaml
+tests:
+  -
+    it: service labels
+    values:
+      - ./values/common.yaml
+      - ./values/service-ports.yaml
+    asserts:
+     - isSubset:
+        path: metadata.labels
+        content:
+          common: label
+  -
+    it: service ports
+    values:
+      - ./values/common.yaml
+      - ./values/service-ports.yaml
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.ports[2]
+          value:
+            name: x11
+            port: 6000
+
+      ## Note: ports map is alphabitical ordered thus we use z prefix to
+      ##       put this port last.
+      - notContains:
+          path: spec.ports
+          content:
+            name: zdisabled
+      - isSubset:
+          path: spec.selector
+          content:
+            tenant: foo
+  -
+    it: check extended port configuration
+    values:
+      - ./values/service-ports-ext.yaml
+    asserts:
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.ports[0].targetPort
+          value: foo
+      - equal:
+          path: spec.ports[0].nodePort
+          value: null

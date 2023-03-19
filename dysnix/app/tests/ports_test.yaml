@@ -1,0 +1,26 @@
+suite: ports
+templates:
+  - service.yaml
+tests:
+  -
+    it: service ports
+    values:
+      - ./values/ports.yaml
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.ports[2]
+          value:
+            name: x11
+            port: 6000
+
+      ## Note: ports map is alphabitical ordered thus we use z prefix to
+      ##       put this port last.
+      - notContains:
+          path: spec.ports
+          content:
+            name: zdisabled
