@@ -97,6 +97,7 @@ bsc:
   syncmode: "full"
   # Blockchain garbage collection mode ("full", "archive") (default: "full")
   gcmode: "full"
+  logLevel: "info"
   base_path: "/data"
   rpcApi: ["eth", "net", "web3", "txpool", "parlia"]
   rpcVhosts: ["*"]
