@@ -22,6 +22,7 @@ spec:
       annotations:
         # Automatically Roll Deployments
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/config.scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
@@ -45,7 +46,7 @@ spec:
       dnsPolicy: ClusterFirst
       shareProcessNamespace: true
       containers:
-        - name: {{ .Chart.Name }}
+        - name: proxysql
           command:
             - "proxysql"
             - "-c"
@@ -59,6 +60,10 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ template "proxysql.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "/usr/local/bin/wait_queries_to_finish.sh > /proc/1/fd/1"]
           ports:
             - name: proxy
               containerPort: {{ .Values.service.proxyPort }}
@@ -90,6 +95,9 @@ spec:
             - name: secrets
               mountPath: /etc/proxysql/admin_credentials.cnf
               subPath: admin_credentials.cnf
+            - name: scripts
+              mountPath: /usr/local/bin/wait_queries_to_finish.sh
+              subPath: wait_queries_to_finish.sh
           {{- if .Values.ssl.fromSecret }}
             - name: ssl
               mountPath: /etc/proxysql/ssl
@@ -131,7 +139,7 @@ spec:
             - secretRef:
                 name: '{{ include "proxysql.fullname" . }}-healthcheck'
           volumeMounts:
-            - name: healthcheck-scripts
+            - name: scripts
               mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
               subPath: proxysql_cluster_healthcheck.sh
           {{- with .Values.proxysql_cluster.healthcheck.sidecar.securityContext }}
@@ -168,10 +176,13 @@ spec:
             secretName: {{ . }}
             defaultMode: 0640
         {{- end }}
-        - name: healthcheck-scripts
+        - name: scripts
           configMap:
-            name: {{ include "proxysql.fullname" . }}-healthcheck-scripts
+            name: {{ include "proxysql.fullname" . }}-scripts
             items:
+              - key: wait_queries_to_finish.sh
+                path: wait_queries_to_finish.sh
+                mode: 0777
               - key: proxysql_cluster_healthcheck.sh
                 path: proxysql_cluster_healthcheck.sh
                 mode: 0777

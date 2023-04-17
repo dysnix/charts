@@ -11,14 +11,4 @@ data:
   DB_PORT: {{ .Values.proxysql_cluster.healthcheck.sidecar.config.psql_host_port | quote }}
   PROXYSQL_DIFF_CHECK_LIMIT: {{ .Values.proxysql_cluster.healthcheck.sidecar.config.diff_check_limit | quote }}
   PROXYSQL_KILL_IF_HEALTCHECK_FAILED: {{ .Values.proxysql_cluster.healthcheck.sidecar.config.kill_if_healthcheck_failed | quote }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "proxysql.fullname" . }}-healthcheck-scripts
-  labels:
-    {{- include "proxysql.labels" . | nindent 4 }}
-data:
-  proxysql_cluster_healthcheck.sh: |
-    {{- tpl (.Files.Get "files/proxysql_cluster_healthcheck.sh") . | nindent 4 }}
 {{- end }}

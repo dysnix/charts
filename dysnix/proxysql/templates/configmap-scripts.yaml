@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "proxysql.fullname" . }}-scripts
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+data:
+  proxysql_cluster_healthcheck.sh: |
+    {{- tpl (.Files.Get "files/proxysql_cluster_healthcheck.sh") . | nindent 4 }}
+  wait_queries_to_finish.sh: |
+    {{- tpl (.Files.Get "files/wait_queries_to_finish.sh") . | nindent 4 }}
