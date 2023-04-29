@@ -445,6 +445,9 @@ dnsPolicy:
 ## @param hostNetwork Host networking requested for this pod. Use the host's network namespace. If this option is set, the ports that will be used must be specified. Default to false.
 ##
 hostNetwork:
+## @param automountServiceAccountToken Automount service account token for the pod. Defaults to "true"
+##
+automountServiceAccountToken:
 
 ## ONLY FOR STATEFULSETS
 ## @param podManagementPolicy Statefulset Pod management policy, it needs to be Parallel to be able to complete the cluster join
