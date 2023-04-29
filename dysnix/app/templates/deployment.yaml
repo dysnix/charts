@@ -46,6 +46,9 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ template "app.serviceAccountName" . }}
+      {{- if kindIs "bool" .Values.automountServiceAccountToken }}
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      {{- end }}
       {{- include "app.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
