@@ -83,3 +83,7 @@ Usage
 {{- define "app.service-monitor" -}}
   {{- include "app.resources.include" (dict "resource" "service-monitor" | merge .) -}}
 {{- end -}}
+
+{{- define "app.hpa" -}}
+  {{- include "app.resources.include" (dict "resource" "hpa" | merge .) -}}
+{{- end -}}

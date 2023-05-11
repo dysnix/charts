@@ -1,0 +1,60 @@
+{{/* vim: set filetype=helm: */}}
+{{- define "app.resources.hpa" -}}
+{{- if .Values.autoscaling.enabled }}
+---
+apiVersion: {{ include "common.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- include "app.labels.component" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.serviceAccount.annotations .Values.commonAnnotations }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.serviceAccount.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.serviceAccount.annotations "context" $) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  {{- if .Values.autoscaling.behavior }}
+  behavior: {{- include "common.tplvalues.render" (dict "value" .Values.autoscaling.behavior "context" $) | nindent 4 }}
+  {{- end }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.autoscaling.targetCPU }}
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: {{ .Values.autoscaling.targetCPU }}
+          type: Utilization
+      type: Resource
+    {{- end }}
+    {{- if .Values.autoscaling.targetMemory }}
+    - resource:
+        name: memory
+        target:
+          averageUtilization: {{ .Values.autoscaling.targetMemory }}
+          type: Utilization
+      type: Resource
+    {{- end }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  scaleTargetRef:
+    apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+    kind: Deployment
+    name: {{ template "common.names.fullname" . }}
+{{- end }}
+{{- end -}}
+
+{{/* Include the resource */}}
+{{- if eq "direct" (include "app.chart.mode" .) -}}
+  {{- range $_, $component := concat (list "") $.Values.app.components -}}
+    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
+    {{- include "app.hpa" (dict "component" $component "values" $values "top" $) -}}
+  {{- end -}}
+{{- end -}}
