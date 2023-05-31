@@ -447,17 +447,21 @@ bscCmd: ["geth"]
 externalLB: false
 externalLBIP: ""
 externalLBSourceRanges: {}
+externalLBAnnotations: {}
 
 externalLBp2p: false
 externalLBp2pIP: ""
+externalLBp2pAnnotations: {}
 
 externalLBp2pDiscovery: false
 externalLBp2pDiscoveryIP: ""
+externalLBp2pDiscoveryAnnotations: {}
 
 p2pPublishNotReadyAddresses: true
 
 internalLB: false
 internalLBIP: ""
+internalLBAnnotations: {}
 
 persistence:
   enabled: true

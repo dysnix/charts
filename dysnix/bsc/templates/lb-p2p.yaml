@@ -5,6 +5,9 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-lb-p2p
   labels: {{ include "bsc.labels" . | nindent 4 }}
+  {{- with .Values.externalLBp2pAnnotations }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: LoadBalancer
   {{ if .Values.externalLBp2pIP }}
