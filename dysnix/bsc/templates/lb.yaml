@@ -6,6 +6,9 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-lb
   labels: {{ include "bsc.labels" . | nindent 4 }}
+  {{- with .Values.externalLBAnnotations }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: LoadBalancer
   {{ if .Values.externalLBIP }}
