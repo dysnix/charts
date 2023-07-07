@@ -803,6 +803,11 @@ volumePermissions:
 ## @section Other Parameters
 ##
 
+## @param minReadySeconds minimum seconds for pod to become ready. 0 is the default k8s value
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#min-ready-seconds
+##
+minReadySeconds: 0
+
 ## RBAC configuration
 ##
 rbac:
