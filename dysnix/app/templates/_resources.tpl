@@ -1,89 +1,94 @@
 {{/* vim: set filetype=helm: */}}
 {{/*
-Includes the given resource. If .values is omitted .top.Values or .top.Values.[component] are
-used by default.
+Includes the given resource.
+Note that if component is not provided we assume it's default.
 
 Usage
-  {{- include "app.resource.include" (dict "resource" "deployment" "component" "" "values" .Values_or_some_path "context" .) -}}
-    or
-  {{- include "app.resource.include" (dict "resource" "deployment" "component" "" "context" .) -}}
+  {{- include "app.resource.include" (dict "_include" (dict "resource" "deployment" "top" $) }}
+  {{- include "app.resource.include" (dict "_include" (dict "resource" "deployment" "component" "foo" "values" .Path.Values "top" $)) }}
+
+  It also supports custom parameters, especially during nested invocation such
+  as in configmaps or secrets. Pay attention to mergeOverwrite since we need to
+  overwrite existing fieleds such _include.resource
+
+  {{- include "app.resources.include" (dict "_include" (dict "resource" "configmap" "name" $name "data" $data) | mergeOverwrite $) }}
 */}}
 {{- define "app.resources.include" -}}
-  {{/*
-    Global parameters are set in the main component only, but the rest can be set on component level
-      - commonLabels
-      - commonAnnotations
-      - app.name
-   */}}
-  {{- $global := pick .top.Values "commonLabels" "commonAnnotations" "global" -}}
-  {{- $values := .values -}}
-
-  {{/* _include contains resource include parameters and:
-          topValues (top-level values)
-          Values (component specific values)
-  */}}
-  {{- $include := dict "topValues" .top.Values -}}
-  {{- if and .component (not .values) -}}
-    {{- $_ := set $include "Values" (get .top.Values .component) -}}
-  {{- else -}}
-    {{- $_ := set $include "Values" .top.Values -}}
+  {{/* Don't require top on nested runs, use _include.top */}}
+  {{- if not (all ._include.resource ._include.top) -}}
+    {{- keys ._include | toYaml | fail -}}
+    {{- "_include.{resource,top} must be provided" | fail -}}
   {{- end -}}
 
-  {{/*
-    Build up the new resource Values.
-    Use .values if provided otherwise use .top.Values or .top.Values.[component].
-  */}}
-  {{- if and .component (not .values) -}}
-    {{- $values = get .top.Values .component -}}
-  {{- else if not .values -}}
-    {{- $values = .top.Values -}}
+  {{/* Set empty paths for the default component or if it's passed */}}
+  {{- $componentPaths := ternary (dict "" true) (dict .component true "" true) (empty .component)   -}}
+  {{/* Give precedence to .Values.app.components path settings */}}
+  {{- $componentPaths = default dict ._include.top.Values.app.components | mergeOverwrite $componentPaths -}}
+  {{- $path := get $componentPaths (default "" ._include.component) | toString -}}
+
+  {{/* Path is enabled, so is the component */}}
+  {{- if ne $path "false" -}}
+    {{- $componentValues := ternary ._include.top.Values ($path | get ._include.top.Values) (eq $path "true") -}}
+
+    {{- if empty $componentValues -}}
+      {{- $pathstr := $path | printf ".Values.%s" | trimSuffix "." -}}
+      {{- printf "Component %s has no values at path %s" ._include.component $pathstr | fail -}}
+    {{- end -}}
+
+    {{/* Specific global values are always injected into the render context */}}
+    {{- $global := pick ._include.top.Values "commonLabels" "commonAnnotations" "global" -}}
+    {{- $values := $global | mergeOverwrite (._include.values | default $componentValues) -}}
+
+    {{- $context := omit ._include.top "Values" | merge (dict "Values" $values "_include" ._include) -}}
+    {{- include (printf "app.resources.%s" ._include.resource) $context  -}}
   {{- end -}}
-
-  {{/* Pass parent values in _include dict. */}}
-  {{- $include := dict "_include" (omit . "values" "top" | merge $include) -}}
-
-  {{/* We set the new context for the included resource using .top which always has the full Helm context */}}
-  {{- $context := omit .top "Values" "_include" | merge $include -}}
-  {{- $context := dict "Values" (mergeOverwrite $values $global) | merge $context -}}
-  {{- include (printf "app.resources.%s" .resource) $context -}}
 {{- end -}}
 
-{{- define "app.deployment" -}}
-  {{- include "app.resources.include" (dict "resource" "deployment" | merge .) -}}
-{{- end -}}
+{{/*
+Function renders app resource template files (eg. deployments).
+It's a wrapper to app.resources.include and all its supported parameters can be passed!
 
-{{- define "app.service-account" -}}
-  {{- include "app.resources.include" (dict "resource" "service-account" | merge .) -}}
-{{- end -}}
+For example if we want to render the deployment resource it's recommended to
+place the code into deployment.yaml, the resource name "deployment"
+automatically picked from the file name.
 
-{{- define "app.service" -}}
-  {{- include "app.resources.include" (dict "resource" "service" | merge .) -}}
-{{- end -}}
+Placing the include statement into the specific file provides the following benefits:
+  - Automatic resource name detection
+  - Resource render is bound to the given file, thus during the render
+    line `# Source .../templates/{resource}.yaml` is explicit.
 
-{{- define "app.configmaps" -}}
-  {{- include "app.resources.include" (dict "resource" "configmaps" | merge .) -}}
-{{- end -}}
+Note by default the default component is rendererd only. Use the extended form
+to render more components or if need to provide a specific resource template.
 
-{{- define "app.secrets" -}}
-  {{- include "app.resources.include" (dict "resource" "secrets" | merge .) -}}
-{{- end -}}
+Usage:
+  Renderer the resource template for the default component
+  {{- include "app.template" . -}}
+  {{- include "app.template" (dict "resource" "pvc" "top" $) -}}
+  {{- include "app.template" (dict "resource" "pvc" "component" "foo" "values" .Path.to.values "top" $) -}}
+```
+*/}}
+{{- define "app.template" -}}
+  {{- $top := . | default .top -}}
 
-{{- define "app.pvc" -}}
-  {{- include "app.resources.include" (dict "resource" "pvc" | merge .) -}}
-{{- end -}}
+  {{/* Pick the resource or detect automatically */}}
+  {{- $defaultResource := .Template.Name | base | trimSuffix ".yaml" -}}
+  {{- $resource := ternary $defaultResource .resource (empty .resource) -}}
 
-{{- define "app.ingress" -}}
-  {{- include "app.resources.include" (dict "resource" "ingress" | merge .) -}}
-{{- end -}}
+  {{/* Define context */}}
+  {{- $include := dict "resource" $resource "top" $top "values" .values -}}
 
-{{- define "app.ingress.tls-secret" -}}
-  {{- include "app.resources.include" (dict "resource" "ingress.tls-secret" | merge .) -}}
-{{- end -}}
+  {{/* Set empty paths for the default component or if it's passed */}}
+  {{- $componentPaths := ternary (dict "" true) (dict .component true "" true) (empty .component)   -}}
+  {{/* Give precedence to .Values.app.components path settings */}}
+  {{- $componentPaths = default dict $top.Values.app.components | mergeOverwrite $componentPaths -}}
 
-{{- define "app.service-monitor" -}}
-  {{- include "app.resources.include" (dict "resource" "service-monitor" | merge .) -}}
-{{- end -}}
 
-{{- define "app.hpa" -}}
-  {{- include "app.resources.include" (dict "resource" "hpa" | merge .) -}}
+  {{/* Render all components which are not explicitly disabled (nulled) */}}
+  {{- range $component := keys $componentPaths | sortAlpha -}}
+    {{- $path := get $componentPaths $component | toString -}}
+    {{- if ne $path "false" -}}
+      {{- $context := dict "_include" ($include | merge (dict "component" $component)) -}}
+      {{- include "app.resources.include" $context -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}

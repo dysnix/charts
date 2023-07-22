@@ -1,12 +1,12 @@
 suite: metrics
 templates:
-  - servicemonitor.yaml
+  - service-monitor.yaml
 tests:
   -
     it: service-monitor
     values:
       - ./values/common.yaml
-      - ./values/servicemonitor.yaml
+      - ./values/service-monitor.yaml
     asserts:
       -
         isKind:

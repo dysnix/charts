@@ -7,21 +7,21 @@
 ## an end-user. While "app" is used as the primary layer for resources configuration
 ## leaving extra* parameters intact for an end-user.
 ##
+## @param workload Specifies the workload type (deployment/statefulset) for the component
 ## @param app.name Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart
-## @param app.workload.enabled Specifies whether the default workload resource is generated (Deployment/StatefulSet etc)
-## @param app.workload.type Specifies type of the main workload resource
+## @param app.components [object] Enable/disable the components. For example `{"": false, "foo": true, "bar": "custom"}`.
+## @skip app.components.
 ##
+workload: deployment
 app:
   name: app
-  workload:
-    enabled: true
-    type: deployment
-  ## @param app.components Specifies list of components to enable used in direct mode (it respectively expects .Values.[component] to be present)
-  ##
-  ## e.g.
-  ## components:
-  ##   - foo
-  components: []
+  components:
+    "": true
+  ## eg.
+  # components:
+  #   foo: true          # foo is enabled, .Values.foo
+  #   bar: myPath        # bar is enabled, .Values.myPath
+  #   not-enabled: false # component is disabled 
 
 ## @param selector.matchLabels Specifies additional selector labels for the workload resources and services
 ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#service-resource
@@ -393,6 +393,7 @@ pdb:
 ## @param autoscaling.maxReplicas Maximum number of %%MAIN_OBJECT_BLOCK%% replicas
 ## @param autoscaling.targetCPU Target CPU utilization percentage
 ## @param autoscaling.targetMemory Target Memory utilization percentage
+## @param autoscaling.behavior Configure separate scale-up and scale-down behaviors
 ##
 autoscaling:
   enabled: false

@@ -1,7 +1,7 @@
 {{/* vim: set filetype=helm: */}}
 
 {{- define "app.resources.deployment" -}}
-{{- if and .Values.app.workload.enabled (eq .Values.app.workload.type "deployment") }}
+{{- if eq (toString .Values.workload) "deployment" }}
 ---
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
@@ -110,7 +110,7 @@ spec:
         {{- end }}
         {{- if .Values.initContainers -}}
           {{/* Use extendeded .Values.initContainers (use, values map) */}}
-          {{- include "app.containers" (dict "initContainers" true "values" .Values.initContainers "top" $) | nindent 8 }}
+          {{- include "app.containers" (dict "initContainers" true "values" .Values.initContainers "context" $) | nindent 8 }}
         {{- end }}
         {{- if .Values.extraInitContainers }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraInitContainers "context" $) | nindent 8 }}
@@ -193,7 +193,7 @@ spec:
           {{- end }}
         {{- if .Values.containers }}
           {{/* Use extendeded .Values.app.containers (use, values map) */}}
-          {{- include "app.containers" (dict "values" .Values.containers "top" $) | nindent 8 }}
+          {{- include "app.containers" (dict "values" .Values.containers "context" $) | nindent 8 }}
         {{- end }}
         {{- if .Values.sidecars }}
           {{- include "common.tplvalues.render" (dict "value" .Values.sidecars "context" $) | nindent 8 }}
@@ -217,10 +217,5 @@ spec:
 {{- end }}
 {{- end -}}
 
-{{/* Include the resource */}}
-{{- if eq "direct" (include "app.chart.mode" .) -}}
-  {{- range $_, $component := concat (list "") $.Values.app.components -}}
-    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
-    {{- include "app.deployment" (dict "component" $component "values" $values "top" $) -}}
-  {{- end -}}
-{{- end -}}
+{{/* Includes this resource */}}
+{{- include "app.template" . -}}

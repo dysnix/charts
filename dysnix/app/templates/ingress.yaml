@@ -73,10 +73,5 @@ spec:
 {{- end }}
 {{- end -}}
 
-{{/* Include the resource */}}
-{{- if eq "direct" (include "app.chart.mode" .) -}}
-  {{- range $_, $component := concat (list "") $.Values.app.components -}}
-    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
-    {{- include "app.ingress" (dict "component" $component "values" $values "top" $) -}}
-  {{- end -}}
-{{- end -}}
+{{/* Includes this resource */}}
+{{- include "app.template" . -}}
