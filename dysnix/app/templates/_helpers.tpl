@@ -15,15 +15,6 @@
 {{- end -}}
 
 {{/*
-  Component label
-*/}}
-{{- define "app.labels.component" -}}
-  {{- if ._include.component -}}
-    app.kubernetes.io/component: {{ ._include.component }}
-  {{- end -}}
-{{- end -}}
-
-{{/*
 Create the name of the service account to use
 */}}
 {{- define "app.serviceAccountName" -}}
@@ -113,15 +104,4 @@ targetPort: {{ .value.targetPort }}
 {{- else -}}
 targetPort: {{ .value.targetPort | int }}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Labels to use on deploy.spec.selector.matchLabels and svc.spec.selector
-*/}}
-{{- define "common.labels.matchLabels" -}}
-app.kubernetes.io/name: {{ include "common.names.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- range $key, $value := ._include.top.Values.selector.matchLabels }}
-{{ $key }}: {{ ternary $value ($value | toString) (kindIs "string" $value) }}
-{{- end }}
 {{- end -}}

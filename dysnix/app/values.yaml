@@ -21,17 +21,7 @@ app:
   # components:
   #   foo: true          # foo is enabled, .Values.foo
   #   bar: myPath        # bar is enabled, .Values.myPath
-  #   not-enabled: false # component is disabled 
-
-## @param selector.matchLabels Specifies additional selector labels for the workload resources and services
-## ref: https://kubernetes.io/docs/concepts/services-networking/service/#service-resource
-##
-## eg.
-## selector:
-##   matchLabels:
-##     tenant: foo
-selector:
-  matchLabels: {}
+  #   not-enabled: false # component is disabled
 
 ## @param reuse Enables reuse/merge of the upper-level component values (applicable for containers/initContainers)
 ##

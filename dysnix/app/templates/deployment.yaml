@@ -10,7 +10,6 @@ metadata:
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
-    {{- include "app.labels.component" . | nindent 4 }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -28,7 +27,6 @@ spec:
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
-      {{- include "app.labels.component" . | nindent 6 }}
   template:
     metadata:
       annotations:
@@ -38,7 +36,6 @@ spec:
         {{- end }}
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}
-        {{- include "app.labels.component" . | nindent 8 }}
         {{- if .Values.commonLabels }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 8 }}
         {{- end }}
@@ -116,7 +113,7 @@ spec:
           {{- include "common.tplvalues.render" (dict "value" .Values.extraInitContainers "context" $) | nindent 8 }}
         {{- end }}
       containers:
-        - name: {{ .Values.app.name }}
+        - name: {{ template "app.chart.name" . }}
           image: {{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.containerSecurityContext.enabled }}

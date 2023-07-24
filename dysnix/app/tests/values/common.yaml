@@ -6,10 +6,6 @@ image:
   repository: alpine
   tag: bar
 
-selector:
-  matchLabels:
-    tenant: foo
-
 commonLabels:
   common: label
 

@@ -50,15 +50,6 @@ tests:
           path: spec.template.spec.containers[0].image
           value: foo/alpine:bar
   -
-    it: selector matchLabels
-    values:
-      - ./values/common.yaml
-    asserts:
-      - isSubset:
-          path: spec.selector.matchLabels
-          content:
-            tenant: foo
-  -
     it: deployment labels
     values:
       - ./values/common.yaml

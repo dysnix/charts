@@ -291,22 +291,21 @@ containers:
 
 ### App chart parameters
 
-| Name                   | Description                                                                                        | Value        |
-| ---------------------- | -------------------------------------------------------------------------------------------------- | ------------ |
-| `workload`             | Specifies the workload type (deployment/statefulset) for the component                             | `deployment` |
-| `app.name`             | Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart       | `app`        |
-| `app.components`       | Enable/disable the components. For example `{"": false, "foo": true, "bar": "custom"}`.            | `{}`         |
-| `selector.matchLabels` | Specifies additional selector labels for the workload resources and services                       | `{}`         |
-| `reuse`                | Enables reuse/merge of the upper-level component values (applicable for containers/initContainers) | `false`      |
-| `containers`           | Specify a map of additional pod containers                                                         | `{}`         |
-| `initContainers`       | Specifies initContainers **(use, values map for order and data)**                                  | `{}`         |
-| `env`                  | Name Map of environment variables for the main container                                           | `{}`         |
-| `envFrom`              | Configures of envFrom to include into the main container                                           | `[]`         |
-| `volumes`              | Specify volumes for the main pod                                                                   | `{}`         |
-| `volumeMounts`         | Specify volumeMounts for the main container                                                        | `{}`         |
-| `configMaps`           | Creates application сonfigMaps (note the name is prefixed with the app name)                       | `{}`         |
-| `secrets`              | Creates application secrets (note the name is prefixed with the app name)                          | `{}`         |
-| `templateChecksums`    | Specifies list of template files to add as an annotation checksum into the pod.                    | `[]`         |
+| Name                | Description                                                                                        | Value        |
+| ------------------- | -------------------------------------------------------------------------------------------------- | ------------ |
+| `workload`          | Specifies the workload type (deployment/statefulset) for the component                             | `deployment` |
+| `app.name`          | Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart       | `app`        |
+| `app.components`    | Enable/disable the components. For example `{"": false, "foo": true, "bar": "custom"}`.            | `{}`         |
+| `reuse`             | Enables reuse/merge of the upper-level component values (applicable for containers/initContainers) | `false`      |
+| `containers`        | Specify a map of additional pod containers                                                         | `{}`         |
+| `initContainers`    | Specifies initContainers **(use, values map for order and data)**                                  | `{}`         |
+| `env`               | Name Map of environment variables for the main container                                           | `{}`         |
+| `envFrom`           | Configures of envFrom to include into the main container                                           | `[]`         |
+| `volumes`           | Specify volumes for the main pod                                                                   | `{}`         |
+| `volumeMounts`      | Specify volumeMounts for the main container                                                        | `{}`         |
+| `configMaps`        | Creates application сonfigMaps (note the name is prefixed with the app name)                       | `{}`         |
+| `secrets`           | Creates application secrets (note the name is prefixed with the app name)                          | `{}`         |
+| `templateChecksums` | Specifies list of template files to add as an annotation checksum into the pod.                    | `[]`         |
 
 
 ### Global parameters
