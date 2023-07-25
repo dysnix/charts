@@ -1,0 +1,195 @@
+workload: deployment
+reuse: false
+containers: {}
+initContainers: {}
+env: {}
+envFrom: []
+volumes: {}
+volumeMounts: {}
+configMaps: {}
+secrets: {}
+templateChecksums: []
+kubeVersion: ""
+nameOverride: ""
+fullnameOverride: ""
+namespaceOverride: ""
+clusterDomain: cluster.local
+extraDeploy: []
+diagnosticMode:
+  enabled: false
+  command:
+    - sleep
+  args:
+    - infinity
+image:
+  registry: ""
+  repository: ""
+  tag: ""
+  digest: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+  debug: false
+replicaCount: 1
+containerPorts: {}
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+customLivenessProbe: {}
+customReadinessProbe: {}
+customStartupProbe: {}
+resources:
+  limits: {}
+  requests: {}
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1001
+  runAsNonRoot: true
+  readOnlyRootFilesystem: false
+command: []
+args: []
+hostAliases: []
+podLabels: {}
+podAnnotations: {}
+podAffinityPreset: ""
+podAntiAffinityPreset: soft
+pdb:
+  create: false
+  minAvailable: 1
+  maxUnavailable: ""
+autoscaling:
+  enabled: false
+  minReplicas: ""
+  maxReplicas: ""
+  targetCPU: ""
+  targetMemory: ""
+  behavior: {}
+nodeAffinityPreset:
+  type: ""
+  key: ""
+  values: []
+affinity: {}
+nodeSelector: {}
+tolerations: []
+updateStrategy:
+  type: RollingUpdate
+dnsPolicy:
+hostNetwork:
+automountServiceAccountToken:
+podManagementPolicy: OrderedReady
+priorityClassName: ""
+topologySpreadConstraints: []
+schedulerName: ""
+terminationGracePeriodSeconds: ""
+lifecycleHooks: {}
+extraEnvVars: []
+extraEnvVarsCM: ""
+extraEnvVarsSecret: ""
+extraVolumes: []
+extraVolumeMounts: []
+sidecars: []
+extraInitContainers: []
+service:
+  type: ClusterIP
+  ports: {}
+  clusterIP: ""
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  externalTrafficPolicy: Cluster
+  annotations: {}
+  extraPorts: []
+  sessionAffinity: None
+  sessionAffinityConfig: {}
+ingress:
+  enabled: false
+  namespace: ""
+  customName: ""
+  serviceName: ""
+  servicePort:
+  pathType: ImplementationSpecific
+  apiVersion: ""
+  hostname: app.local
+  ingressClassName: ""
+  path: /
+  annotations: {}
+  tls: false
+  selfSigned: false
+  selfSignedDays: 365
+  extraHosts: []
+  extraPaths: []
+  extraTls: []
+  secrets: []
+  extraRules: []
+persistence:
+  enabled: false
+  emptyDir: false
+  mountName: data
+  mountPath: /data
+  subPath: ""
+  storageClass: ""
+  annotations: {}
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+  existingClaim: ""
+  selector: {}
+  dataSource: {}
+volumePermissions:
+  command: []
+  image:
+    registry: docker.io
+    repository: bitnami/bitnami-shell
+    tag: 11-debian-11
+    pullPolicy: Always
+    pullSecrets: []
+  resources:
+    limits: {}
+    requests: {}
+  containerSecurityContext:
+    runAsUser: 0
+minReadySeconds: 0
+rbac:
+  create: false
+  rules: []
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  automountServiceAccountToken: true
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+    path: ""
+    port:
+    targetPort:
+    namespace: ""
+    annotations: {}
+    labels: {}
+    jobLabel: ""
+    honorLabels: false
+    interval: ""
+    scrapeTimeout: ""
+    metricRelabelings: []
+    relabelings: []
+    selector: {}

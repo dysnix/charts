@@ -1,0 +1,84 @@
+suite: components
+templates:
+  - service-account.yaml
+  - deployment.yaml
+tests:
+  -
+    it: two Deployment resources for both components
+    values:
+      - ./values/components.yaml
+    template: deployment.yaml
+    set:
+      app.components:
+        "": true
+        component: mycomponent
+    asserts:
+      - containsDocument:
+          kind: Deployment
+          apiVersion: apps/v1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-multi
+        documentIndex: 0
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-multi-component
+        documentIndex: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: image
+        documentIndex: 1
+  -
+    it: one ServiceAccount, component's one is disabled
+    values:
+      - ./values/components.yaml
+    template: service-account.yaml
+    set:
+      app.components:
+        "": true
+        component: mycomponent
+    asserts:
+      - containsDocument:
+          kind: ServiceAccount
+          apiVersion: v1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-multi
+        documentIndex: 0
+      - hasDocuments:
+          count: 1
+  -
+    it: component lablels and selectors
+    values:
+      - ./values/components.yaml
+    template: deployment.yaml
+    asserts:
+      - isSubset:
+          path: metadata.labels
+          content:
+            app.kubernetes.io/component: component
+      - isSubset:
+          path: spec.selector.matchLabels
+          content:
+            app.kubernetes.io/component: component
+  -
+    it: globals/commons are respected
+    values:
+      - ./values/components.yaml
+    set:
+      global.imageRegistry: global
+      commonLabels:
+        component-has: label
+    template: deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: global/image
+      - isSubset:
+          path: metadata.labels
+          content:
+            component-has: label
+      - isSubset:
+          path: spec.template.metadata.labels
+          content:
+            component-has: label

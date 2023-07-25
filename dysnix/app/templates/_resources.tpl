@@ -1,15 +1,15 @@
 {{/* vim: set filetype=helm: */}}
 {{/*
-Includes the given resource.
+Includes the given resource from the app chart templates.
 Note that if component is not provided we assume it's default.
 
 Usage
   {{- include "app.resource.include" (dict "_include" (dict "resource" "deployment" "top" $) }}
   {{- include "app.resource.include" (dict "_include" (dict "resource" "deployment" "component" "foo" "values" .Path.Values "top" $)) }}
 
-  It also supports custom parameters, especially during nested invocation such
+  It also supports custom parameters, especially used during nested invocations such
   as in configmaps or secrets. Pay attention to mergeOverwrite since we need to
-  overwrite existing fieleds such _include.resource
+  overwrite existing the _include fields (including resource).
 
   {{- include "app.resources.include" (dict "_include" (dict "resource" "configmap" "name" $name "data" $data) | mergeOverwrite $) }}
 */}}
@@ -28,16 +28,19 @@ Usage
 
   {{/* Path is enabled, so is the component */}}
   {{- if ne $path "false" -}}
+    {{- $baseDefaults := ._include.top.Files.Get "component-values.yaml" | fromYaml -}}
     {{- $componentValues := ternary ._include.top.Values ($path | get ._include.top.Values) (eq $path "true") -}}
 
-    {{- if empty $componentValues -}}
+    {{- /* Component's values can be provided explicitly via ._include.values */ -}}
+    {{- if not (any $componentValues ._include.values) -}}
       {{- $pathstr := $path | printf ".Values.%s" | trimSuffix "." -}}
       {{- printf "Component %s has no values at path %s" ._include.component $pathstr | fail -}}
     {{- end -}}
+    {{- $componentValues = ._include.values | default $componentValues | mergeOverwrite $baseDefaults -}}
 
     {{/* Specific global values are always injected into the render context */}}
     {{- $global := pick ._include.top.Values "commonLabels" "commonAnnotations" "global" -}}
-    {{- $values := $global | mergeOverwrite (._include.values | default $componentValues) -}}
+    {{- $values := $global | mergeOverwrite $componentValues -}}
 
     {{- $context := omit ._include.top "Values" | merge (dict "Values" $values "_include" ._include) -}}
     {{- include (printf "app.resources.%s" ._include.resource) $context  -}}
@@ -82,8 +85,7 @@ Usage:
   {{/* Give precedence to .Values.app.components path settings */}}
   {{- $componentPaths = default dict $top.Values.app.components | mergeOverwrite $componentPaths -}}
 
-
-  {{/* Render all components which are not explicitly disabled (nulled) */}}
+  {{/* Render all components which are not explicitly disabled */}}
   {{- range $component := keys $componentPaths | sortAlpha -}}
     {{- $path := get $componentPaths $component | toString -}}
     {{- if ne $path "false" -}}
