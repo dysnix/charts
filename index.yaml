@@ -3973,6 +3973,25 @@ entries:
     version: 0.1.3
   local-path-provisioner:
   - apiVersion: v1
+    appVersion: v0.0.25-dev
+    created: "2023-08-10T11:14:05.876470868Z"
+    description: Use HostPath for persistent local storage with Kubernetes
+    digest: 5fb2425c21fc9149dcd46df6c783b42175543d1b64ce52f25cec5dfc1457c926
+    home: https://github.com/rancher/local-path-provisioner
+    keywords:
+    - storage
+    - hostpath
+    kubeVersion: '>=1.12.0-r0'
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: local-path-provisioner
+    sources:
+    - https://github.com/rancher/local-path-provisioner.git
+    urls:
+    - https://github.com/dysnix/charts/releases/download/local-path-provisioner-0.0.25-dev/local-path-provisioner-0.0.25-dev.tgz
+    version: 0.0.25-dev
+  - apiVersion: v1
     appVersion: v0.0.20
     created: "2021-11-30T14:57:00.122648193Z"
     description: Use HostPath for persistent local storage with Kubernetes
@@ -5395,4 +5414,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2023-07-07T16:33:30.874687103Z"
+generated: "2023-08-10T11:14:05.876938419Z"
