@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "local-path-provisioner.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
 {{ include "local-path-provisioner.labels" . | indent 4 }}
 spec:
@@ -12,6 +13,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "local-path-provisioner.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -21,8 +26,12 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       serviceAccountName: {{ template "local-path-provisioner.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
         {{- if .Values.privateRegistry.registryUrl }}
           image: "{{ .Values.privateRegistry.registryUrl }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         {{- else }}
@@ -47,6 +56,18 @@ spec:
           {{- end }}
             - --configmap-name
             - {{ .Values.configmap.name }}
+          {{- if .Values.workerThreads }}
+            - --worker-threads
+            - {{ .Values.workerThreads }}
+          {{- end }}
+          {{- if .Values.provisioningRetryCount }}
+            - --provisioning-retry-count
+            - {{ .Values.provisioningRetryCount }}
+          {{- end }}
+          {{- if .Values.deletionRetryCount }}
+            - --deletion-retry-count
+            - {{ .Values.deletionRetryCount }}
+          {{- end }}
           volumeMounts:
             - name: config-volume
               mountPath: /etc/config/

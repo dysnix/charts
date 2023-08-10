@@ -4,7 +4,7 @@ replicaCount: 1
 
 image:
   repository: rancher/local-path-provisioner
-  tag: v0.0.20
+  tag: master-head
   pullPolicy: IfNotPresent
 
 helperImage:
@@ -41,6 +41,9 @@ storageClass:
   ## ReclaimPolicy field of the class, which can be either Delete or Retain
   reclaimPolicy: Delete
 
+  ## volumeBindingMode field controls when volume binding and dynamic provisioning should occur, can be  "Immediate" or "WaitForFirstConsumer"
+  volumeBindingMode: WaitForFirstConsumer
+
 # nodePathMap is the place user can customize where to store the data on each node.
 # 1. If one node is not listed on the nodePathMap, and Kubernetes wants to create volume on it, the paths specified in
 #    DEFAULT_PATH_FOR_NON_LISTED_NODES will be used for provisioning.
@@ -57,6 +60,29 @@ nodePathMap:
   - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
     paths:
       - /opt/local-path-provisioner
+
+# `sharedFileSystemPath` allows the provisioner to use a filesystem that is mounted on all
+# nodes at the same time. In this case all access modes are supported: `ReadWriteOnce`,
+# `ReadOnlyMany` and `ReadWriteMany` for storage claims. In addition
+# `volumeBindingMode: Immediate` can be used in  StorageClass definition.
+# Please note that `nodePathMap` and `sharedFileSystemPath` are mutually exclusive.
+# If `sharedFileSystemPath` is used, then `nodePathMap` must be set to `[]`.
+# sharedFileSystemPath: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # runAsNonRoot: true
+
+securityContext: {}
+  # allowPrivilegeEscalation: false
+  # seccompProfile:
+  #   type: RuntimeDefault
+  # capabilities:
+  #   drop: ["ALL"]
+  # runAsUser: 65534
+  # runAsGroup: 65534
+  # readOnlyRootFilesystem: true
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -93,48 +119,18 @@ configmap:
   # specify the custom script for setup and teardown
   setup: |-
     #!/bin/sh
-    while getopts "m:s:p:" opt
-    do
-        case $opt in
-            p)
-            absolutePath=$OPTARG
-            ;;
-            s)
-            sizeInBytes=$OPTARG
-            ;;
-            m)
-            volMode=$OPTARG
-            ;;
-        esac
-    done
-
-    mkdir -m 0777 -p ${absolutePath}
+    set -eu
+    mkdir -m 0777 -p "$VOL_DIR"
   teardown: |-
     #!/bin/sh
-    while getopts "m:s:p:" opt
-    do
-        case $opt in
-            p)
-            absolutePath=$OPTARG
-            ;;
-            s)
-            sizeInBytes=$OPTARG
-            ;;
-            m)
-            volMode=$OPTARG
-            ;;
-        esac
-    done
+    set -eu
+    rm -rf "$VOL_DIR"
 
-    rm -rf ${absolutePath}
-  # specify the custom helper pod yaml
-  helperPod: |-
-    apiVersion: v1
-    kind: Pod
-    metadata:
-      name: helper-pod
-    spec:
-      containers:
-      - name: helper-pod
-        image: busybox
-        imagePullPolicy: IfNotPresent
+# Number of provisioner worker threads to call provision/delete simultaneously.
+# workerThreads: 4
+
+# Number of retries of failed volume provisioning. 0 means retry indefinitely.
+# provisioningRetryCount: 15
+
+# Number of retries of failed volume deletion. 0 means retry indefinitely.
+# deletionRetryCount: 15
