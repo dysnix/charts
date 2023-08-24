@@ -1,0 +1,185 @@
+replicas: 1
+
+image:
+  registry: docker.io
+  repository: proxysql/proxysql
+  tag: "2.4.4"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name:
+
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 999
+  runAsUser: 999
+  runAsGroup: 999
+
+securityContext: {}
+service:
+  type: ClusterIP
+
+  proxyPort: 6033
+
+  adminPort: 6032
+
+  webPort: 6080
+  annotations: {}
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+commonAnnotations: {}
+
+commonLabels: {}
+
+podAnnotations: {}
+
+podLabels: {}
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+ssl:
+  auto: true
+  ca: ""
+  cert: ""
+  key: ""
+
+  sslDir: "/etc/proxysql"
+  ca_file: "ca.pem"
+  cert_file: "cert.pem"
+  key_file: "key.pem"
+  fromSecret: ""
+
+secret:
+  admin_user: "proxysql-admin"
+  admin_password: "proxysql"
+
+admin_variables:
+  debug: false
+
+mysql_variables:
+  threads: 4
+
+  max_connections: 2048
+  default_query_delay: 0
+
+  default_query_timeout: 3600000
+  monitor_enabled: false
+
+mysql_users:
+
+mysql_servers:
+
+mysql_query_rules:
+
+use_default_proxysql_servers: true
+additional_proxysql_servers:
+
+proxysql_cluster:
+  enabled: false
+
+  secret:
+    cluster_username: "proxysql-cluster"
+    cluster_password: "proxysql"
+
+  core:
+    enabled: true
+
+    replicas: 3
+    exit_on_error: false
+
+    statefullset:
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
+      podAnnotations: {}
+
+      resources: {}
+
+    service:
+      name:
+
+  satellite:
+    kind: "DaemonSet"
+
+    enabled: true
+    replicas: 3
+    exit_on_error: false
+
+    daemonset:
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
+
+      podAnnotations: {}
+
+      resources: {}
+
+    service:
+      name:
+  job:
+    image:
+      registry: docker.io
+      repository: mysql
+      tag: "8"
+      pullPolicy: IfNotPresent
+
+    enabled: true
+    backoffLimit: 3
+    ttlSecondsAfterFinished: 3600
+
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podAnnotations: {}
+
+    resources: {}
+
+  healthcheck:
+    sidecar:
+      enabled: false
+      image: mysql:debian
+      command:
+        - /usr/local/bin/proxysql_cluster_healthcheck.sh
+      config:
+        psql_user: monitor
+        psql_pass: monitor
+        psql_host: 127.0.0.1
+        psql_host_port: 6032
+
+        diff_check_limit: 10
+        kill_if_healthcheck_failed: true
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+
+debug:
+  sidecar:
+    enabled: false
+    image: mysql:debian
+    command:
+      - /bin/sleep
+      - infinity
+    securityContext:
+      runAsUser: 999
+      runAsGroup: 999
+
+terminationGracePeriodSeconds: 60

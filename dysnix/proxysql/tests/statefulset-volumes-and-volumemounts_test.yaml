@@ -1,0 +1,39 @@
+suite: statefulset
+templates:
+  - configmap-scripts.yaml
+  - configmap.yaml
+  - secret.yaml
+  - statefulset.yaml
+
+tests:
+  - it: pod volumes correct
+    values:
+      - ./values/common.yaml
+      - ./values/volumes.yaml
+    set: &sets
+      proxysql_cluster.satellite.enabled: false
+      proxysql_cluster.enabled: true
+
+    asserts:
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.volumes
+          content:
+            name: admin-vars
+            secret:
+              secretName: admin-vars
+
+  - it: proxysql container volumeMounts correct
+    values:
+      - ./values/common.yaml
+      - ./values/volumeMounts.yaml
+    set: *sets
+
+    asserts:
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: admin-vars
+            mountPath: /etc/proxysql/admin_vars.cnf
+            subPath: admin_vars.cnf

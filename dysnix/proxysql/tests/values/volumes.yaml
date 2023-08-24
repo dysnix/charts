@@ -1,0 +1,4 @@
+volumes:
+  - name: admin-vars
+    secret:
+      secretName: admin-vars
