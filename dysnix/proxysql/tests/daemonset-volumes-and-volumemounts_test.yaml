@@ -26,7 +26,7 @@ tests:
   - it: proxysql container volumeMounts correct
     values:
       - ./values/common.yaml
-      - ./values/volumeMounts.yaml
+      - ./values/volumemounts.yaml
     set: *sets
 
     asserts:
