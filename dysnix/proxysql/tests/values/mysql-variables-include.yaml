@@ -1,0 +1,2 @@
+mysql_variables_include:
+  - /etc/proxysql/secrets/mysql_vars.cnf

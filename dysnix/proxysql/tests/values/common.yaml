@@ -75,6 +75,8 @@ secret:
 admin_variables:
   debug: false
 
+admin_variables_include: []
+
 mysql_variables:
   threads: 4
 
@@ -84,7 +86,11 @@ mysql_variables:
   default_query_timeout: 3600000
   monitor_enabled: false
 
+mysql_variables_include: []
+
 mysql_users:
+
+mysql_users_include: []
 
 mysql_servers:
 

@@ -1,0 +1,2 @@
+mysql_users_include:
+  - /etc/proxysql/secrets/mysql_users.cnf
