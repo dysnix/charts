@@ -270,6 +270,13 @@ mysql_query_rules:
   #   destination_hostgroup: 0
   #   apply: 1
 
+scheduler:
+  []
+  # - active: 1
+  #   interval_ms: 300000
+  #   filename: "/usr/local/bin/cleanup-digest.bash"
+  #   comment: "job to cleanup stats_mysql_query_digest table"
+
 ## If enabled, generate automagically a list of proxysql servers based on the
 #    the number statefullset 'proxysql-core' replicas (default 3).
 use_default_proxysql_servers: true
