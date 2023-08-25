@@ -49,13 +49,14 @@ podLabels: {}
 podDisruptionBudget:
   enabled: false
   minAvailable: 1
+
 readinessProbe:
-  enabled: true
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 1
   successThreshold: 1
   failureThreshold: 3
+
 ssl:
   auto: true
   ca: ""

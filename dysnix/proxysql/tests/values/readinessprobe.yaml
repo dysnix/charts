@@ -1,0 +1,11 @@
+readinessProbe:
+  exec:
+    command:
+      - "bash"
+      - "-c"
+      - "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3

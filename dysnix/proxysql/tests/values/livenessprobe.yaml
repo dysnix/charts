@@ -1,0 +1,6 @@
+livenessProbe:
+  exec:
+    command:
+      - sh
+      - "-c"
+      - uptime
