@@ -21,13 +21,24 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
+# volumes:
+#   - name: admin-vars
+#     secret:
+#       secretName: admin-vars
+
+# volumeMounts:
+#   - name: secrets
+#     mountPath: /etc/proxysql/admin_vars.cnf
+#     subPath: admin_vars.cnf
+
 podSecurityContext:
   runAsNonRoot: true
   fsGroup: 999
   runAsUser: 999
   runAsGroup: 999
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -81,7 +92,8 @@ service:
 
 # Default pod resource allocation.
 # Will be applied if not specified otherwise.
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -150,10 +162,10 @@ ssl:
   cert: ""
   key: ""
 
-  sslDir: "/etc/proxysql"   # ProxySQL SSL directory
-  ca_file: "ca.pem"         # Name of the CA file
-  cert_file: "cert.pem"     # Name of the Cert file
-  key_file: "key.pem"       # Name of the private Key file
+  sslDir: "/etc/proxysql" # ProxySQL SSL directory
+  ca_file: "ca.pem" # Name of the CA file
+  cert_file: "cert.pem" # Name of the Cert file
+  key_file: "key.pem" # Name of the private Key file
 
   ## Loads ca.pem, cert.pem, and key.pem from an existingSecret
   fromSecret: ""
@@ -230,7 +242,6 @@ mysql_query_rules:
   #   match_pattern: "^SELECT .* FOR UPDATE$"
   #   destination_hostgroup: 0
   #   apply: 1
-
 
 ## If enabled, generate automagically a list of proxysql servers based on the
 #    the number statefullset 'proxysql-core' replicas (default 3).
@@ -332,7 +343,6 @@ proxysql_cluster:
   #   starts at version/checksum = 0. As per specification the satellites won't sync the changes
   #   until the version/checksum is not 0.
   job:
-
     image:
       registry: docker.io
       repository: mysql
@@ -370,11 +380,11 @@ proxysql_cluster:
       config:
         psql_user: monitor
         psql_pass: monitor
-        psql_host: 127.0.0.1  # The listening core host/pod
-        psql_host_port: 6032  # The admin port
+        psql_host: 127.0.0.1 # The listening core host/pod
+        psql_host_port: 6032 # The admin port
 
-        diff_check_limit: 10  # How many diff_check errors are tolerated before the healthcheck fails
-        kill_if_healthcheck_failed: true  # Kill proxysql daemon if the healthcheck fails the test
+        diff_check_limit: 10 # How many diff_check errors are tolerated before the healthcheck fails
+        kill_if_healthcheck_failed: true # Kill proxysql daemon if the healthcheck fails the test
       securityContext:
         runAsUser: 999
         runAsGroup: 999

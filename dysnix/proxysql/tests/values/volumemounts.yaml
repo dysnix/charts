@@ -1,0 +1,4 @@
+volumeMounts:
+  - name: admin-vars
+    mountPath: /etc/proxysql/admin_vars.cnf
+    subPath: admin_vars.cnf
