@@ -177,10 +177,10 @@ ssl:
   cert: ""
   key: ""
 
-  sslDir: "/etc/proxysql" # ProxySQL SSL directory
-  ca_file: "ca.pem" # Name of the CA file
-  cert_file: "cert.pem" # Name of the Cert file
-  key_file: "key.pem" # Name of the private Key file
+  sslDir: "/etc/proxysql"  # ProxySQL SSL directory
+  ca_file: "ca.pem"  # Name of the CA file
+  cert_file: "cert.pem"  # Name of the Cert file
+  key_file: "key.pem"  # Name of the private Key file
 
   ## Loads ca.pem, cert.pem, and key.pem from an existingSecret
   fromSecret: ""
@@ -417,11 +417,11 @@ proxysql_cluster:
       config:
         psql_user: monitor
         psql_pass: monitor
-        psql_host: 127.0.0.1 # The listening core host/pod
-        psql_host_port: 6032 # The admin port
+        psql_host: 127.0.0.1  # The listening core host/pod
+        psql_host_port: 6032  # The admin port
 
-        diff_check_limit: 10 # How many diff_check errors are tolerated before the healthcheck fails
-        kill_if_healthcheck_failed: true # Kill proxysql daemon if the healthcheck fails the test
+        diff_check_limit: 10  # How many diff_check errors are tolerated before the healthcheck fails
+        kill_if_healthcheck_failed: true  # Kill proxysql daemon if the healthcheck fails the test
       securityContext:
         runAsUser: 999
         runAsGroup: 999
