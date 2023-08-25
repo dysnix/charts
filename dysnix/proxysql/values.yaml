@@ -142,7 +142,11 @@ podDisruptionBudget:
   # maxUnavailable: 1
 
 readinessProbe:
-  enabled: true
+  exec:
+    command:
+      - "bash"
+      - "-c"
+      - "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"
   initialDelaySeconds: 5
   ##
   ## Default Kubernetes values
@@ -150,6 +154,14 @@ readinessProbe:
   timeoutSeconds: 1
   successThreshold: 1
   failureThreshold: 3
+
+livenessProbe:
+  {}
+  # exec:
+  #   command:
+  #     - sh
+  #     - "-c"
+  #     - uptime
 
 # Enable SSL communication with the backend MySQL servers
 ssl:

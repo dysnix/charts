@@ -1,0 +1,48 @@
+suite: statefulset
+templates:
+  - configmap-scripts.yaml
+  - configmap.yaml
+  - secret.yaml
+  - statefulset.yaml
+
+tests:
+  - it: readinessProbe correct
+    values:
+      - ./values/common.yaml
+      - ./values/readinessprobe.yaml
+    set: &sets
+      proxysql_cluster.satellite.enabled: false
+      proxysql_cluster.enabled: true
+
+    asserts:
+      - template: statefulset.yaml
+        equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+                - "bash"
+                - "-c"
+                - "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+
+  - it: livenessProbe correct
+    values:
+      - ./values/common.yaml
+      - ./values/livenessprobe.yaml
+    set: *sets
+
+    asserts:
+      - template: statefulset.yaml
+        equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+                - sh
+                - "-c"
+                - uptime
