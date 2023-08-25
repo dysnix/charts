@@ -112,7 +112,7 @@ proxysql_servers=
 
 scheduler=
 (
-  {{- range $idx, $rule := .Values.schedulers }}
+  {{- range $idx, $rule := .Values.scheduler }}
   {
     rule_id={{ add $idx 1 }}
     {{- range $key, $value := $rule }}
