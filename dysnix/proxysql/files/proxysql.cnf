@@ -2,7 +2,12 @@ datadir="/var/lib/proxysql"
 
 admin_variables=
 {
+  {{- range $include := .Values.admin_variables_include}}
+  @include "{{ $include }}"
+  {{- end }}
+  {{- if not .Values.admin_variables_include}}
   @include "/etc/proxysql/admin_credentials.cnf"
+  {{- end}}
   {{- if .Values.admin_variables.mysql_ifaces }}
   interfaces={{ .Values.admin_variables.mysql_ifaces | quote }}
   {{- else }}
@@ -15,6 +20,9 @@ admin_variables=
 
 mysql_variables=
 {
+  {{- range $include := .Values.mysql_variables_include}}
+  @include "{{ $include }}"
+  {{- end }}
   {{/* ProxySQL SSL config */}}
   {{- if .Values.ssl.fromSecret }}
   ssl_p2s_ca="{{ include "proxysql.sslDir" . }}/{{ .Values.ssl.ca_file }}"
@@ -52,6 +60,9 @@ mysql_servers =
 
 mysql_users:
 (
+  {{- range $include := .Values.mysql_users_include}}
+  @include "{{ $include }}"
+  {{- end }}
   {{- range $_, $user := .Values.mysql_users }}
   {
     {{- if hasKey $user "active" -}}

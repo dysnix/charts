@@ -188,6 +188,11 @@ admin_variables:
 
   # refresh_interval: 2000
 
+## A list of files to @include in the `admin_variables` section
+##
+admin_variables_include: []
+#   - /etc/proxysql/secrets/admin_vars.cnf
+
 mysql_variables:
   ## ref: https://github.com/sysown/proxysql/wiki/Global-variables
   #
@@ -212,6 +217,11 @@ mysql_variables:
   # monitor_password: "monitor"
   # monitor_history: 600000
 
+## A list of files to @include in the `mysql_variables` section
+##
+mysql_variables_include: []
+#   - /etc/proxysql/secrets/mysql_vars.cnf
+
 ## Configures ProxySQL mysql users.
 #  For MySQL 8.0 paswords must be mysql_native_password.
 #  ref: https://github.com/sysown/proxysql/wiki/MySQL-8.0
@@ -223,6 +233,11 @@ mysql_users:
   #   max_connections: 200
   #   default_schema: "information_schema"
   #   active: 1
+
+## A list of files to @include in the `mysql_users` section
+##
+mysql_users_include: []
+#   - /etc/proxysql/secrets/mysql_users.cnf
 
 ## Define MySQL backend servers
 #

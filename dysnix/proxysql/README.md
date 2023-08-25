@@ -69,12 +69,15 @@ The following table lists the configurable parameters of the ProxySQL chart and 
 | `podDisruptionBudget.maxUnavailable`        | Maximum number / percentage of pods that may be made unavailable | 
 | `admin_variables.admin_credentials`         | ProxySQL admin credentials for the management (127.0.0.1:6032)  | `admin:admin`                                         |
 | `admin_variables.debug`                     | ProxySQL debug mode                                | `false`                                                            |
+| `admin_variables_include`                   | A list of files to @include in the `admin_variables` section | `[]`                                                     |
 | `mysql_variables.threads`                   | The number of background threads that ProxySQL uses in order to process MySQL traffic. | `4`                            |
 | `mysql_variables.max_connections`           | The maximum number of client connections that the proxy can handle. | `2048`                                            |
 | `mysql_variables.default_query_delay`       | Simple throttling mechanism for queries to the backends. Setting this variable to a non-zero value (in miliseconds) will delay the execution of all queries, globally.                                     | `0`                                                |
 | `mysql_variables.default_query_timeout`     | Mechanism for specifying the maximal duration of queries to the backend MySQL servers until ProxySQL should return an error to the MySQL client.                                                                 | `3600000` milliseconds                             |
 | `mysql_variables.monitor`                   | Enables or disables MySQL Monitor module.           | `false`                                                           |
+| `mysql_variables_include`                   | A list of files to @include in the `mysql_variables` section | `[]`                                                     |
 | `mysql_users`                               | Defines ProxySQL [users configuration](https://github.com/sysown/proxysql/wiki/Users-configuration)         | `[]`      |
+| `mysql_users_include`                       | A list of files to @include in the `mysql_users` section | `[]`                                                         |
 | `mysql_servers`                             | Defines ProxySQL [backend servers configuration](https://github.com/sysown/proxysql/wiki/MySQL-Server-Configuration) | `[]`  |
 | `mysql_query_rules`                         | Defines ProxySQL [Query Rules (routing)] (https://github.com/sysown/proxysql#configuring-proxysql-through-the-config-file) | `[]`  |
 | `ssl.auto`                                  | Automatically set `use_ssl` to `1` when the SSL configuration is provided | `true`  |
