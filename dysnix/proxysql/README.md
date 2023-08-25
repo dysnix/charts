@@ -52,6 +52,8 @@ The following table lists the configurable parameters of the ProxySQL chart and 
 | `image.tag`                                 | ProxySQL Image tag                                   | `2.0.9`                                                          |
 | `image.pullPolicy`                          | ProxySQL image pull policy                           | `IfNotPresent`                                                   |
 | `image.pullSecrets`                         | Specify docker-registry secret names as an array    | `[]` (does not add image pull secrets to deployed pods)           |
+| `livenessProbe`                             | Specify livenessProbe for ProxySQL container | `{}`                                                                     |
+| `readinessProbe`                            | Specify readinessProbe for ProxySQL container | (see values.yaml)                                                       |
 | `nameOverride`                              | String to partially override proxysql.fullname template with a string (will prepend the release name) | `nil`            |
 | `fullnameOverride`                          | String to fully override proxysql.fullname template with a string                                     | `nil`            |
 | `service.type`                              | Kubernetes service type                             | `ClusterIP`                                                       |
