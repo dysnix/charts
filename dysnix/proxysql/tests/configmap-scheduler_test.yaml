@@ -1,0 +1,19 @@
+suite: configmap
+templates:
+  - configmap.yaml
+
+tests:
+  - it: scheduler correct
+    values:
+      - ./values/common.yaml
+      - ./values/scheduler.yaml
+
+    asserts:
+      - matchRegex:
+          path: .data["proxysql.cnf"]
+          # NOTE: the renderer organizes the keys in alphabetical order
+          pattern: |
+            \s+active=1
+            \s+comment="job to cleanup stats_mysql_query_digest table"
+            \s+filename="/usr/local/bin/cleanup-digest.bash"
+            \s+interval_ms=300000
