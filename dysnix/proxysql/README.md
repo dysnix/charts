@@ -82,6 +82,7 @@ The following table lists the configurable parameters of the ProxySQL chart and 
 | `mysql_users_include`                       | A list of files to @include in the `mysql_users` section | `[]`                                                         |
 | `mysql_servers`                             | Defines ProxySQL [backend servers configuration](https://github.com/sysown/proxysql/wiki/MySQL-Server-Configuration) | `[]`  |
 | `mysql_query_rules`                         | Defines ProxySQL [Query Rules (routing)] (https://github.com/sysown/proxysql#configuring-proxysql-through-the-config-file) | `[]`  |
+| `scheduler`                                 | Define ProxySQL [scheduler jobs](https://proxysql.com/documentation/scheduler/) | (see values.yaml)                      |
 | `ssl.auto`                                  | Automatically set `use_ssl` to `1` when the SSL configuration is provided | `true`  |
 | `ssl.ca`                                    | CA authority certificate to use | `""`  |
 | `ssl.cert`                                  | ProxySQL SSL certificate | `""`  |
