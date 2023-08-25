@@ -1,0 +1,2 @@
+admin_variables_include:
+  - /etc/proxysql/secrets/admin_vars.cnf
