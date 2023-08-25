@@ -73,15 +73,11 @@ spec:
             - name: web
               containerPort: {{ .Values.service.webPort }}
               protocol: TCP
-          {{- if .Values.readinessProbe.enabled }}
-          readinessProbe:
-            exec:
-              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"]
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.readinessProbe.successThreshold }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe: {{ toYaml . | nindent 12 }}
           {{- end }}
           resources:
             {{- toYaml (default .Values.resources .Values.proxysql_cluster.satellite.daemonset.resources) | nindent 12 }}
