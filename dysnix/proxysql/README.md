@@ -82,6 +82,8 @@ The following table lists the configurable parameters of the ProxySQL chart and 
 | `ssl.cert`                                  | ProxySQL SSL certificate | `""`  |
 | `ssl.key`                                   | ProxySQL SSL key | `""`  |
 | `ssl.fromSecret`                            | Specify a secret containing `ca.pem`, `cert.pem` and `key.pem` SSL configuration | `""`  |
+| `volumes`                                   | Configure volumes for the ProxySQL pods | `[]`                                                                          |
+| `volumeMounts`                              | Configure volumeMounts for the ProxySQL container | `[]`                                                                |
 
 For more information please refer to the proxysql [config file](https://github.com/sysown/proxysql#configuring-proxysql-through-the-config-file) and [global variables](https://github.com/sysown/proxysql/wiki/Global-variables).
 

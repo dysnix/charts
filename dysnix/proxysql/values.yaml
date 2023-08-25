@@ -21,15 +21,18 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
-# volumes:
-#   - name: admin-vars
+## Configure volumes for the ProxySQL pods
+##
+volumes: []
+#   - name: secret-confs
 #     secret:
-#       secretName: admin-vars
+#       secretName: secret-confs
 
-# volumeMounts:
-#   - name: secrets
-#     mountPath: /etc/proxysql/admin_vars.cnf
-#     subPath: admin_vars.cnf
+## Configure volumeMounts for the ProxySQL container
+##
+volumeMounts: []
+#   - name: secret-confs
+#     mountPath: /etc/proxysql/secrets
 
 podSecurityContext:
   runAsNonRoot: true
