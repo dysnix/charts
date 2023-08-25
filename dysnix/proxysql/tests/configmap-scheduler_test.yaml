@@ -10,7 +10,7 @@ tests:
 
     asserts:
       - matchRegex:
-          path: .data["proxysql.cnf"]
+          path: data.[proxysql.cnf]
           # NOTE: the renderer organizes the keys in alphabetical order
           pattern: |
             \s+active=1
