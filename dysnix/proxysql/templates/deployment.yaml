@@ -87,6 +87,9 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
             - name: data
               mountPath: /data/proxysql
             - name: conf
@@ -161,6 +164,9 @@ spec:
     {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds | int }}
       volumes:
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         - name: data
           emptyDir: {}
         - name: secrets
