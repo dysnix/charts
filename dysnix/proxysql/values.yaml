@@ -331,7 +331,7 @@ proxysql_cluster:
     service:
       # Override default core service name
       name:
-      # Expose the proxy (to MySQL servers) port 
+      # Expose the proxy (to MySQL servers) port
       exposeProxyPort: false
 
   satellite:
