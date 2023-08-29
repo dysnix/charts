@@ -123,6 +123,7 @@ proxysql_cluster:
 
     service:
       name:
+      exposeProxyPort: false
 
   satellite:
     kind: "DaemonSet"
