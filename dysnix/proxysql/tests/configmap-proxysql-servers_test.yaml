@@ -1,0 +1,18 @@
+suite: configmap
+templates:
+  - configmap.yaml
+
+tests:
+  - it: proxysql_servers correct
+    values:
+      - ./values/common.yaml
+      - ./values/proxysql-servers.yaml
+
+    asserts:
+      - matchRegex:
+          path: data.[proxysql.cnf]
+          # NOTE: the renderer organizes the keys in alphabetical order
+          pattern: |
+            \s+hostname="foobar-test-core-0.foobar-test-core"
+            \s+port=6032
+            \s+weight=100

@@ -94,7 +94,7 @@ proxysql_servers=
   {{- $coreServiceName := printf "%s-core" (include "proxysql.fullname" .) }}
   {{- range $index, $_ := until $nodeCount }}
   {
-    hostname={{ printf "proxysql-core-%d.%s" $index $coreServiceName | toJson }}
+    hostname={{ printf "%s-%d.%s" $coreServiceName $index $coreServiceName | toJson }}
     port={{ $.Values.service.adminPort | toJson }}
     weight=100
   },
