@@ -70,6 +70,14 @@ metadata:
     {{- end }}
 spec:
   ports:
+    {{- if .Values.proxysql_cluster.core.service.exposeProxyPort }}
+    - name: proxy
+      port: {{ .Values.service.proxyPort }}
+      targetPort: proxy
+      {{- if .Values.service.proxyNodePort }}
+      nodePort: {{ .Values.service.proxyNodePort }}
+      {{- end }}
+    {{- end }}
     - name: admin
       port: {{ .Values.service.adminPort }}
       targetPort: admin

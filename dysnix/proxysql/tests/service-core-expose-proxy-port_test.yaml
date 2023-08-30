@@ -1,0 +1,37 @@
+suite: service
+templates:
+  - service.yaml
+
+tests:
+  - it: core service default no proxy port
+    documentIndex: 1
+    values:
+      - ./values/common.yaml
+    set:
+      proxysql_cluster.enabled: true
+      proxysql_cluster.core.enabled: true
+
+    asserts:
+      - notContains:
+          path: spec.ports
+          content:
+            name: proxy
+            port: 6033
+            targetPort: proxy
+
+  - it: core service expose proxy port correct
+    documentIndex: 1
+    values:
+      - ./values/common.yaml
+    set:
+      proxysql_cluster.enabled: true
+      proxysql_cluster.core.enabled: true
+      proxysql_cluster.core.service.exposeProxyPort: true
+
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: proxy
+            port: 6033
+            targetPort: proxy
