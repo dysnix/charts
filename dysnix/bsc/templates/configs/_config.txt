@@ -41,11 +41,12 @@ HTTPHost = "0.0.0.0"
 NoUSB = true
 InsecureUnlockAllowed = false
 HTTPPort = {{ .Values.service.rpcPort }}
-HTTPVirtualHosts = ["*"]
-HTTPModules = ["eth", "net", "web3", "txpool", "parlia"]
+HTTPVirtualHosts = ["{{ join "\",\"" .Values.bsc.rpcVhosts }}"]
+HTTPModules = ["{{ join "\",\"" .Values.bsc.rpcApi }}"]
+WSHost = "0.0.0.0"
 WSPort = {{ .Values.service.wsPort }}
-WSOrigins = ["*"]
-WSModules = ["net", "web3", "eth"]
+WSOrigins = ["{{ join "\",\"" .Values.bsc.wsOrigins }}"]
+WSModules = ["{{ join "\",\"" .Values.bsc.wsApi }}"]
 
 [Node.HTTPTimeouts]
 ReadTimeout = 30000000000
@@ -55,7 +56,7 @@ IdleTimeout = 120000000000
 [Node.LogConfig]
 FilePath = "bsc.log"
 MaxBytesSize = 10485760
-Level = "info"
+Level = "{{ .Values.bsc.logLevel }}"
 FileRoot = ""
 
 # keep this section the last one, as we may append trusted nodes via config generation

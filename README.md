@@ -1,3 +1,5 @@
+[![Lint and Test Charts](https://github.com/dysnix/charts/actions/workflows/lint-test.yaml/badge.svg)](https://github.com/dysnix/charts/actions/workflows/lint-test.yaml)
+
 # Dysnix Helm Charts
 
 To add dysnix charts repository:

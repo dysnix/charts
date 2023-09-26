@@ -1,0 +1,91 @@
+suite: persistence
+templates:
+  - pvc.yaml
+  - deployment.yaml
+tests:
+  -
+    it: persistence enabled
+    values:
+      - ./values/persistence.yaml
+      - ./values/app.yaml
+    asserts:
+      -
+        template: pvc.yaml
+        isKind:
+          of: PersistentVolumeClaim
+      -
+        template: pvc.yaml
+        isSubset:
+          path: spec
+          content:
+            resources:
+              requests:
+                storage: 10Gi
+            storageClassName: custom
+      -
+        template: deployment.yaml
+        contains:
+          path: spec.template.spec.volumes
+          any: true
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-app
+      -
+        template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          any: true
+          content:
+            name: data
+  -
+    it: persistence enabled with .persistence.existingClaim is set
+    values:
+      - ./values/persistence.yaml
+      - ./values/app.yaml
+    set:
+      persistence.existingClaim: existing-claim
+    asserts:
+      -
+        template: pvc.yaml
+        hasDocuments:
+          count: 0
+      -
+        template: deployment.yaml
+        contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          any: true
+          content:
+            name: data
+  -
+    it: persistence enabled and .persistence.emptyDir is set
+    values:
+      - ./values/persistence.yaml
+      - ./values/app.yaml
+    set:
+      persistence.emptyDir: true
+    asserts:
+      -
+        template: pvc.yaml
+        isKind:
+          of: PersistentVolumeClaim
+      -
+        template: deployment.yaml
+        contains:
+          path: spec.template.spec.volumes
+          any: true
+          content:
+            name: data
+            emptyDir: {}
+  -
+    it: pvc labels
+    values:
+      - ./values/persistence.yaml
+      - ./values/common.yaml
+    asserts:
+    -
+      template: pvc.yaml
+      isSubset:
+        path: metadata.labels
+        content:
+          common: label

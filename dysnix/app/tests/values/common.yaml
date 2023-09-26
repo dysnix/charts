@@ -1,0 +1,17 @@
+app:
+  name: app-name
+
+image:
+  registry: foo
+  repository: alpine
+  tag: bar
+
+selector:
+  matchLabels:
+    tenant: foo
+
+commonLabels:
+  common: label
+
+podLabels:
+  pod: label

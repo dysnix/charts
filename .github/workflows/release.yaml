@@ -17,10 +17,13 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Add repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+
       - name: Run chart-releaser
-        uses: ccremer/chart-releaser-action@ignore-dirs
+        uses: helm/chart-releaser-action@v1.5.0
         with:
           charts_dir: dysnix/
-          version: v1.3.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

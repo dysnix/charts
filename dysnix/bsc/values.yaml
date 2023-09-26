@@ -97,17 +97,20 @@ bsc:
   syncmode: "full"
   # Blockchain garbage collection mode ("full", "archive") (default: "full")
   gcmode: "full"
+  logLevel: "info"
   base_path: "/data"
-  rpcApi: "eth,net,web3,txpool,parlia"
-  rpcVhosts: "*"
-  wsApi: "net,web3,eth"
-  wsOrigins: "*"
-  graphQlVhosts: "*"
+  rpcApi: ["eth", "net", "web3", "txpool", "parlia"]
+  rpcVhosts: ["*"]
+  wsEnabled: false
+  wsApi: ["net", "web3", "eth"]
+  wsOrigins: ["*"]
   maxpeers: 50
   cache: 8192
   snapshot: false
   pipecommit: false
   diffsync: true
+  # extra arguments to pass to container
+  extraArgs: []
   # https://github.com/bnb-chain/bsc/issues/1193
   # valid values are local, full, insecure, none
   triesVerifyMode: local
@@ -444,17 +447,21 @@ bscCmd: ["geth"]
 externalLB: false
 externalLBIP: ""
 externalLBSourceRanges: {}
+externalLBAnnotations: {}
 
 externalLBp2p: false
 externalLBp2pIP: ""
+externalLBp2pAnnotations: {}
 
 externalLBp2pDiscovery: false
 externalLBp2pDiscoveryIP: ""
+externalLBp2pDiscoveryAnnotations: {}
 
 p2pPublishNotReadyAddresses: true
 
 internalLB: false
 internalLBIP: ""
+internalLBAnnotations: {}
 
 persistence:
   enabled: true

@@ -1,0 +1,62 @@
+suite: configmaps
+templates:
+  - configmaps.yaml
+tests:
+  -
+    it: is configmap
+    values:
+      - ./values/configmaps.yaml
+    asserts:
+      - containsDocument:
+          kind: ConfigMap
+          name: RELEASE-NAME-app-default
+          apiVersion: v1
+      - containsDocument:
+          kind: ConfigMap
+          name: RELEASE-NAME-app-env
+          apiVersion: v1
+  -
+    it: configmap renders template functions
+    documentIndex: 0
+    values:
+      - ./values/configmaps.yaml
+    asserts:
+      - matchRegex:
+          path: data.[sample.txt]
+          pattern: |-
+            "RELEASE-NAME"
+  -
+    it: configmap validate common.tplvalues.render
+    documentIndex: 1
+    values:
+      - ./values/configmaps.yaml
+    asserts:
+      - matchRegex:
+          path: data.[RENDERED_FOUR]
+          pattern: "4"
+      - equal:
+          path: data.[FOUR]
+          value: "4"
+  -
+    it: check map value is rendered correctly
+    documentIndex: 2
+    values:
+      - ./values/configmaps.yaml
+    asserts:
+      - equal:
+          path: data.[foo.yaml]
+          value: |-
+              description: content is rendered as string
+              foo: foo.yaml is passed as a map
+  -
+    it: configmap labels
+    documentIndex: 1
+    values:
+      - ./values/configmaps.yaml
+      - ./values/common.yaml
+    asserts:
+    -
+      isSubset:
+        path: metadata.labels
+        content:
+          common: label

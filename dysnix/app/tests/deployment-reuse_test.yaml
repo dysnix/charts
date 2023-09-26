@@ -1,0 +1,32 @@
+suite: deployment
+templates:
+  - deployment.yaml
+tests:
+  -
+    it: reuse test
+    values:
+      - ./values/reuse-mode.yaml
+    asserts:
+      -
+        equal:
+          path: spec.template.spec.containers[1].image
+          value: alpine
+      -
+        equal:
+          path: spec.template.spec.containers[1].env[0]
+          value:
+            name: FOO
+            value: REUSED
+      -
+        contains:
+          path: spec.template.spec.containers[1].envFrom
+          content:
+            configMapRef:
+              name: RELEASE-NAME-app-env
+      -
+        notEqual:
+          path: spec.template.spec.containers[1].resources
+          value:
+            limits:
+              memory: 128Mi
+            requests: {}

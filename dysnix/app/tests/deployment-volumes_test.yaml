@@ -1,0 +1,44 @@
+suite: deployment
+templates:
+  - deployment.yaml
+tests:
+  -
+    it: .volumes
+    values:
+      - ./values/app.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ebs
+            awsElasticBlockStore:
+              fsType: ext4
+              volumeID: <volume id>
+  -
+    it: .volumeMounts
+    values:
+      - ./values/app.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: ebs
+            awsElasticBlockStore:
+              fsType: ext4
+              volumeID: <volume id>
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          any: true
+          content:
+            name: ebs
+      - contains:
+          path: spec.template.spec.containers[1].volumeMounts
+          any: true
+          content:
+            name: ebs
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          any: true
+          content:
+            name: ebs
+

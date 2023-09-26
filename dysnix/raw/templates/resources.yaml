@@ -27,10 +27,10 @@
 
 {{- range $resources }}
 ---
-{{- merge . $metadata | toYaml }}
+{{ merge . $metadata | toYaml }}
 {{- end }}
 
 {{- range $templates }}
 ---
-{{- merge (tpl . $ | fromYaml) $metadata | toYaml }}
+{{ merge (tpl . $ | fromYaml) $metadata | toYaml }}
 {{- end }}

@@ -9,6 +9,9 @@ metadata:
   annotations:
     cloud.google.com/load-balancer-type: "Internal"
     cloud.google.com/network-tier: "PREMIUM"
+    {{- with .Values.internalLBAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: LoadBalancer
   {{ if .Values.internalLBIP }}

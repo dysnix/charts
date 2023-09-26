@@ -1,0 +1,76 @@
+## Default values merged with lower priorites for stable app.containers renderding
+##
+
+## Specifies if the container should merge it's parant component values
+##
+reuse: false
+
+image:
+  registry: ""
+  repository: ""
+  tag: ""
+  digest: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+  debug: false
+
+replicaCount: 1
+
+containerPorts: {}
+
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
+  successThreshold: 1
+
+customLivenessProbe: {}
+
+customReadinessProbe: {}
+
+customStartupProbe: {}
+
+resources:
+  limits: {}
+  requests: {}
+
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1001
+  runAsNonRoot: true
+  readOnlyRootFilesystem: false
+
+command: []
+
+args: []
+
+diagnosticMode:
+  enabled: false
+  command:
+    - sleep
+  args:
+    - infinity
+
+env: {}
+
+envFrom: []
+
+volumeMounts: []
