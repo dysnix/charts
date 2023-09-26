@@ -17,7 +17,7 @@ serviceAccount:
   name: ""
 
 updateStrategy:
-  type: RollingUpdate 
+  type: RollingUpdate
 
 terminationGracePeriodSeconds: 300
 
@@ -46,7 +46,7 @@ services:
   p2p:
     enabled: true
     type: NodePort
-    loadBalancerIP: "" # you may want to set .Values.config.node.p2p.nat if you are behind NAT
+    loadBalancerIP: ""   # you may want to set .Values.config.node.p2p.nat if you are behind NAT
     port: 30303
     # nodePort: 30303
   rpc:
@@ -101,13 +101,13 @@ persistence:
   type: pvc
   # type: hostPath
   pvc:
-    size: 900Gi               # starting point for snap-synced node as of 2023-09
+    size: 900Gi                # starting point for snap-synced node as of 2023-09
     accessMode: ReadWriteOnce
-    storageClass: ""          # set to "-" if you want to manually create persistent volume
+    storageClass: ""           # set to "-" if you want to manually create persistent volume
     annotations: {}
   hostPath:
     path: /data/geth
-    type: Directory           # by default you need to create directory yourself
+    type: Directory            # by default you need to create directory yourself
 
 affinity: {}
 
@@ -197,7 +197,7 @@ config:
       origins: ["*"]
       modules: ["eth", "net", "web3"]
     p2p:
-      useHostPort: false # when true, .Values.services.p2p will be disabled, and hostPort will be allocated
+      useHostPort: false    # when true, .Values.services.p2p will be disabled, and hostPort will be allocated
       port: 30303
       nat: ""
       maxPeers: 50
