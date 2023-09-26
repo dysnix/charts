@@ -1,0 +1,34 @@
+{{- if .Values.services.metrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "geth.fullname" . }}-metrics
+  {{- if .Values.services.metrics.annotations }}
+  annotations:
+    {{- .Values.services.metrics.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: metrics
+    {{- include "geth.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.metrics.type }}
+  {{- with .Values.services.metrics.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.metrics.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.metrics.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.metrics.internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  publishNotReadyAddresses: true
+  ports:
+    - name: metrics
+      port: {{ .Values.services.metrics.port }}
+      targetPort: metrics
+  selector:
+    {{- include "geth.selectorLabels" . | nindent 4 }}
+{{- end }}

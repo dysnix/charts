@@ -1,21 +1,18 @@
 apiVersion: v2
-appVersion: v1.11.4
-description: Official Go implementation of the Ethereum protocol
-home: https://geth.ethereum.org
-icon: https://geth.ethereum.org/static/images/ethereum.png
-keywords:
-- geth
-- cryptocurrency
-- blockchain
-maintainers:
-- email: daniel@dysnix.com
-  name: daniel-yavorovich
-- email: av@dysnix.com
-  name: voron
-- email: vd@dysnix.com
-  name: vladstarr
 name: geth
+description: Go-ethereum blockchain node Helm Chart
+
+version: 1.0.0
+appVersion: v1.13.1
+
+keywords:
+  - geth
+  - cryptocurrency
+  - blockchain
+
 sources:
-- https://github.com/dysnix/charts
-- https://github.com/ethereum/go-ethereum
-version: 0.5.0
+  - https://github.com/dysnix/charts
+
+maintainers:
+  - name: VladStarr
+    email: vlad.derigin@dysnix.com

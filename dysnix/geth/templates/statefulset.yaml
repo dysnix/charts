@@ -1,25 +1,32 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "geth.fullname" . }}
+  name: {{ include "geth.fullname" . }}
   labels:
-    app: {{ template "geth.name" . }}
-    chart: {{ template "geth.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "geth.labels" . | nindent 4 }}
 spec:
   serviceName: {{ template "geth.name" . }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
   selector:
     matchLabels:
-      app: {{ template "geth.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "geth.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
       labels:
-        app: {{ template "geth.name" . }}
-        release: {{ .Release.Name }}
-        {{- include "geth.statefulset.annotations" . | nindent 8 }}
+        {{- include "geth.selectorLabels" . | nindent 8 }}
     spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "geth.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 10 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -32,75 +39,70 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      initContainers:
-      - name: remove-lock
-        command:
-        - rm
-        - -f
-        - /root/.ethereum/geth/LOCK
-        image: busybox
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-        - name: data
-          mountPath: /root
-      {{- if .Values.init.removeNodeKey }}
-      - name: remove-nodekey
-        command:
-        - rm
-        - -f
-        - /root/.ethereum/geth/nodekey
-        image: busybox
-        imagePullPolicy: IfNotPresent
-        volumeMounts:
-        - name: data
-          mountPath: /root
-      {{- end }}
       containers:
-      {{- if .Values.proxy.enabled }}
-      - name: {{ template "geth.fullname" . }}-proxy
-        image: "{{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag }}"
-        imagePullPolicy: {{ .Values.proxy.image.pullPolicy | quote }}
-        ports:
-        - name: proxy-rpc
-          containerPort: {{ .Values.proxy.http.port }}
-        - name: proxy-ws
-          containerPort: {{ .Values.proxy.ws.port }}
-        env:
-        - name: OTP_SECRET
-          value: {{ .Values.proxy.otpSecret | quote }}
-      {{- end }}
-      - name: {{ template "geth.fullname" . }}
+      - name: geth
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-        command: ["/usr/local/bin/geth"]
-        args: {{- include "geth.args" . | nindent 10 }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.command }}
+        command:
+          {{- tpl (toYaml .) $ | nindent 10 }}
+        {{- end }}
+        args:
+        {{- with .Values.config.eth.network }}
+        - --{{ . }}
+        {{- end }}
+        - --config=/config/config.toml
+        {{- with .Values.config.node.p2p.nat }}
+        - --nat={{ . }}
+        {{- end }}
+        {{- with .Values.config.cache }}
+        - --cache={{ . }}
+        {{- end }}
+        - --verbosity={{ .Values.config.verbosity }}
+        {{- with .Values.config.vmodule }}
+        - --log.vmodule={{ join "," . }}
+        {{- end }}
+        {{- with .Values.extraArgs }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+        {{- end }}
         ports:
-        - name: rpc
-          containerPort: {{ .Values.http.port }}
+        - name: http
+          containerPort: {{ .Values.config.node.http.port }}
+        - name: authrpc
+          containerPort: {{ .Values.config.node.authrpc.port }}
+        {{- if .Values.config.node.ws.enabled }}
         - name: ws
-          containerPort: {{ .Values.ws.port }}
-        - name: monitoring
-          containerPort: 6060
-        - name: p2p
-          containerPort: {{ .Values.p2p.port }}
-          {{- if .Values.p2p.useHostPort }}
-          hostPort: {{ .Values.p2p.port }}
+          containerPort: {{ .Values.config.node.ws.port }}
+        {{- end }}
+        {{- if .Values.config.metrics.enabled }}
+        - name: metrics
+          containerPort: {{ .Values.config.metrics.port }}
+        {{- end }}
+        - name: p2p-tcp
+          containerPort: {{ .Values.config.node.p2p.port }}
+          {{- if .Values.config.node.p2p.useHostPort }}
+          hostPort: {{ .Values.config.node.p2p.port }}
           {{- end }}
           protocol: TCP
-        - name: p2p-discovery
-          containerPort: {{ .Values.p2p.discoveryPort }}
-          {{- if .Values.p2p.useHostPort }}
-          hostPort: {{ .Values.p2p.discoveryPort }}
+        - name: p2p-udp
+          containerPort: {{ .Values.config.node.p2p.port }}
+          {{- if .Values.config.node.p2p.useHostPort }}
+          hostPort: {{ .Values.config.node.p2p.port }}
           {{- end }}
           protocol: UDP
-        {{- if .Values.authrpc.enabled }}
-        - name: authrpc
-          containerPort: {{ .Values.authrpc.port }}
-        {{- end }}
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: data
+          mountPath: /root/.ethereum
+        - name: secrets
+          mountPath: /secrets
+        - name: env
+          mountPath: /env
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
           {{- if and .Values.livenessProbe.exec (kindIs "string" .Values.livenessProbe.exec.command) }}
@@ -123,39 +125,47 @@ spec:
           {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 10 }}
           {{- end }}
         {{- end }}
-        volumeMounts:
-        - name: data
-          mountPath: /root
-        {{- if .Values.authrpc.enabled }}
-        - name: jwtsecret
-          mountPath: /root/jwt
-          readOnly: true
-        {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
-      {{- if .Values.authrpc.enabled }}
       volumes:
-        - name: jwtsecret
-          secret:
-            secretName: "{{ .Release.Name }}-jwt"
+      - name: env
+        emptyDir: {}
+      - name: secrets
+        secret:
+          secretName: {{ template "geth.fullname" . }}
+      - name: scripts
+        configMap:
+          name: {{ template "geth.fullname" . }}-scripts
+      - name: config
+        configMap:
+          name: {{ template "geth.fullname" . }}-config
+      {{- if eq .Values.persistence.type "hostPath" }}
+      - name: data
+        hostPath:
+          path: {{ .Values.persistence.hostPath.path }}
+          type: {{ .Values.persistence.hostPath.type }}
       {{- end }}
+  {{- if eq .Values.persistence.type "pvc" }}
   volumeClaimTemplates:
   - metadata:
       name: data
-      annotations:
-        "helm.sh/resource-policy": keep
       labels:
-        app: {{ template "geth.name" . }}
-        release: {{ .Release.Name }}
-        {{- if .Values.persistence.snapshotValue }}
-        snapshot: {{ .Values.persistence.snapshotValue }}
-        {{- end }}
+        {{- include "geth.selectorLabels" . | nindent 8 }}
+      {{- with .Values.persistence.pvc.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       accessModes:
-      - "ReadWriteOnce"
-      {{- if .Values.persistence.storageClassName }}
-      storageClassName: {{ .Values.persistence.storageClassName | quote }}
+      - {{ .Values.persistence.pvc.accessMode }}
+      {{- if .Values.persistence.pvc.storageClass }}
+      {{- if eq .Values.persistence.pvc.storageClass "-" }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: {{ .Values.persistence.pvc.storageClass | quote }}
+      {{- end }}
       {{- end }}
       resources:
         requests:
-          storage: {{ .Values.persistence.size | quote }}
+          storage: {{ .Values.persistence.pvc.size | quote }}
+  {{- end }}

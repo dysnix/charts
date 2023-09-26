@@ -1,0 +1,34 @@
+{{- if .Values.services.authrpc.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "geth.fullname" . }}-authrpc
+  {{- if .Values.services.authrpc.annotations }}
+  annotations:
+    {{- .Values.services.authrpc.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: authrpc
+    {{- include "geth.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.authrpc.type }}
+  {{- with .Values.services.authrpc.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.authrpc.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.authrpc.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.authrpc.internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  publishNotReadyAddresses: true
+  ports:
+    - name: authrpc
+      port: {{ .Values.services.authrpc.port }}
+      targetPort: authrpc
+  selector:
+    {{- include "geth.selectorLabels" . | nindent 4 }}
+{{- end }}

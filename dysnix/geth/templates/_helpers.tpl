@@ -32,56 +32,48 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Geth statefullset annotations
+Common labels
 */}}
-{{- define "geth.statefulset.annotations" -}}
-{{- if .Values.persistence.snapshotValue -}}
-snapshot: {{ .Values.persistence.snapshotValue }}
-{{- end -}}
-{{- end -}}
+{{- define "geth.labels" -}}
+helm.sh/chart: {{ include "geth.chart" . }}
+app.kubernetes.io/name: {{ include "geth.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
 
 {{/*
-Geth args
+Selector labels
 */}}
-{{- define "geth.args" -}}
-
-{{- $customArgs := list -}}
-{{- $args := list "--maxpeers" .Values.maxPeers "--cache" .Values.cache -}}
-{{- $args = concat $args (list "--syncmode" .Values.syncMode "--pprof" "--pprof.addr=0.0.0.0") -}}
-{{- $args = concat $args (list "--pprof.port=6060" "--metrics" "--http" "--http.api" .Values.http.api) -}}
-{{- $args = concat $args (list "--http.addr" "0.0.0.0" "--http.port" .Values.http.port "--http.vhosts" .Values.http.vhosts) -}}
-{{- $args = concat $args (list "--http.corsdomain" "*" "--ws" "--ws.addr" "0.0.0.0" "--ws.port" .Values.ws.port) -}}
-{{- $args = concat $args (list "--ws.api" .Values.ws.api "--ws.origins" .Values.ws.origins) -}}
-{{- $args = concat $args (list "--port" .Values.p2p.port "--discovery.port" .Values.p2p.discoveryPort) -}}
-{{- if .Values.authrpc.enabled }}
-{{- $args = concat $args (list "--authrpc.addr=0.0.0.0"  "--authrpc.port" .Values.authrpc.port ) -}}
-{{- $args = concat $args (list "--authrpc.vhosts" .Values.authrpc.vhosts ) -}}
-{{- $args = concat $args (list "--authrpc.jwtsecret" .Values.authrpc.jwtpath ) -}}
-{{- end -}}
-{{- if .Values.p2p.nat }}
-{{- $args = concat $args (list "--nat" .Values.p2p.nat ) -}}
+{{- define "geth.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "geth.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- with .Values.podLabels }}
+{{ toYaml . | indent 0 }}
 {{- end }}
-{{- if .Values.maxPendPeers }}
-{{- $args = concat $args (list "--maxpendpeers" .Values.maxPendPeers) -}}
 {{- end }}
 
-{{- range $testnet := list "ropsten" "rinkeby" "goerli" -}}
-  {{- if eq ($testnet | get $.Values | toString) "true"  -}}
-    {{- $args = prepend $args ($testnet | printf "--%s") -}}
-  {{- end -}}
-{{- end -}}
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "geth.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "geth.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
 
-{{- range $k, $v := .Values.customArgs -}}
-  {{- $customArgs = concat $customArgs (list ($k | printf "--%s") $v) -}}
+{{/*
+Toml list generation
+*/}}
+{{- define "geth.tomlList" -}}
+{{- print "[" }}
+{{- range $idx, $element := . }}
+  {{- if $idx }}, {{ end }}
+  {{- $element | quote }}
 {{- end -}}
-
-{{- $mode := "snapshot" | get .Values | toString -}}
-{{- if eq $mode "true" -}}
-  {{- $args = append $args "--snapshot" -}}
-{{- else if eq $mode "false" -}}
-  {{- $args = append $args "--snapshot=false" -}}
-{{- end -}}
-
-{{- concat $args $customArgs | compact | toStrings | toYaml -}}
-
-{{- end -}}
+{{ print "]" -}}
+{{- end }}
