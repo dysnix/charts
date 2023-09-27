@@ -79,6 +79,13 @@ services:
     port: 30303
     # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
     # nodePort: 30303
+  p2pDiscovery:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 30301
+    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # nodePort: 30301
   rpc:
     enabled: true
     type: ClusterIP
@@ -230,6 +237,7 @@ config:
     p2p:
       useHostPort: false    # if set to true .Values.services.p2p will be disabled, and hostPort will be allocated instead
       port: 30303
+      discoveryPort: 30301
       nat: ""               # you may want to set it if you are running P2P via NodePort/LoadBalancer k8s svc
       maxPeers: 50
       noDiscovery: false
