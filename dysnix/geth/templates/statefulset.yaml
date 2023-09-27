@@ -112,6 +112,8 @@ spec:
           mountPath: /root/.ethereum
         - name: secrets
           mountPath: /secrets
+        - name: scripts
+          mountPath: /scripts
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
           {{- if and .Values.livenessProbe.exec (kindIs "string" .Values.livenessProbe.exec.command) }}
