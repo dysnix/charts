@@ -1,8 +1,6 @@
 {{- with .Values.config.eth -}}
 [Eth]
 SyncMode = {{ .syncMode | quote }}
-EthDiscoveryURLs = ["enrtree://AKA3AM6LPBYEUDMVNU3BSVQJ5AD45Y7YPOHJLEF6W26QOE4VTUDPE@all.mainnet.ethdisco.net"]
-SnapDiscoveryURLs = ["enrtree://AKA3AM6LPBYEUDMVNU3BSVQJ5AD45Y7YPOHJLEF6W26QOE4VTUDPE@all.mainnet.ethdisco.net"]
 NoPruning = {{ eq .gcMode "archive" | ternary true false }}
 NoPrefetch = false
 TxLookupLimit = {{ int .txLookupLimit }}
@@ -84,8 +82,12 @@ JWTSecret = "/secrets/jwt.hex"
 MaxPeers = {{ int .maxPeers }}
 NoDiscovery = {{ .noDiscovery }}
 DiscoveryV4 = true
+{{- if .bootstrapNodes }}
 BootstrapNodes = {{ include "geth.tomlList" .bootstrapNodes }}
+{{- end }}
+{{- if .bootstrapNodesV5 }}
 BootstrapNodesV5 = {{ include "geth.tomlList" .bootstrapNodesV5 }}
+{{- end }}
 StaticNodes = {{ include "geth.tomlList" .staticNodes }}
 TrustedNodes = {{ include "geth.tomlList" .trustedNodes }}
 ListenAddr = ":{{ .port }}"
