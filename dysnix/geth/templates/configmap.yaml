@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geth.fullname" . }}-config
+  labels:
+    {{- include "geth.labels" . | nindent 4 }}
+data:
+  config.toml: |-
+    {{- include (print $.Template.BasePath "/_config.tpl") . | nindent 4 }}

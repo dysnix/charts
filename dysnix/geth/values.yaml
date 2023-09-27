@@ -1,76 +1,149 @@
 image:
-  repository: "ethereum/client-go"
-  ## AppVersion is used when not set
-  # tag: ""
+  repository: ethereum/client-go
   pullPolicy: IfNotPresent
+  tag: ""
 
 imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
 
-proxy:
-  enabled: false
-  http:
-    port: 9545
-  ws:
-    port: 9546
-  otpSecret: "<change-me>"
-  image:
-    pullPolicy: IfNotPresent
-    repository: dysnix/protected-proxy
-    tag: latest
-
-http:
-  port: 8545
-  api: "net,eth,personal,web3"
-  vhosts: "*"
-ws:
-  port: 8546
-  api: "net,eth,personal,web3"
-  origins: "*"
-authrpc:
-  enabled: false
-  port: 8551
-  # Use a utility like OpenSSL to create the token via command: openssl rand -hex 32 | tr -d "\n" > "jwt.hex".
-  jwtsecret: ""
-  jwtpath: /root/jwt/jwt.hex
-  vhosts: "*"
-
-networkId: 1
-ropsten: false
-rinkeby: false
-goerli: false
-
-## Snapshot database mode (if not set, not passed)
-## true/false
-# snapshot:
-syncMode: "snap"
-
-maxPeers: 50
-cache: 4096
-customArgs: {}
-
-service:
-  type: ClusterIP
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
   annotations: {}
-    # service.beta.kubernetes.io/aws-load-balancer-internal: ...
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+updateStrategy:
+  type: RollingUpdate
+
+## Geth v1.13+ with --state.scheme=path shuts down way faster.
+terminationGracePeriodSeconds: 300
+
+## Extra pod labels
+podLabels: {}
+  # environment: production
+
+## This labels mark Geth node as ready to serve the traffic.
+## Used as selector for RPC service together with `.Values.podLabels` and default labels.
+podStatusLabels: {}
+  # manualstatus: in-service
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 1000
+
+## Override geth container command (can be templated)
+command: []
+
+## Extra container arguments (can be templated)
+extraArgs: []
+
+## Extra init containers, can be templated
+initContainers: []
+  # - name: dumpconfig
+  #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  #   imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+  #   command: ["--config", "/config/config.toml", "dumpconfig"]
+  #   volumeMounts:
+  #   - name: config
+  #     mountPath: /config
+
+## Sidecar containers, can be templated
+sidecarContainers: []
+  # - name: exporter
+  #   image: ethpandaops/ethereum-metrics-exporter:latest
+  #   imagePullPolicy: Always
+  #   args:
+  #   - --execution-url=http://localhost:{{ .Values.config.node.http.port }}
+  #   ports:
+  #   - name: exporter
+  #     containerPort: 9090
+
+## Services config
+services:
+  p2p:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 30303
+    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # nodePort: 30303
+  rpc:
+    enabled: true
+    type: ClusterIP
+    httpPort: 8545
+    wsPort: 8546
+  metrics:
+    enabled: false
+    type: ClusterIP
+    port: 6060
+  authrpc:
+    enabled: true
+    type: ClusterIP
+    port: 8551
 
 ingress:
-  certmanagerClusterIssuer: letsencrypt-prod
-  enabled: false
-  rpc:
-    proxyHosts:
-    - rpc.example.com
-    hosts:
-    - secret-rpc.example.com
+  http:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts: []
+      # - host: geth.local
+      #   paths:
+      #     - path: /
+      #       pathType: ImplementationSpecific
+    tls: []
+      # - secretName: geth-tls
+      #   hosts:
+      #     - geth.local
   ws:
-    proxyHosts:
-    - ws.example.com
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-    - secret-ws.example.com
+      # - host: geth-ws.local
+      #   paths:
+      #     - path: /
+      #       pathType: ImplementationSpecific
+    tls: []
+      # - secretName: geth-ws-tls
+      #   hosts:
+      #     - geth-ws.local
 
 persistence:
-  # snapshotValue: ""
-  size: 400Gi
-  # storageClassName:
+  type: pvc
+  # type: hostPath
+  pvc:
+    size: 900Gi                # starting point for snap-synced node as of 2023-09
+    accessMode: ReadWriteOnce
+    storageClass: ""           # set to "-" if you want to manually create persistent volume
+    annotations: {}
+  hostPath:
+    path: /data/geth
+    type: Directory            # by default you need to create directory yourself
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -78,49 +151,97 @@ resources: {}
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
-  #   cpu: 1000m
-  #   memory: 2000Mi
+  #   cpu: 100m
+  #   memory: 128Mi
   # requests:
-  #   cpu: 1000m
-  #   memory: 2000Mi
+  #   cpu: 100m
+  #   memory: 128Mi
 
-## Autoscaling parameters
-##
-autoscaling:
+# Create Prometheus Operator serviceMonitor
+serviceMonitor:
   enabled: false
-  # minReplicas: 1
-  # maxReplicas: 10
-  # targetCPU: 50
-  # targetMemory: 50
+  # interval: 10s
+  # scrapeTimeout: 2s
+  # honorLabels: true
+  # relabelings: []
+  # metricRelabelings: []
 
+# Assume that node is stuck if it's lag is more than 300 seconds.
+# .livenessProbe.exec.command can also be in a templated string format
 livenessProbe:
   enabled: false
   initialDelaySeconds: 120
   periodSeconds: 60
   successThreshold: 1
   failureThreshold: 3
-  timeoutSeconds: 15
+  timeoutSeconds: 10
   exec:
-    command: |
+    command:
       - sh
-      - -c
-      - "echo -e 'POST / HTTP/1.1\nHost: localhost:8545\nUser-Agent: curl/7.61.1\nAccept: */*\nContent-Type: application/json\nContent-Length: 60\n\n{\"jsonrpc\":\"2.0\",\"method\":\"net_version\",\"params\":[],\"id\":67}' | nc localhost 8545 | grep -q 'HTTP/1.1 200 OK' && echo -e 'GET / HTTP/1.1\nHost: localhost:8546\nUpgrade: websocket\nConnection: Upgrade\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\nSec-WebSocket-Version: 13\n' | nc localhost 8546 | grep -q 'HTTP/1.1 101'"
+      - /scripts/check-readiness.sh
+      - "300"
 
+# Assume that node is not ready to serve traffic if it's lag is more than 60 seconds.
+# .readinessProbe.exec.command can also be in a templated string format
 readinessProbe:
   enabled: false
   initialDelaySeconds: 60
-  periodSeconds: 60
+  periodSeconds: 10
   successThreshold: 1
-  failureThreshold: 30
-  timeoutSeconds: 10
+  failureThreshold: 1
+  timeoutSeconds: 5
   exec:
-    command: |
+    command:
       - sh
-      - -c
-      - "geth {{ if .Values.ropsten }} --ropsten {{ end }} {{ if .Values.rinkeby }} --rinkeby {{ end }} attach --exec '!eth.syncing || eth.syncing.highestBlock-eth.syncing.currentBlock < 100' | grep -q true && return 0 || return 1"
+      - /scripts/check-readiness.sh
+      - "60"
 
-affinity: {}
-
-nodeSelector: {}
-
-tolerations: []
+## Main Geth config
+config:
+  ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
+  jwt: ""
+  eth:
+    network: mainnet
+    syncMode: snap
+    gcMode: full
+    txLookupLimit: 2350000
+    transactionHistory: 2350000
+    stateHistory: 90000
+    stateScheme: hash
+    preimages: false
+  node:
+    ipc:
+      enabled: true
+      path: geth.ipc
+    http:
+      enabled: true
+      port: 8545
+      vhosts: ["*"]
+      cors: ["*"]
+      modules: ["eth", "net", "web3"]
+    authrpc:
+      port: 8551
+      vhosts: ["*"]
+    ws:
+      enabled: false
+      port: 8546
+      origins: ["*"]
+      modules: ["eth", "net", "web3"]
+    p2p:
+      useHostPort: false    # if set to true .Values.services.p2p will be disabled, and hostPort will be allocated instead
+      port: 30303
+      nat: ""               # you may want to set it if you are running P2P via NodePort/LoadBalancer k8s svc
+      maxPeers: 50
+      noDiscovery: false
+      bootstrapNodes: []
+      bootstrapNodesV5: []
+      staticNodes: []
+      trustedNodes: []
+  cache: 4096
+  verbosity: 3
+  vmodule: []
+  # - rpc=5
+  metrics:
+    enabled: false
+    expensive: false
+    port: 6060
