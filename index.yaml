@@ -3519,6 +3519,24 @@ entries:
     version: 0.1.0
   geth:
   - apiVersion: v2
+    appVersion: v1.13.1
+    created: "2023-09-27T10:30:30.727173224Z"
+    description: Go-ethereum blockchain node Helm Chart
+    digest: 4721d1d15eb8f2d9f6edc592e514c71c56a82a74e37d606679594ba56adab75c
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-1.0.0/geth-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v2
     appVersion: v1.10.26
     created: "2023-03-08T11:01:36.324163511Z"
     description: Official Go implementation of the Ethereum protocol
@@ -5414,4 +5432,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-10T11:14:05.876938419Z"
+generated: "2023-09-27T10:30:30.728150035Z"
