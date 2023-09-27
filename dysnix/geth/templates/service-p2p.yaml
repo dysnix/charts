@@ -33,13 +33,6 @@ spec:
       {{- with .Values.services.p2p.nodePort }}
       nodePort: {{ . }}
       {{- end }}
-    - name: p2p-udp
-      port: {{ .Values.services.p2p.port }}
-      targetPort: p2p-udp
-      protocol: UDP
-      {{- with .Values.services.p2p.nodePort }}
-      nodePort: {{ . }}
-      {{- end }}
   selector:
     {{- include "geth.selectorLabels" . | nindent 4 }}
 {{- end }}

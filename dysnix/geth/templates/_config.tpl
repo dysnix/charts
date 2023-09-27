@@ -89,7 +89,7 @@ BootstrapNodesV5 = {{ include "geth.tomlList" .bootstrapNodesV5 }}
 StaticNodes = {{ include "geth.tomlList" .staticNodes }}
 TrustedNodes = {{ include "geth.tomlList" .trustedNodes }}
 ListenAddr = ":{{ .port }}"
-DiscAddr = ""
+DiscAddr = ":{{ .discoveryPort }}"
 EnableMsgEvents = false
 {{- end }}
 

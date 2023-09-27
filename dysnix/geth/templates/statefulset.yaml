@@ -100,9 +100,9 @@ spec:
           {{- end }}
           protocol: TCP
         - name: p2p-udp
-          containerPort: {{ .Values.config.node.p2p.port }}
+          containerPort: {{ .Values.config.node.p2p.discoveryPport }}
           {{- if .Values.config.node.p2p.useHostPort }}
-          hostPort: {{ .Values.config.node.p2p.port }}
+          hostPort: {{ .Values.config.node.p2p.discoveryPort }}
           {{- end }}
           protocol: UDP
         volumeMounts:
