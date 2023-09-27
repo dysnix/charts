@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      type: metrics
+      service-type: metrics
       {{- include "geth.selectorLabels" . | nindent 6 }}
   endpoints:
     - port: metrics
