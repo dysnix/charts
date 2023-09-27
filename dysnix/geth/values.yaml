@@ -196,8 +196,9 @@ readinessProbe:
       - /scripts/check-readiness.sh
       - "60"
 
-# Main Geth config
+## Main Geth config
 config:
+  ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
   jwt: ""
   eth:
     network: mainnet
