@@ -3,7 +3,7 @@ set -e
 
 # Retrieving latest block timestamp
 get_block_timestamp() {
-  geth attach --exec "eth.getBlock(eth.blockNumber).timestamp"
+  geth --{{ .Values.config.eth.network }} --exec "eth.getBlock(eth.blockNumber).timestamp" 2>/dev/null
 }
 
 if [ -z $1 ]; then
