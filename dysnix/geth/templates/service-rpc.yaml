@@ -38,4 +38,7 @@ spec:
     {{- end }}
   selector:
     {{- include "geth.selectorLabels" . | nindent 4 }}
+    {{- with .Values.podStatusLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 {{- end }}

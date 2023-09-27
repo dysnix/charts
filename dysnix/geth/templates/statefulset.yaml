@@ -17,6 +17,9 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "geth.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podStatusLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- with .Values.imagePullSecrets }}
@@ -40,7 +43,14 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.initContainers }}
+      initContainers:
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
       containers:
+      {{- with .Values.sidecarContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
       - name: geth
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -129,8 +139,6 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       volumes:
-      - name: env
-        emptyDir: {}
       - name: secrets
         secret:
           secretName: {{ template "geth.fullname" . }}
