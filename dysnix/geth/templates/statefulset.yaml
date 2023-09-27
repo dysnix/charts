@@ -77,6 +77,11 @@ spec:
         {{- with .Values.config.vmodule }}
         - --log.vmodule={{ join "," . }}
         {{- end }}
+        {{- if .Values.config.metrics.enabled }}
+        - --pprof
+        - --pprof.addr=0.0.0.0
+        - --pprof.port={{ .Values.config.metrics.port }}
+        {{- end }}
         {{- with .Values.extraArgs }}
         {{- tpl (toYaml .) $ | nindent 8 }}
         {{- end }}
