@@ -121,6 +121,7 @@ bsc:
   initGenesis: false
   initFromSnapshot: false
   initFromSnapshotImage: dysnix/zstd:v3.15.1
+  initFormSnapshotPostCmd: ""
   initFromRsync: false
   initFromRsyncImage: instrumentisto/rsync-ssh:latest
   initFromGCS:

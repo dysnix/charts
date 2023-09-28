@@ -25,6 +25,7 @@ else
   wget ${SNAPSHOT_URL} -O - | tar --overwrite -x -C ${DATA_DIR}
 fi
 
+{{ .Values.bsc.initFormSnapshotPostCmd }}
 
 # Mark data dir as initialized
 touch ${TEST_FILE}
