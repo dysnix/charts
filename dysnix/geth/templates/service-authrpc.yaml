@@ -5,7 +5,7 @@ metadata:
   name: {{ include "geth.fullname" . }}-authrpc
   {{- if .Values.services.authrpc.annotations }}
   annotations:
-    {{- .Values.services.authrpc.annotations | nindent 4 }}
+    {{- toYaml .Values.services.authrpc.annotations | nindent 4 }}
   {{- end }}
   labels:
     service-type: authrpc

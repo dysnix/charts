@@ -5,7 +5,7 @@ metadata:
   name: {{ include "geth.fullname" . }}-p2p-discovery
   {{- if .Values.services.p2pDiscovery.annotations }}
   annotations:
-    {{- .Values.services.p2pDiscovery.annotations | nindent 4 }}
+    {{- toYaml .Values.services.p2pDiscovery.annotations | nindent 4 }}
   {{- end }}
   labels:
     service-type: p2p-discovery

@@ -5,7 +5,7 @@ metadata:
   name: {{ include "geth.fullname" . }}-metrics
   {{- if .Values.services.metrics.annotations }}
   annotations:
-    {{- .Values.services.metrics.annotations | nindent 4 }}
+    {{- toYaml .Values.services.metrics.annotations | nindent 4 }}
   {{- end }}
   labels:
     service-type: metrics

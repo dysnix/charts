@@ -5,7 +5,7 @@ metadata:
   name: {{ include "geth.fullname" . }}-p2p
   {{- if .Values.services.p2p.annotations }}
   annotations:
-    {{- .Values.services.p2p.annotations | nindent 4 }}
+    {{- toYaml .Values.services.p2p.annotations | nindent 4 }}
   {{- end }}
   labels:
     service-type: p2p

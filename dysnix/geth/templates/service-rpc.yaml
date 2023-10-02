@@ -5,7 +5,7 @@ metadata:
   name: {{ include "geth.fullname" . }}-rpc
   {{- if .Values.services.rpc.annotations }}
   annotations:
-    {{- .Values.services.rpc.annotations | nindent 4 }}
+    {{- toYaml .Values.services.rpc.annotations | nindent 4 }}
   {{- end }}
   labels:
     service-type: rpc

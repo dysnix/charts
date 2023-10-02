@@ -79,6 +79,7 @@ services:
     port: 30303
     # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
     # nodePort: 30303
+    annotations: {}
   p2pDiscovery:
     enabled: true
     type: NodePort
@@ -86,19 +87,23 @@ services:
     port: 30301
     # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
     # nodePort: 30301
+    annotations: {}
   rpc:
     enabled: true
     type: ClusterIP
     httpPort: 8545
     wsPort: 8546
+    annotations: {}
   metrics:
     enabled: false
     type: ClusterIP
     port: 6060
+    annotations: {}
   authrpc:
     enabled: true
     type: ClusterIP
     port: 8551
+    annotations: {}
 
 ingress:
   http:
