@@ -217,7 +217,7 @@ readinessProbe:
 
 init:
   genesisUrl: https://raw.githubusercontent.com/maticnetwork/heimdall/master/builder/files/genesis-mainnet-v1.json
-  downloadSnapshot: true
+  downloadSnapshot: false
 
 #######
 ### Polygon network
