@@ -1,0 +1,39 @@
+{{- if .Values.services.rest.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "heimdall.fullname" . }}-rest
+  {{- if .Values.services.rest.annotations }}
+  annotations:
+    {{- .Values.services.rest.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: rest
+    {{- include "heimdall.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.rest.type }}
+  {{- with .Values.services.rest.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.rest.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.rest.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.rest.internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.rest.publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: rest
+      port: {{ .Values.services.rest.port }}
+      targetPort: rest
+  selector:
+    {{- include "heimdall.selectorLabels" . | nindent 4 }}
+    {{- with .Values.podStatusLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

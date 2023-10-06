@@ -1,0 +1,184 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "heimdall.fullname" . }}
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ template "heimdall.name" . }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "heimdall.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "heimdall.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podStatusLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "heimdall.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 10 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init-genesis
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command: ["sh", "/scripts/init-genesis.sh"]
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: /data
+      {{- if .Values.init.downloadSnapshot }}
+      - name: download-snapshot
+        image: debian:stable-slim
+        imagePullPolicy: Always
+        command: ["sh", "/scripts/download-snapshot.sh"]
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: /data
+      {{- end }}
+      {{- with .Values.extraInitContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
+      containers:
+      {{- with .Values.sidecarContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
+      - name: {{ template "heimdall.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.command }}
+        command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }} 
+        args:
+          - start
+          - --home
+          - /data
+          - --rest-server
+          {{- with .Values.extraArgs }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+        ports:
+        {{- range $k, $v := .Values.containerPorts }}
+        {{- if $v.enabled }}
+          - name: {{ $k }}
+            containerPort: {{ $v.port }}
+            {{- with $v.protocol }}
+            protocol: {{ . }}
+            {{- end }}
+            {{- with $v.hostPort }}
+            hostPort: {{ . }}
+            {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          {{- if and .Values.livenessProbe.exec (kindIs "string" .Values.livenessProbe.exec.command) }}
+          {{- omit .Values.livenessProbe "enabled" "exec" | toYaml | nindent 10 }}
+          exec:
+            command:
+              {{- tpl .Values.livenessProbe.exec.command . | nindent 14 }}
+          {{- else }}
+          {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 10 }}
+          {{- end }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          {{- if and .Values.readinessProbe.exec (kindIs "string" .Values.readinessProbe.exec.command) }}
+          {{- omit .Values.readinessProbe "enabled" "exec" | toYaml | nindent 10 }}
+          exec:
+            command:
+              {{- tpl .Values.readinessProbe.exec.command . | nindent 14 }}
+          {{- else }}
+          {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 10 }}
+          {{- end }}
+        {{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: config
+          mountPath: /data/config/config.toml
+          subPath: config.toml
+        - name: config
+          mountPath: /data/config/heimdall-config.toml
+          subPath: heimdall-config.toml
+        - name: config
+          mountPath: /data/config/app.toml
+          subPath: app.toml
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- with .Values.sidecarContainers }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "heimdall.fullname" . }}-config
+        - name: scripts
+          configMap:
+            name: {{ include "heimdall.fullname" . }}-scripts
+        {{- if eq .Values.persistence.type "hostPath" }}
+        - name: data
+          hostPath:
+            path: {{ .Values.persistence.hostPath.path }}
+            type: {{ .Values.persistence.hostPath.type }}
+        {{- end }}
+  {{- if eq .Values.persistence.type "pvc" }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        {{- include "heimdall.selectorLabels" . | nindent 8 }}
+      {{- with .Values.persistence.pvc.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      - {{ .Values.persistence.pvc.accessMode }}
+      {{- if .Values.persistence.pvc.storageClass }}
+      {{- if eq .Values.persistence.pvc.storageClass "-" }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: {{ .Values.persistence.pvc.storageClass | quote }}
+      {{- end }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.pvc.size | quote }}
+  {{- end }}
