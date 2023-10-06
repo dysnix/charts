@@ -24,7 +24,9 @@ spec:
   {{- with .Values.services.metrics.internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  publishNotReadyAddresses: true
+  {{- with .Values.services.p2p.publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
   ports:
     - name: metrics
       port: {{ .Values.services.metrics.port }}

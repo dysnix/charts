@@ -82,20 +82,12 @@ containerPorts:
     port: 9090
   p2p:
     enabled: true
-    port: 26656
+    port: 30656
     protocol: TCP
-    # hostPort: 26656
+    # hostPort: 30656
 
 ## Services config
 services:
-  p2p:
-    enabled: true
-    type: LoadBalancer
-    loadBalancerIP: ""
-    port: 26656
-    # it's better to set nodePort equal to .Values.containerPorts.p2p.port when the svc type is "NodePort"
-    # nodePort: 36656
-    annotations: {}
   rpc:
     enabled: true
     type: ClusterIP
@@ -106,11 +98,21 @@ services:
     type: ClusterIP
     port: 1317
     annotations: {}
+  p2p:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 30656
+    # it's better to set nodePort equal to .Values.containerPorts.p2p.port when the svc type is "NodePort"
+    nodePort: 30656
+    annotations: {}
+    publishNotReadyAddresses: true
   metrics:
     enabled: false
     type: ClusterIP
     port: 9090
     annotations: {}
+    publishNotReadyAddresses: true
 
 ingress:
   rpc:
