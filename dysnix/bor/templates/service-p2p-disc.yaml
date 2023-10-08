@@ -1,0 +1,40 @@
+{{- if .Values.services.p2pDiscovery.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bor.fullname" . }}-p2p-discovery
+  {{- if .Values.services.p2pDiscovery.annotations }}
+  annotations:
+    {{- .Values.services.p2pDiscovery.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: p2p-discovery
+    {{- include "bor.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.p2pDiscovery.type }}
+  {{- with .Values.services.p2pDiscovery.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.p2pDiscovery.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.p2pDiscovery.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.p2pDiscovery.internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.rpc.publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: p2p-discovery
+      port: {{ .Values.services.p2pDiscovery.port }}
+      targetPort: p2p-discovery
+      protocol: UDP
+      {{- with .Values.services.p2pDiscovery.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "bor.selectorLabels" . | nindent 4 }}
+{{- end }}

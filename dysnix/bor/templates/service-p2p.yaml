@@ -1,0 +1,40 @@
+{{- if .Values.services.p2p.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bor.fullname" . }}-p2p
+  {{- if .Values.services.p2p.annotations }}
+  annotations:
+    {{- .Values.services.p2p.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: p2p
+    {{- include "bor.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.services.p2p.type }}
+  {{- with .Values.services.p2p.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.p2p.clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .Values.services.p2p.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.p2p.internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .Values.services.rpc.publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: p2p
+      port: {{ .Values.services.p2p.port }}
+      targetPort: p2p
+      protocol: TCP
+      {{- with .Values.services.p2p.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "bor.selectorLabels" . | nindent 4 }}
+{{- end }}
