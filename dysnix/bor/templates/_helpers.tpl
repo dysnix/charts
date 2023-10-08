@@ -87,9 +87,9 @@ Render Toml properties
 {{- range $k, $v := $root }}
 	{{- if not (kindIs "map" $v) }}
 		{{- if kindIs "string" $v }}
-			{{- if regexMatch "^.*({{).*(}}).*$" $v }} 																			 	{{- /* enable tpl only if string is actually a template */}}
+			{{- if contains "{{" $v }} {{- /* render templated values */}}
 				{{- $v = tpl $v $context }}
-				{{- if not (or (regexMatch "^[0-9]+$" $v) (regexMatch "^(true|false)$" $v)) }} 	{{- /* do not quote unless the template value results in a string */}}
+				{{- if not (or (regexMatch "^[0-9]+$" $v) (regexMatch "^(true|false)$" $v)) }}
 					{{- $v = quote $v }}
 				{{- end }}
 			{{- else }}
