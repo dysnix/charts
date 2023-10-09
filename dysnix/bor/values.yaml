@@ -264,7 +264,6 @@ config:
   chain: mainnet
   identity: '{{ include "bor.fullname" . }}'
   verbosity: 3
-  log-level: ""
   vmdebug: false
   datadir: /data
   ancient: ""
