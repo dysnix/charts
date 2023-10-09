@@ -1,40 +1,42 @@
-{{- if .Values.services.p2p.enabled }}
+{{- with .Values.services.p2p }}
+{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "bor.fullname" . }}-p2p
-  {{- if .Values.services.p2p.annotations }}
+  name: {{ include "bor.fullname" $ }}-p2p
+  {{- with .annotations }}
   annotations:
-    {{- .Values.services.p2p.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     service-type: p2p
-    {{- include "bor.labels" . | nindent 4 }}
+    {{- include "bor.labels" $ | nindent 4 }}
 spec:
-  type: {{ .Values.services.p2p.type }}
-  {{- with .Values.services.p2p.loadBalancerIP }}
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.p2p.clusterIP }}
+  {{- with .clusterIP }}
   clusterIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.p2p.externalTrafficPolicy }}
+  {{- with .externalTrafficPolicy }}
   externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.p2p.internalTrafficPolicy }}
+  {{- with .internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.rpc.publishNotReadyAddresses }}
+  {{- with .publishNotReadyAddresses }}
   publishNotReadyAddresses: {{ . }}
   {{- end }}
   ports:
     - name: p2p
-      port: {{ .Values.services.p2p.port }}
+      port: {{ .port }}
       targetPort: p2p
       protocol: TCP
-      {{- with .Values.services.p2p.nodePort }}
+      {{- with .nodePort }}
       nodePort: {{ . }}
       {{- end }}
   selector:
-    {{- include "bor.selectorLabels" . | nindent 4 }}
+    {{- include "bor.selectorLabels" $ | nindent 4 }}
+{{- end }}
 {{- end }}

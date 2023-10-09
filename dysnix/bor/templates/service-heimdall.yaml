@@ -1,36 +1,38 @@
-{{- if .Values.services.heimdall.enabled }}
+{{- with .Values.services.heimdall }}
+{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "bor.fullname" . }}-heimdall
-  {{- if .Values.services.heimdall.annotations }}
+  name: {{ include "bor.fullname" $ }}-heimdall
+  {{- with .annotations }}
   annotations:
-    {{- .Values.services.heimdall.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     service-type: heimdall
-    {{- include "bor.labels" . | nindent 4 }}
+    {{- include "bor.labels" $ | nindent 4 }}
 spec:
-  type: {{ .Values.services.heimdall.type }}
-  {{- with .Values.services.heimdall.loadBalancerIP }}
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.heimdall.clusterIP }}
+  {{- with .clusterIP }}
   clusterIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.heimdall.externalTrafficPolicy }}
+  {{- with .externalTrafficPolicy }}
   externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.heimdall.internalTrafficPolicy }}
+  {{- with .internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.rpc.publishNotReadyAddresses }}
+  {{- with .publishNotReadyAddresses }}
   publishNotReadyAddresses: {{ . }}
   {{- end }}
   ports:
     - name: http
-      port: {{ .Values.services.heimdall.port }}
+      port: {{ .port }}
       targetPort: http
   selector:
-    {{- include "bor.selectorLabels" . | nindent 4 }}
+    {{- include "bor.selectorLabels" $ | nindent 4 }}
+{{- end }}
 {{- end }}

@@ -248,6 +248,10 @@ init:
   # download Bor snapshot from official source
   downloadSnapshot:
     enabled: false
+    image:
+      repository: docker.io/debian
+      tag: stable-slim
+      pullPolicy: Always
   # download Genesis
   downloadGenesis:
     enabled: true

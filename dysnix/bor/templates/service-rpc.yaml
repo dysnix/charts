@@ -1,44 +1,46 @@
-{{- if .Values.services.rpc.enabled }}
+{{- with .Values.services.rpc }}
+{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "bor.fullname" . }}-rpc
-  {{- if .Values.services.rpc.annotations }}
+  name: {{ include "bor.fullname" $ }}-rpc
+  {{- with .annotations }}
   annotations:
-    {{- .Values.services.rpc.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     service-type: rpc
-    {{- include "bor.labels" . | nindent 4 }}
+    {{- include "bor.labels" $ | nindent 4 }}
 spec:
-  type: {{ .Values.services.rpc.type }}
-  {{- with .Values.services.rpc.loadBalancerIP }}
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.rpc.clusterIP }}
+  {{- with .clusterIP }}
   clusterIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.rpc.externalTrafficPolicy }}
+  {{- with .externalTrafficPolicy }}
   externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.rpc.internalTrafficPolicy }}
+  {{- with .internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.rpc.publishNotReadyAddresses }}
+  {{- with .publishNotReadyAddresses }}
   publishNotReadyAddresses: {{ . }}
   {{- end }}
   ports:
     - name: http
-      port: {{ .Values.services.rpc.http.port }}
+      port: {{ .http.port }}
       targetPort: http
-    {{- if .Values.services.rpc.ws.enabled }}
+    {{- if .ws.enabled }}
     - name: ws
-      port: {{ .Values.services.rpc.ws.port }}
+      port: {{ .ws.port }}
       targetPort: ws
     {{- end }}
   selector:
-    {{- include "bor.selectorLabels" . | nindent 4 }}
-    {{- with .Values.podStatusLabels }}
+    {{- include "bor.selectorLabels" $ | nindent 4 }}
+    {{- with $.Values.podStatusLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+{{- end }}
 {{- end }}
