@@ -7,7 +7,5 @@ metadata:
 data:
   check-readiness.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_check-readiness.tpl") . | nindent 4 }}
-  init-genesis.sh: |-
-    {{- include (print $.Template.BasePath "/scripts/_init-genesis.tpl") . | nindent 4 }}
   download-snapshot.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_download-snapshot.tpl") . | nindent 4 }}

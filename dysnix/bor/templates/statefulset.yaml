@@ -14,7 +14,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
       labels:
         {{- include "bor.selectorLabels" . | nindent 8 }}
         {{- with .Values.podStatusLabels }}
@@ -43,22 +44,40 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.init.genesis.enabled }}
-      - name: init-genesis
+      {{- if .Values.init.pruneState.enabled }}
+      - name: prune-state
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        command: ["sh", "/scripts/init-genesis.sh"]
+        args:
+        - snapshot
+        - prune-state
+        - --datadir
+        - /data
+        {{- with .Values.init.pruneState.extraArgs }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         volumeMounts:
-        - name: scripts
-          mountPath: /scripts
         - name: data
           mountPath: /data
       {{- end }}
-      {{- if .Values.init.downloadSnapshot }}
+      {{- if .Values.init.downloadGenesis.enabled }}
+      - name: download-genesis
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command: ["sh", "-c", "wget -O /data/genesis.json {{ .Values.init.downloadGenesis.url }}"]
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      {{- end }}
+      {{- if .Values.init.downloadSnapshot.enabled }}
       - name: download-snapshot
         image: debian:stable-slim
         imagePullPolicy: Always

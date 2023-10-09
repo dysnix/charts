@@ -95,7 +95,7 @@ Render Toml properties
 			{{- else }}
 				{{- $v = quote $v }}
 			{{- end }}
-		{{- else if kindIs "float64" $v }}
+		{{- else if or (kindIs "int" $v) (kindIs "float64" $v) }}
 			{{- $v = int $v }}
 		{{- else if kindIs "slice" $v }}
 			{{- $v = include "toml.list" $v }}
