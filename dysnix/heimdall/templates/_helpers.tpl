@@ -67,7 +67,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Convert Golang slice to Toml arrat
+Convert Golang slice to Toml array
 */}}
 {{- define "toml.list" -}}
 {{- print "[" }}
