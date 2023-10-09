@@ -137,3 +137,16 @@ Render full Toml config including tables
 	{{- end }}
 {{- end }}
 {{- end }}
+
+{{- define "heimdall.healthcheck" -}}
+{{- $context := index . 0 }}
+{{- $root := index . 1 }}
+{{- if and $root.exec (kindIs "string" $root.exec.command) }}
+{{- omit $root "enabled" "exec" | toYaml }}
+exec:
+  command:
+		{{- tpl $root.exec.command $context | nindent 4 }}
+{{- else }}
+{{- omit $root "enabled" | toYaml }}
+{{- end }}
+{{- end }}
