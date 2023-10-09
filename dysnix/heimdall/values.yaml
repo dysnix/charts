@@ -222,7 +222,7 @@ init:
     enabled: true
     url: https://raw.githubusercontent.com/maticnetwork/heimdall/master/builder/files/genesis-mainnet-v1.json
   downloadSnapshot:
-    enabled: true
+    enabled: false
     image:
       repository: docker.io/debian
       tag: stable-slim
