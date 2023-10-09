@@ -59,16 +59,18 @@ spec:
         - name: data
           mountPath: /data
       {{- end }}
-      {{- if .Values.init.downloadSnapshot.enabled }}
+      {{- with .Values.init.downloadSnapshot }}
+      {{- if .enabled }}
       - name: download-snapshot
-        image: debian:stable-slim
-        imagePullPolicy: Always
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
         command: ["sh", "/scripts/download-snapshot.sh"]
         volumeMounts:
         - name: scripts
           mountPath: /scripts
         - name: data
           mountPath: /data
+      {{- end }}
       {{- end }}
       {{- with .Values.extraInitContainers }}
         {{- tpl (toYaml . | nindent 6) $ }}

@@ -222,7 +222,11 @@ init:
     enabled: true
     url: https://raw.githubusercontent.com/maticnetwork/heimdall/master/builder/files/genesis-mainnet-v1.json
   downloadSnapshot:
-    enabled: false
+    enabled: true
+    image:
+      repository: docker.io/debian
+      tag: stable-slim
+      pullPolicy: Always
 
 #######
 ### Polygon network
