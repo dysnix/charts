@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "heimdall.fullname" . }}-config
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+data:
+  config.toml: |-
+    {{- include "toml.config" (list $ .Values.tendermintConfig) | indent 4 }}
+  heimdall-config.toml: |-
+    {{- include "toml.config" (list $ .Values.heimdallConfig) | indent 4 }}
+  app.toml: |-
+    {{- include "toml.config" (list $ .Values.appConfig) | indent 4 }}
