@@ -1,39 +1,44 @@
-{{- if .Values.services.rest.enabled }}
+{{- with .Values.services.rest }}
+{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "heimdall.fullname" . }}-rest
-  {{- if .Values.services.rest.annotations }}
+  name: {{ include "heimdall.fullname" $ }}-rest
+  {{- with .annotations }}
   annotations:
-    {{- .Values.services.rest.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     service-type: rest
-    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- include "heimdall.labels" $ | nindent 4 }}
 spec:
-  type: {{ .Values.services.rest.type }}
-  {{- with .Values.services.rest.loadBalancerIP }}
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.rest.clusterIP }}
+  {{- with .clusterIP }}
   clusterIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.rest.externalTrafficPolicy }}
+  {{- with .externalTrafficPolicy }}
   externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.rest.internalTrafficPolicy }}
+  {{- with .internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.rest.publishNotReadyAddresses }}
+  {{- with .publishNotReadyAddresses }}
   publishNotReadyAddresses: {{ . }}
   {{- end }}
   ports:
     - name: rest
-      port: {{ .Values.services.rest.port }}
+      port: {{ .port }}
       targetPort: rest
+      {{- with .nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
   selector:
-    {{- include "heimdall.selectorLabels" . | nindent 4 }}
-    {{- with .Values.podStatusLabels }}
+    {{- include "heimdall.selectorLabels" $ | nindent 4 }}
+    {{- with $.Values.podStatusLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
+{{- end }}
 {{- end }}
