@@ -1313,6 +1313,28 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/base-0.2.0/base-0.2.0.tgz
     version: 0.2.0
+  bor:
+  - apiVersion: v2
+    appVersion: 1.0.6
+    created: "2023-10-09T15:52:40.269911116Z"
+    description: Polygon Bor execution layer node Helm chart
+    digest: 73a255a8c47daebb480fab03663fc9b3ee35b50923fe2033f9532b94ddd08dbf
+    keywords:
+    - geth
+    - bor
+    - polygon
+    - matic
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: bor
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bor-0.0.1/bor-0.0.1.tgz
+    version: 0.0.1
   bsc:
   - apiVersion: v2
     appVersion: v1.2.4
@@ -5602,4 +5624,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2023-10-09T13:44:35.336456717Z"
+generated: "2023-10-09T15:52:40.270454531Z"
