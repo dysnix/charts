@@ -14,7 +14,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
       labels:
         {{- include "heimdall.selectorLabels" . | nindent 8 }}
         {{- with .Values.podStatusLabels }}
@@ -43,6 +44,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
+      {{- if .Values.init.genesis.enabled }}
       - name: init-genesis
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
@@ -56,7 +58,8 @@ spec:
           mountPath: /scripts
         - name: data
           mountPath: /data
-      {{- if .Values.init.downloadSnapshot }}
+      {{- end }}
+      {{- if .Values.init.downloadSnapshot.enabled }}
       - name: download-snapshot
         image: debian:stable-slim
         imagePullPolicy: Always

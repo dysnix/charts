@@ -87,8 +87,15 @@ Render Toml properties
 {{- range $k, $v := $root }}
 	{{- if not (kindIs "map" $v) }}
 		{{- if kindIs "string" $v }}
-			{{- $v = (tpl $v $context | quote) }}
-		{{- else if kindIs "float64" $v }}
+			{{- if contains "{{" $v }} {{- /* render templated values */}}
+				{{- $v = tpl $v $context }}
+				{{- if not (or (regexMatch "^[0-9]+$" $v) (regexMatch "^(true|false)$" $v)) }}
+					{{- $v = quote $v }}
+				{{- end }}
+			{{- else }}
+				{{- $v = quote $v }}
+			{{- end }}
+		{{- else if or (kindIs "int" $v) (kindIs "float64" $v) }}
 			{{- $v = int $v }}
 		{{- else if kindIs "slice" $v }}
 			{{- $v = include "toml.list" $v }}
@@ -115,7 +122,7 @@ Render full Toml config including tables
 		{{- end }}
 
 [{{ $k }}]
-		{{- include "toml.properties" (list $v $context) }}				{{/* 1st-level table */}}
+		{{- include "toml.properties" (list $v $context) }}				{{- /* 1st-level table */}}
 		{{- range $i, $j := $v }}
 			{{- if kindIs "map" $j }}
 				{{- if contains "." $i }}
@@ -124,7 +131,7 @@ Render full Toml config including tables
 				{{- $i = print $k "." $i }}
 
 [{{ $i }}]
-				{{- include "toml.properties" (list $j $context) }}		{{/* 2nd-level table */}}
+				{{- include "toml.properties" (list $j $context) }}		{{- /* 2nd-level table */}}
 			{{- end }}
 		{{- end }}
 	{{- end }}

@@ -8,7 +8,7 @@ if [ ! -f /data/.downloaded ]; then
   sed -i 's/sudo//g' download.sh
   chmod +x download.sh
 
-  ./download.sh --network {{ .Values.network }} --client heimdall --extract-dir /data/data --validate-checksum false
+  ./download.sh --network {{ .Values.network }} --client heimdall --extract-dir /data/data --validate-checksum true
   touch /data/.downloaded
 else
   echo "Initial snapshot already downloaded, skipping."
