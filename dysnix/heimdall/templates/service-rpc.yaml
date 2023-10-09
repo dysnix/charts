@@ -1,0 +1,44 @@
+{{- with .Values.services.rpc }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "heimdall.fullname" $ }}-rpc
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: rpc
+    {{- include "heimdall.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: rpc
+      port: {{ .port }}
+      targetPort: rpc
+      {{- with .nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "heimdall.selectorLabels" $ | nindent 4 }}
+    {{- with $.Values.podStatusLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
+{{- end }}
