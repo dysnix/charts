@@ -4082,6 +4082,28 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/grafana-dashboards-0.1.0/grafana-dashboards-0.1.0.tgz
     version: 0.1.0
+  heimdall:
+  - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2023-10-09T13:44:35.335543358Z"
+    description: Polygon Heimdall consensus layer node Helm chart
+    digest: 9058936746b5bbb0e5cadc7c7b8e8f79a0d054efd5659c7e4d8a8ea53fc9e181
+    keywords:
+    - heimdall
+    - polygon
+    - matic
+    - cryptocurrency
+    - blockchain
+    - consensus
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: heimdall
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/heimdall-0.0.1/heimdall-0.0.1.tgz
+    version: 0.0.1
   kafkamagic:
   - apiVersion: v1
     appVersion: "1.0"
@@ -5580,4 +5602,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2023-10-02T09:35:19.052361789Z"
+generated: "2023-10-09T13:44:35.336456717Z"
