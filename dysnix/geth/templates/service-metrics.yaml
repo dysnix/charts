@@ -1,34 +1,38 @@
-{{- if .Values.services.metrics.enabled }}
+{{- with .Values.services.metrics }}
+{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "geth.fullname" . }}-metrics
-  {{- if .Values.services.metrics.annotations }}
+  name: {{ include "geth.fullname" $ }}-metrics
+  {{- with .annotations }}
   annotations:
-    {{- toYaml .Values.services.metrics.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     service-type: metrics
-    {{- include "geth.labels" . | nindent 4 }}
+    {{- include "geth.labels" $ | nindent 4 }}
 spec:
-  type: {{ .Values.services.metrics.type }}
-  {{- with .Values.services.metrics.loadBalancerIP }}
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.metrics.clusterIP }}
+  {{- with .clusterIP }}
   clusterIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.metrics.externalTrafficPolicy }}
+  {{- with .externalTrafficPolicy }}
   externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.metrics.internalTrafficPolicy }}
+  {{- with .internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  publishNotReadyAddresses: true
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
   ports:
     - name: metrics
-      port: {{ .Values.services.metrics.port }}
+      port: {{ .port }}
       targetPort: metrics
   selector:
-    {{- include "geth.selectorLabels" . | nindent 4 }}
+    {{- include "geth.selectorLabels" $ | nindent 4 }}
+{{- end }}
 {{- end }}

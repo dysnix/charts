@@ -67,9 +67,9 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Toml list generation
+Convert Golang slice to Toml array
 */}}
-{{- define "geth.tomlList" -}}
+{{- define "toml.list" -}}
 {{- print "[" }}
 {{- range $idx, $element := . }}
   {{- if $idx }}, {{ end }}

@@ -55,41 +55,41 @@ MaxBlockHistory = 1024
 MaxPrice = 500000000000
 IgnorePrice = 2
 
-{{- with .Values.config.node }}
+{{ with .Values.config.node -}}
 [Node]
 DataDir = "/root/.ethereum"
 IPCPath = {{ .ipc.enabled | ternary .ipc.path "" | quote }}
 HTTPHost = {{ .http.enabled | ternary "0.0.0.0" "" | quote }}
 HTTPPort = {{ .http.port }}
-HTTPVirtualHosts = {{ include "geth.tomlList" .http.vhosts }}
-HTTPModules = {{ include "geth.tomlList" .http.modules }}
-HTTPCors = {{ include "geth.tomlList" .http.cors }}
+HTTPVirtualHosts = {{ include "toml.list" .http.vhosts }}
+HTTPModules = {{ include "toml.list" .http.modules }}
+HTTPCors = {{ include "toml.list" .http.cors }}
 AuthAddr = "0.0.0.0"
 AuthPort = {{ .authrpc.port }}
-AuthVirtualHosts = {{ include "geth.tomlList" .authrpc.vhosts }}
+AuthVirtualHosts = {{ include "toml.list" .authrpc.vhosts }}
 WSHost = {{ .ws.enabled | ternary "0.0.0.0" "" | quote }}
 WSPort = {{ .ws.port }}
-WSModules = {{ include "geth.tomlList" .ws.modules }}
-WSOrigins = {{ include "geth.tomlList" .ws.origins }}
+WSModules = {{ include "toml.list" .ws.modules }}
+WSOrigins = {{ include "toml.list" .ws.origins }}
 GraphQLVirtualHosts = ["localhost"]
 BatchRequestLimit = 1000
 BatchResponseMaxSize = 25000000
 JWTSecret = "/secrets/jwt.hex"
 {{- end }}
 
-{{- with .Values.config.node.p2p }}
+{{ with .Values.config.node.p2p -}}
 [Node.P2P]
 MaxPeers = {{ int .maxPeers }}
 NoDiscovery = {{ .noDiscovery }}
 DiscoveryV4 = true
 {{- if .bootstrapNodes }}
-BootstrapNodes = {{ include "geth.tomlList" .bootstrapNodes }}
+BootstrapNodes = {{ include "toml.list" .bootstrapNodes }}
 {{- end }}
 {{- if .bootstrapNodesV5 }}
-BootstrapNodesV5 = {{ include "geth.tomlList" .bootstrapNodesV5 }}
+BootstrapNodesV5 = {{ include "toml.list" .bootstrapNodesV5 }}
 {{- end }}
-StaticNodes = {{ include "geth.tomlList" .staticNodes }}
-TrustedNodes = {{ include "geth.tomlList" .trustedNodes }}
+StaticNodes = {{ include "toml.list" .staticNodes }}
+TrustedNodes = {{ include "toml.list" .trustedNodes }}
 ListenAddr = ":{{ .port }}"
 DiscAddr = ":{{ .discoveryPort }}"
 EnableMsgEvents = false
@@ -101,7 +101,11 @@ ReadHeaderTimeout = 30000000000
 WriteTimeout = 30000000000
 IdleTimeout = 120000000000
 
-{{- with .Values.config.metrics }}
+{{/*
+
+https://github.com/ethereum/go-ethereum/issues/24178
+Metrics section in TOML config does not work, so use only CLI flags
+
 [Metrics]
 Enabled = {{ .enabled }}
 EnabledExpensive = {{ .expensive }}
@@ -115,4 +119,5 @@ InfluxDBTags = "host=localhost"
 InfluxDBToken = "test"
 InfluxDBBucket = "geth"
 InfluxDBOrganization = "geth"
-{{- end }}
+
+*/}}

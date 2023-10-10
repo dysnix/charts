@@ -79,9 +79,16 @@ spec:
         {{- end }}
         {{- if .Values.config.metrics.enabled }}
         - --metrics
+        - --metrics.addr=0.0.0.0
+        - --metrics.port={{ .Values.config.metrics.port }}
+        {{- if .Values.config.metrics.expensive }}
+        - --metrics.expensive
+        {{- end }}
+        {{- end }}
+        {{- if .Values.config.pprof.enabled }}
         - --pprof
         - --pprof.addr=0.0.0.0
-        - --pprof.port={{ .Values.config.metrics.port }}
+        - --pprof.port={{ .Values.config.pprof.port }}
         {{- end }}
         {{- with .Values.extraArgs }}
         {{- tpl (toYaml .) $ | nindent 8 }}
@@ -98,6 +105,10 @@ spec:
         {{- if .Values.config.metrics.enabled }}
         - name: metrics
           containerPort: {{ .Values.config.metrics.port }}
+        {{- end }}
+        {{- if .Values.config.pprof.enabled }}
+        - name: pprof
+          containerPort: {{ .Values.config.pprof.port }}
         {{- end }}
         - name: p2p-tcp
           containerPort: {{ .Values.config.node.p2p.port }}

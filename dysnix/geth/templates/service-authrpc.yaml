@@ -1,34 +1,38 @@
-{{- if .Values.services.authrpc.enabled }}
+{{- with .Values.services.authrpc }}
+{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "geth.fullname" . }}-authrpc
-  {{- if .Values.services.authrpc.annotations }}
+  name: {{ include "geth.fullname" $ }}-authrpc
+  {{- with .annotations }}
   annotations:
-    {{- toYaml .Values.services.authrpc.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     service-type: authrpc
-    {{- include "geth.labels" . | nindent 4 }}
+    {{- include "geth.labels" $ | nindent 4 }}
 spec:
-  type: {{ .Values.services.authrpc.type }}
-  {{- with .Values.services.authrpc.loadBalancerIP }}
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.authrpc.clusterIP }}
+  {{- with .clusterIP }}
   clusterIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.authrpc.externalTrafficPolicy }}
+  {{- with .externalTrafficPolicy }}
   externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.authrpc.internalTrafficPolicy }}
+  {{- with .internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  publishNotReadyAddresses: true
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
   ports:
     - name: authrpc
-      port: {{ .Values.services.authrpc.port }}
+      port: {{ .port }}
       targetPort: authrpc
   selector:
-    {{- include "geth.selectorLabels" . | nindent 4 }}
+    {{- include "geth.selectorLabels" $ | nindent 4 }}
+{{- end }}
 {{- end }}

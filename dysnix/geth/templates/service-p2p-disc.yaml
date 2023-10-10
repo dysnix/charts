@@ -1,38 +1,42 @@
-{{- if and .Values.services.p2pDiscovery.enabled (not .Values.config.node.p2p.useHostPort) }}
+{{- with .Values.services.p2pDiscovery }}
+{{- if and .enabled (not $.Values.config.node.p2p.useHostPort) }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "geth.fullname" . }}-p2p-discovery
-  {{- if .Values.services.p2pDiscovery.annotations }}
+  name: {{ include "geth.fullname" $ }}-p2p-discovery
+  {{- with .annotations }}
   annotations:
-    {{- toYaml .Values.services.p2pDiscovery.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   labels:
     service-type: p2p-discovery
-    {{- include "geth.labels" . | nindent 4 }}
+    {{- include "geth.labels" $ | nindent 4 }}
 spec:
-  type: {{ .Values.services.p2pDiscovery.type }}
-  {{- with .Values.services.p2pDiscovery.loadBalancerIP }}
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
   loadBalancerIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.p2pDiscovery.clusterIP }}
+  {{- with .clusterIP }}
   clusterIP: {{ . }}
   {{- end }}
-  {{- with .Values.services.p2pDiscovery.externalTrafficPolicy }}
+  {{- with .externalTrafficPolicy }}
   externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- with .Values.services.p2pDiscovery.internalTrafficPolicy }}
+  {{- with .internalTrafficPolicy }}
   internalTrafficPolicy: {{ . }}
   {{- end }}
-  publishNotReadyAddresses: true
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
   ports:
     - name: p2p-udp
-      port: {{ .Values.services.p2pDiscovery.port }}
+      port: {{ .port }}
       targetPort: p2p-udp
       protocol: UDP
-      {{- with .Values.services.p2pDiscovery.nodePort }}
+      {{- with .nodePort }}
       nodePort: {{ . }}
       {{- end }}
   selector:
-    {{- include "geth.selectorLabels" . | nindent 4 }}
+    {{- include "geth.selectorLabels" $ | nindent 4 }}
+{{- end }}
 {{- end }}
