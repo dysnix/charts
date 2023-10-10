@@ -286,7 +286,7 @@ config:
     maxpeers: 50
     maxpendpeers: 50
     bind: 0.0.0.0
-    port: 30303
+    port: "{{ .Values.containerPorts.p2p.port }}"
     nodiscover: false
     nat: any            # set it to "extip:<your-ip>" if p2p is not exposed via hostPort
     netrestrict: ""
