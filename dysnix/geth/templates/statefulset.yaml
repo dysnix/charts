@@ -78,6 +78,7 @@ spec:
         - --log.vmodule={{ join "," . }}
         {{- end }}
         {{- if .Values.config.metrics.enabled }}
+        - --metrics
         - --pprof
         - --pprof.addr=0.0.0.0
         - --pprof.port={{ .Values.config.metrics.port }}

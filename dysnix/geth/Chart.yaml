@@ -2,7 +2,7 @@ apiVersion: v2
 name: geth
 description: Go-ethereum blockchain node Helm Chart
 
-version: 1.0.7
+version: 1.0.8
 appVersion: v1.13.1
 
 keywords:
