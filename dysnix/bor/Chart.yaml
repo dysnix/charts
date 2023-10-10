@@ -2,7 +2,7 @@ apiVersion: v2
 name: bor
 description: Polygon Bor execution layer node Helm chart
 
-version: 0.0.2
+version: 0.0.3
 appVersion: "1.0.6"
 
 keywords:

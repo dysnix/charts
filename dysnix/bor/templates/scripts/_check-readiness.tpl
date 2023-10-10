@@ -3,7 +3,7 @@ set -e
 
 # Retrieving latest block timestamp
 get_block_timestamp() {
-  bor attach http://localhost:{{ .Values.config.jsonrpc.http.port }} --exec "eth.getBlock(eth.blockNumber).timestamp" 2>/dev/null
+  bor attach /data/bor.ipc --exec "eth.getBlock(eth.blockNumber).timestamp" 2>/dev/null
 }
 
 if [ -z $1 ]; then

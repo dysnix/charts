@@ -101,7 +101,7 @@ services:
     # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
     # nodePort: 30303
     annotations: {}
-    publishNotReadAddresses: true
+    publishNotReadyAddresses: true
   p2pDiscovery:
     enabled: true
     type: NodePort
@@ -110,7 +110,7 @@ services:
     # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
     # nodePort: 30303
     annotations: {}
-    publishNotReadAddresses: true
+    publishNotReadyAddresses: true
   rpc:
     enabled: true
     type: ClusterIP
@@ -125,13 +125,13 @@ services:
     type: ClusterIP
     port: 7071
     annotations: {}
-    publishNotReadAddresses: true
+    publishNotReadyAddresses: true
   heimdall:
     enabled: true
     type: ClusterIP
     port: 8545
     annotations: {}
-    publishNotReadAddresses: true
+    publishNotReadyAddresses: true
 
 ingress:
   http:
