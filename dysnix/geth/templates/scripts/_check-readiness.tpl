@@ -11,7 +11,7 @@ if [ -z $1 ]; then
 fi
 
 allowed_gap=$1
-current_gap=$(expr $(date +%s) - $(get_block_timestamp))
+current_gap=$(($(date +%s) - $(get_block_timestamp)))
 
 if [ $current_gap -le $allowed_gap ]; then
   exit 0

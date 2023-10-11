@@ -213,7 +213,7 @@ livenessProbe:
   initialDelaySeconds: 120
   periodSeconds: 60
   successThreshold: 1
-  failureThreshold: 3
+  failureThreshold: 10
   timeoutSeconds: 10
   exec:
     command:
@@ -228,7 +228,7 @@ readinessProbe:
   initialDelaySeconds: 60
   periodSeconds: 10
   successThreshold: 1
-  failureThreshold: 1
+  failureThreshold: 2
   timeoutSeconds: 5
   exec:
     command:
