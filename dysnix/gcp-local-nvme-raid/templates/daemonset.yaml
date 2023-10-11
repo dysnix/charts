@@ -5,9 +5,6 @@ metadata:
   labels:
     {{- include "gcp-local-nvme-raid.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "gcp-local-nvme-raid.selectorLabels" . | nindent 6 }}
