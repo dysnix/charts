@@ -201,9 +201,14 @@ spec:
             - mountPath: /mnt/disks
               name: local-disks
               mountPropagation: "HostToContainer"
+      {{- with .Values.tolerations }}
       tolerations:
-        - effect: NoSchedule
-          operator: Exists
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: provisioner-config
           configMap:
