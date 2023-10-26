@@ -32,11 +32,8 @@ check_pod_readiness() {
   deletion_timestamp=$("$KUBECTL" get -o jsonpath='{.metadata.deletionTimestamp}' pod "$1")
   check_ret $? "$(date -Iseconds) Cannot get pod ${1}, abort"
 
-  if [ -z "$deletion_timestamp" ]; then
-    echo "$(date -Iseconds) Pod ${1} is ready, continuing"
-  else
-    echo "$(date -Iseconds) Pod ${1} is terminating, try another time"
-  fi
+  [ -n "$deletion_timestamp" ]
+  check_ret $? "$(date -Iseconds) Pod ${1} is terminating now, try another time" 1
 }
 
 enable_sync() {
