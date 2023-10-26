@@ -7,3 +7,11 @@ metadata:
 data:
   check-readiness.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_check-readiness.tpl") . | nindent 4 }}
+  init-from-s3.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_init-from-s3.tpl") . | nindent 4 }}
+  sync-to-s3.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_sync-to-s3.tpl") . | nindent 4 }}
+  s3-env.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_s3-env.tpl") . | nindent 4 }}
+  s3-cron.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_s3-cron.tpl") . | nindent 4 }}

@@ -50,7 +50,7 @@ command: []
 extraArgs: []
 
 ## Extra init containers, can be templated
-initContainers: []
+extraInitContainers: []
   # - name: dumpconfig
   #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
   #   imagePullPolicy: "{{ .Values.image.pullPolicy }}"
@@ -265,3 +265,42 @@ config:
   pprof:
     enabled: false
     port: 6061
+
+### S3 directory structure
+### Currenly tested only 1 baseUrl per 1 node deployment
+###
+###   baseUrl
+###   ├── ancient_url
+###   └── chaindata_url
+###
+###   cat ancient_url   ->  baseUrl/<your_ancient_destination>
+###   cat chaindata_url ->  baseUrl/<your_chaindata_destination>
+###
+
+s3config:
+  image:
+    repository: peakcom/s5cmd
+    tag: v2.2.2
+    pullPolicy: IfNotPresent
+  baseUrl: S3-BUCKET-NAME/{{ .Release.Name }}
+  endpointUrl: https://storage.googleapis.com
+  accessKeyId: "REPLACEME"
+  secretAccessKey: "REPLACEME"
+
+initFromS3:
+  # enable initContainer
+  enabled: false
+  # download snapshot from S3 on every pod start
+  force: false
+
+syncToS3:
+  # enable initContainer
+  enabled: false
+  # restart pod and trigger sync to S3 inside initContainer by schedule
+  cronjob:
+    enabled: false
+    image:
+      repository: dysnix/kubectl
+      tag: v1.27
+      pullPolicy: IfNotPresent
+    schedule: "0 2 * * *"
