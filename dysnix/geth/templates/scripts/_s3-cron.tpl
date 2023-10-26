@@ -32,7 +32,7 @@ check_pod_readiness() {
   deletion_timestamp=$("$KUBECTL" get -o jsonpath='{.metadata.deletionTimestamp}' pod "$1")
   check_ret $? "$(date -Iseconds) Cannot get pod ${1}, abort"
 
-  [ -n "$deletion_timestamp" ]
+  [ -z "$deletion_timestamp" ]
   check_ret $? "$(date -Iseconds) Pod ${1} is terminating now, try another time" 1
 }
 
