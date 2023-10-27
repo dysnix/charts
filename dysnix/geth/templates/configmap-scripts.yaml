@@ -7,7 +7,7 @@ metadata:
 data:
   check-readiness.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_check-readiness.tpl") . | nindent 4 }}
-  {{- if or .Values.syncToS3.enabled .Values.initFromS3.eanbled }}
+  {{- if or .Values.syncToS3.enabled .Values.initFromS3.enabled }}
   init-from-s3.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_init-from-s3.tpl") . | nindent 4 }}
   sync-to-s3.sh: |-

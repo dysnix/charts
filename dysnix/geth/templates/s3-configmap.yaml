@@ -10,4 +10,10 @@ data:
   S3_CHAINDATA_URL: {{ tpl .Values.s3config.chaindataUrl . }}
   S3_ANCIENT_URL: {{ tpl .Values.s3config.ancientUrl . }}
   FORCE_INIT: {{ ternary "True" "False" .Values.initFromS3.force | quote }}
+  {{- with .Values.s3config.chaindataDir }}
+  CHAINDATA_DIR: {{ tpl . $ }}
+  {{- end }}
+  {{- with .Values.s3config.ancientDir }}
+  ANCIENT_DIR: {{ tpl . $ }}
+  {{- end }}
 {{- end }}

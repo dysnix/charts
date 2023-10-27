@@ -285,6 +285,9 @@ s3config:
   # GCS    https://cloud.google.com/storage/docs/authentication/managing-hmackeys#create
   accessKeyId: REPLACEME
   secretAccessKey: REPLACEME
+  # override local paths
+  # chaindataDir: /root/.ethereum/geth/chaindata
+  # ancientDir: /root/.ethereum/geth/chaindata/ancient
 
 initFromS3:
   # enable initContainer
