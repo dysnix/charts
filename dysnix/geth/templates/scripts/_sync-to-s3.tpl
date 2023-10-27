@@ -34,19 +34,15 @@ interrupt() {
 }
 
 sync() {
-  # get destinations
-  chaindata_dst=$("$S5CMD" cat "s3://${CHAINDATA_URL}")
-  ancient_dst=$("$S5CMD" cat "s3://${ANCIENT_URL}")
-
   # add lockfile while uploading
   # shellcheck disable=SC3028
   echo "${HOSTNAME} $(date +%s)" | "$S5CMD" pipe "s3://${LOCKFILE_URL}"
 
   # perform upload of local data and remove destination objects which don't exist locally
   # run two jobs in parallel, one for chaindata, second for ancient data
-  time "$S5CMD" --stat sync --delete $EXCLUDE_ANCIENT "${CHAINDATA_DIR}/" "s3://${chaindata_dst}/" >/dev/null &
+  time "$S5CMD" --stat sync --delete $EXCLUDE_ANCIENT "${CHAINDATA_DIR}/" "s3://${CHAINDATA_URL}/" &
   upload_chaindata=$!
-  time nice "$S5CMD" --stat sync --delete --part-size 200 --concurrency 2 $EXCLUDE_CHAINDATA "${ANCIENT_DIR}/" "s3://${ancient_dst}/" >/dev/null &
+  time nice "$S5CMD" --stat sync --delete --part-size 200 --concurrency 2 $EXCLUDE_CHAINDATA "${ANCIENT_DIR}/" "s3://${ANCIENT_URL}/" &
   upload_ancient=$!
 
   # handle interruption / termination

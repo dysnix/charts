@@ -67,7 +67,7 @@ main() {
     patch_configmap
     delete_pod "$POD_NAME"
     ;;
-  # intended to be run in sidecar after successful sync, don't interact with pod
+  # intended to be run inside initContainer after successful sync
   "disable_sync")
     disable_sync
     patch_configmap

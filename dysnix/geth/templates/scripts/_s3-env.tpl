@@ -12,20 +12,18 @@ export CHAINDATA_DIR="${CHAINDATA_DIR:-${DATA_DIR}/geth/chaindata}"
 export ANCIENT_DIR="${ANCIENT_DIR:-${CHAINDATA_DIR}/ancient}"
 export INITIALIZED_FILE="${DATA_DIR}/.initialized"
 
-# s3 config
-export S3_BASE_URL="${S3_BASE_URL?S3_BASE_URL not provided.}"
-
 # s3 directory structure config
+export S3_BASE_URL="${S3_BASE_URL?S3_BASE_URL not provided.}"
+export S3_CHAINDATA_URL="${S3_CHAINDATA_URL?S3_CHAINDATA_URL not provided.}"
+export S3_ANCIENT_URL="${S3_ANCIENT_URL?S3_ANCIENT_URL not provided.}"
 export S_COMPLETED="/completed"
-export S_CHAINDATA_URL="/chaindata_url"
-export S_ANCIENT_URL="/ancient_url"
 export S_STATS="/stats"
 export S_LOCKFILE="/lockfile"
+export CHAINDATA_URL="${S3_BASE_URL}${S3_CHAINDATA_URL}"
+export ANCIENT_URL="${S3_BASE_URL}${S3_ANCIENT_URL}"
 export COMPLETED_URL="${S3_BASE_URL}${S_COMPLETED}"
 export LOCKFILE_URL="${S3_BASE_URL}${S_LOCKFILE}"
 export STATS_URL="${S3_BASE_URL}${S_STATS}"
-export CHAINDATA_URL="${S3_BASE_URL}${S_CHAINDATA_URL}"
-export ANCIENT_URL="${S3_BASE_URL}${S_ANCIENT_URL}"
 
 # download/upload options
 export FORCE_INIT="${FORCE_INIT:-False}"

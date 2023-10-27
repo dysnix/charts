@@ -21,13 +21,8 @@ process_inputs() {
   fi
 }
 
-get_src_urls() {
-  chaindata_src=$("$S5CMD" cat "s3://${CHAINDATA_URL}")
-  ancient_src=$("$S5CMD" cat "s3://${ANCIENT_URL}")
-  remote_stats=$("$S5CMD" cat "s3://${STATS_URL}")
-}
-
 progress() {
+  remote_stats=$("$S5CMD" cat "s3://${STATS_URL}")
   case $1 in
   "start")
     while true; do
@@ -73,9 +68,9 @@ sync() {
 
   # perform remote snapshot download and remove local objects which don't exist in snapshot
   # run two jobs in parallel, one for chaindata, second for ancient data
-  time "$S5CMD" --stat sync $EXCLUDE_ANCIENT "s3://${chaindata_src}/*" "${CHAINDATA_DIR}/" >/dev/null &
+  time "$S5CMD" --stat sync $EXCLUDE_ANCIENT "s3://${CHAINDATA_URL}/*" "${CHAINDATA_DIR}/" >/dev/null &
   download_chaindata=$!
-  time nice "$S5CMD" --stat sync --part-size 200 --concurrency 2 $EXCLUDE_CHAINDATA "s3://${ancient_src}/*" "${ANCIENT_DIR}/" >/dev/null &
+  time nice "$S5CMD" --stat sync --part-size 200 --concurrency 2 $EXCLUDE_CHAINDATA "s3://${ANCIENT_URL}/*" "${ANCIENT_DIR}/" >/dev/null &
   download_ancient=$!
 
   # handle interruption / termination
@@ -92,7 +87,6 @@ sync() {
 
 main() {
   process_inputs
-  get_src_urls
   check_lockfile
   sync
 }
