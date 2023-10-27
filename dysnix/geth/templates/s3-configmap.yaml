@@ -1,0 +1,13 @@
+{{- if or .Values.initFromS3.enabled .Values.syncToS3.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geth.fullname" . }}-s3-config
+data:
+  DATA_DIR: /root/.ethereum
+  SYNC_TO_S3: "False"
+  S3_BASE_URL: {{ tpl .Values.s3config.baseUrl . }}
+  S3_CHAINDATA_URL: {{ tpl .Values.s3config.chaindataUrl . }}
+  S3_ANCIENT_URL: {{ tpl .Values.s3config.ancientUrl . }}
+  FORCE_INIT: {{ ternary "True" "False" .Values.initFromS3.force | quote }}
+{{- end }}
