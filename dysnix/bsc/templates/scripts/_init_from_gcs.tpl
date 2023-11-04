@@ -12,8 +12,8 @@ INITIALIZED_FILE="${DATA_DIR}/.initialized"
 #without gs:// or s3://, just a bucket name and path
 INDEX_URL="{{ .Values.bsc.initFromGCS.indexUrl }}"
 S5CMD=/s5cmd
-EXCLUDE_ANCIENT='--exclude "*.cidx" --exclude "*.ridx" --exclude "*.cdat" --exclude "*.rdat"'
-EXCLUDE_STATE='--exclude "*.ldb"'
+EXCLUDE_ANCIENT="--exclude *.cidx --exclude *.ridx --exclude *.cdat --exclude *.rdat"
+EXCLUDE_STATE="--exclude *.ldb"
 INDEX="index"
 S_UPDATING="/updating"
 S_TIMESTAMP="/timestamp"

@@ -26,8 +26,8 @@ RMLOG="${DATA_DIR}/rmlog.txt"
 RMLIST="${DATA_DIR}/rmlist.txt"
 
 # s5cmd excludes just by file extension, not by file path
-EXCLUDE_ANCIENT='--exclude "*.cidx" --exclude "*.ridx" --exclude "*.cdat" --exclude "*.rdat"'
-EXCLUDE_STATE='--exclude "*.ldb"'
+EXCLUDE_ANCIENT="--exclude *.cidx --exclude *.ridx --exclude *.cdat --exclude *.rdat"
+EXCLUDE_STATE="--exclude *.ldb"
 
 S_UPDATING="/updating"
 S_TIMESTAMP="/timestamp"
