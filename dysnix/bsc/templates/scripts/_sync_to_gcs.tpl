@@ -74,9 +74,9 @@ ${S5CMD} cp updating "s3://${UPDATING_URL}"
 # sync from local disk to cloud with removing existing [missing on local disk] files
 # run multiple syncs in background
 # sync is recursive by default, thus we need to exclude ancient data here
-time ${S5CMD} --stat sync --delete ${EXCLUDE_ANCIENT} "${CHAINDATA_DIR}/" "s3://${STATE_DST}/"  > cplist_state.txt &
+time ${S5CMD} --stat --log error sync --delete ${EXCLUDE_ANCIENT} "${CHAINDATA_DIR}/" "s3://${STATE_DST}/" &
 STATE_CP_PID=$!
-time nice ${S5CMD} --stat sync --delete --part-size 200 --concurrency 2 ${EXCLUDE_STATE} "${CHAINDATA_DIR}/ancient/" "s3://${ANCIENT_DST}/"  > cplist_ancient.txt &
+time nice ${S5CMD} --stat --log error sync --delete --part-size 200 --concurrency 2 ${EXCLUDE_STATE} "${CHAINDATA_DIR}/ancient/" "s3://${ANCIENT_DST}/" &
 ANCIENT_CP_PID=$!
 # Wait for each specified child process and return its termination status
 # errors are "handled" by "set -e"
