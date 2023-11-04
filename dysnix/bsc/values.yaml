@@ -126,7 +126,7 @@ bsc:
   initFromRsyncImage: instrumentisto/rsync-ssh:latest
   initFromGCS:
     enabled: false
-    image: peakcom/s5cmd:v2.0.0
+    image: peakcom/s5cmd:v2.2.2
     endpoint: "https://storage.googleapis.com"
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
@@ -134,8 +134,7 @@ bsc:
     fullResyncOnSrcUpdate: false
   syncToGCS:
     enabled: false
-    # v2.0.0 may lead to OOM issues during uploads
-    image: peakcom/s5cmd:v1.4.0
+    image: peakcom/s5cmd:v2.2.2
     endpoint: "https://storage.googleapis.com"
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
@@ -305,7 +304,7 @@ rsyncd:
   service:
     port: 1873
     name: rsyncd
-# clean up GCS using a list from sync-to-gcs
+# legacy clean up GCS using a list from sync-to-gcs
 # workload identity is used
 gcsCleanup:
   enabled: false

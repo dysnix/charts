@@ -115,7 +115,7 @@ while [ "${SYNC}" -gt 0 ] ; do
     # we don't wanna sync ancient data here
     time ${S5CMD} sync ${EXCLUDE_ANCIENT} s3://${STATE_SRC}/* ${CHAINDATA_DIR}/ > cplist_state.txt &
     STATE_CP_PID=$!
-    time nice ${S5CMD} sync --part-size 200 --concurrency 2 ${EXCLUDE_STATE} s3://${ANCIENT_SRC}/* ${CHAINDATA_DIR}/ancient/ > cplist_ancient.txt &
+    time nice ${S5CMD} sync --delete --part-size 200 --concurrency 2 ${EXCLUDE_STATE} s3://${ANCIENT_SRC}/* ${CHAINDATA_DIR}/ancient/ > cplist_ancient.txt &
     ANCIENT_CP_PID=$!
 
     # wait for all syncs to complete
