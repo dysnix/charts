@@ -26,8 +26,8 @@ RMLOG="${DATA_DIR}/rmlog.txt"
 RMLIST="${DATA_DIR}/rmlist.txt"
 
 # s5cmd excludes just by file extension, not by file path
-EXCLUDE_ANCIENT='--exclude "*.cidx" --exclude "*.ridx" --exclude "*.cdat" --exclude "*.rdat"'
-EXCLUDE_STATE='--exclude "*.ldb"'
+EXCLUDE_ANCIENT="--exclude *.cidx --exclude *.ridx --exclude *.cdat --exclude *.rdat"
+EXCLUDE_STATE="--exclude *.ldb"
 
 S_UPDATING="/updating"
 S_TIMESTAMP="/timestamp"
@@ -71,12 +71,12 @@ ${S5CMD} cp updating "s3://${UPDATING_URL}"
 
 # we're ready to perform actual data copy
 
-# sync from local disk to cloud, without removing existing [missing on local disk] files
+# sync from local disk to cloud with removing existing [missing on local disk] files
 # run multiple syncs in background
-# cp is recursive by default, thus we need to exclude ancient data here
-time ${S5CMD} cp -n -s -u ${EXCLUDE_ANCIENT} "${CHAINDATA_DIR}/" "s3://${STATE_DST}/"  > cplist_state.txt &
+# sync is recursive by default, thus we need to exclude ancient data here
+time ${S5CMD} --stat --log error sync --delete ${EXCLUDE_ANCIENT} "${CHAINDATA_DIR}/" "s3://${STATE_DST}/" &
 STATE_CP_PID=$!
-time nice ${S5CMD} cp -n -s -u --part-size 200 --concurrency 2 ${EXCLUDE_STATE} "${CHAINDATA_DIR}/ancient/" "s3://${ANCIENT_DST}/"  > cplist_ancient.txt &
+time nice ${S5CMD} --stat --log error sync --delete --part-size 200 --concurrency 2 ${EXCLUDE_STATE} "${CHAINDATA_DIR}/ancient/" "s3://${ANCIENT_DST}/" &
 ANCIENT_CP_PID=$!
 # Wait for each specified child process and return its termination status
 # errors are "handled" by "set -e"
@@ -94,20 +94,3 @@ INODES=$(df -Phi "${DATA_DIR}" | tail -n 1 | awk '{print $3}')
 SIZE=$(df -P -BG "${DATA_DIR}" | tail -n 1 | awk '{print $3}')G
 echo -ne "Inodes:\t${INODES} Size:\t${SIZE}" > stats
 ${S5CMD} cp stats "s3://${STATS_URL}"
-
-# get number of objects copied
-cat cplist_state.txt cplist_ancient.txt > "${CPLIST}"
-# we use a heuristic here - lot of uploaded objects => lot of object to remove in the cloud => we need to generate removal list
-CP_OBJ_NUMBER=$(wc -l < "${CPLIST}")
-echo "$(date -Iseconds) Uploaded objects: ${CP_OBJ_NUMBER}" | tee -a "${CPLOG}"
-set +e
-FORCE_CLEANUP=$(echo "{{ .Values.bsc.syncToGCS.forceCleanup }}" | tr '[:upper:]' '[:lower:]')
-if [ "${CP_OBJ_NUMBER}" -gt 1000 ] || [ "${FORCE_CLEANUP}" == "true" ] ;then
-  set -e
-  # s5cmd doesn't support GCS object removal, just generate a list of files to remove via gsutil
-  # removal should be done in another sidecar
-  time $S5CMD --dry-run cp -n ${EXCLUDE_ANCIENT} "s3://${STATE_DST}/*" "${CHAINDATA_DIR}/" | awk '{print $2}'|sed 's/^s3/gs/' > rmlist.txt
-  time $S5CMD --dry-run cp -n ${EXCLUDE_STATE} "s3://${ANCIENT_DST}/*" "${CHAINDATA_DIR}/ancient/" | awk '{print $2}'|sed 's/^s3/gs/' >> rmlist.txt
-  echo "$(date -Iseconds) Objects to remove: $(wc -l < rmlist.txt)" | tee -a "${RMLOG}"
-  cp rmlist.txt "${RMLIST}"
-fi
