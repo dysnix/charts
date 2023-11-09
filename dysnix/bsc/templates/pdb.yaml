@@ -9,9 +9,11 @@ spec:
 {{- with .Values.podDisruptionBudget }}
 {{- if .minAvailable }}
   minAvailable: {{ .minAvailable }}
-{{- end }}
-{{- if .maxUnavailable }}
+{{- else if .maxUnavailable }}
   maxUnavailable: {{ .maxUnavailable }}
+{{- end }}
+{{- if .unhealthyPodEvictionPolicy }}
+  unhealthyPodEvictionPolicy: {{ .unhealthyPodEvictionPolicy }}
 {{- end }}
 {{- end }}
   selector:
