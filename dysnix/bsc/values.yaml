@@ -547,5 +547,6 @@ affinity:
 
 podDisruptionBudget:
   enabled: false
-  minAvailable: 1
+#  minAvailable: 1
 #  maxUnavailable: 1
+#  unhealthyPodEvictionPolicy: AlwaysAllow
