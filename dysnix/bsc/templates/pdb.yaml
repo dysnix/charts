@@ -1,0 +1,21 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "bsc.labels" . | nindent 4 }}
+spec:
+{{- with .Values.podDisruptionBudget }}
+{{- if .minAvailable }}
+  minAvailable: {{ .minAvailable }}
+{{- end }}
+{{- if .maxUnavailable }}
+  maxUnavailable: {{ .maxUnavailable }}
+{{- end }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bsc.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
