@@ -1,6 +1,64 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{/*
+  App containers template renders values provided by initContainers/containers.
+  It supports:
+    - .reuse, .use order and .values for initContainers
+    - alphabetical order for ordinary containers
+    - reuse=true merges containers with component specific values
+        {container specific} > {component specific} > {container base defaults}
+    - reuse=false merges containers with component specific values
+        {container specific} > {container base defaults}
+
+Usage:
+  {{- include "app.containers" (dict "values" .Values.containers "context" $) | nindent 8 }}
+  or
+  {{- include "app.containers" (dict "initContainers" true "values" .Values.initContainers "context" $) | nindent 8 }}
+*/}}
+{{- define "app.containers" -}}
+  {{/* In nested app.resource.include calls safely use ._include.top */}}
+  {{- $top := dig "_include" "top" .context .context -}}
+  {{- $order := list -}}
+  {{- $values := .values -}}
+  {{- $containers := list -}}
+  {{- $baseDefaults := $top.Files.Get "container-values.yaml" | fromYaml -}}
+  {{- $reuseKeys := list "image" "containerSecurityContext" "command" "args" "env" "envFrom" "volumeMounts" -}}
+
+  {{/* Specify rendering order and pick containers $values */}}
+  {{- if .initContainers -}}
+    {{- $order = .values.use -}}
+    {{- $values = .values.values -}}
+  {{- else -}}
+    {{- $order = keys .values | sortAlpha -}}
+  {{- end -}}
+
+  {{/* Apply rendering order for containers */}}
+  {{- range $_, $name := $order -}}
+    {{- $container := get $values $name -}}
+    {{- if $container -}}
+      {{- $container := merge $container (dict "name" $name) $baseDefaults -}}
+
+      {{- if $container.reuse -}}
+        {{- range $reuseKeys -}}
+          {{/* reuse key is not disabled (the value is nulled), use $.context.Values! */}}
+          {{- if not (typeIs "<nil>" (get $container .)) -}}
+            {{- $container = merge $container (pick $.context.Values .) (dict "name" $name) $baseDefaults -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{- $context := dict "_include" (dict "resource" "container" "initContainer" $.initContainers "values" $container "top" $top) -}}
+      {{- $containerYaml := include "app.resources.include" $context -}}
+      {{- $containers = append $containers ($containerYaml | fromYaml) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if $containers -}}
+    {{- $containers | toYaml -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
 Genenrate container map configuration
 Usage:
   {{ include "app.resources.container" ( dict "value" .Values.path.to.the.Value "context" $) }}
@@ -74,52 +132,4 @@ volumeMounts:
   {{- if .Values.extraVolumeMounts }}
     {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
   {{- end }}
-{{- end -}}
-
-{{/* Get the default values for container and render app.containers */}}
-{{- define "app.containers" -}}
-  {{- $order := list -}}
-  {{- $values := dict -}}
-  {{- $containers := list -}}
-  {{- $containerDefaults := .top.Files.Get "container-values.yaml" | fromYaml -}}
-  {{- $reuseKeys := list "image" "containerSecurityContext" "command" "args" "env" "envFrom" "volumeMounts" -}}
-
-  {{- if .initContainers -}}
-    {{- $order = .values.use -}}
-    {{- $values = .values.values -}}
-  {{- else -}}
-    {{- $order = keys .values | sortAlpha -}}
-    {{- $values = .values -}}
-  {{- end -}}
-
-  {{- range $_, $name := $order -}}
-    {{- $container := get $values $name -}}
-    {{- if $container -}}
-      {{- $container := merge $container (dict "name" $name) -}}
-
-      {{/* Reuse(merge) container values from the parent component */}}
-      {{- if $container.reuse -}}
-
-        {{- range $reuseKeys -}}
-          {{- if and (hasKey $container .) (typeIs "<nil>" (get $container .)) -}}
-            {{/*
-              Container undoes the reuse by setting the value to null, which is
-              effectively equal to the default value (from container-values.yaml)
-            */}}
-          {{- else -}}
-            {{- $container = merge $container (pick $.top._include.Values .) -}}
-          {{- end -}}
-        {{- end -}}
-      {{- end -}}
-
-      {{- $container = merge $container $containerDefaults -}}
-      {{- $containerYaml := include "app.resources.include" (dict "resource" "container" "initContainer" $.initContainers "values" $container "top" $.top) -}}
-      {{- $containers = append $containers ($containerYaml | fromYaml) -}}
-
-    {{- end -}}
-  {{- end -}}
-
-  {{- if $containers -}}
-    {{- $containers | toYaml -}}
-  {{- end -}}
 {{- end -}}

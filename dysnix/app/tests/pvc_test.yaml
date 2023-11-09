@@ -1,0 +1,33 @@
+suite: pvc
+templates:
+  - pvc.yaml
+tests:
+  -
+    it: persistence enabled
+    values:
+      - ./values/persistence.yaml
+      - ./values/app.yaml
+    asserts:
+      -
+        isKind:
+          of: PersistentVolumeClaim
+      -
+        template: pvc.yaml
+        isSubset:
+          path: spec
+          content:
+            resources:
+              requests:
+                storage: 10Gi
+            storageClassName: custom
+  -
+    it: pvc labels
+    values:
+      - ./values/persistence.yaml
+      - ./values/common.yaml
+    asserts:
+    -
+      isSubset:
+        path: metadata.labels
+        content:
+          common: label

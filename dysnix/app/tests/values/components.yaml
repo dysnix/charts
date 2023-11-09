@@ -1,0 +1,11 @@
+app:
+  name: multi
+  components:
+    "": false
+    component: mycomponent
+
+mycomponent:
+  serviceAccount:
+    create: false
+  image:
+    repository: image

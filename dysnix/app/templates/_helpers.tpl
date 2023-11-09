@@ -4,23 +4,14 @@
   Returns the chart operation mode direct or library
 */}}
 {{- define "app.chart.mode" -}}
-  {{- ternary "direct" "library" (eq .Chart.Name "app") -}}
+  {{- ternary "direct" "library" (and (empty .Subcharts.app) (eq .Chart.IsRoot true)) -}}
 {{- end -}}
 
 {{/*
   Returns proper chart name based on the operation mode
 */}}
 {{- define "app.chart.name" -}}
-  {{- ternary ._include.topValues.app.name .Chart.Name (eq "direct" (include "app.chart.mode" .)) -}}
-{{- end -}}
-
-{{/*
-  Component label
-*/}}
-{{- define "app.labels.component" -}}
-  {{- if ._include.component -}}
-    app.kubernetes.io/component: {{ ._include.component }}
-  {{- end -}}
+  {{- ternary ._include.top.Values.app.name .Chart.Name (eq "direct" (include "app.chart.mode" .)) -}}
 {{- end -}}
 
 {{/*
@@ -30,8 +21,8 @@ Create the name of the service account to use
   {{- $sa := .Values.serviceAccount | default dict -}}
   {{- if  $sa.create -}}
     {{- default (include "common.names.fullname" .) $sa.name -}}
-  {{- else if and ._include.topValues.serviceAccount.create $sa.reuse -}}
-    {{- default (include "common.names.fullname" .) ._include.topValues.serviceAccount.name -}}
+  {{- else if and ._include.top.Values.serviceAccount.create $sa.reuse -}}
+    {{- default (include "common.names.fullname" .) ._include.top.Values.serviceAccount.name -}}
   {{- else -}}
     {{- default "default" $sa.name -}}
   {{- end -}}
@@ -113,15 +104,4 @@ targetPort: {{ .value.targetPort }}
 {{- else -}}
 targetPort: {{ .value.targetPort | int }}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Labels to use on deploy.spec.selector.matchLabels and svc.spec.selector
-*/}}
-{{- define "common.labels.matchLabels" -}}
-app.kubernetes.io/name: {{ include "common.names.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- range $key, $value := ._include.topValues.selector.matchLabels }}
-{{ $key }}: {{ ternary $value ($value | toString) (kindIs "string" $value) }}
-{{- end }}
 {{- end -}}

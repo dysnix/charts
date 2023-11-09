@@ -291,23 +291,21 @@ containers:
 
 ### App chart parameters
 
-| Name                   | Description                                                                                                            | Value        |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `app.name`             | Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart                           | `app`        |
-| `app.workload.enabled` | Specifies whether the default workload resource is generated (Deployment/StatefulSet etc)                              | `true`       |
-| `app.workload.type`    | Specifies type of the main workload resource                                                                           | `deployment` |
-| `app.components`       | Specifies list of components to enable used in direct mode (it respectively expects .Values.[component] to be present) | `[]`         |
-| `selector.matchLabels` | Specifies additional selector labels for the workload resources and services                                           | `{}`         |
-| `reuse`                | Enables reuse/merge of the upper-level component values (applicable for containers/initContainers)                     | `false`      |
-| `containers`           | Specify a map of additional pod containers                                                                             | `{}`         |
-| `initContainers`       | Specifies initContainers **(use, values map for order and data)**                                                      | `{}`         |
-| `env`                  | Name Map of environment variables for the main container                                                               | `{}`         |
-| `envFrom`              | Configures of envFrom to include into the main container                                                               | `[]`         |
-| `volumes`              | Specify volumes for the main pod                                                                                       | `{}`         |
-| `volumeMounts`         | Specify volumeMounts for the main container                                                                            | `{}`         |
-| `configMaps`           | Creates application сonfigMaps (note the name is prefixed with the app name)                                           | `{}`         |
-| `secrets`              | Creates application secrets (note the name is prefixed with the app name)                                              | `{}`         |
-| `templateChecksums`    | Specifies list of template files to add as an annotation checksum into the pod.                                        | `[]`         |
+| Name                | Description                                                                                        | Value        |
+| ------------------- | -------------------------------------------------------------------------------------------------- | ------------ |
+| `workload`          | Specifies the workload type (deployment/statefulset) for the component                             | `deployment` |
+| `app.name`          | Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart       | `app`        |
+| `app.components`    | Enable/disable the components. For example `{"": false, "foo": true, "bar": "custom"}`.            | `{}`         |
+| `reuse`             | Enables reuse/merge of the upper-level component values (applicable for containers/initContainers) | `false`      |
+| `containers`        | Specify a map of additional pod containers                                                         | `{}`         |
+| `initContainers`    | Specifies initContainers **(use, values map for order and data)**                                  | `{}`         |
+| `env`               | Name Map of environment variables for the main container                                           | `{}`         |
+| `envFrom`           | Configures of envFrom to include into the main container                                           | `[]`         |
+| `volumes`           | Specify volumes for the main pod                                                                   | `{}`         |
+| `volumeMounts`      | Specify volumeMounts for the main container                                                        | `{}`         |
+| `configMaps`        | Creates application сonfigMaps (note the name is prefixed with the app name)                       | `{}`         |
+| `secrets`           | Creates application secrets (note the name is prefixed with the app name)                          | `{}`         |
+| `templateChecksums` | Specifies list of template files to add as an annotation checksum into the pod.                    | `[]`         |
 
 
 ### Global parameters
@@ -405,6 +403,7 @@ containers:
 | `autoscaling.maxReplicas`                         | Maximum number of %%MAIN_OBJECT_BLOCK%% replicas                                                                                                                  | `""`            |
 | `autoscaling.targetCPU`                           | Target CPU utilization percentage                                                                                                                                 | `""`            |
 | `autoscaling.targetMemory`                        | Target Memory utilization percentage                                                                                                                              | `""`            |
+| `autoscaling.behavior`                            | Configure separate scale-up and scale-down behaviors                                                                                                              | `{}`            |
 | `nodeAffinityPreset.type`                         | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                         | `""`            |
 | `nodeAffinityPreset.key`                          | Node label key to match. Ignored if `affinity` is set                                                                                                             | `""`            |
 | `nodeAffinityPreset.values`                       | Node label values to match. Ignored if `affinity` is set                                                                                                          | `[]`            |
@@ -414,6 +413,7 @@ containers:
 | `updateStrategy.type`                             | statefulset strategy type                                                                                                                                         | `RollingUpdate` |
 | `dnsPolicy`                                       | Set DNS policy for the pod. Defaults to "ClusterFirst".                                                                                                           | `nil`           |
 | `hostNetwork`                                     | Host networking requested for this pod. Use the host's network namespace. If this option is set, the ports that will be used must be specified. Default to false. | `nil`           |
+| `automountServiceAccountToken`                    | Automount service account token for the pod. Defaults to "true"                                                                                                   | `nil`           |
 | `podManagementPolicy`                             | Statefulset Pod management policy, it needs to be Parallel to be able to complete the cluster join                                                                | `OrderedReady`  |
 | `priorityClassName`                               | pods' priorityClassName                                                                                                                                           | `""`            |
 | `topologySpreadConstraints`                       | Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template                                          | `[]`            |
@@ -501,6 +501,7 @@ containers:
 
 | Name                                          | Description                                                                                                              | Value   |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `minReadySeconds`                             | minimum seconds for pod to become ready. 0 is the default k8s value                                                      | `0`     |
 | `rbac.create`                                 | Specifies whether RBAC resources should be created                                                                       | `false` |
 | `rbac.rules`                                  | Custom RBAC rules to set                                                                                                 | `[]`    |
 | `serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                     | `true`  |

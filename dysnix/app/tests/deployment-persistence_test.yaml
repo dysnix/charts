@@ -1,6 +1,5 @@
-suite: persistence
+suite: deployment
 templates:
-  - pvc.yaml
   - deployment.yaml
 tests:
   -
@@ -10,20 +9,6 @@ tests:
       - ./values/app.yaml
     asserts:
       -
-        template: pvc.yaml
-        isKind:
-          of: PersistentVolumeClaim
-      -
-        template: pvc.yaml
-        isSubset:
-          path: spec
-          content:
-            resources:
-              requests:
-                storage: 10Gi
-            storageClassName: custom
-      -
-        template: deployment.yaml
         contains:
           path: spec.template.spec.volumes
           any: true
@@ -32,7 +17,6 @@ tests:
             persistentVolumeClaim:
               claimName: RELEASE-NAME-app
       -
-        template: deployment.yaml
         contains:
           path: spec.template.spec.containers[0].volumeMounts
           any: true
@@ -47,11 +31,6 @@ tests:
       persistence.existingClaim: existing-claim
     asserts:
       -
-        template: pvc.yaml
-        hasDocuments:
-          count: 0
-      -
-        template: deployment.yaml
         contains:
           path: spec.template.spec.containers[0].volumeMounts
           any: true
@@ -66,10 +45,6 @@ tests:
       persistence.emptyDir: true
     asserts:
       -
-        template: pvc.yaml
-        isKind:
-          of: PersistentVolumeClaim
-      -
         template: deployment.yaml
         contains:
           path: spec.template.spec.volumes
@@ -77,15 +52,3 @@ tests:
           content:
             name: data
             emptyDir: {}
-  -
-    it: pvc labels
-    values:
-      - ./values/persistence.yaml
-      - ./values/common.yaml
-    asserts:
-    -
-      template: pvc.yaml
-      isSubset:
-        path: metadata.labels
-        content:
-          common: label

@@ -9,7 +9,6 @@ metadata:
   namespace: {{ include "common.names.namespace" . | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
-    {{- include "app.labels.component" . | nindent 4 }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -49,14 +48,8 @@ spec:
     {{- end }}
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-    {{- include "app.labels.component" . | nindent 4 }}
 {{- end }}
 {{- end -}}
 
-{{/* Include the resource */}}
-{{- if eq "direct" (include "app.chart.mode" .) -}}
-  {{- range $_, $component := concat (list "") $.Values.app.components -}}
-    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
-    {{- include "app.service" (dict "component" $component "values" $values "top" $) -}}
-  {{- end -}}
-{{- end -}}
+{{/* Includes this resource */}}
+{{- include "app.template" . -}}

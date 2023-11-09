@@ -35,10 +35,6 @@ tests:
           path: spec.ports
           content:
             name: zdisabled
-      - isSubset:
-          path: spec.selector
-          content:
-            tenant: foo
   -
     it: check extended port configuration
     values:

@@ -7,7 +7,7 @@ tests:
     values:
       - ./values/common.yaml
     set:
-      app.workload.type: deployment
+      app.workload: deployment
     asserts:
       - isKind:
           of: Deployment
@@ -19,7 +19,7 @@ tests:
     values:
       - ./values/common.yaml
     set:
-      app.workload.type: deployment
+      app.workload: deployment
       namespaceOverride: foo
     asserts:
       - isKind:
@@ -32,7 +32,7 @@ tests:
     values:
       - ./values/common.yaml
     set:
-      app.workload.type: deployment
+      app.workload: deployment
     release:
       name: foo
     asserts:
@@ -44,20 +44,11 @@ tests:
     values:
       - ./values/common.yaml
     set:
-      app.workload.type: deployment
+      app.workload: deployment
     asserts:
       - equal:
           path: spec.template.spec.containers[0].image
           value: foo/alpine:bar
-  -
-    it: selector matchLabels
-    values:
-      - ./values/common.yaml
-    asserts:
-      - isSubset:
-          path: spec.selector.matchLabels
-          content:
-            tenant: foo
   -
     it: deployment labels
     values:
