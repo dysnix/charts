@@ -7,9 +7,9 @@ metadata:
     {{- include "bsc.labels" . | nindent 4 }}
 spec:
 {{- with .Values.podDisruptionBudget }}
-{{- if .minAvailable }}
+{{- if hasKey . "minAvailable" }}
   minAvailable: {{ .minAvailable }}
-{{- else if .maxUnavailable }}
+{{- else if hasKey . "maxUnavailable" }}
   maxUnavailable: {{ .maxUnavailable }}
 {{- end }}
 {{- if .unhealthyPodEvictionPolicy }}
