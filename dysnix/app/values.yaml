@@ -563,6 +563,9 @@ service:
   ## @param service.annotations Additional custom annotations for service
   ##
   annotations: {}
+  ## @param service.extraSelectors Additional custom selectors for pods to match the service
+  ##
+  extraSelectors: {}
   ## @param service.extraPorts Extra ports to expose in service (normally used with the `sidecars` value)
   ##
   extraPorts: []
