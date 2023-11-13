@@ -18,6 +18,8 @@ As of now **[dysnix/app](https://github.com/dysnix/charts/tree/main/dysnix/app)*
   - HorizontalPodAutoscaler
   - PersistentVolumeClaim
   - ServiceAccount
+  - Role & RoleBinding
+  - PodDisruptionBudget
 
 ## TL;DR
 

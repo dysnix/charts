@@ -381,11 +381,15 @@ podAntiAffinityPreset: soft
 ## @param pdb.create Enable/disable a Pod Disruption Budget creation
 ## @param pdb.minAvailable Minimum number/percentage of pods that should remain scheduled
 ## @param pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable
+## @param pdb.unhealthyPodEvictionPolicy IfHealthyBudget/AlwaysAllow
+## @param pdb.selector extra selector for PDB
 ##
 pdb:
   create: false
   minAvailable: 1
   maxUnavailable: ""
+  unhealthyPodEvictionPolicy: ""
+  selector: {}
 ## Autoscaling configuration
 ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 ## @param autoscaling.enabled Enable autoscaling for %%MAIN_OBJECT_BLOCK%%
