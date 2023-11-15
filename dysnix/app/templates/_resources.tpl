@@ -87,3 +87,11 @@ Usage
 {{- define "app.hpa" -}}
   {{- include "app.resources.include" (dict "resource" "hpa" | merge .) -}}
 {{- end -}}
+
+{{- define "app.pdb" -}}
+  {{- include "app.resources.include" (dict "resource" "pdb" | merge .) -}}
+{{- end -}}
+
+{{- define "app.rbac" -}}
+  {{- include "app.resources.include" (dict "resource" "rbac" | merge .) -}}
+{{- end -}}

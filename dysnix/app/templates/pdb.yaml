@@ -1,0 +1,44 @@
+{{- define "app.resources.pdb" -}}
+{{- if .Values.pdb.create }}
+---
+apiVersion: {{ include "common.capabilities.policy.apiVersion" . }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- include "app.labels.component" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+spec:
+{{- with .Values.pdb }}
+{{/* float64 instead of int seems to be related to https://github.com/helm/helm/issues/1707 */}}
+{{- if and ( hasKey . "minAvailable" ) (or (kindIs "float64" .minAvailable) (kindIs "string" .minAvailable)) }}
+  minAvailable: {{ .minAvailable }}
+{{- else if and ( hasKey . "maxUnavailable" ) (or (kindIs "float64" .maxUnavailable) (kindIs "string" .maxUnavailable)) }}
+  maxUnavailable: {{ .maxUnavailable }}
+{{- end }}
+{{- if and ( hasKey . "unhealthyPodEvictionPolicy" ) (kindIs "string" .unhealthyPodEvictionPolicy ) }}
+  unhealthyPodEvictionPolicy: {{ .unhealthyPodEvictionPolicy }}
+{{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" $| nindent 6 }}
+      {{- if .selector }}
+      {{- include "common.tplvalues.render" (dict "value" .selector "context" $) | nindent 6 }}
+      {{- end }}
+{{- end }}
+{{- end -}}
+{{- end }}
+
+{{/* Include the resource */}}
+{{- if eq "direct" (include "app.chart.mode" .) -}}
+  {{- range $_, $component := concat (list "") $.Values.app.components -}}
+    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
+    {{- include "app.pdb" (dict "component" $component "values" $values "top" $) -}}
+  {{- end -}}
+{{- end -}}

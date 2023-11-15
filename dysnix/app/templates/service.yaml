@@ -50,6 +50,9 @@ spec:
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     {{- include "app.labels.component" . | nindent 4 }}
+    {{- if .Values.service.extraSelectors }}
+      {{- include "common.tplvalues.render" (dict "value" .Values.service.extraSelectors "context" $) | nindent 4 }}
+    {{- end }}
 {{- end }}
 {{- end -}}
 

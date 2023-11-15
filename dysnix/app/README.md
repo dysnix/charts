@@ -18,6 +18,8 @@ As of now **[dysnix/app](https://github.com/dysnix/charts/tree/main/dysnix/app)*
   - HorizontalPodAutoscaler
   - PersistentVolumeClaim
   - ServiceAccount
+  - Role & RoleBinding
+  - PodDisruptionBudget
 
 ## TL;DR
 
@@ -339,7 +341,7 @@ containers:
 ### Main pod Parameters
 
 | Name                                              | Description                                                                                                                                                       | Value           |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |-----------------|
 | `image.registry`                                  | image registry                                                                                                                                                    | `""`            |
 | `image.repository`                                | image repository                                                                                                                                                  | `""`            |
 | `image.tag`                                       | image tag (immutable tags are recommended)                                                                                                                        | `""`            |
@@ -398,8 +400,8 @@ containers:
 | `podAffinityPreset`                               | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                               | `""`            |
 | `podAntiAffinityPreset`                           | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                          | `soft`          |
 | `pdb.create`                                      | Enable/disable a Pod Disruption Budget creation                                                                                                                   | `false`         |
-| `pdb.minAvailable`                                | Minimum number/percentage of pods that should remain scheduled                                                                                                    | `1`             |
-| `pdb.maxUnavailable`                              | Maximum number/percentage of pods that may be made unavailable                                                                                                    | `""`            |
+| `pdb.minAvailable`                                | Minimum number/percentage of pods that should remain scheduled                                                                                                    | `null`          |
+| `pdb.maxUnavailable`                              | Maximum number/percentage of pods that may be made unavailable                                                                                                    | `null`          |
 | `autoscaling.enabled`                             | Enable autoscaling for %%MAIN_OBJECT_BLOCK%%                                                                                                                      | `false`         |
 | `autoscaling.minReplicas`                         | Minimum number of %%MAIN_OBJECT_BLOCK%% replicas                                                                                                                  | `""`            |
 | `autoscaling.maxReplicas`                         | Maximum number of %%MAIN_OBJECT_BLOCK%% replicas                                                                                                                  | `""`            |
