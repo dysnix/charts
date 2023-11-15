@@ -1,5 +1,5 @@
 {{- define "app.resources.rbac" -}}
-{{- if .Values.rbac.create }}
+{{- if and .Values.rbac.create .Values.serviceAccount.create }}
 
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: Role
