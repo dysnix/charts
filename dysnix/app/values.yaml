@@ -386,9 +386,9 @@ podAntiAffinityPreset: soft
 ##
 pdb:
   create: false
-  minAvailable: 1
-  maxUnavailable: ""
-  unhealthyPodEvictionPolicy: ""
+  minAvailable: null
+  maxUnavailable: null
+  unhealthyPodEvictionPolicy: null
   selector: {}
 ## Autoscaling configuration
 ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/

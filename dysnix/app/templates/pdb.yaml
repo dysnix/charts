@@ -17,12 +17,13 @@ metadata:
     {{- end }}
 spec:
 {{- with .Values.pdb }}
-{{- if and ( hasKey . "minAvailable" ) (not (eq .minAvailable "") ) }}
+{{/* float64 instead of int seems to be related to https://github.com/helm/helm/issues/1707 */}}
+{{- if and ( hasKey . "minAvailable" ) (or (kindIs "float64" .minAvailable) (kindIs "string" .minAvailable)) }}
   minAvailable: {{ .minAvailable }}
-{{- else if and ( hasKey . "maxUnavailable" ) (not (eq .maxUnavailable "")) }}
+{{- else if and ( hasKey . "maxUnavailable" ) (or (kindIs "float64" .maxUnavailable) (kindIs "string" .maxUnavailable)) }}
   maxUnavailable: {{ .maxUnavailable }}
 {{- end }}
-{{- if and ( hasKey . "unhealthyPodEvictionPolicy" ) (not (eq .unhealthyPodEvictionPolicy "")) }}
+{{- if and ( hasKey . "unhealthyPodEvictionPolicy" ) (kindIs "string" .unhealthyPodEvictionPolicy ) }}
   unhealthyPodEvictionPolicy: {{ .unhealthyPodEvictionPolicy }}
 {{- end }}
   selector:
