@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       service-type: metrics
-      {{- include "geth.selectorLabels" . | nindent 6 }}
+      {{- include "geth.labels" . | nindent 6 }}
   endpoints:
     - port: metrics
       path: /debug/metrics/prometheus
