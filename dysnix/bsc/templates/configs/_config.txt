@@ -1,44 +1,36 @@
 [Eth]
 NetworkId = 56
+LightPeers = 100
 NoPruning = false
 NoPrefetch = false
-LightPeers = 100
-UltraLightFraction = 75
-TrieTimeout = 100000000000
-EnablePreimageRecording = false
-EWASMInterpreter = ""
-EVMInterpreter = ""
+TrieTimeout = 150000000000
 DisablePeerTxBroadcast = true
 
 [Eth.Miner]
-GasFloor = 30000000
-GasCeil = 40000000
-GasPrice = 1000000000
+GasCeil = 140000000
+GasPrice = 3000000000
 Recommit = 10000000000
-Noverify = false
 
 [Eth.TxPool]
 Locals = []
 NoLocals = true
 Journal = "transactions.rlp"
 Rejournal = 3600000000000
-PriceLimit = 1000000000
+PriceLimit = 3000000000
 PriceBump = 10
-AccountSlots = 512
-GlobalSlots = 10000
-AccountQueue = 256
-GlobalQueue = 5000
-Lifetime = 10800000000000
+AccountSlots = 200
+GlobalSlots = 8000
+AccountQueue = 200
+GlobalQueue = 4000
 
 [Eth.GPO]
 Blocks = 20
 Percentile = 60
-OracleThreshold = 20
+OracleThreshold = 1000
 
 [Node]
 IPCPath = "geth.ipc"
 HTTPHost = "0.0.0.0"
-NoUSB = true
 InsecureUnlockAllowed = false
 HTTPPort = {{ .Values.service.rpcPort }}
 HTTPVirtualHosts = ["{{ join "\",\"" .Values.bsc.rpcVhosts }}"]
