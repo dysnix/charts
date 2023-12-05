@@ -107,8 +107,11 @@ bsc:
   maxpeers: 50
   cache: 8192
   snapshot: false
-  pipecommit: false
-  diffsync: true
+  allowUnprotectedTxs: true
+  preimages: true
+  txlookuplimit: 0            # set this to null and use history.transactions if using BSC >=1.3.x
+  history.transactions: null  # BSC >=1.3.x only
+  pruneancient: false
   # extra arguments to pass to container
   extraArgs: []
   # https://github.com/bnb-chain/bsc/issues/1193
