@@ -99,7 +99,7 @@ bsc:
   gcmode: "full"
   logLevel: "info"
   base_path: "/data"
-  rpcApi: ["eth", "net", "web3", "txpool", "parlia"]
+  rpcApi: ["eth", "net", "web3", "txpool"]
   rpcVhosts: ["*"]
   wsEnabled: false
   wsApi: ["net", "web3", "eth"]
