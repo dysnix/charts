@@ -8,7 +8,7 @@ terminationGracePeriodSeconds: 180
 
 image:
   repository: ghcr.io/bnb-chain/bsc
-  tag: latest
+  tag: ""
   pullPolicy: Always
 
 imagePullSecrets: []
