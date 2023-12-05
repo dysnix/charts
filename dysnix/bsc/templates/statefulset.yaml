@@ -98,7 +98,7 @@ spec:
           {{- if kindIs "float64" (get .Values.bsc "history.transactions") }}
           - --history.transactions={{ int (get .Values.bsc "history.transactions") }}
           {{- end }}
-          {{- if .Values.bsc.preimages }}
+          {{- if get .Values.bsc "cache.preimages" }}
           - --cache.preimages
           {{- end }}
           {{- if .Values.bsc.wsEnabled }}
