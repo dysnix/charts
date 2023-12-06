@@ -84,7 +84,7 @@ spec:
           - --syncmode={{ .Values.bsc.syncmode }}
           - --gcmode={{ .Values.bsc.gcmode }}
           - --maxpeers={{ .Values.bsc.maxpeers }}
-          - --cache={{ .Values.bsc.cache }}
+          - --cache={{ .Values.bsc.cache.value }}
           - --snapshot={{ .Values.bsc.snapshot }}
           - --persistdiff={{ .Values.bsc.persistdiff }}
           - --diffblock={{ .Values.bsc.diffblock }}
@@ -95,10 +95,10 @@ spec:
           {{- if kindIs "float64" .Values.bsc.txlookuplimit }}
           - --txlookuplimit={{ int .Values.bsc.txlookuplimit }}
           {{- end }}
-          {{- if kindIs "float64" (get .Values.bsc "history.transactions") }}
-          - --history.transactions={{ int (get .Values.bsc "history.transactions") }}
+          {{- if kindIs "float64" .Values.bsc.history.transactions }}
+          - --history.transactions={{ int .Values.bsc.history.transactions }}
           {{- end }}
-          {{- if get .Values.bsc "cache.preimages" }}
+          {{- if .Values.bsc.cache.preimages }}
           - --cache.preimages
           {{- end }}
           {{- if .Values.bsc.wsEnabled }}
