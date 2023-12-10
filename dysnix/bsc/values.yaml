@@ -549,6 +549,7 @@ affinity:
               app.kubernetes.io/name: "bsc"
               bsc/chain: "mainnet"
           topologyKey: failure-domain.beta.kubernetes.io/zone
+topologySpreadConstraints: []
 
 podDisruptionBudget:
   enabled: false
