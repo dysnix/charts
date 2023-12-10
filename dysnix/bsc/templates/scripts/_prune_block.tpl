@@ -18,7 +18,7 @@ ret=0
   # background logging
   tail -F "${DATA_DIR}/bsc.log" &
   # prune-block will turn our full node into light one actually
-  $GETH --config=/config/config.toml --datadir=${DATA_DIR} --datadir.ancient=${DATA_DIR}/geth/chaindata/ancient --cache {{ .Values.bsc.cache }} snapshot prune-block --block-amount-reserved=${BLOCKS_RESERVED}
+  $GETH --config=/config/config.toml --datadir=${DATA_DIR} --datadir.ancient=${DATA_DIR}/geth/chaindata/ancient --cache {{ .Values.bsc.cache.value }} snapshot prune-block --block-amount-reserved=${BLOCKS_RESERVED}
   ret=$?
   if [ "${ret}" -eq "0" ];then
     # update timestamp
