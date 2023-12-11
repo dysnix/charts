@@ -27,6 +27,10 @@ spec:
   minReadySeconds: {{ .Values.minReadySeconds }}
   scaleStrategy:
     {{- toYaml .Values.scaleStrategy | nindent 4 }}
+  {{- with .Values.lifecycle }}
+  lifecycle:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
   selector:
     matchLabels:
