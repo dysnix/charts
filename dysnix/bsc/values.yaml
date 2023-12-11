@@ -33,6 +33,8 @@ podManagementPolicy: OrderedReady
 # CloneSet-specific options
 minReadySeconds: 60
 scaleStrategy: {}
+# https://openkruise.io/docs/user-manuals/cloneset#lifecycle-hook
+lifecycle: {}
 # scaleStrategy:
 #  # scale up limit rate
 #  maxUnavailable: 1
