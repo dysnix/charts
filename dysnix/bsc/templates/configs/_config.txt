@@ -5,6 +5,7 @@ NoPruning = false
 NoPrefetch = false
 TrieTimeout = 150000000000
 DisablePeerTxBroadcast = true
+StateScheme = "{{ .Values.bsc.state.scheme }}"
 
 [Eth.Miner]
 GasCeil = 140000000

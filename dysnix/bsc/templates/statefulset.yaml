@@ -133,6 +133,12 @@ spec:
           - --pprof.addr=0.0.0.0
           - --pprof.port={{ .Values.bsc.metrics.service.port }}
           {{- end }}
+          {{- if .Values.bsc.state.scheme }}
+          - --state.scheme={{ .Values.bsc.state.scheme }}
+          {{- end }}
+          {{- if .Values.bsc.db.engine }}
+          - --db.engine={{ .Values.bsc.db.engine }}
+          {{- end }}
           {{- range .Values.bsc.extraArgs }}
           - {{ . }}
           {{- end }}

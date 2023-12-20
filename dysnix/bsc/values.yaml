@@ -112,6 +112,12 @@ bsc:
   cache:
     value: 8192
     preimages: true
+  state:
+    # possible options are "hash" and "path"(1.3.x+)
+    scheme: hash
+  db:
+    # possible options are "leveldb" and "pebble"(1.3.x+)
+    engine: leveldb
   txlookuplimit: 0                        # WARNING: won't work on BSC >=1.3.x, node will crash if it's provided. use ".Values.history.transactions" instead
   history:
     transactions: null                    # BSC >=1.3.x only
