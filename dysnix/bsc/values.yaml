@@ -112,6 +112,14 @@ bsc:
   cache:
     value: 8192
     preimages: true
+  state:
+    # possible options (1.3.x+) are "hash" and "path"
+    # use empty value for 1.2.x
+    scheme: ""
+  db:
+    # possible options (1.3.x+) are "leveldb" and "pebble"
+    # use empty value for 1.2.x
+    engine: ""
   txlookuplimit: 0                        # WARNING: won't work on BSC >=1.3.x, node will crash if it's provided. use ".Values.history.transactions" instead
   history:
     transactions: null                    # BSC >=1.3.x only
@@ -138,6 +146,7 @@ bsc:
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
     indexUrl: "bucket/path/to/file"
+    baseUrlOverride: ""                   # "bucket/path/to/dir"
     fullResyncOnSrcUpdate: false
   syncToGCS:
     enabled: false
