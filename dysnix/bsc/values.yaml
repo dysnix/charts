@@ -144,6 +144,7 @@ bsc:
     keyID: "AWS_ACCESS_KEY_ID"
     accessKey: "AWS_SECRET_ACCESS_KEY"
     indexUrl: "bucket/path/to/file"
+    baseUrlOverride: "" # "bucket/path/to/dir"
     fullResyncOnSrcUpdate: false
   syncToGCS:
     enabled: false

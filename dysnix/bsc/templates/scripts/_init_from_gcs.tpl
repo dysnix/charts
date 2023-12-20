@@ -11,6 +11,7 @@ CHAINDATA_DIR="${DATA_DIR}/geth/chaindata"
 INITIALIZED_FILE="${DATA_DIR}/.initialized"
 #without gs:// or s3://, just a bucket name and path
 INDEX_URL="{{ .Values.bsc.initFromGCS.indexUrl }}"
+GCS_BASE_URL="{{ .Values.bsc.initFromGCS.baseUrlOverride }}"
 S5CMD=/s5cmd
 EXCLUDE_ANCIENT="--exclude *.cidx --exclude *.ridx --exclude *.cdat --exclude *.rdat"
 EXCLUDE_STATE="--exclude *.ldb"
@@ -33,22 +34,24 @@ fi
 # we need to create temp files
 cd /tmp
 
-# get index of source base dirs
-${S5CMD} cp "s3://${INDEX_URL}" "${INDEX}"
+if [ "${GCS_BASE_URL}" == "" ];then
+  # get index of source base dirs
+  ${S5CMD} cp "s3://${INDEX_URL}" "${INDEX}"
 
-# get the most fresh datadir
-# prune time is ignored here, we assume that all datadirs are pruned frequently enough
-GCS_BASE_URL=""
-MAX_TIMESTAMP=1
-for _GCS_BASE_URL in $(cat ${INDEX});do
-  _TIMESTAMP_URL="${_GCS_BASE_URL}${S_TIMESTAMP}"
-  _TIMESTAMP=$(${S5CMD} cat s3://${_TIMESTAMP_URL})
-  if [ "${_TIMESTAMP}" -gt "${MAX_TIMESTAMP}" ];then
-    GCS_BASE_URL="${_GCS_BASE_URL}"
-    MAX_TIMESTAMP=${_TIMESTAMP}
-  fi
-done
-
+  # get the most fresh datadir
+  # prune time is ignored here, we assume that all datadirs are pruned frequently enough
+  MAX_TIMESTAMP=1
+  for _GCS_BASE_URL in $(cat ${INDEX});do
+    _TIMESTAMP_URL="${_GCS_BASE_URL}${S_TIMESTAMP}"
+    _TIMESTAMP=$(${S5CMD} cat s3://${_TIMESTAMP_URL})
+    if [ "${_TIMESTAMP}" -gt "${MAX_TIMESTAMP}" ];then
+      GCS_BASE_URL="${_GCS_BASE_URL}"
+      MAX_TIMESTAMP=${_TIMESTAMP}
+    fi
+  done
+else
+  echo "Using overridden base URL: ${GCS_BASE_URL}"
+fi
 if [ "${GCS_BASE_URL}" == "" ];then
   echo "Fatal: cannot pick up correct base url, exiting"
   exit 1
