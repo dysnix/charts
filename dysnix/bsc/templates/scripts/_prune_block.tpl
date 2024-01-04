@@ -13,12 +13,16 @@ DATA_DIR="{{ .Values.bsc.base_path }}"
 GETH=/usr/local/bin/geth
 # how much recent blocks do we need to keep. Default 0 means we clean up ancientDB completely
 BLOCKS_RESERVED=${1:-0}
-
+{{- if eq .Values.bsc.state.scheme "path" }}
+ANCIENT=${DATA_DIR}/geth/chaindata/ancient/chain/
+{{- else }}
+ANCIENT=${DATA_DIR}/geth/chaindata/ancient/
+{{- end }}
 ret=0
   # background logging
   tail -F "${DATA_DIR}/bsc.log" &
   # prune-block will turn our full node into light one actually
-  $GETH --config=/config/config.toml --datadir=${DATA_DIR} --datadir.ancient=${DATA_DIR}/geth/chaindata/ancient --cache {{ .Values.bsc.cache.value }} snapshot prune-block --block-amount-reserved=${BLOCKS_RESERVED}
+  $GETH --config=/config/config.toml --datadir=${DATA_DIR} --datadir.ancient=${ANCIENT} --cache {{ .Values.bsc.cache.value }} snapshot prune-block --block-amount-reserved=${BLOCKS_RESERVED}
   ret=$?
   if [ "${ret}" -eq "0" ];then
     # update timestamp
