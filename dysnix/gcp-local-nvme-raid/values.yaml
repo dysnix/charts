@@ -17,7 +17,7 @@ podAnnotations: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: 
+securityContext:
   privileged: true
 
 nodeSelector:
@@ -28,3 +28,7 @@ tolerations:
     operator: Exists
 
 affinity: {}
+
+localSsd:
+  mkfsOpts: ""
+  mountPoint: /mnt/disks/raid0

@@ -57,10 +57,10 @@ spec:
 
               if ! tune2fs -l "${device}" ; then
                 echo "Formatting '${device}'"
-                mkfs.ext4 -F "${device}"
+                mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} "${device}"
               fi
 
-              mountpoint=/mnt/disks/raid0
+              mountpoint={{ .Values.localSsd.mountPoint }}
               mkdir -p "${mountpoint}"
               echo "Mounting '${device}' at '${mountpoint}'"
               mount -o discard,defaults "${device}" "${mountpoint}"
