@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "op-node.fullname" . }}
+  labels:
+    {{- include "op-node.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ template "op-node.name" . }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "op-node.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "op-node.selectorLabels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: op-node
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- with .Values.command }}
+        command:
+          {{- tpl (toYaml .) $ | nindent 10 }}
+        {{- end }}
+        args:
+        - --l1={{ .Values.config.l1.url }}
+        - --l1.trustrpc={{ .Values.config.l1.trustRpc }}
+        - --l2={{ .Values.config.l2.url }}
+        - --l2.jwt-secret=/secrets/jwt.hex
+        - --rpc.addr=0.0.0.0
+        - --rpc.port={{ .Values.config.port }}
+        - --network={{ .Values.config.network }}
+        {{- with .Values.config.rollup }}
+        - --rollup.load-protocol-versions={{ .loadProtocolVersions }}
+        {{- with .halt }}
+        - --rollup.halt={{ . }}
+        {{- end }}
+        {{- with .config }}
+        - --rollup.config={{ . }}
+        {{- end }}
+        {{- end }}
+        {{- if kindIs "float64" .Values.config.verifier.l1Confs }}
+        - --verifier.l1-confs={{ int .Values.config.verifier.l1Confs }}
+        {{- end }}
+        {{- if .Values.config.metrics.enabled }}
+        - --metrics.enabled
+        - --metrics.addr=0.0.0.0
+        - --metrics.port={{ .Values.config.metrics.port }}
+        {{- end }}
+        {{- if .Values.config.p2p.nat }}
+        - --p2p.nat
+        {{- end }}
+        {{- if .Values.config.p2p.advertiseIP }}
+        - --p2p.advertise.ip={{ .Values.config.p2p.advertiseIP }}
+        {{- end }}
+        - --p2p.listen.tcp={{ .Values.config.p2p.port }}
+        - --p2p.listen.udp={{ .Values.config.p2p.port }}
+        - --p2p.listen.ip=0.0.0.0
+        {{- with .Values.config.p2p.bootnodes }}
+        - --p2p.bootnodes={{ join "," . }}
+        {{- end }}
+        - --log.level={{ .Values.config.logLevel }}
+        {{- with .Values.extraArgs }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+        {{- end }}
+        ports:
+        - name: rpc
+          containerPort: {{ .Values.config.port }}
+        {{- if .Values.config.metrics }}
+        - name: metrics
+          containerPort: 7300
+        {{- end }}
+        - name: p2p-tcp
+          containerPort: {{ .Values.config.p2p.port }}
+          protocol: TCP
+          {{- if .Values.config.p2p.useHostPort }}
+          hostPort: {{ .Values.config.p2p.port }}
+          {{- end }}
+        - name: p2p-udp
+          containerPort: {{ .Values.config.p2p.port }}
+          protocol: UDP
+          {{- if .Values.config.p2p.useHostPort }}
+          hostPort: {{ .Values.config.p2p.port }}
+          {{- end }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          {{- include "op-node.healthcheck" (list $ .Values.livenessProbe) | nindent 10 }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          {{- include "op-node.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: secrets
+        secret:
+          secretName: {{ template "op-node.fullname" . }}

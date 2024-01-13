@@ -1,0 +1,145 @@
+
+image:
+  repository: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node
+  tag: ""
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+updateStrategy:
+  type: RollingUpdate
+
+terminationGracePeriodSeconds: 300
+
+## Override geth container command (can be templated)
+command: []
+
+## Extra container arguments (can be templated)
+extraArgs: []
+
+## Services config
+services:
+  p2p:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 9222
+    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # nodePort: 9222
+    annotations: {}
+    publishNotReadyAddresses: true
+  p2pDiscovery:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 9222
+    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # nodePort: 9222
+    annotations: {}
+    publishNotReadyAddresses: true
+  rpc:
+    enabled: true
+    type: ClusterIP
+    port: 9545
+    annotations: {}
+  metrics:
+    enabled: true
+    type: ClusterIP
+    port: 7300
+    annotations: {}
+    publishNotReadyAddresses: true
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts: []
+    # - host: op-node.examplerpc.com
+    #   paths:
+    #     - path: /
+    #       pathType: ImplementationSpecific
+  tls: []
+    # - secretName: op-node-tls
+    #   hosts:
+    #     - op-node.examplerpc.com
+
+# Create Prometheus Operator serviceMonitor
+serviceMonitor:
+  enabled: false
+  # interval: 10s
+  # scrapeTimeout: 2s
+  # honorLabels: true
+  # relabelings: []
+  # metricRelabelings: []
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+  timeoutSeconds: 5
+  httpGet:
+    path: /healthz
+    port: rpc
+
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 3
+  timeoutSeconds: 5
+  httpGet:
+    path: /healthz
+    port: rpc
+
+resources: {}
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+## Main op-node config
+config:
+  jwt: ""                              # REQUIRED for communication with op-geth
+  network: op-mainnet                  # which network to use, it can be either optimism, or base, conduit, zora, pgn, etc..
+  port: 9545
+  logLevel: INFO
+  l1:
+    url: https://1rpc.io/eth           # url for eth L1 node
+    trustRpc: false                    # enable if you trust L1 provider and want to fetch data from it faster
+    rpcKind: standard                  # can be: alchemy, quicknode, infura, parity, nethermind, debug_geth, erigon, basic, any, standard
+  l2:
+    url: http://op-geth.optimism:8545  # url of op-geth L2 node
+  rollup:
+    config: ""                         # path to rollup config json
+    loadProtocolVersions: true         # load superchain contract
+    halt: ""                           # possible values: major, minor, patch, none
+  verifier:
+    l1Confs: 0                         # number of L1 blocks to keep distance from the L1 head before deriving L2 data from
+  metrics:
+    enabled: false                     # enable metrics server
+    port: 7300
+  p2p:
+    nat: false                         # use NAT to get external IP
+    advertiseIP: ""                    # override announced p2p IP
+    port: 9222
+    useHostPort: false                 # use hostPort for p2p traffic instead of dedicated k8s svc
+    bootnodes: []                      # override bootnodes
