@@ -132,6 +132,14 @@ spec:
         - name: metrics
           containerPort: 6060
         {{- end }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          {{- include "op-geth.healthcheck" (list $ .Values.livenessProbe) | nindent 10 }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          {{- include "op-geth.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
+        {{- end }}
         volumeMounts:
         - name: data
           mountPath: /root/.ethereum

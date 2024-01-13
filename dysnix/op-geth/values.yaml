@@ -43,14 +43,14 @@ securityContext: {}
   # runAsUser: 1000
   # runAsGroup: 1000
 
-## Override geth container command (can be templated)
+## Override op-geth command (can be templated)
 command: []
 
-## Extra container arguments (can be templated)
+## Extra op-geth arguments (can be templated)
 extraArgs: []
 
 ## Extra init containers, can be templated
-extraInitContainers: {}
+extraInitContainers: []
   # - name: dumpconfig
   #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
   #   imagePullPolicy: "{{ .Values.image.pullPolicy }}"
@@ -68,6 +68,8 @@ sidecarContainers: []
   #     - start:replica-mon
   #     - --referencerpcprovider=https://mainnet.optimism.io
   #     - --targetrpcprovider=http://localhost:{{ .Values.config.http.port }}
+  #     - --hostname=0.0.0.0
+  #     - --port=7300
   #   ports:
   #     - name: replica-mon
   #       containerPort: 7300
@@ -181,6 +183,26 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+livenessProbe:
+  enabled: false
+  # initialDelaySeconds: 120
+  # periodSeconds: 60
+  # successThreshold: 1
+  # failureThreshold: 10
+  # timeoutSeconds: 10
+  # tcpSocket:
+  #   port: http
+
+readinessProbe:
+  enabled: false
+  # initialDelaySeconds: 60
+  # periodSeconds: 10
+  # successThreshold: 1
+  # failureThreshold: 2
+  # timeoutSeconds: 5
+  # tcpSocket:
+  #   port: http
+
 ## Main op-geth config
 config:
   jwt: ""                                                   # REQUIRED for authentication with op-node
@@ -215,7 +237,7 @@ config:
     expensive: false
 
 ## initContainer for datadir snapshot download
-## decompressed on-the-fly
+## archive will be extracted using tarpipe
 init:
   enabled: false
   downloadUrl: https://r2-snapshots.fastnode.io/op/op-16-12-2023-full.tar.lz4

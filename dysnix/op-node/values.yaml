@@ -22,11 +22,29 @@ updateStrategy:
 
 terminationGracePeriodSeconds: 300
 
-## Override geth container command (can be templated)
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 1000
+
+## Override op-node command (can be templated)
 command: []
 
-## Extra container arguments (can be templated)
+## Extra op-node arguments (can be templated)
 extraArgs: []
+
+## Extra init containers, can be templated
+initContainers: []
+
+## Sidecar containers, can be templated
+sidecarContainers: []
 
 ## Services config
 services:
@@ -87,26 +105,26 @@ serviceMonitor:
   # metricRelabelings: []
 
 livenessProbe:
-  enabled: true
-  initialDelaySeconds: 60
-  periodSeconds: 30
-  successThreshold: 1
-  failureThreshold: 3
-  timeoutSeconds: 5
-  httpGet:
-    path: /healthz
-    port: rpc
+  enabled: false
+  # initialDelaySeconds: 60
+  # periodSeconds: 30
+  # successThreshold: 1
+  # failureThreshold: 3
+  # timeoutSeconds: 5
+  # httpGet:
+  #   path: /healthz
+  #   port: rpc
 
 readinessProbe:
   enabled: false
-  initialDelaySeconds: 60
-  periodSeconds: 30
-  successThreshold: 1
-  failureThreshold: 3
-  timeoutSeconds: 5
-  httpGet:
-    path: /healthz
-    port: rpc
+  # initialDelaySeconds: 60
+  # periodSeconds: 30
+  # successThreshold: 1
+  # failureThreshold: 3
+  # timeoutSeconds: 5
+  # httpGet:
+  #   path: /healthz
+  #   port: rpc
 
 resources: {}
 
@@ -119,13 +137,13 @@ tolerations: []
 ## Main op-node config
 config:
   jwt: ""                              # REQUIRED for communication with op-geth
-  network: op-mainnet                  # which network to use, it can be either optimism, or base, conduit, zora, pgn, etc..
+  network: op-mainnet                  # which network to use
   port: 9545
   logLevel: INFO
   l1:
     url: https://1rpc.io/eth           # url for eth L1 node
-    trustRpc: false                    # enable if you trust L1 provider and want to fetch data from it faster
-    rpcKind: standard                  # can be: alchemy, quicknode, infura, parity, nethermind, debug_geth, erigon, basic, any, standard
+    trustrpc: false                    # enable if you trust L1 provider and want to fetch data from it faster
+    rpckind: standard                  # can be: alchemy, quicknode, infura, parity, nethermind, debug_geth, erigon, basic, any, standard
   l2:
     url: http://op-geth.optimism:8545  # url of op-geth L2 node
   rollup:

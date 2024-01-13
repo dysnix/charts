@@ -21,6 +21,11 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "op-node.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -33,17 +38,26 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.initContainers }}
+      initContainers:
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
       containers:
       - name: op-node
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         {{- with .Values.command }}
         command:
           {{- tpl (toYaml .) $ | nindent 10 }}
         {{- end }}
         args:
         - --l1={{ .Values.config.l1.url }}
-        - --l1.trustrpc={{ .Values.config.l1.trustRpc }}
+        - --l1.trustrpc={{ .Values.config.l1.trustrpc }}
+        - --l1.rpckind={{ .Values.config.l1.rpckind }}
         - --l2={{ .Values.config.l2.url }}
         - --l2.jwt-secret=/secrets/jwt.hex
         - --rpc.addr=0.0.0.0
@@ -114,6 +128,9 @@ spec:
           mountPath: /secrets
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+      {{- with .Values.sidecarContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
       volumes:
       - name: secrets
         secret:
