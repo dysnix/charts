@@ -16,6 +16,7 @@ spec:
       labels:
         {{- include "op-node.selectorLabels" . | nindent 8 }}
     spec:
+      enableServiceLinks: false
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
