@@ -4,3 +4,18 @@ description: Optimism op-geth execution-layer client Helm chart
 
 version: 0.1.0
 appVersion: v1.101305.0
+
+keywords:
+  - geth
+  - optimism
+  - op-geth
+  - cryptocurrency
+  - blockchain
+  - ethereum
+
+sources:
+  - https://github.com/dysnix/charts
+
+maintainers:
+  - name: Vladyslav Deryhin
+    email: vladstarrr@icloud.com
