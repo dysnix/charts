@@ -108,7 +108,7 @@ services:
     enabled: true
     type: ClusterIP
     port: 6060
-    publishNotReadyAddresses: true    
+    publishNotReadyAddresses: true
 
 ingress:
   http:
