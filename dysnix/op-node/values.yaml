@@ -140,11 +140,11 @@ config:
   port: 9545
   logLevel: INFO
   l1:
-    url: https://1rpc.io/eth           # url for eth L1 node
+    url: https://1rpc.io/eth           # eth L1 node rpc url, can also be ws://
     trustrpc: false                    # enable if you trust L1 provider and want to fetch data from it faster
     rpckind: standard                  # can be: alchemy, quicknode, infura, parity, nethermind, debug_geth, erigon, basic, any, standard
   l2:
-    url: http://op-geth.optimism:8545  # url of op-geth L2 node
+    url: http://op-geth.optimism:8551  # authrpc addr of op-geth L2 node, can also be ws://
   rollup:
     config: ""                         # path to rollup config json
     loadProtocolVersions: true         # load superchain contract
