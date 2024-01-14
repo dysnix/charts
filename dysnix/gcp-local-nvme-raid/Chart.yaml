@@ -1,6 +1,6 @@
 apiVersion: v2
 name: gcp-local-nvme-raid
-description: A Helm chart for Kubernetes
+description: Deamon installation which create raid with local nvme disk in gke node 
 
 type: application
 
