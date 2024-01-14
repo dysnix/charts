@@ -50,9 +50,12 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.command }}
+        {{- if .Values.command }}
         command:
-          {{- tpl (toYaml .) $ | nindent 10 }}
+          {{- tpl (toYaml .Values.command) $ | nindent 10 }}
+        {{- else }}
+        command:
+        - op-node
         {{- end }}
         args:
         - --l1={{ .Values.config.l1.url }}
