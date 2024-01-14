@@ -201,10 +201,9 @@ spec:
             - mountPath: /mnt/disks
               name: local-disks
               mountPropagation: "HostToContainer"
-      {{- with .Values.tolerations }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - effect: NoSchedule
+          operator: Exists
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
