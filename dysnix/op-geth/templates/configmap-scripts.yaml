@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "op-geth.fullname" . }}-scripts
+  labels:
+    {{- include "op-geth.labels" . | nindent 4 }}
+data:
+  init-download.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_init-download.tpl") . | nindent 4 }}

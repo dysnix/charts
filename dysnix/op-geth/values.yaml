@@ -1,0 +1,250 @@
+image:
+  repository: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth
+  tag: ""
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+updateStrategy:
+  type: RollingUpdate
+
+## --state.scheme=path promised to speed up shutdown
+terminationGracePeriodSeconds: 300
+
+## Extra pod labels
+podLabels: {}
+  # environment: production
+
+## This labels mark Geth node as ready to serve the traffic.
+## Used as selector for RPC service together with `.Values.podLabels` and default labels.
+podStatusLabels: {}
+  # manualstatus: in-service
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  allowPrivilegeEscalation: false
+  privileged: false
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 1000
+
+## Override op-geth command (can be templated)
+command: []
+
+## Extra op-geth arguments (can be templated)
+extraArgs: []
+
+## Extra init containers, can be templated
+extraInitContainers: []
+  # - name: dumpconfig
+  #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  #   imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+  #   command: ["--config", "/config/config.toml", "dumpconfig"]
+  #   volumeMounts:
+  #   - name: config
+  #     mountPath: /config
+
+## Sidecar containers, can be templated
+sidecarContainers: []
+  # - name: replica-mon
+  #   image: us-docker.pkg.dev/oplabs-tools-artifacts/images/chain-mon:v1.1.1
+  #   imagePullPolicy: IfNotPresent
+  #   args:
+  #     - start:replica-mon
+  #     - --referencerpcprovider=https://mainnet.optimism.io
+  #     - --targetrpcprovider=http://localhost:{{ .Values.config.http.port }}
+  #     - --hostname=0.0.0.0
+  #     - --port=7300
+  #   ports:
+  #     - name: replica-mon
+  #       containerPort: 7300
+  #   readinessProbe:
+  #     initialDelaySeconds: 30
+  #     periodSeconds: 5
+  #     successThreshold: 2
+  #     failureThreshold: 3
+  #     exec:
+  #       command:
+  #       - sh
+  #       - -c
+  #       - |
+  #         diff=$(curl -s localhost:7300/metrics | grep "^healthcheck_height" | cut -d' ' -f2)
+  #         test $diff -le 60 && exit 0 || exit 1
+  #   livenessProbe:
+  #     initialDelaySeconds: 60
+  #     periodSeconds: 30
+  #     httpGet:
+  #       path: /healthz
+  #       port: replica-mon
+
+## Services config
+services:
+  rpc:
+    enabled: true
+    type: ClusterIP
+    httpPort: 8545
+    wsPort: 8546
+  authrpc:
+    enabled: true
+    type: ClusterIP
+    port: 8551
+    publishNotReadyAddresses: true
+  metrics:
+    enabled: true
+    type: ClusterIP
+    port: 6060
+    publishNotReadyAddresses: true
+
+ingress:
+  http:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts: []
+      # - host: geth.local
+      #   paths:
+      #     - path: /
+      #       pathType: ImplementationSpecific
+    tls: []
+      # - secretName: geth-tls
+      #   hosts:
+      #     - geth.local
+  ws:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      # - host: geth-ws.local
+      #   paths:
+      #     - path: /
+      #       pathType: ImplementationSpecific
+    tls: []
+      # - secretName: geth-ws-tls
+      #   hosts:
+      #     - geth-ws.local
+
+# Create Prometheus Operator serviceMonitor
+serviceMonitor:
+  enabled: false
+  # interval: 10s
+  # scrapeTimeout: 2s
+  # honorLabels: true
+  # relabelings: []
+  # metricRelabelings: []
+
+persistence:
+  type: pvc
+  # type: hostPath
+  pvc:
+    size: 2048Gi                # starting point for full node
+    accessMode: ReadWriteOnce
+    storageClass: ""           # set to "-" if you want to manually create persistent volume
+    annotations: {}
+  hostPath:
+    path: /data/geth
+    type: Directory            # by default you need to create directory yourself
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+livenessProbe:
+  enabled: false
+  # initialDelaySeconds: 120
+  # periodSeconds: 60
+  # successThreshold: 1
+  # failureThreshold: 10
+  # timeoutSeconds: 10
+  # tcpSocket:
+  #   port: http
+
+readinessProbe:
+  enabled: false
+  # initialDelaySeconds: 60
+  # periodSeconds: 10
+  # successThreshold: 1
+  # failureThreshold: 2
+  # timeoutSeconds: 5
+  # tcpSocket:
+  #   port: http
+
+## Main op-geth config
+config:
+  jwt: ""                                                   # REQUIRED for authentication with op-node
+  network: op-mainnet                                       # equivalent to --op-network arg
+  rollup:
+    halt: ""                                                # stall sync on incompatible protocol (i.e. hardforks), possible values: major, minor, patch, none
+    disabletxpoolgossip: true                               # tx pool gossip not supported currently, so disable it
+    sequencerhttp: https://mainnet-sequencer.optimism.io/   # url of sequencer, depends on .Values.config.network
+  http:
+    port: 8545
+    vhosts: ["*"]
+    corsdomain: ["*"]
+    api: ["eth", "net", "web3"]
+  ws:
+    enabled: false
+    port: 8546
+    origins: ["*"]
+    api: ["eth", "net", "web3"]
+  authrpc:
+    port: 8551
+    vhosts: ["*"]
+  cache: 0            # disable by default, let geth automatically set proper value https://blog.ethereum.org/2023/09/12/geth-v1-13-0
+  syncmode: full      # only "full" is currenly supported, "snap" to be implemented in future
+  gcmode: full        # possible values: full, archive
+  snapshot: true      # enable snapshot generation
+  verbosity: 3
+  bootnodes: []
+  vmodule: []
+  # - rpc=5
+  metrics:
+    enabled: false
+    expensive: false
+
+## initContainer for datadir snapshot download
+## archive will be extracted using tarpipe
+init:
+  download:
+    enabled: false
+    url: https://r2-snapshots.fastnode.io/op/op-16-12-2023-full.tar.lz4
+    image:
+      repository: alpine
+      tag: 3.18
+      pullPolicy: Always

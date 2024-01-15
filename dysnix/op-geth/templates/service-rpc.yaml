@@ -1,0 +1,46 @@
+{{- with .Values.services.rpc }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "op-geth.fullname" $ }}-rpc
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: rpc
+    {{- include "op-geth.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .httpPort }}
+      targetPort: http
+    {{- if $.Values.config.ws.enabled }}
+    - name: ws
+      port: {{ .wsPort }}
+      targetPort: ws
+    {{- end }}
+  selector:
+    {{- include "op-geth.selectorLabels" $ | nindent 4 }}
+    {{- with $.Values.podStatusLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
+{{- end }}

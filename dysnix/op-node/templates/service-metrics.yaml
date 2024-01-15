@@ -1,0 +1,38 @@
+{{- with .Values.services.metrics }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "op-node.fullname" $ }}-metrics
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: metrics
+    {{- include "op-node.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: metrics
+      port: {{ .port }}
+      targetPort: metrics
+  selector:
+    {{- include "op-node.selectorLabels" $ | nindent 4 }}
+{{- end }}
+{{- end }}
