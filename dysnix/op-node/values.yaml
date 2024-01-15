@@ -24,10 +24,12 @@ terminationGracePeriodSeconds: 300
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  allowPrivilegeEscalation: false
+  privileged: false
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
