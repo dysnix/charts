@@ -4988,6 +4988,50 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.0/nifi-registry-0.1.0.tgz
     version: 0.1.0
+  op-geth:
+  - apiVersion: v2
+    appVersion: v1.101305.0
+    created: "2024-01-15T16:53:00.338410904Z"
+    description: Optimism op-geth execution-layer client Helm chart
+    digest: 77a7aabe56e5bf5b8cb6a2057a1758f791cdfa69a83ffffb1bb0d81aecc7be60
+    keywords:
+    - geth
+    - optimism
+    - op-geth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: op-geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/op-geth-0.1.0/op-geth-0.1.0.tgz
+    version: 0.1.0
+  op-node:
+  - apiVersion: v2
+    appVersion: v1.4.2
+    created: "2024-01-15T16:53:00.576399112Z"
+    description: Optimism op-node consensus-layer client Helm chart
+    digest: 2e07ccb47040c13c95e8c3e4fb0d8d0f3c4505fa1f0c4c90dfcb3faa5900647e
+    keywords:
+    - rollup
+    - consensus
+    - optimism
+    - op-node
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: op-node
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/op-node-0.1.0/op-node-0.1.0.tgz
+    version: 0.1.0
   predictkube-auth:
   - apiVersion: v2
     appVersion: 0.1.0
@@ -6046,4 +6090,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2024-01-04T04:03:08.689128546Z"
+generated: "2024-01-15T16:53:00.576809077Z"
