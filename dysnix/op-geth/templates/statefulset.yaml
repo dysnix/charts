@@ -46,11 +46,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.init.enabled }}
-      - name: init
-        image: "{{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}"
-        imagePullPolicy: {{ .Values.init.image.pullPolicy | quote }}
-        command: ["sh", "/scripts/op-geth-init.sh"]
+      {{- if .Values.init.download.enabled }}
+      - name: init-download
+        image: "{{ .Values.init.download.image.repository }}:{{ .Values.init.download.image.tag }}"
+        imagePullPolicy: {{ .Values.init.download.image.pullPolicy | quote }}
+        command: ["sh", "/scripts/init-download.sh"]
         volumeMounts:
         - name: scripts
           mountPath: /scripts
@@ -87,7 +87,9 @@ spec:
         - --http.api={{ join "," .Values.config.http.api }}
         - --http.vhosts={{ join "," .Values.config.http.vhosts }}
         - --http.corsdomain={{ join "," .Values.config.http.corsdomain }}
+        {{- if .Values.config.cache }}
         - --cache={{ .Values.config.cache }}
+        {{- end }}
         - --gcmode={{ .Values.config.gcmode }}
         - --snapshot={{ .Values.config.snapshot }}
         {{- with .Values.config.rollup }}

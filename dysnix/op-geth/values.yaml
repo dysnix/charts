@@ -224,7 +224,7 @@ config:
   authrpc:
     port: 8551
     vhosts: ["*"]
-  cache: 8192
+  cache: 0            # disable by default, let geth automatically set proper value https://blog.ethereum.org/2023/09/12/geth-v1-13-0
   syncmode: full      # only "full" is currenly supported, "snap" to be implemented in future
   gcmode: full        # possible values: full, archive
   snapshot: true      # enable snapshot generation
@@ -239,9 +239,10 @@ config:
 ## initContainer for datadir snapshot download
 ## archive will be extracted using tarpipe
 init:
-  enabled: false
-  downloadUrl: https://r2-snapshots.fastnode.io/op/op-16-12-2023-full.tar.lz4
-  image:
-    repository: alpine
-    tag: 3.18
-    pullPolicy: Always
+  download:
+    enabled: false
+    url: https://r2-snapshots.fastnode.io/op/op-16-12-2023-full.tar.lz4
+    image:
+      repository: alpine
+      tag: 3.18
+      pullPolicy: Always
