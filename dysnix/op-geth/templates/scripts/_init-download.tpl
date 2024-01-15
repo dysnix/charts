@@ -1,6 +1,11 @@
 #!/bin/sh
 
+# TODO: improve zstd extraction with mbuffer
+
 set -e
+
+mkdir -p /root/.ethereum/{{ .Values.config.network }}
+cd /root/.ethereum/{{ .Values.config.network }}
 
 if [ ! -f /root/.ethereum/.downloaded ]; then
   echo "Not initialized, proceeding with download..."
