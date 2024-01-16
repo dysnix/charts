@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "gcp-local-nvme-raid.fullname" . }}
+  labels:
+    {{- include "gcp-local-nvme-raid.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "gcp-local-nvme-raid.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "gcp-local-nvme-raid.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      hostPID: true
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: STARTUP_SCRIPT
+            value: |
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+
+              devices=()
+              for ssd in /dev/disk/by-id/google-local-ssd-block*; do
+                if [ -e "${ssd}" ]; then
+                  devices+=("${ssd}")
+                fi
+              done
+              if [ "${#devices[@]}" -eq 0 ]; then
+                echo "No Local NVMe SSD disks found."
+                exit 0
+              fi
+
+              raid_id="md0"
+              device="/dev/${raid_id}"
+              echo "Setting RAID array with Local SSDs on device ${device}"
+              if ! grep -q "$raid_id" /proc/mdstat; then
+                echo "y" | mdadm --create "${device}" --level=0 --force --raid-devices=${#devices[@]} "${devices[@]}"
+              fi
+
+              if ! tune2fs -l "${device}" ; then
+                echo "Formatting '${device}'"
+                mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} "${device}"
+              fi
+
+              mountpoint={{ .Values.localSsd.mountPoint }}
+              mkdir -p "${mountpoint}"
+              echo "Mounting '${device}' at '${mountpoint}'"
+              mount -o discard,defaults "${device}" "${mountpoint}"
+              chmod a+w "${mountpoint}"
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

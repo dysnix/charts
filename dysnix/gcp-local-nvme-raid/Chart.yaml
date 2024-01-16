@@ -1,0 +1,20 @@
+apiVersion: v2
+name: gcp-local-nvme-raid
+description: Deamon installation which create raid with local nvme disk in gke node
+
+type: application
+
+version: 0.1.0
+
+appVersion: "1.16.0"
+
+keywords:
+  - gke
+  - nvme
+
+sources:
+  - https://github.com/dysnix/charts
+
+maintainers:
+  - name: plejik
+    email: anton.rubets@dysnix.com
