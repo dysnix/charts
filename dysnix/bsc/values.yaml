@@ -148,6 +148,7 @@ bsc:
     indexUrl: "bucket/path/to/file"
     baseUrlOverride: ""                   # "bucket/path/to/dir"
     fullResyncOnSrcUpdate: false
+    maxUsedSpacePercent: 93               # percents
   syncToGCS:
     enabled: false
     image: peakcom/s5cmd:v2.2.2
