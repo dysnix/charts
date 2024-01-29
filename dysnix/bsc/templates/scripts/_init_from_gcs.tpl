@@ -12,6 +12,7 @@ CHAINDATA_DIR="${GETH_DIR}/chaindata"
 STATE_TMP_DIR="${GETH_DIR}/state_tmp"
 ANCIENT_TMP_DIR="${GETH_DIR}/ancient_tmp"
 INITIALIZED_FILE="${DATA_DIR}/.initialized"
+OUT_OF_SPACE_FILE="${DATA_DIR}/.out_of_space"
 #without gs:// or s3://, just a bucket name and path
 INDEX_URL="{{ .Values.bsc.initFromGCS.indexUrl }}"
 GCS_BASE_URL="{{ .Values.bsc.initFromGCS.baseUrlOverride }}"
@@ -28,12 +29,18 @@ MAX_USED_SPACE_PERCENT={{ .Values.bsc.initFromGCS.maxUsedSpacePercent }}
 trap "{ exit 1; }" INT TERM
 
 {{- if .Values.bsc.forceInitFromSnapshot }}
-rm -f "${INITIALIZED_FILE}"
+rm -f "${INITIALIZED_FILE}" "${OUT_OF_SPACE_FILE}"
 {{- end }}
 
 if [ -f "${INITIALIZED_FILE}" ]; then
     echo "Blockchain already initialized. Exiting..."
     exit 0
+fi
+
+if [ -f "${OUT_OF_SPACE_FILE}" ]; then
+    echo "Seems, we're out of space. Exiting with an error ..."
+    cat "${OUT_OF_SPACE_FILE}"
+    exit 2
 fi
 
 # we need to create temp files
@@ -137,14 +144,12 @@ while [ "${SYNC}" -gt 0 ] ; do
       set +x
       # stop monitoring
       if [ ${MON_PID} -ne 0 ];then kill ${MON_PID};MON_PID=0; fi
-      echo "We're out of disk space. Stuck here, nothing we can do. Check the source snapshot size"
-      echo "Source snapshot size ${REMOTE_STATS}"
-      echo "Disk usage is ${VOLUME_USAGE_PERCENT}%"
-      df -P -BG "${DATA_DIR}"
-      # we need to sleep <short-delay> inside loop to handle pod termination w/o delays
-      # infinite sleep loop
-      while true; do sleep 10;done
-      # never hit there
+      # out of inodes error is "handled" by "set -e"
+      echo "We're out of disk space. Marking ${DATA_DIR} as out-of-space and exiting. Check the source snapshot size" | tee -a "${OUT_OF_SPACE_FILE}"
+      echo "Source snapshot size ${REMOTE_STATS}" | tee -a "${OUT_OF_SPACE_FILE}"
+      echo "Disk usage is ${VOLUME_USAGE_PERCENT}%" | tee -a "${OUT_OF_SPACE_FILE}"
+      df -P -BG "${DATA_DIR}" | tee -a "${OUT_OF_SPACE_FILE}"
+      exit 2
     fi
     # s5cmd uses 0 for success and 1 for any errors
     # no errors - we're good to go
