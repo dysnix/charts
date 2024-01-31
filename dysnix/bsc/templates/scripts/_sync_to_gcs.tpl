@@ -76,12 +76,15 @@ ${S5CMD} cp updating "s3://${UPDATING_URL}"
 # sync is recursive by default, thus we need to exclude ancient data here
 time ${S5CMD} --stat --log error sync --delete ${EXCLUDE_ANCIENT} "${CHAINDATA_DIR}/" "s3://${STATE_DST}/" &
 STATE_CP_PID=$!
+{{- if not .Values.bsc.pruneancient }}
 time nice ${S5CMD} --stat --log error sync --delete --part-size 200 --concurrency 2 ${EXCLUDE_STATE} "${CHAINDATA_DIR}/ancient/" "s3://${ANCIENT_DST}/" &
 ANCIENT_CP_PID=$!
 # Wait for each specified child process and return its termination status
 # errors are "handled" by "set -e"
-wait ${STATE_CP_PID}
 wait ${ANCIENT_CP_PID}
+{{- end }}
+wait ${STATE_CP_PID}
+
 
 # update timestamp
 # TODO store timestamp inside readinnes check and use it instead of now()
