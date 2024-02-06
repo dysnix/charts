@@ -87,3 +87,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# default for DaemonSet
+updateStrategy:
+  type: RollingUpdate
