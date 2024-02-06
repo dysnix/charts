@@ -10,6 +10,8 @@ metadata:
   labels:
   {{- include "gcp-local-ssd-raid.labels" . | nindent 4 }}
 spec:
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "gcp-local-ssd-raid.name" . }}
