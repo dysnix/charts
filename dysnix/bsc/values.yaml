@@ -304,7 +304,7 @@ metrics:
       memory: 256Mi
 
 metricsExtra:
-  enabled: true
+  enabled: false
   port: 9369
   portName: metricsextra
   interval: 3s
