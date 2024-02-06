@@ -29,6 +29,12 @@ spec:
     protocol: "TCP"
     targetPort: {{ .Values.rsyncd.service.port }}
   {{- end }}
+  {{- if .Values.metricsExtra.enabled }}
+  - port: {{ .Values.metricsExtra.port }}
+    name: {{ .Values.metricsExtra.portName }}
+    protocol: "TCP"
+    targetPort: {{ .Values.metricsExtra.port }}
+  {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "bsc.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
