@@ -238,7 +238,7 @@ spec:
           {{- toYaml .Values.metrics.resources | nindent 10 }}
       {{- end }}
       {{- if .Values.metricsExtra.enabled }}
-      - name: metricsadditional
+      - name: timestamp-monitor
         image: "{{ .Values.metricsExtra.image.repository }}:{{ .Values.metricsExtra.image.tag }}"
         imagePullPolicy: {{ .Values.metrics.image.pullPolicy }}
         {{- if .Values.metricsExtra.args }}
