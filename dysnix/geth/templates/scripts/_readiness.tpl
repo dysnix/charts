@@ -6,7 +6,7 @@
 
 set -eo pipefail
 
-HTTP_PORT="8545"
+HTTP_PORT="{{ .Values.config.node.http.port }}"
 AGE_THRESHOLD=$1
 
 if [ -z "$AGE_THRESHOLD" ]; then
