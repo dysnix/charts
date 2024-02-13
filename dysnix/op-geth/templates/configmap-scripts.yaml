@@ -5,5 +5,11 @@ metadata:
   labels:
     {{- include "op-geth.labels" . | nindent 4 }}
 data:
+  readiness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_readiness.tpl") . | nindent 4 }}
+  liveness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_liveness.tpl") . | nindent 4 }}
   init-download.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_init-download.tpl") . | nindent 4 }}
+  init-genesis.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_init-genesis.tpl") . | nindent 4 }}
