@@ -14,13 +14,16 @@ if [ -z "${AGE_THRESHOLD}" ] || [ -z "${STATE_FILE}" ]; then
     echo "Usage: $0 <last block import age threshold> [state file]" 1>&2; exit 1
 fi
 
+
+# expected output format: 0x50938d
 get_block_number() {
     wget "http://localhost:$HTTP_PORT" -qO- \
         --header 'Content-Type: application/json' \
         --post-data '{"jsonrpc":"2.0","method":"eth_blockNumber","id":1}' \
-    | grep -oE '"result":".*"' | tr -d '"' | cut -d':' -f2
+    | sed -r 's/.*"result":"([^"]+)".*/\1/g'
 }
 
+# using $(()) converts hex string to number
 block_number=$(($(get_block_number)))
 saved_block_number=""
 
@@ -32,14 +35,15 @@ if [ -f "${STATE_FILE}" ]; then
     saved_block_number=$(cat "${STATE_FILE}")
 fi
 
-
 if [ "${block_number}" != "${saved_block_number}" ]; then
   mkdir -p "$(dirname "${STATE_FILE}")"
   echo "${block_number}" > "${STATE_FILE}"
 fi
 
+current_timestamp=$(date +%s)
+last_import_timestamp=$(date -r "${STATE_FILE}" +%s)
 
-age=$(($(date +%s) - $(date -r "${STATE_FILE}" +%s)))
+age=$((current_timestamp - last_import_timestamp))
 
 if [ $age -lt $AGE_THRESHOLD ]; then
     exit 0
