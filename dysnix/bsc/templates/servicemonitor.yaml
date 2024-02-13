@@ -12,6 +12,16 @@ spec:
     port: {{ .Values.service.metricsPortName }}
     path: /metrics
     scheme: http
+  {{- if .Values.metricsExtra.enabled }}
+  {{- with .Values.metricsExtra }}
+  - interval: {{ .interval }}
+    scrapeTimeout: {{ .scrapeTimeout }}
+    honorLabels: true
+    port: {{ .portName }}
+    path: {{ .path }}
+    scheme: {{ .scheme }}
+  {{- end }}
+  {{- end }}
   {{- if .Values.failback.metrics.enabled }}
   - interval: {{ .Values.failback.metrics.interval }}
     scrapeTimeout: {{ .Values.failback.metrics.scrapeTimeout }}

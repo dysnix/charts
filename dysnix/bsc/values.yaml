@@ -303,6 +303,39 @@ metrics:
       cpu: 500m
       memory: 256Mi
 
+metricsExtra:
+  enabled: false
+  port: 9369
+  portName: metricsextra
+  interval: 3s
+  path: /metrics
+  scrapeTimeout: 3s
+  args: []
+    # - --url
+    # - http://127.0.0.1:9369
+    # - --addr
+    # - ":9369"
+  image:
+    repository: us-docker.pkg.dev/rpcfast/geth-timestamp-diff-exporter/geth
+    tag: v0.1.0
+    pullPolicy: IfNotPresent
+#   image:
+#     repository: 31z4/ethereum-prometheus-exporter
+#     tag: v1.3.0
+#     pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 0m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    - name: GETH_PORT
+      value: "8575"
+    - name: LISTENER_PORT
+      value: "9369"
+
 prometheus:
   rules:
     enabled: false

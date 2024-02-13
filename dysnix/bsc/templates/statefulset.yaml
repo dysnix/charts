@@ -237,6 +237,25 @@ spec:
         resources:
           {{- toYaml .Values.metrics.resources | nindent 10 }}
       {{- end }}
+      {{- if .Values.metricsExtra.enabled }}
+      - name: timestamp-monitor
+        image: "{{ .Values.metricsExtra.image.repository }}:{{ .Values.metricsExtra.image.tag }}"
+        imagePullPolicy: {{ .Values.metrics.image.pullPolicy }}
+        {{- if .Values.metricsExtra.args }}
+        args:
+          {{- toYaml .Values.metricsExtra.args | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.metricsExtra.resources | nindent 10 }}
+        {{- if .Values.metricsExtra.env }}
+        env:
+          {{- toYaml .Values.metricsExtra.env | nindent 10 }}
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.metricsExtra.port }}
+          name: {{ .Values.metricsExtra.portName }}
+          protocol: TCP
+      {{- end }}
       {{- if .Values.failback.enabled }}
       - name: nginx
         image: "{{ .Values.failback.image.repository }}:{{ .Values.failback.image.tag }}"
