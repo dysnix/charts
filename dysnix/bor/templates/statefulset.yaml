@@ -22,6 +22,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       serviceAccountName: {{ template "bor.serviceAccountName" . }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

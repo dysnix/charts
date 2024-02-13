@@ -1,8 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env sh
+set -e
 
 # TODO: improve zstd extraction with mbuffer
-
-set -e
 
 mkdir -p /root/.ethereum/{{ .Values.config.network }}
 cd /root/.ethereum/{{ .Values.config.network }}

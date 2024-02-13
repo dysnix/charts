@@ -20,7 +20,7 @@ updateStrategy:
   type: RollingUpdate
 
 ## Ensure we shut down gracefully
-terminationGracePeriodSeconds: 600
+terminationGracePeriodSeconds: 300
 
 ## Extra pod labels
 podLabels: {}
@@ -206,7 +206,6 @@ serviceMonitor:
   # relabelings: []
   # metricRelabelings: []
 
-# Assume that node is stuck if it's lag is more than 300 seconds.
 # .livenessProbe.exec.command can also be in a templated string format
 livenessProbe:
   enabled: false
@@ -218,10 +217,9 @@ livenessProbe:
   exec:
     command:
       - sh
-      - /scripts/check-readiness.sh
+      - /scripts/liveness.sh
       - "300"
 
-# Assume that node is not ready to serve traffic if it's lag is more than 60 seconds.
 # .readinessProbe.exec.command can also be in a templated string format
 readinessProbe:
   enabled: false
@@ -233,7 +231,7 @@ readinessProbe:
   exec:
     command:
       - sh
-      - /scripts/check-readiness.sh
+      - /scripts/readiness.sh
       - "60"
 
 #######
