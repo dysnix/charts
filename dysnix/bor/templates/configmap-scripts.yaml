@@ -5,7 +5,9 @@ metadata:
   labels:
     {{- include "bor.labels" . | nindent 4 }}
 data:
-  check-readiness.sh: |-
-    {{- include (print $.Template.BasePath "/scripts/_check-readiness.tpl") . | nindent 4 }}
+  readiness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_readiness.tpl") . | nindent 4 }}
+  liveness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_liveness.tpl") . | nindent 4 }}
   download-snapshot.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_download-snapshot.tpl") . | nindent 4 }}
