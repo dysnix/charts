@@ -5160,6 +5160,27 @@ entries:
   op-geth:
   - apiVersion: v2
     appVersion: v1.101305.0
+    created: "2024-02-14T11:12:29.854206151Z"
+    description: Optimism op-geth execution-layer client Helm chart
+    digest: 9b547871c3e8f6230c76f6adbf75a2c0f375bce5ce3ef4ffa7dda038e0894110
+    keywords:
+    - geth
+    - optimism
+    - op-geth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: op-geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/op-geth-0.1.2/op-geth-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v1.101305.0
     created: "2024-02-13T17:19:59.73332817Z"
     description: Optimism op-geth execution-layer client Helm chart
     digest: a2fb7b3d6ac411345829a592faa23de382ae7040a6c3bea62a4e5cec4321d244
@@ -6280,4 +6301,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2024-02-14T09:41:17.31886971Z"
+generated: "2024-02-14T11:12:29.854536675Z"
