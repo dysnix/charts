@@ -3901,6 +3901,28 @@ entries:
   gcp-local-ssd-raid:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2024-02-14T09:41:17.318251017Z"
+    description: A Helm chart for Kubernetes
+    digest: 5cf1c525d212c91139183a1410822830b39065c2c8b58aef40302236a54b4d67
+    keywords:
+    - gcp
+    - nvme
+    - ssd
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    name: gcp-local-ssd-raid
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pingcap/tidb-operator/blob/master/manifests/gke/local-ssd-provision/local-ssd-provision.yaml
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/gcp-local-ssd-raid-0.1.5/gcp-local-ssd-raid-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2024-02-06T08:37:57.152314308Z"
     description: A Helm chart for Kubernetes
     digest: 73ed70a46691238fb018cbe9b5f85afd94cee13c3440f2fbb380fd3b4f7d623b
@@ -6258,4 +6280,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2024-02-13T17:19:59.733943678Z"
+generated: "2024-02-14T09:41:17.31886971Z"
