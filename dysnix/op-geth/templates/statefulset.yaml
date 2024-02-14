@@ -164,6 +164,8 @@ spec:
           mountPath: /root/.ethereum
         - name: secrets
           mountPath: /secrets
+        - name: scripts
+          mountPath: /scripts
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       {{- with .Values.sidecarContainers }}
