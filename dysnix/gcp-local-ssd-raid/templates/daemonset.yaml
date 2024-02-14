@@ -204,8 +204,7 @@ spec:
               name: local-disks
               mountPropagation: "HostToContainer"
       tolerations:
-        - effect: NoSchedule
-          operator: Exists
+        {{- toYaml .Values.tolerations | nindent 8 }}
       volumes:
         - name: provisioner-config
           configMap:
