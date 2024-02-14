@@ -84,7 +84,9 @@ autoscaling:
 
 nodeSelector: {}
 
-tolerations: []
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
 
 affinity: {}
 
