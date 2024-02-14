@@ -1347,6 +1347,27 @@ entries:
   bor:
   - apiVersion: v2
     appVersion: 1.1.0
+    created: "2024-02-14T14:14:28.860172286Z"
+    description: Polygon Bor execution layer node Helm chart
+    digest: 16ac006cdd4d30667eb6bba08fd6eb87470b1b3dd2a93f30d0cb112e18deacfa
+    keywords:
+    - geth
+    - bor
+    - polygon
+    - matic
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: bor
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bor-0.0.6/bor-0.0.6.tgz
+    version: 0.0.6
+  - apiVersion: v2
+    appVersion: 1.1.0
     created: "2024-02-13T17:19:59.523326953Z"
     description: Polygon Bor execution layer node Helm chart
     digest: fb6afc53b778acc28839352834afca58293bb90fd04474b24e444a6400eebd54
@@ -4029,6 +4050,24 @@ entries:
   geth:
   - apiVersion: v2
     appVersion: v1.13.10
+    created: "2024-02-14T14:14:28.968994012Z"
+    description: Go-ethereum blockchain node Helm Chart
+    digest: b1aa4cac6b0b7c3b0dedb530dcde8f2a00beb2bc49949c06bec1530da50a59f8
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-1.0.15/geth-1.0.15.tgz
+    version: 1.0.15
+  - apiVersion: v2
+    appVersion: v1.13.10
     created: "2024-02-13T17:19:59.625318092Z"
     description: Go-ethereum blockchain node Helm Chart
     digest: 32ee2523921f2a5122e10b3c280fb910ba30e6cd2b82c91a1b23a336756eaeb7
@@ -5158,6 +5197,27 @@ entries:
     - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.0/nifi-registry-0.1.0.tgz
     version: 0.1.0
   op-geth:
+  - apiVersion: v2
+    appVersion: v1.101305.0
+    created: "2024-02-14T14:14:29.085090949Z"
+    description: Optimism op-geth execution-layer client Helm chart
+    digest: d08e9ef0f86dd9f56d92ae93c443447edaf68dd9fd09e1bbd6a1bcba0df05874
+    keywords:
+    - geth
+    - optimism
+    - op-geth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: op-geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/op-geth-0.1.3/op-geth-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: v1.101305.0
     created: "2024-02-14T11:12:29.854206151Z"
@@ -6301,4 +6361,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2024-02-14T11:12:29.854536675Z"
+generated: "2024-02-14T14:14:29.085602956Z"
