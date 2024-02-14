@@ -4,7 +4,7 @@
 # Node is alive when new blocks are being imported.
 # We are checking the age when last block import event occured.
 
-set -eo pipefail
+set -e
 
 AGE_THRESHOLD=$1
 STATE_FILE=${2:-"{{ .Values.config.datadir }}/saved_block_number.txt"}

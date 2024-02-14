@@ -4,7 +4,7 @@
 # Node is ready when the latest block is fresh enough.
 # We are checking the timestamp of the latest block and compare it to current local time.
 
-set -eo pipefail
+set -e
 
 HTTP_PORT="{{ .Values.containerPorts.http.port }}"
 AGE_THRESHOLD=$1
