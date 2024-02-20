@@ -129,15 +129,13 @@ podDisruptionBudget:
   minAvailable: 1
   # maxUnavailable: 1
 
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 5
-  ##
-  ## Default Kubernetes values
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 0
   periodSeconds: 10
   timeoutSeconds: 1
-  successThreshold: 1
   failureThreshold: 3
+  successThreshold: 1
 
 # Enable SSL communication with the backend MySQL servers
 ssl:
