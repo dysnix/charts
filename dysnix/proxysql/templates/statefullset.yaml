@@ -85,6 +85,26 @@ spec:
             successThreshold: {{ .Values.startupProbe.successThreshold }}
             failureThreshold: {{ .Values.startupProbe.failureThreshold }}
           {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/proxysql_cluster_healthcheck.sh"]
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/proxysql_cluster_healthcheck.sh"]
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- end }}
           resources:
             {{- toYaml (default .Values.resources .Values.proxysql_cluster.core.statefullset.resources) | nindent 12 }}
           volumeMounts:
@@ -99,6 +119,9 @@ spec:
             - name: scripts
               mountPath: /usr/local/bin/wait_queries_to_finish.sh
               subPath: wait_queries_to_finish.sh
+            - name: scripts
+              mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
+              subPath: proxysql_cluster_healthcheck.sh
           {{- if .Values.ssl.fromSecret }}
             - name: ssl
               mountPath: /etc/proxysql/ssl

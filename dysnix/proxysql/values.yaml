@@ -137,6 +137,22 @@ startupProbe:
   failureThreshold: 3
   successThreshold: 1
 
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
 # Enable SSL communication with the backend MySQL servers
 ssl:
   ## When a cert and a key or fromSecret are provided use_ssl is be enabled automaticaly (in mysql_servers items)
