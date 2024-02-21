@@ -3,16 +3,15 @@
 set -u
 
 # Set the database connection variables
-DB_USER="${DB_USER:-monitor}"
-DB_HOST="${DB_HOST:-127.0.0.1}"
-DB_PORT="${DB_PORT:-6032}"
+export DB_USER="${PROXYSQL_HEALTHCHECK_DB_USER:-monitor}"
+export DB_HOST="${PROXYSQL_HEALTHCHECK_DB_HOST:-127.0.0.1}"
+export DB_PORT="${PROXYSQL_HEALTHCHECK_DB_PORT:-6032}"
+export MYSQL_PWD="${PROXYSQL_HEALTHCHECK_DB_PASS:-monitor}"
 
 # Health check configuration with default values
-PROXYSQL_DIFF_CHECK_LIMIT=${PROXYSQL_DIFF_CHECK_LIMIT:-10}
-PROXYSQL_KILL_IF_HEALTCHECK_FAILED=${PROXYSQL_KILL_IF_HEALTCHECK_FAILED:-true}
-PROXYSQL_HEALTH_CHECK_FAILURES=${PROXYSQL_HEALTH_CHECK_FAILURES:-3}
-
-export MYSQL_PWD="${DB_PASS:-monitor}"
+PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT=${PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT:-10}
+PROXYSQL_HEALTHCHECK_KILL_IF_HEALTCHECK_FAILED=${PROXYSQL_HEALTHCHECK_KILL_IF_HEALTCHECK_FAILED:-true}
+PROXYSQL_HEALTHCHECK_FAILURE_THRESHOLD=${PROXYSQL_HEALTHCHECK_FAILURE_THRESHOLD:-3}
 
 # Locate mysql or mariadb client binary
 function find_mysql_client() {
@@ -34,16 +33,16 @@ function mysql_cli() {
 
 function run_diff_check_count() {
   local diff_check_count
-  diff_check_count=$(mysql_cli "SELECT COUNT(diff_check) FROM stats_proxysql_servers_checksums WHERE diff_check > $PROXYSQL_DIFF_CHECK_LIMIT;")
+  diff_check_count=$(mysql_cli "SELECT COUNT(diff_check) FROM stats_proxysql_servers_checksums WHERE diff_check > $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT;")
 
   if [[ "$diff_check_count" == 0 ]]; then
-    echo "[$(date -Ins)] [INFO] ProxySQL Cluster diff_check OK. diff_check < $PROXYSQL_DIFF_CHECK_LIMIT"
+    echo "[$(date -Ins)] [INFO] ProxySQL Cluster diff_check OK. diff_check < $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT"
     return 0
   else
     local result
-    result=$(mysql_cli "SELECT hostname, port, name, version, FROM_UNIXTIME(epoch) epoch, checksum, FROM_UNIXTIME(changed_at) changed_at, FROM_UNIXTIME(updated_at) updated_at, diff_check, DATETIME('NOW') FROM stats_proxysql_servers_checksums WHERE diff_check > $PROXYSQL_DIFF_CHECK_LIMIT ORDER BY name;")
+    result=$(mysql_cli "SELECT hostname, port, name, version, FROM_UNIXTIME(epoch) epoch, checksum, FROM_UNIXTIME(changed_at) changed_at, FROM_UNIXTIME(updated_at) updated_at, diff_check, DATETIME('NOW') FROM stats_proxysql_servers_checksums WHERE diff_check > $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT ORDER BY name;")
     echo "$result"
-    echo "[$(date -Ins)] [ERROR] ProxySQL Cluster diff_check CRITICAL. diff_check >= $PROXYSQL_DIFF_CHECK_LIMIT." >&2
+    echo "[$(date -Ins)] [ERROR] ProxySQL Cluster diff_check CRITICAL. diff_check >= $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT." >&2
     return 1
   fi
 }

@@ -95,7 +95,7 @@ spec:
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
-              command: ["/usr/local/bin/proxysql_cluster_healthcheck.sh"]
+              command: {{ .Values.proxysql_cluster.healthcheck.command }}
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -105,7 +105,7 @@ spec:
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             exec:
-              command: ["/usr/local/bin/proxysql_cluster_healthcheck.sh"]
+              command: {{ .Values.proxysql_cluster.healthcheck.command }}
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
