@@ -55,6 +55,13 @@ spec:
             {{- if .Values.proxysql_cluster.satellite.exit_on_error }}
             - "--exit-on-error"
             {{- end }}
+          envFrom:
+          {{- if or .Values.readinessProbe.enabled .Values.livenessProbe.enabled }}
+            - configMapRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+            - secretRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ template "proxysql.image" . }}
