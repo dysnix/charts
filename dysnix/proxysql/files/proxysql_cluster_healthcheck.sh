@@ -37,6 +37,12 @@ function mysql_cli() {
   $MYSQL_CLIENT -u "$DB_USER" -h "$DB_HOST" -P "$DB_PORT" --skip-column-names --batch -e "$1"
 }
 
+function get_current_proxysql_state() {
+    local current_state_result
+    current_state_result=$(mysql_cli "SELECT hostname, port, name, version, FROM_UNIXTIME(epoch) epoch, checksum, FROM_UNIXTIME(changed_at) changed_at, FROM_UNIXTIME(updated_at) updated_at, diff_check, DATETIME('NOW') FROM stats_proxysql_servers_checksums WHERE diff_check > $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT ORDER BY name;")
+    echo "$current_state_result"
+}
+
 function run_diff_check_count() {
   local diff_check_count
   diff_check_count=$(mysql_cli "SELECT COUNT(diff_check) FROM stats_proxysql_servers_checksums WHERE diff_check > $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT;")
@@ -45,13 +51,27 @@ function run_diff_check_count() {
     log_info "ProxySQL Cluster diff_check OK. diff_check < $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT"
     return 0
   else
-    local result
-    result=$(mysql_cli "SELECT hostname, port, name, version, FROM_UNIXTIME(epoch) epoch, checksum, FROM_UNIXTIME(changed_at) changed_at, FROM_UNIXTIME(updated_at) updated_at, diff_check, DATETIME('NOW') FROM stats_proxysql_servers_checksums WHERE diff_check > $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT ORDER BY name;")
-    echo "$result"
     log_error "ProxySQL Cluster diff_check CRITICAL. diff_check >= $PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT."
+    get_current_proxysql_state
+    return 1
+  fi
+}
+
+function run_valid_config_count() {
+  # The query checks how many valid ProxySQL configurations exist, ignoring any that are outdated or incomplete.
+  local valid_config_count
+  valid_config_count=$(mysql_cli "SELECT COUNT(checksum) FROM stats_proxysql_servers_checksums WHERE version <> 0 AND checksum <> '' AND checksum IS NOT NULL AND checksum <> '0x0000000000000000' ORDER BY name, hostname;")
+
+  if [[ "$valid_config_count" -ge 1 ]]; then
+    log_info "ProxySQL Cluster config version and checksum OK. valid_config_count ${valid_config_count} >= 1"
+    return 0
+  else
+    log_error "ProxySQL Cluster config version and checksum CRITICAL. valid_config_count ${valid_config_count} < 1"
+    get_current_proxysql_state
     return 1
   fi
 }
 
 # Call the health check function once for Kubernetes probes
 run_diff_check_count
+run_valid_config_count
