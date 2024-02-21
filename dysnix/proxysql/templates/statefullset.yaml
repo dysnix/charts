@@ -159,25 +159,6 @@ spec:
             {{- toYaml .| nindent 12 }}
           {{- end }}
         {{- end }}
-        {{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.healthcheck.sidecar.enabled }}
-        - name: healthcheck
-          image: {{ .Values.proxysql_cluster.healthcheck.sidecar.image }}
-          command:
-            {{- toYaml .Values.proxysql_cluster.healthcheck.sidecar.command | nindent 14 }}
-          envFrom:
-            - configMapRef:
-                name: '{{ include "proxysql.fullname" . }}-healthcheck'
-            - secretRef:
-                name: '{{ include "proxysql.fullname" . }}-healthcheck'
-          volumeMounts:
-            - name: scripts
-              mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
-              subPath: proxysql_cluster_healthcheck.sh
-          {{- with .Values.proxysql_cluster.healthcheck.sidecar.securityContext }}
-          securityContext:
-            {{- toYaml .| nindent 12 }}
-          {{- end }}
-        {{- end }}
       {{- with (default .Values.nodeSelector .Values.proxysql_cluster.core.statefullset.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
