@@ -57,6 +57,9 @@ spec:
             {{- if .Values.proxysql_cluster.core.exit_on_error }}
             - "--exit-on-error"
             {{- end }}
+          env:
+            - name: PROXYSQL_IS_CORE_NODE
+              value: "true"
           envFrom:
           {{- if or .Values.readinessProbe.enabled .Values.livenessProbe.enabled }}
             - configMapRef:

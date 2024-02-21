@@ -132,22 +132,22 @@ podDisruptionBudget:
 startupProbe:
   enabled: false
   initialDelaySeconds: 5
-  periodSeconds: 10
+  periodSeconds: 3
   timeoutSeconds: 1
-  failureThreshold: 3
+  failureThreshold: 10
   successThreshold: 1
 
 readinessProbe:
   enabled: false
-  initialDelaySeconds: 20
+  initialDelaySeconds: 0
   periodSeconds: 10
   timeoutSeconds: 5
-  failureThreshold: 3
+  failureThreshold: 60
   successThreshold: 1
 
 livenessProbe:
   enabled: false
-  initialDelaySeconds: 15
+  initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
@@ -383,6 +383,7 @@ proxysql_cluster:
 
     diff_check_limit: 10  # How many diff_check errors are tolerated before the healthcheck fails
     kill_if_healthcheck_failed: true  # Kill proxysql daemon if the healthcheck fails the test
+    verbose: false
 
     command:
       - /usr/local/bin/proxysql_cluster_healthcheck.sh

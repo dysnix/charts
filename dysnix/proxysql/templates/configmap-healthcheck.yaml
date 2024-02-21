@@ -11,4 +11,5 @@ data:
   PROXYSQL_HEALTHCHECK_DB_PORT: {{ .Values.proxysql_cluster.healthcheck.psql_host_port | default .Values.service.adminPort | quote }}
   PROXYSQL_HEALTHCHECK_DIFF_CHECK_LIMIT: {{ .Values.proxysql_cluster.healthcheck.diff_check_limit | quote }}
   PROXYSQL_HEALTHCHECK_KILL_IF_HEALTCHECK_FAILED: {{ .Values.proxysql_cluster.healthcheck.kill_if_healthcheck_failed | quote }}
+  PROXYSQL_HEALTHCHECK_VERBOSE: {{ .Values.proxysql_cluster.healthcheck.verbose | quote }}
 {{- end }}
