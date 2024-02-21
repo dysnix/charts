@@ -131,7 +131,7 @@ podDisruptionBudget:
 
 startupProbe:
   enabled: false
-  initialDelaySeconds: 0
+  initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 1
   failureThreshold: 3
@@ -139,7 +139,7 @@ startupProbe:
 
 readinessProbe:
   enabled: false
-  initialDelaySeconds: 10
+  initialDelaySeconds: 20
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
