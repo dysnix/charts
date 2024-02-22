@@ -357,7 +357,7 @@ proxysql_cluster:
     backoffLimit: 3
 
     # delete the job resource after given seconds
-    ttlSecondsAfterFinished: 3600
+    ttlSecondsAfterFinished: 86400
 
     nodeSelector: {}
     tolerations: []
