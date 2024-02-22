@@ -13,7 +13,7 @@ metadata:
     {{- toYaml .Values.commonAnnotations | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.proxysql_cluster.satellite.replicas }}
   selector:
     matchLabels:
       {{- include "proxysql.satellite.selectorLabels" . | nindent 6 }}
