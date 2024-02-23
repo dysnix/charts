@@ -69,7 +69,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "/usr/local/bin/wait_queries_to_finish.sh > /proc/1/fd/1"]
+                command: ["/bin/sh", "-c", "/usr/local/bin/wait_queries_to_finish.sh"]
           ports:
             - name: proxy
               containerPort: {{ .Values.service.proxyPort }}
@@ -93,7 +93,7 @@ spec:
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
-              command: {{ .Values.proxysql_cluster.healthcheck.command }}
+              command: {{ .Values.proxysql_cluster.healthcheck.command | toYaml | nindent 16 }}
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
@@ -103,7 +103,7 @@ spec:
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             exec:
-              command: {{ .Values.proxysql_cluster.healthcheck.command }}
+              command: {{ .Values.proxysql_cluster.healthcheck.command | toYaml | nindent 16 }}
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}

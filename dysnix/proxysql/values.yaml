@@ -345,12 +345,6 @@ proxysql_cluster:
   #   until the version/checksum is not 0.
   job:
 
-    image:
-      registry: docker.io
-      repository: mysql
-      tag: "8"
-      pullPolicy: IfNotPresent
-
     enabled: true
 
     # Retry 3 times until failed
@@ -383,8 +377,7 @@ proxysql_cluster:
     kill_if_healthcheck_failed: true  # Kill proxysql daemon if the healthcheck fails the test
     verbose: false
 
-    command:
-      - /usr/local/bin/proxysql_cluster_healthcheck.sh
+    command: ["/bin/sh", "-c", "/usr/local/bin/proxysql_cluster_healthcheck.sh"]
 
 # Enable debugging container along the proxysql instance
 #   It may be usefull to access the proxysql admin interface locally to debug issues
