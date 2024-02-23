@@ -368,8 +368,8 @@ proxysql_cluster:
 
   healthcheck:
     # This is the healtcheck script executed by the k8s probes
-    psql_user: null # If not set use `.mysql_variables.monitor_username`
-    psql_pass: null # If not set use `.mysql_variables.monitor_password`
+    psql_user: null  # If not set use `.mysql_variables.monitor_username`
+    psql_pass: null  # If not set use `.mysql_variables.monitor_password`
     psql_host: "127.0.0.1"  # The listening core host/pod. NOTE: User 'monitor' can only connect locally
     psql_host_port: null  # The admin port. If not set use `.service.adminPort`
 
