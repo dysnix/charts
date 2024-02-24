@@ -1,38 +1,39 @@
-containers: []
-  # - name: ethereum-metrics-exporter
-  #   metric_port: "http"
-  #   metric_endpoint: "/metrics"
-  #   metric_scrape_interval: "15s"
-  #   securityContext: {}
-  #   image:
-  #     repository: ethpandaops/ethereum-metrics-exporter
-  #     tag: 0.21.0
-  #     pullPolicy: IfNotPresent
-  #   args:
-  #     - --execution-url
-  #     - "http://127.0.0.1:8545"
-  #     - --metrics-port
-  #     - "9000"
-  #     - --execution-modules
-  #     - eth,net,rpc,web3,txpool
-  #   env: []
-  #   ports:
-  #     http: "9000"
-  #   livenessProbe:
-  #     httpGet:
-  #       path: /
-  #       port: http
-  #   readinessProbe:
-  #     httpGet:
-  #       path: /
-  #       port: http
-  #   resources:
-  #     requests:
-  #       cpu: 0m
-  #       memory: 128Mi
-  #     limits:
-  #       cpu: 500m
-  #       memory: 256Mi
+containers:
+  - name: ethereum-metrics-exporter
+    metric_port_name: "http"
+    metric_port: "9000"
+    metric_endpoint: "/metrics"
+    metric_scrape_interval: "15s"
+    securityContext: {}
+    image:
+      repository: ethpandaops/ethereum-metrics-exporter
+      tag: 0.21.0
+      pullPolicy: IfNotPresent
+    args:
+      - --execution-url
+      - "http://127.0.0.1:8545"
+      - --metrics-port
+      - "9000"
+      - --execution-modules
+      - eth,net,rpc,web3,txpool
+    env: []
+    ports:
+      http: "9000"
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+    resources:
+      requests:
+        cpu: 0m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
   # - name: timestamp-monitor
   #   metric_port: "timestamp"
   #   metric_endpoint: "/metrics"
