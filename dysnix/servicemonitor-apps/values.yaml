@@ -19,14 +19,8 @@ containers:
     env: []
     ports:
       http: "9000"
-    livenessProbe:
-      httpGet:
-        path: /
-        port: http
-    readinessProbe:
-      httpGet:
-        path: /
-        port: http
+    livenessProbe: null
+    readinessProbe: null
     resources:
       requests:
         cpu: 0m
