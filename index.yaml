@@ -6361,4 +6361,22 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/rpcfast-gateway-0.1.0/rpcfast-gateway-0.1.0.tgz
     version: 0.1.0
-generated: "2024-02-14T14:14:29.085602956Z"
+  servicemonitor-apps:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2024-02-24T20:59:03.211336344Z"
+    description: A Helm chart for creating a ServiceMonitor for the apps
+    digest: 028f3639ffec1285954c60473e94924b137a7dd313125ba9dbee597319ebd7e5
+    keywords:
+    - prometheus
+    - servicemonitor
+    maintainers:
+    - email: ar@dysnix.com
+      name: tony
+    name: servicemonitor-apps
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/servicemonitor-apps-0.1.0/servicemonitor-apps-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-02-24T20:59:03.211877016Z"
