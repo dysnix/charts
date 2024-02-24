@@ -10,3 +10,7 @@ keywords:
 
 sources:
   - https://github.com/dysnix/charts
+
+maintainers:
+  - name: tony
+    email: ar@dysnix.com
