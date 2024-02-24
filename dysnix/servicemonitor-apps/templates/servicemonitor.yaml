@@ -1,0 +1,27 @@
+{{ if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "servicemonitor-apps.fullname" . }}
+  labels:
+    {{- include "servicemonitor-apps.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  {{- range $container := .Values.containers }}
+  {{- with $container }}
+  - interval: {{ .metric_scrape_interval }}
+    scrapeTimeout: {{ .scrapeTimeout | default "30s" }}
+    honorLabels: true
+    port: {{ .metric_port_name }}
+    path: {{ .metric_endpoint }}
+    scheme: http
+  {{- end }}
+  {{- end }}
+  jobLabel: {{ include "servicemonitor-apps.fullname" . }}
+  selector:
+    matchLabels:
+      {{- include "servicemonitor-apps.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}
