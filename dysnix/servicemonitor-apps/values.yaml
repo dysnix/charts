@@ -1,0 +1,94 @@
+containers: []
+  # - name: ethereum-metrics-exporter
+  #   metric_port: "http"
+  #   metric_endpoint: "/metrics"
+  #   metric_scrape_interval: "15s"
+  #   securityContext: {}
+  #   image:
+  #     repository: ethpandaops/ethereum-metrics-exporter
+  #     tag: 0.21.0
+  #     pullPolicy: IfNotPresent
+  #   args:
+  #     - --execution-url
+  #     - "http://127.0.0.1:8545"
+  #     - --metrics-port
+  #     - "9000"
+  #     - --execution-modules
+  #     - eth,net,rpc,web3,txpool
+  #   env: []
+  #   ports:
+  #     http: "9000"
+  #   livenessProbe:
+  #     httpGet:
+  #       path: /
+  #       port: http
+  #   readinessProbe:
+  #     httpGet:
+  #       path: /
+  #       port: http
+  #   resources:
+  #     requests:
+  #       cpu: 0m
+  #       memory: 128Mi
+  #     limits:
+  #       cpu: 500m
+  #       memory: 256Mi
+  # - name: timestamp-monitor
+  #   metric_port: "timestamp"
+  #   metric_endpoint: "/metrics"
+  #   metric_scrape_interval: "3s"
+  #   securityContext: {}
+  #   image:
+  #     repository: us-docker.pkg.dev/rpcfast/geth-timestamp-diff-exporter/geth
+  #     tag: v0.1.0
+  #     pullPolicy: IfNotPresent
+  #   env:
+  #   - name: GETH_PORT
+  #     value: "8575"
+  #   - name: GETH_HOST
+  #     value: "localhost"
+  #   - name: LISTENER_PORT
+  #     value: "9001"
+  #   ports:
+  #     http: "9001"
+  #   livenessProbe:
+  #     httpGet:
+  #       path: /
+  #       port: timestamp
+  #   readinessProbe:
+  #     httpGet:
+  #       path: /
+  #       port: timestamp
+  #   resources:
+  #     requests:
+  #       cpu: 0m
+  #       memory: 64Mi
+  #     limits:
+  #       cpu: 0m
+  #       memory: 128Mi
+
+serviceAccount:
+  name: ""
+# image:
+#   repository: nginx
+#   pullPolicy: IfNotPresent
+#   # Overrides the image tag whose default is the chart appVersion.
+#   tag: ""
+
+service:
+  type: ClusterIP
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

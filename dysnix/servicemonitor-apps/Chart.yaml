@@ -1,0 +1,12 @@
+apiVersion: v2
+name: servicemonitor-apps
+description: A Helm chart for creating a ServiceMonitor for the apps
+keywords:
+ - prometheus
+ - servicemonitor
+
+sources:
+  - https://github.com/dysnix/charts
+
+version: 0.1.0
+appVersion: "1.16.0"

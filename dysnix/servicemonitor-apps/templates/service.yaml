@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "servicemonitor-apps.fullname" . }}
+  labels:
+    {{- include "servicemonitor-apps.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  {{- range $container := .Values.containers }}
+    {{- with $container }}
+    - port: {{ .metric_port }}
+      targetPort: {{ .metric_port_name }}
+      protocol: TCP
+      name:  {{ .metric_port_name }}
+    {{- end }}
+  {{- end }}
+  selector:
+    {{- include "servicemonitor-apps.selectorLabels" . | nindent 4 }}
