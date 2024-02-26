@@ -125,6 +125,7 @@ spec:
                         -noprompt \
                         -trustcacerts \
                         -alias $ALIAS \
+                        -storetype JKS \
                         -file $ca \
                         -keystore "${NIFI_REGISTRY_HOME}/tls/truststore.jks" \
                         -storepass "{{ .Values.certManager.truststorePasswd }}"
@@ -142,6 +143,7 @@ spec:
                       -destkeystore "${NIFI_REGISTRY_HOME}/tls/keystore.jks" \
                       -srckeystore "/tmp/tls.p12" \
                       -srcstoretype PKCS12 \
+                      -deststoretype JKS \
                       -srcstorepass "{{ .Values.certManager.keystorePasswd }}" \
                       -deststorepass "{{ .Values.certManager.keystorePasswd }}"
               keytool -list -keystore "${NIFI_REGISTRY_HOME}/tls/keystore.jks" \
