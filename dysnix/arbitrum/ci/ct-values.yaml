@@ -1,6 +1,7 @@
 config:
   init:
     empty: true
+    url: ""
   parent-chain:
     connection:
       url: https://eth.drpc.org/
