@@ -269,16 +269,16 @@ s3config:
 
 initFromS3:
   # enable initContainer
-  enabled: true
+  enabled: false
   # download snapshot from S3 on every pod start
   force: false
 
 syncToS3:
   # enable initContainer (won't enable actual sync)
-  enabled: true
+  enabled: false
   # restart pod and trigger sync to S3 inside initContainer by schedule
   cronjob:
-    enabled: true
+    enabled: false
     image:
       repository: dysnix/kubectl
       tag: v1.27
