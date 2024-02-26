@@ -30,6 +30,10 @@ controller: StatefulSet
 # StatefulSet-specific options
 podManagementPolicy: OrderedReady
 
+# By disabling we fix "Unknown config environment variable envvar=GETH_"
+# Enable if your workload depends on this functionality
+enableServiceLinks: false
+
 # CloneSet-specific options
 minReadySeconds: 60
 scaleStrategy: {}

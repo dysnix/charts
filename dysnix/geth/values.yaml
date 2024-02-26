@@ -43,6 +43,10 @@ securityContext: {}
   # runAsUser: 1000
   # runAsGroup: 1000
 
+## By disabling we fix "Unknown config environment variable envvar=GETH_"
+## Enable if your workload depends on this functionality
+enableServiceLinks: false
+
 ## Override geth container command (can be templated)
 command: []
 

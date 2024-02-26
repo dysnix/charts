@@ -50,6 +50,7 @@ spec:
         controller.kubernetes.io/pod-deletion-cost: {{ .Values.podDeletionCost | quote }}
         {{- end }}
     spec:
+      enableServiceLinks: {{ .Values.enableServiceLinks }}
       serviceAccountName: {{ include "bsc.serviceAccountName" . }}
       {{- with .Values.securityContext }}
       securityContext:
