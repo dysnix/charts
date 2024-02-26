@@ -55,13 +55,20 @@ extraArgs: []
 
 ## Extra init containers, can be templated
 extraInitContainers: []
-  # - name: dumpconfig
+  # - name: init
   #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
   #   imagePullPolicy: "{{ .Values.image.pullPolicy }}"
-  #   command: ["dumpconfig"]
+  #   args:
+  #   - --init.then-quit
+  #   - '--init.url={{ .Values.config.init.url }}'
+  #   - '--init.download-path={{ index .Values "config" "init" "download-path" }}'
+  #   - --parent-chain.connection.url=https://mock.mock
+  #   - --parent-chain.blob-client.beacon-url=http://mock.mock
   #   volumeMounts:
   #   - name: config
   #     mountPath: /config
+  #   - name: download
+  #     mountPath: '{{ index .Values "config" "init" "download-path" }}'
 
 ## Sidecar containers, can be templated
 sidecarContainers: []
@@ -73,6 +80,27 @@ sidecarContainers: []
   #   ports:
   #   - name: exporter
   #     containerPort: 9090
+
+extraVolumeMounts: []
+  # - name: download
+  #   mountPath: '{{ index .Values "config" "init" "download-path" }}'
+
+extraVolumes: []
+  # - name: download
+  #   claimName: '{{ include "arbitrum.fullname" . }}-download-pvc'
+
+extraVolumeClaimTemplates: []
+  # - metadata:
+  #     name: download
+  #     labels:
+  #       app.kubernetes.io/name: arbitrum
+  #       app.kubernetes.io/instance: arbitrum
+  #   spec:
+  #     accessModes:
+  #     - ReadWriteOnce
+  #     resources:
+  #       requests:
+  #         storage: 512Gi
 
 ## Services config
 services:
@@ -193,13 +221,6 @@ readinessProbe:
       - /scripts/readiness.sh
       - "60"
 
-## Create separate PVC for initial snapshot download
-pvcForDownload:
-  enabled: false
-  size: 500Gi
-  storageClassName: ""
-  accessMode: ReadWriteOnce
-
 ## Main nitro config section
 config:
   chain:
@@ -217,6 +238,7 @@ config:
 
   init:
     url: https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar
+    ## HINT: use together with extraVolumes if you want to save some space, i.e. when running on local SSDs
     download-path: ""
 
   metrics: true

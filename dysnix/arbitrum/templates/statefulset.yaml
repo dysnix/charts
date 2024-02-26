@@ -187,30 +187,10 @@ spec:
             path: {{ .Values.persistence.hostPath.path }}
             type: {{ .Values.persistence.hostPath.type }}
         {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+        {{- end }}
   volumeClaimTemplates:
-  {{- if .Values.pvcForDownload.enabled }}
-  - metadata:
-      name: download
-      labels:
-        {{- include "arbitrum.selectorLabels" . | nindent 8 }}
-      {{- with .Values.pvcForDownload.annotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-    spec:
-      accessModes:
-      - {{ .Values.pvcForDownload.accessMode }}
-      {{- if .Values.pvcForDownload.storageClass }}
-      {{- if eq .Values.pvcForDownload.storageClass "-" }}
-      storageClassName: ""
-      {{- else }}
-      storageClassName: {{ .Values.pvcForDownload.storageClass | quote }}
-      {{- end }}
-      {{- end }}
-      resources:
-        requests:
-          storage: {{ .Values.pvcForDownload.size | quote }}
-  {{- end }}
   {{- if eq .Values.persistence.type "pvc" }}
   - metadata:
       name: data
@@ -233,4 +213,7 @@ spec:
       resources:
         requests:
           storage: {{ .Values.persistence.pvc.size | quote }}
+  {{- end }}
+  {{- with .Values.extraVolumeClaimTemplates }}
+  {{- tpl (toYaml .) $ | nindent 2 }}
   {{- end }}
