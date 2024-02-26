@@ -1,0 +1,22 @@
+{{- if and .Values.services.metrics.enabled .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "arbitrum.fullname" . }}
+  labels:
+    {{- include "arbitrum.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      service-type: metrics
+      {{- include "arbitrum.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: /debug/metrics/prometheus
+      {{- with (omit .Values.serviceMonitor "enabled") }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+{{- end }}

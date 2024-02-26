@@ -1,0 +1,286 @@
+image:
+  repository: offchainlabs/nitro-node
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+updateStrategy:
+  type: RollingUpdate
+
+## Ensure we shut down gracefully
+terminationGracePeriodSeconds: 300
+
+## Extra pod labels
+podLabels: {}
+  # environment: production
+
+## This labels mark bor node as ready to serve the traffic.
+## Used as selector for RPC service together with `.Values.podLabels` and default labels.
+podStatusLabels: {}
+  # manualstatus: in-service
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 1000
+
+## By disabling we fix "Unknown config environment variable envvar=GETH_"
+## Enable if your workload depends on this functionality
+enableServiceLinks: false
+
+## Override bor container command (can be templated)
+command: []
+
+## Extra container arguments (can be templated)
+extraArgs: []
+
+## Extra init containers, can be templated
+extraInitContainers: []
+  # - name: dumpconfig
+  #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+  #   imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+  #   command: ["dumpconfig"]
+  #   volumeMounts:
+  #   - name: config
+  #     mountPath: /config
+
+## Sidecar containers, can be templated
+sidecarContainers: []
+  # - name: exporter
+  #   image: ethpandaops/ethereum-metrics-exporter:latest
+  #   imagePullPolicy: Always
+  #   args:
+  #   - --execution-url=http://localhost:{{ .Values.config.http.port }}
+  #   ports:
+  #   - name: exporter
+  #     containerPort: 9090
+
+## Services config
+services:
+  rpc:
+    enabled: true
+    type: ClusterIP
+    http:
+      port: 8545
+    ws:
+      enabled: false
+      port: 8546
+    annotations: {}
+  metrics:
+    enabled: false
+    type: ClusterIP
+    port: 7071
+    annotations: {}
+    publishNotReadyAddresses: true
+
+ingress:
+  http:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts: []
+      # - host: arbitrum.local
+      #   paths:
+      #     - path: /
+      #       pathType: ImplementationSpecific
+    tls: []
+      # - secretName: arbitrum-tls
+      #   hosts:
+      #     - arbitrum.local
+  ws:
+    enabled: false
+    className: ""
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      # - host: arbitrum-ws.local
+      #   paths:
+      #     - path: /
+      #       pathType: ImplementationSpecific
+    tls: []
+      # - secretName: arbitrum-ws-tls
+      #   hosts:
+      #     - arbitrum-ws.local
+
+persistence:
+  type: pvc
+  # type: hostPath
+  pvc:
+    size: 1280Gi               # full node occupies ~600GB state + 500GB for snapshot download
+    accessMode: ReadWriteOnce
+    storageClass: ""           # set to "-" if you want to manually create persistent volume
+    annotations: {}
+  hostPath:
+    path: /mnt/disks/raid0/arb
+    type: Directory            # by default you need to create directory yourself
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Create Prometheus Operator serviceMonitor
+serviceMonitor:
+  enabled: false
+  # interval: 10s
+  # scrapeTimeout: 2s
+  # honorLabels: true
+  # relabelings: []
+  # metricRelabelings: []
+
+# .livenessProbe.exec.command can also be in a templated string format
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 120
+  periodSeconds: 60
+  successThreshold: 1
+  failureThreshold: 10
+  timeoutSeconds: 10
+  exec:
+    command:
+      - sh
+      - /scripts/liveness.sh
+      - "300"
+
+# .readinessProbe.exec.command can also be in a templated string format
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 2
+  timeoutSeconds: 5
+  exec:
+    command:
+      - sh
+      - /scripts/readiness.sh
+      - "60"
+
+## Create separate PVC for initial snapshot download
+pvcForDownload:
+  enabled: false
+  size: 500Gi
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+
+## Main nitro config section
+config:
+  chain:
+    name: arb1
+
+  parent-chain:
+    id: 1
+    blob-client:
+      beacon-url: http://lighthouse:5052
+    connection:
+      url: http://geth:8545
+
+  persistent:
+    chain: /home/user/.arbitrum
+
+  init:
+    url: https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar
+    download-path: ""
+
+  metrics: true
+
+  metrics-server:
+    addr: 0.0.0.0
+    port: 6070
+
+  pprof: false
+
+  pprof-cfg:
+    addr: 0.0.0.0
+    port: 6071
+
+  http:
+    addr: 0.0.0.0
+    port: 8545
+    api: ["eth", "net", "web3", "arb"]
+    vhosts: ["*"]
+    corsdomain: ["*"]
+    server-timeouts:
+      idle-timeout: 60m
+      read-header-timeout: 60m
+      read-timeout: 60m
+      write-timeout: 60m
+
+  ws:
+    addr: 0.0.0.0
+    port: 8546
+    api: ["eth", "net", "web3", "arb"]
+    origins: ["*"]
+
+## S3 snapshot sync config
+s3config:
+  image:
+    repository: peakcom/s5cmd
+    tag: v2.2.2
+    pullPolicy: IfNotPresent
+  # Any S3-compatible object storage service should be supported, but has only been tested with GCS.
+  # I.e. Amazon S3, MinIO, DigitalOcean Spaces, CloudFlare R2.
+  # endpointUrl: https://s3.amazonaws.com
+  endpointUrl: https://storage.googleapis.com
+  # Assuming your S3 bucket name is `my-snapshot-bucket` and base directory name is Helm release name
+  baseUrl: my-snapshot-bucket/{{ .Release.Name }}
+  # How to create access key
+  # AWS S3 https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+  # GCS    https://cloud.google.com/storage/docs/authentication/managing-hmackeys#create
+  accessKeyId: REPLACEME
+  secretAccessKey: REPLACEME
+
+initFromS3:
+  # enable initContainer
+  enabled: true
+  # download snapshot from S3 on every pod start
+  force: false
+
+syncToS3:
+  # enable initContainer (won't enable actual sync)
+  enabled: true
+  # restart pod and trigger sync to S3 inside initContainer by schedule
+  cronjob:
+    enabled: true
+    image:
+      repository: dysnix/kubectl
+      tag: v1.27
+      pullPolicy: IfNotPresent
+    schedule: "0 2 * * *"

@@ -1,0 +1,236 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "arbitrum.fullname" . }}
+  labels:
+    {{- include "arbitrum.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "arbitrum.name" . }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "arbitrum.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
+      labels:
+        {{- include "arbitrum.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podStatusLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      enableServiceLinks: {{ .Values.enableServiceLinks }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      serviceAccountName: {{ include "arbitrum.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      {{- if .Values.initFromS3.enabled }}
+      {{- with .Values.s3config }}
+      - name: init-from-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        command:
+        - sh
+        - /scripts/init-from-s3.sh
+        envFrom:
+        - configMapRef:
+            name: {{ include "arbitrum.fullname" $ }}-s3-config
+        - secretRef:
+            name: {{ include "arbitrum.fullname" $ }}-s3-secret
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ $.Values.config.persistent.chain }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.syncToS3.enabled }}
+      {{- with .Values.s3config }}
+      - name: sync-to-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        command:
+        - /bin/sh
+        - /scripts/sync-to-s3.sh
+        envFrom:
+        - configMapRef:
+            name: {{ include "arbitrum.fullname" $ }}-s3-config
+        - secretRef:
+            name: {{ include "arbitrum.fullname" $ }}-s3-secret
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ $.Values.config.persistent.chain }}
+      {{- end }}
+      {{- with .Values.syncToS3.cronjob }}
+      {{- if .enabled }}
+      - name: disable-sync-to-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        command:
+        - /bin/sh
+        - /scripts/s3-cron.sh
+        - disable_sync
+        - 5s
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+      {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- with .Values.extraInitContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
+      containers:
+      {{- with .Values.sidecarContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
+      - name: {{ include "arbitrum.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.command }}
+        command:
+          {{- tpl (toYaml .) $ | nindent 10 }}
+        {{- end }}
+        args:
+        {{- if .Values.config.metrics }}
+        - --metrics
+        {{- end }}
+        {{- if .Values.config.pprof }}
+        - --pprof
+        {{- end }}
+        - --conf.file=/config/config.json
+        {{- with .Values.extraArgs }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+        {{- end }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.config.http.port }}
+          protocol: TCP
+        - name: ws
+          containerPort: {{ .Values.config.ws.port }}
+          protocol: TCP
+        {{- if .Values.config.metrics }}
+        - name: metrics
+          containerPort: {{ index .Values "config" "metrics-server" "port" }}
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.config.pprof }}
+        - name: pprof
+          containerPort: {{ index .Values "config" "pprof-cfg" "port" }}
+          protocol: TCP
+        {{- end }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          {{- include "bor.healthcheck" (list $ .Values.livenessProbe) | nindent 10 }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          {{- include "bor.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ .Values.config.persistent.chain }}
+        {{- if .Values.extraVolumeMounts }}
+        {{- range .Values.extraVolumeMounts }}
+        - name: {{ .name }}
+          mountPath: {{ tpl .mountPath $ }}
+        {{- end }}
+        {{- end }}
+        {{- if and .Values.config.init.url (index .Values "config" "init" "download-path") }}
+        - name: download
+          mountPath: {{ index .Values "config" "init" "download-path" }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "arbitrum.fullname" . }}
+        - name: scripts
+          configMap:
+            name: {{ include "arbitrum.fullname" . }}-scripts
+        {{- if eq .Values.persistence.type "hostPath" }}
+        - name: data
+          hostPath:
+            path: {{ .Values.persistence.hostPath.path }}
+            type: {{ .Values.persistence.hostPath.type }}
+        {{- end }}
+  volumeClaimTemplates:
+  {{- if .Values.pvcForDownload.enabled }}
+  - metadata:
+      name: download
+      labels:
+        {{- include "arbitrum.selectorLabels" . | nindent 8 }}
+      {{- with .Values.pvcForDownload.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      - {{ .Values.pvcForDownload.accessMode }}
+      {{- if .Values.pvcForDownload.storageClass }}
+      {{- if eq .Values.pvcForDownload.storageClass "-" }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: {{ .Values.pvcForDownload.storageClass | quote }}
+      {{- end }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.pvcForDownload.size | quote }}
+  {{- end }}
+  {{- if eq .Values.persistence.type "pvc" }}
+  - metadata:
+      name: data
+      labels:
+        {{- include "arbitrum.selectorLabels" . | nindent 8 }}
+      {{- with .Values.persistence.pvc.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      - {{ .Values.persistence.pvc.accessMode }}
+      {{- if .Values.persistence.pvc.storageClass }}
+      {{- if eq .Values.persistence.pvc.storageClass "-" }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: {{ .Values.persistence.pvc.storageClass | quote }}
+      {{- end }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.pvc.size | quote }}
+  {{- end }}
