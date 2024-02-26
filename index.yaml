@@ -1347,6 +1347,27 @@ entries:
   bor:
   - apiVersion: v2
     appVersion: 1.1.0
+    created: "2024-02-26T15:21:29.251616231Z"
+    description: Polygon Bor execution layer node Helm chart
+    digest: eac38882ffafdf812ec3f04e9e844d3e49a51ed5ae861522ccf7b431cadd2be0
+    keywords:
+    - geth
+    - bor
+    - polygon
+    - matic
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: bor
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bor-0.0.7/bor-0.0.7.tgz
+    version: 0.0.7
+  - apiVersion: v2
+    appVersion: 1.1.0
     created: "2024-02-14T14:14:28.860172286Z"
     description: Polygon Bor execution layer node Helm chart
     digest: 16ac006cdd4d30667eb6bba08fd6eb87470b1b3dd2a93f30d0cb112e18deacfa
@@ -1472,6 +1493,28 @@ entries:
     - https://github.com/dysnix/charts/releases/download/bor-0.0.1/bor-0.0.1.tgz
     version: 0.0.1
   bsc:
+  - apiVersion: v2
+    appVersion: 1.2.15
+    created: "2024-02-26T15:21:29.465745359Z"
+    description: Binance Smart Chain chart for Kubernetes
+    digest: 1a9d2cd7011ff7005901797cc5dd1668aff729a4ca074e3812611c5740c07c48
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    - email: ap@dysnix.com
+      name: apolegoshko
+    name: bsc
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bsc-0.6.42/bsc-0.6.42.tgz
+    version: 0.6.42
   - apiVersion: v2
     appVersion: 1.2.15
     created: "2024-02-13T09:40:58.835133735Z"
@@ -4050,6 +4093,24 @@ entries:
   geth:
   - apiVersion: v2
     appVersion: v1.13.10
+    created: "2024-02-26T15:21:29.681328041Z"
+    description: Go-ethereum blockchain node Helm Chart
+    digest: bc82ccb7f9d61a28d5aa68afb589b437f90130a1a55d43f29b14d00244187a94
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-1.0.16/geth-1.0.16.tgz
+    version: 1.0.16
+  - apiVersion: v2
+    appVersion: v1.13.10
     created: "2024-02-14T14:14:28.968994012Z"
     description: Go-ethereum blockchain node Helm Chart
     digest: b1aa4cac6b0b7c3b0dedb530dcde8f2a00beb2bc49949c06bec1530da50a59f8
@@ -5212,6 +5273,27 @@ entries:
     - https://github.com/dysnix/charts/releases/download/nifi-registry-0.1.0/nifi-registry-0.1.0.tgz
     version: 0.1.0
   op-geth:
+  - apiVersion: v2
+    appVersion: v1.101305.0
+    created: "2024-02-26T15:21:29.929883469Z"
+    description: Optimism op-geth execution-layer client Helm chart
+    digest: 64141ea64c86e32091737b3619f7dd16189f911ae78a9d99896ec57004b4a0dd
+    keywords:
+    - geth
+    - optimism
+    - op-geth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: op-geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/op-geth-0.1.4/op-geth-0.1.4.tgz
+    version: 0.1.4
   - apiVersion: v2
     appVersion: v1.101305.0
     created: "2024-02-14T14:14:29.085090949Z"
@@ -6394,4 +6476,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/servicemonitor-apps-0.1.0/servicemonitor-apps-0.1.0.tgz
     version: 0.1.0
-generated: "2024-02-26T11:46:08.069340272Z"
+generated: "2024-02-26T15:21:29.930614715Z"
