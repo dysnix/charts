@@ -116,7 +116,7 @@ services:
   metrics:
     enabled: false
     type: ClusterIP
-    port: 7071
+    port: 6070
     annotations: {}
     publishNotReadyAddresses: true
 
