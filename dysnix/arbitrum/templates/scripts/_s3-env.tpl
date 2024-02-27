@@ -5,7 +5,7 @@ export S5CMD=/s5cmd
 export EXCLUDE_FILES="--exclude *.log.gz --exclude *.log"
 
 # local directory structure config
-export DATA_DIR="${DATA_DIR:-{{ .Values.config.persistent.chain }}/{{ .Values.config.chain.name }}}"
+export DATA_DIR="${DATA_DIR:-{{ .Values.config.persistent.chain }}}"
 export INITIALIZED_FILE="${DATA_DIR}/.initialized"
 
 # s3 directory structure config
