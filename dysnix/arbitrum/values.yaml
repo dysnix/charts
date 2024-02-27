@@ -234,7 +234,7 @@ config:
       url: http://geth:8545
 
   persistent:
-    chain: /home/user/.arbitrum
+    chain: /home/user/.arbitrum/arb1
 
   init:
     url: https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar
