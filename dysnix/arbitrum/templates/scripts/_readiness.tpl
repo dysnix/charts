@@ -15,9 +15,9 @@ fi
 
 # expected output format: 0x65cb8ca8
 get_block_timestamp() {
-    wget "http://localhost:$HTTP_PORT" -qO- \
-        --header 'Content-Type: application/json' \
-        --post-data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["latest", false],"id":1}' \
+    curl -s "http://localhost:$HTTP_PORT" \
+        -H 'Content-Type: application/json' \
+        -d '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["latest", false],"id":1}' \
     | sed -r 's/.*"timestamp":"([^"]+)".*/\1/g'
 }
 

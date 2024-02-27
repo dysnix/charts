@@ -17,9 +17,9 @@ fi
 
 # expected output format: 0x50938d
 get_block_number() {
-    wget "http://localhost:$HTTP_PORT" -qO- \
-        --header 'Content-Type: application/json' \
-        --post-data '{"jsonrpc":"2.0","method":"eth_blockNumber","id":1}' \
+    curl -s "http://localhost:$HTTP_PORT" \
+        -H 'Content-Type: application/json' \
+        -d '{"jsonrpc":"2.0","method":"eth_blockNumber","id":1}' \
     | sed -r 's/.*"result":"([^"]+)".*/\1/g'
 }
 
