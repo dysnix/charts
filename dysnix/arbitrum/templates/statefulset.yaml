@@ -149,11 +149,11 @@ spec:
         {{- end }}
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
-          {{- include "bor.healthcheck" (list $ .Values.livenessProbe) | nindent 10 }}
+          {{- include "arbitrum.healthcheck" (list $ .Values.livenessProbe) | nindent 10 }}
         {{- end }}
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
-          {{- include "bor.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
+          {{- include "arbitrum.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
         {{- end }}
         volumeMounts:
         - name: config
