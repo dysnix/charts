@@ -65,7 +65,7 @@ sync() {
   progress start
 
   # perform remote snapshot download and remove local objects which don't exist in snapshot
-  time "$S5CMD" --stat sync "s3://${S3_BASE_URL}${S3_DATA_DIR}/*" "${DATA_DIR}/" >/dev/null &
+  time "$S5CMD" --stat sync "s3://${S3_DATA_DIR}/*" "${DATA_DIR}/" >/dev/null &
   download_data=$!
 
   # handle interruption / termination

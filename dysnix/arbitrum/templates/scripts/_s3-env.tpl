@@ -4,11 +4,11 @@ export S5CMD=/s5cmd
 
 # local directory structure config
 export DATA_DIR="${DATA_DIR:-{{ .Values.config.persistent.chain }}}/nitro"
-export INITIALIZED_FILE="${DATA_DIR}/.initialized"
+export INITIALIZED_FILE="{{ .Values.config.persistent.chain }}/.initialized"
 
 # s3 directory structure config
 export S3_BASE_URL="${S3_BASE_URL?S3_BASE_URL not provided.}"
-export S3_DATA_DIR="/nitro"
+export S3_DATA_DIR="${S3_BASE_URL}/nitro"
 export S_COMPLETED="/completed"
 export S_STATS="/stats"
 export S_LOCKFILE="/lockfile"

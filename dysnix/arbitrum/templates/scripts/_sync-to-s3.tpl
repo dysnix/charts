@@ -39,7 +39,7 @@ sync() {
   echo "${HOSTNAME} $(date +%s)" | "$S5CMD" pipe "s3://${LOCKFILE_URL}"
 
   # perform upload of local data and remove destination objects which don't exist locally
-  time "$S5CMD" --stat sync --delete "${DATA_DIR}/" "s3://${S3_BASE_URL}${S3_DATA_DIR}/" &
+  time "$S5CMD" --stat sync --delete "${DATA_DIR}/" "s3://${S3_DATA_DIR}/" &
   upload_data=$!
 
   # handle interruption / termination
