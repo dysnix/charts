@@ -34,13 +34,13 @@ podStatusLabels: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext:
-  capabilities:
-    drop:
-    - ALL
-  runAsNonRoot: true
-  runAsUser: 1000
-  runAsGroup: 1000
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # runAsNonRoot: true
+  # runAsUser: 1000
+  # runAsGroup: 1000
 
 ## By disabling we fix "Unknown config environment variable envvar=GETH_"
 ## Enable if your workload depends on this functionality
@@ -276,6 +276,13 @@ s3config:
     repository: peakcom/s5cmd
     tag: v2.2.2
     pullPolicy: IfNotPresent
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
   # Any S3-compatible object storage service should be supported, but has only been tested with GCS.
   # I.e. Amazon S3, MinIO, DigitalOcean Spaces, CloudFlare R2.
   # endpointUrl: https://s3.amazonaws.com

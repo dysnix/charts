@@ -51,7 +51,7 @@ spec:
       - name: init-from-s3
         image: "{{ .image.repository }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.pullPolicy | quote }}
-        {{- with $.Values.securityContext }}
+        {{- with .securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
@@ -75,7 +75,7 @@ spec:
       - name: sync-to-s3
         image: "{{ .image.repository }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.pullPolicy | quote }}
-        {{- with $.Values.securityContext }}
+        {{- with .securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
@@ -98,7 +98,7 @@ spec:
       - name: disable-sync-to-s3
         image: "{{ .image.repository }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.pullPolicy | quote }}
-        {{- with $.Values.securityContext }}
+        {{- with .securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
