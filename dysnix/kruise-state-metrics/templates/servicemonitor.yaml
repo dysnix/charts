@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "common.names.fullname" . }}-prometheus-service-monitor
+  labels: {{ include "common.labels.standard" . | nindent 4 }}
+spec:
+  endpoints:
+    - interval: 10s
+      path: /metrics
+      port: http-metrics
+  selector:
+    matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - "{{ .Release.Namespace }}"

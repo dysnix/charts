@@ -1,0 +1,22 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "common.names.fullname" . }}
+rules:
+  - apiGroups: ["apps.kruise.io"]
+    resources: ["*"]
+    verbs: ["get", "watch", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "common.names.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "base.serviceAccountName" (dict "serviceAccount" .Values.serviceAccount "name" .name "context" .) }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ include "common.names.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
