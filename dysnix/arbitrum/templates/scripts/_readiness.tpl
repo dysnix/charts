@@ -18,7 +18,7 @@ get_block_timestamp() {
     curl -s "http://localhost:$HTTP_PORT" \
         -H 'Content-Type: application/json' \
         -d '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["latest", false],"id":1}' \
-    | sed -r 's/.*"timestamp":"([^"]+)".*/\1/g'
+    | jq -r .result.timestamp
 }
 
 # using $(()) converts hex string to number
