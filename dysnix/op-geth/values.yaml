@@ -257,7 +257,7 @@ config:
     port: 8551
     vhosts: ["*"]
   cache: 0            # disable by default, let geth automatically set proper value https://blog.ethereum.org/2023/09/12/geth-v1-13-0
-  syncmode: snap      # can be "full" or "snap"
+  syncmode: full      # can be "full" or "snap"
   gcmode: full        # possible values: full, archive
   snapshot: true      # enable snapshot generation
   verbosity: 3
