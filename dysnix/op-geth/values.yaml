@@ -116,20 +116,20 @@ services:
     port: 6060
     publishNotReadyAddresses: true
   p2p:
-    enabled: true
+    enabled: false      # enable if you want to use "snap" syncmode
     type: NodePort
     loadBalancerIP: ""
     port: 30303
-    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # it's better to set nodePort equal to .Values.config.port when the svc type is "NodePort"
     # nodePort: 30303
     annotations: {}
     publishNotReadyAddresses: true
   p2pDiscovery:
-    enabled: true
+    enabled: false      # enable if you want to use "snap" syncmode
     type: NodePort
     loadBalancerIP: ""
     port: 30301
-    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # it's better to set nodePort equal to .Values.config.discovery.port when the svc type is "NodePort"
     # nodePort: 30301
     annotations: {}
     publishNotReadyAddresses: true
@@ -261,8 +261,8 @@ config:
   gcmode: full        # possible values: full, archive
   snapshot: true      # enable snapshot generation
   verbosity: 3
-  maxpeers: 50
-  nodiscover: false
+  maxpeers: 0         # increase if you want to use "snap" syncmode
+  nodiscover: true    # disable if you want to use "snap" syncmode
   port: 30303
   discovery:
     port: 30301
