@@ -145,6 +145,7 @@ config:
     url: https://1rpc.io/eth           # eth L1 node rpc url, can also be ws://
     trustrpc: false                    # enable if you trust L1 provider and want to fetch data from it faster
     rpckind: standard                  # can be: alchemy, quicknode, infura, parity, nethermind, debug_geth, erigon, basic, any, standard
+    beacon: ""                         # endpoint for L1 beacon node, used for retrieving EIP-4844 blob transactions
   l2:
     url: http://op-geth-authrpc:8551  # authrpc addr of op-geth L2 node, can also be ws://
   rollup:
