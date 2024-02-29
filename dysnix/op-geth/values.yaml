@@ -258,7 +258,7 @@ init:
     url: ""
   download:
     enabled: false
-    url: https://r2-snapshots.fastnode.io/op/op-16-12-2023-full.tar.lz4
+    url: https://r2-snapshots.fastnode.io/op/op-10-02-2024-full.tar.lz4
     image:
       repository: alpine
       tag: 3.18

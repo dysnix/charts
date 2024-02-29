@@ -2,8 +2,8 @@ apiVersion: v2
 name: op-geth
 description: Optimism op-geth execution-layer client Helm chart
 
-version: 0.1.4
-appVersion: v1.101305.0
+version: 0.1.5
+appVersion: v1.101308.2
 
 keywords:
   - geth

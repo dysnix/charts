@@ -1,2 +1,4 @@
 config:
   jwt: 43970166a3e2c62cad0cfc923853ba9ee56c29d31439179947a0e7b3cb455ae6
+  l1:
+    beacon: https://ethereum-beacon-api.publicnode.com
