@@ -93,8 +93,10 @@ spec:
         - --op-network={{ . }}
         {{- end }}
         - --syncmode={{ .Values.config.syncmode }}
-        - --maxpeers=0
+        - --maxpeers={{ .Values.config.maxpeers }}
+        {{- if .Values.config.nodiscover }}
         - --nodiscover
+        {{- end }}
         - --authrpc.addr=0.0.0.0
         - --authrpc.jwtsecret=/secrets/jwt.hex
         - --authrpc.vhosts={{ join "," .Values.config.authrpc.vhosts }}
@@ -136,6 +138,14 @@ spec:
         {{- with .Values.config.vmodule }}
         - --vmodule={{ join "," . }}
         {{- end }}
+        {{- with .Values.config.bootnodes }}
+        - --bootnodes={{ join "," . }}
+        {{- end }}
+        {{- if not .Values.config.nodiscover }}
+        - --port={{ .Values.config.port }}
+        - --discovery.port={{ .Values.config.discovery.port }}
+        {{- end }}
+        - --nat={{ .Values.config.nat }}
         {{- with .Values.extraArgs }}
         {{- tpl (toYaml .) $ | nindent 8 }}
         {{- end }}
@@ -151,6 +161,20 @@ spec:
         {{- if .Values.config.metrics.enabled }}
         - name: metrics
           containerPort: 6060
+        {{- end }}
+        {{- if not .Values.config.nodiscover }}
+        - name: p2p-tcp
+          containerPort: {{ .Values.config.port }}
+          {{- if .Values.config.useHostPort }}
+          hostPort: {{ .Values.config.port }}
+          {{- end }}
+          protocol: TCP
+        - name: p2p-udp
+          containerPort: {{ .Values.config.discovery.port }}
+          {{- if .Values.config.useHostPort }}
+          hostPort: {{ .Values.config.discovery.port }}
+          {{- end }}
+          protocol: UDP
         {{- end }}
         {{- if .Values.livenessProbe.enabled }}
         livenessProbe:
