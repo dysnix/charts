@@ -115,6 +115,24 @@ services:
     type: ClusterIP
     port: 6060
     publishNotReadyAddresses: true
+  p2p:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 30303
+    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # nodePort: 30303
+    annotations: {}
+    publishNotReadyAddresses: true
+  p2pDiscovery:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 30301
+    # it's better to set nodePort equal to .Values.config.node.p2p.port when the svc type is "NodePort"
+    # nodePort: 30301
+    annotations: {}
+    publishNotReadyAddresses: true
 
 ingress:
   http:
@@ -239,10 +257,17 @@ config:
     port: 8551
     vhosts: ["*"]
   cache: 0            # disable by default, let geth automatically set proper value https://blog.ethereum.org/2023/09/12/geth-v1-13-0
-  syncmode: full      # only "full" is currenly supported, "snap" to be implemented in future
+  syncmode: snap      # can be "full" or "snap"
   gcmode: full        # possible values: full, archive
   snapshot: true      # enable snapshot generation
   verbosity: 3
+  maxpeers: 50
+  nodiscover: false
+  port: 30303
+  discovery:
+    port: 30301
+  useHostPort: false    # effectively disables p2p k8s services
+  nat: "any"
   bootnodes: []
   vmodule: []
   # - rpc=5

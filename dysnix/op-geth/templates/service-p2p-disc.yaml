@@ -1,0 +1,42 @@
+{{- with .Values.services.p2pDiscovery }}
+{{- if and .enabled (not $.Values.config.useHostPort) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "op-geth.fullname" $ }}-p2p-discovery
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: p2p-discovery
+    {{- include "op-geth.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: p2p-udp
+      port: {{ .port }}
+      targetPort: p2p-udp
+      protocol: UDP
+      {{- with .nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "op-geth.selectorLabels" $ | nindent 4 }}
+{{- end }}
+{{- end }}

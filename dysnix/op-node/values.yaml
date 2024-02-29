@@ -141,6 +141,7 @@ config:
   network: op-mainnet                  # which network to use
   port: 9545
   logLevel: INFO
+  syncmode: execution-layer            # can be null or "" if not using snap syncmode on execution layer
   l1:
     url: https://1rpc.io/eth                              # eth L1 node rpc url, can also be ws://
     trustrpc: false                                       # enable if you trust L1 provider and want to fetch data from it faster
