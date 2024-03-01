@@ -26,7 +26,7 @@ terminationGracePeriodSeconds: 300
 podLabels: {}
   # environment: production
 
-## This labels mark bor node as ready to serve the traffic.
+## This labels mark arbitrum node as ready to serve the traffic.
 ## Used as selector for RPC service together with `.Values.podLabels` and default labels.
 podStatusLabels: {}
   # manualstatus: in-service
@@ -46,7 +46,7 @@ securityContext: {}
 ## Enable if your workload depends on this functionality
 enableServiceLinks: false
 
-## Override bor container command (can be templated)
+## Override arbitrum container command (can be templated)
 command: []
 
 ## Extra container arguments (can be templated)
@@ -163,7 +163,7 @@ persistence:
     annotations: {}
   hostPath:
     path: /mnt/disks/raid0/arb
-    type: Directory            # by default you need to create directory yourself
+    type: Directory            # assume that path is already created, otherwise set to "DirectoryOrCreate"
 
 affinity: {}
 
