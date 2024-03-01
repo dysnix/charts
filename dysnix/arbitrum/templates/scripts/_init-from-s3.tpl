@@ -12,7 +12,7 @@ process_inputs() {
     rm -f "$INITIALIZED_FILE"
   fi
   # check for S3 credentials
-  if [ -z "$S3_ENDPOINT_URL" ] || [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+  if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
     echo "S3 credentials are not provided, exiting"; exit 1
   fi
 }

@@ -285,8 +285,8 @@ s3config:
       - ALL
   # Any S3-compatible object storage service should be supported, but has only been tested with GCS.
   # I.e. Amazon S3, MinIO, DigitalOcean Spaces, CloudFlare R2.
-  # endpointUrl: https://s3.amazonaws.com
-  endpointUrl: https://storage.googleapis.com
+  # endpointUrl: https://storage.googleapis.com
+  endpointUrl: ""
   # Assuming your S3 bucket name is `my-snapshot-bucket` and base directory name is Helm release name
   baseUrl: my-snapshot-bucket/{{ .Release.Name }}
   # How to create access key
