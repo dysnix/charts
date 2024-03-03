@@ -57,6 +57,16 @@ spec:
             {{- if .Values.proxysql_cluster.core.exit_on_error }}
             - "--exit-on-error"
             {{- end }}
+          env:
+            - name: PROXYSQL_IS_CORE_NODE
+              value: "true"
+          envFrom:
+          {{- if or .Values.readinessProbe.enabled .Values.livenessProbe.enabled }}
+            - configMapRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+            - secretRef:
+                name: '{{ include "proxysql.fullname" . }}-healthcheck'
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: {{ template "proxysql.image" . }}
@@ -64,7 +74,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "/usr/local/bin/wait_queries_to_finish.sh > /proc/1/fd/1"]
+                command: ["/bin/sh", "-c", "/usr/local/bin/wait_queries_to_finish.sh"]
           ports:
             - name: proxy
               containerPort: {{ .Values.service.proxyPort }}
@@ -75,15 +85,35 @@ spec:
             - name: web
               containerPort: {{ .Values.service.webPort }}
               protocol: TCP
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            exec:
+              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"]
+            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.startupProbe.successThreshold }}
+            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+          {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             exec:
-              command: ["bash", "-c", "true <>/dev/tcp/127.0.0.1/{{ .Values.service.proxyPort }}"]
+              command: {{ .Values.proxysql_cluster.healthcheck.command | toYaml | nindent 16 }}
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.readinessProbe.successThreshold }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command: {{ .Values.proxysql_cluster.healthcheck.command | toYaml | nindent 16 }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
           {{- end }}
           resources:
             {{- toYaml (default .Values.resources .Values.proxysql_cluster.core.statefullset.resources) | nindent 12 }}
@@ -99,6 +129,9 @@ spec:
             - name: scripts
               mountPath: /usr/local/bin/wait_queries_to_finish.sh
               subPath: wait_queries_to_finish.sh
+            - name: scripts
+              mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
+              subPath: proxysql_cluster_healthcheck.sh
           {{- if .Values.ssl.fromSecret }}
             - name: ssl
               mountPath: /etc/proxysql/ssl
@@ -125,25 +158,6 @@ spec:
           command:
             {{- toYaml .Values.debug.sidecar.command | nindent 14 }}
           {{- with .Values.debug.sidecar.securityContext }}
-          securityContext:
-            {{- toYaml .| nindent 12 }}
-          {{- end }}
-        {{- end }}
-        {{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.healthcheck.sidecar.enabled }}
-        - name: healthcheck
-          image: {{ .Values.proxysql_cluster.healthcheck.sidecar.image }}
-          command:
-            {{- toYaml .Values.proxysql_cluster.healthcheck.sidecar.command | nindent 14 }}
-          envFrom:
-            - configMapRef:
-                name: '{{ include "proxysql.fullname" . }}-healthcheck'
-            - secretRef:
-                name: '{{ include "proxysql.fullname" . }}-healthcheck'
-          volumeMounts:
-            - name: scripts
-              mountPath: /usr/local/bin/proxysql_cluster_healthcheck.sh
-              subPath: proxysql_cluster_healthcheck.sh
-          {{- with .Values.proxysql_cluster.healthcheck.sidecar.securityContext }}
           securityContext:
             {{- toYaml .| nindent 12 }}
           {{- end }}

@@ -1,5 +1,7 @@
 {{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.job.enabled .Values.proxysql_cluster.core.enabled }}
-{{- $coreServiceName := printf "%s-core" (include "proxysql.fullname" .) }}
+---
+{{- $coreServiceName := printf "%s-core.%s.svc" (include "proxysql.fullname" .) .Release.Namespace }}
+{{- $coreServiceAdminPort := (.Values.proxysql_cluster.healthcheck.psql_host_port | default .Values.service.adminPort) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -53,19 +55,29 @@ spec:
       initContainers:
         {{/* Wait for proxysql admin DB to show up */}}
         - name: wait-for-proxysql-admin
-          image: busybox:latest
-          imagePullPolicy: Always
-          command: ["/bin/sh" ]
-          args: ["-c",
-                 "until nc -vz {{ $coreServiceName }} 6032; do echo 'Waiting for DB...'; sleep 3s; done;"]
+          image: {{ template "proxysql.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash" ]
+          args:
+            - "-c"
+            - |
+                until true <>/dev/tcp/{{ $coreServiceName }}/{{ $coreServiceAdminPort }}; do
+                  echo "Waiting for {{ $coreServiceName }}:{{ $coreServiceAdminPort }} node...";
+                  sleep 3s;
+                done;
+                echo "Success connecting to {{ $coreServiceName }}:{{ $coreServiceAdminPort }}";
       containers:
-        - name: "psql-init-cluster"
+        - name: "psql-init-update-cluster-checksums"
           {{/* Connect to the ProxySQL console and execute the SQL script `/data/update-cluster-checksums.sql` */}}
-          command: ["/bin/sh" ]
-          args: [ "-c",
-                  "mysql --user=${PSQL_USER} --password=${PSQL_PASSWORD} --host={{ $coreServiceName }} --port=6032 --wait -vv < /data/update-cluster-checksums.sql" ]
-          image: {{ template "proxysql.proxysql_cluster.job.image" . }}
-          imagePullPolicy: {{ .Values.proxysql_cluster.job.image.pullPolicy }}
+          image: {{ template "proxysql.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/bash"]
+          args:
+            - "-c"
+            - >
+                mysql --user=${PSQL_USER} --password=${PSQL_PASSWORD}
+                --host={{ $coreServiceName }} --port={{ $coreServiceAdminPort }}
+                --wait -vv < /data/update-cluster-checksums.sql
           resources:
             {{- toYaml (default .Values.resources .Values.proxysql_cluster.job.resources) | nindent 12 }}
           env:
