@@ -599,6 +599,27 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/app-0.3.1/app-0.3.1.tgz
     version: 0.3.1
+  arbitrum:
+  - apiVersion: v2
+    appVersion: v2.3.0-3e14543
+    created: "2024-03-04T10:44:57.534773712Z"
+    description: Arbitrum nitro-node Helm Chart
+    digest: 59a9367b93dde78259fc0f4e1a7bca7f1759556ef3f1c808144887613f836c51
+    keywords:
+    - rollup
+    - arbitrum
+    - nitro
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: arbitrum
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/arbitrum-0.1.0/arbitrum-0.1.0.tgz
+    version: 0.1.0
   base:
   - annotations:
       category: Infrastructure
@@ -6534,4 +6555,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/servicemonitor-apps-0.1.0/servicemonitor-apps-0.1.0.tgz
     version: 0.1.0
-generated: "2024-03-03T17:26:33.943678681Z"
+generated: "2024-03-04T10:44:57.53526777Z"
