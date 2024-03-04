@@ -27,29 +27,17 @@ check_recent_init() {
   fi
 }
 
-# stop all background processes
-interrupt() {
-  echo "Got interrupt signal, stopping..."
-  for i in "$@"; do kill $i; done
-}
-
 sync() {
   # add lockfile while uploading
   # shellcheck disable=SC3028
   echo "${HOSTNAME} $(date +%s)" | "$S5CMD" pipe "s3://${LOCKFILE_URL}"
 
   # perform upload of local data and remove destination objects which don't exist locally
-  time "$S5CMD" --stat sync --delete "${DATA_DIR}/" "s3://${S3_DATA_DIR}/" &
-  upload_data=$!
-
-  # handle interruption / termination
-  trap 'interrupt ${upload_data}' INT TERM
-  # wait for upload to complete
-  wait $upload_data
+  time "$S5CMD" --stat sync --delete "${DATA_DIR}/" "s3://${S3_DATA_DIR}/"
 
   # mark upload as completed
   date +%s | "$S5CMD" pipe "s3://${COMPLETED_URL}"
-  "$S5CMD" rm "s3://${LOCKFILE_URL}" || true
+  "$S5CMD" rm "s3://${LOCKFILE_URL}"
 }
 
 update_stats() {

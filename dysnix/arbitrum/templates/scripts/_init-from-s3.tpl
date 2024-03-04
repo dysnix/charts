@@ -58,21 +58,17 @@ sync() {
   # s5cmd does not support "true" sync, it does not save object's timestamps
   # https://github.com/peak/s5cmd/issues/532
   echo "Cleaning up local data..."
-  rm -rf "${DATA_DIR:?}/"*
+  rm -rf "${DATA_DIR}"
   mkdir -p "${DATA_DIR}"
 
   echo "Starting download data from S3..."
+
+  # handle interruption / termination
+  trap 'interrupt ${progress_pid}' INT TERM
   progress start
 
   # perform remote snapshot download and remove local objects which don't exist in snapshot
-  time "$S5CMD" --stat sync "s3://${S3_DATA_DIR}/*" "${DATA_DIR}/" >/dev/null &
-  download_data=$!
-
-  # handle interruption / termination
-  trap 'interrupt ${download_data} ${progress_pid}' INT TERM
-  # wait for all syncs to complete
-  wait $download_data
-
+  time "$S5CMD" --stat sync --log error "s3://${S3_DATA_DIR}/*" "${DATA_DIR}/"
   progress stop
 
   # all done, mark as initialized
