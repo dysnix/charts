@@ -1,4 +1,13 @@
+readinessProbe:
+  enabled: false
+
+livenessProbe:
+  enabled: false
+
 config:
+  init:
+    empty: true
+    url: ""
   parent-chain:
     connection:
       url: https://ethereum-rpc.publicnode.com

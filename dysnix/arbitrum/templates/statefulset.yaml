@@ -168,7 +168,7 @@ spec:
           {{- include "arbitrum.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
         {{- end }}
         {{- if .Values.startupProbe.enabled }}
-        readinessProbe:
+        startupProbe:
           {{- include "arbitrum.healthcheck" (list $ .Values.startupProbe) | nindent 10 }}
         {{- end }}
         volumeMounts:
