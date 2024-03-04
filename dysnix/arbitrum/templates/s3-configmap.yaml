@@ -1,0 +1,11 @@
+{{- if or .Values.initFromS3.enabled .Values.syncToS3.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "arbitrum.fullname" . }}-s3-config
+data:
+  DATA_DIR: {{ .Values.config.persistent.chain }}
+  SYNC_TO_S3: "False"
+  S3_BASE_URL: {{ tpl .Values.s3config.baseUrl . }}
+  FORCE_INIT: {{ ternary "True" "False" .Values.initFromS3.force | quote }}
+{{- end }}

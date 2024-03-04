@@ -1,0 +1,46 @@
+{{- with .Values.services.rpc }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "arbitrum.fullname" $ }}-rpc
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: rpc
+    {{- include "arbitrum.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with .clusterIP }}
+  clusterIP: {{ . }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .publishNotReadyAddresses }}
+  publishNotReadyAddresses: {{ . }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .http.port }}
+      targetPort: http
+    {{- if .ws.enabled }}
+    - name: ws
+      port: {{ .ws.port }}
+      targetPort: ws
+    {{- end }}
+  selector:
+    {{- include "arbitrum.selectorLabels" $ | nindent 4 }}
+    {{- with $.Values.podStatusLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
+{{- end }}

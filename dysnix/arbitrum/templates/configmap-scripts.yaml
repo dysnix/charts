@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "arbitrum.fullname" . }}-scripts
+  labels:
+    {{- include "arbitrum.labels" . | nindent 4 }}
+data:
+  readiness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_readiness.tpl") . | nindent 4 }}
+  liveness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_liveness.tpl") . | nindent 4 }}
+  {{- if or .Values.syncToS3.enabled .Values.initFromS3.enabled }}
+  init-from-s3.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_init-from-s3.tpl") . | nindent 4 }}
+  sync-to-s3.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_sync-to-s3.tpl") . | nindent 4 }}
+  s3-env.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_s3-env.tpl") . | nindent 4 }}
+  s3-cron.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_s3-cron.tpl") . | nindent 4 }}
+  {{- end }}

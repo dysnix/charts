@@ -1,0 +1,12 @@
+arbitrum RPC can be accessed via port {{ .Values.config.http.port }} on the following DNS name from within your cluster:
+{{ template "arbitrum.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+
+To connect to arbitrum RPC:
+
+1. Forward the port for the node:
+
+  $ kubectl port-forward --namespace {{ .Release.Namespace }} $(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath='{ .items[0].metadata.name }') {{ .Values.config.http.port }}
+
+2. Try basic RPC method:
+
+  $ curl -X POST http://localhost:{{ .Values.config.http.port }} --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":1}'

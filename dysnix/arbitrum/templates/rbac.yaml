@@ -1,0 +1,31 @@
+{{- if and .Values.syncToS3.enabled .Values.serviceAccount.create }}
+{{- $fullName := include "arbitrum.fullname" . }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $fullName }}
+  labels: {{ include "arbitrum.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    resourceNames:
+      - {{ $fullName }}-s3-config
+    verbs:
+      - get
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $fullName }}
+  labels: {{ include "arbitrum.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $fullName }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ $fullName }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
