@@ -1,7 +1,6 @@
 config:
-  init:
-    empty: true
-    url: ""
   parent-chain:
     connection:
-      url: https://eth.drpc.org/
+      url: https://ethereum-rpc.publicnode.com
+    blob-client:
+      beacon-url: https://ethereum-beacon-api.publicnode.com

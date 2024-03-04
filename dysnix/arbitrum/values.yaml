@@ -192,9 +192,20 @@ serviceMonitor:
   # relabelings: []
   # metricRelabelings: []
 
+# .startupProbe.exec.command can also be in a templated string format
+# using startupProbe we can cover cases when node is downloading initial snapshot
+startupProbe:
+  enabled: true
+  periodSeconds: 5
+  successThreshold: 1
+  failureThreshold: 518400
+  timeoutSeconds: 2
+  tcpSocket:
+    port: http
+
 # .livenessProbe.exec.command can also be in a templated string format
 livenessProbe:
-  enabled: false
+  enabled: true
   initialDelaySeconds: 120
   periodSeconds: 60
   successThreshold: 1
@@ -208,7 +219,7 @@ livenessProbe:
 
 # .readinessProbe.exec.command can also be in a templated string format
 readinessProbe:
-  enabled: false
+  enabled: true
   initialDelaySeconds: 60
   periodSeconds: 10
   successThreshold: 1
