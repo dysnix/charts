@@ -19,6 +19,9 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
+# Optional: If set, the proxysql pods will use the given priorityClassName.
+priorityClassName: ""
+
 podSecurityContext:
   runAsNonRoot: true
   fsGroup: 999
@@ -281,6 +284,9 @@ proxysql_cluster:
     #  minAvailable: 0     # required count of pods to remain available, even without the evicted pod.
     #  maxUnavailable: 0   # Count of pods that may be unavailable after eviction.
 
+    # Optional: If set, the proxysql pods will use the given priorityClassName.
+    priorityClassName: ""
+
     statefullset:
       nodeSelector: {}
       tolerations: []
@@ -315,6 +321,9 @@ proxysql_cluster:
     podDisruptionBudget: {}
     #  minAvailable: 0     # required count of pods to remain available, even without the evicted pod.
     #  maxUnavailable: 0   # Count of pods that may be unavailable after eviction.
+
+    # Optional: If set, the proxysql pods will use the given priorityClassName.
+    priorityClassName: ""
 
     daemonset:
       nodeSelector: {}
