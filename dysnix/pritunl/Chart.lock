@@ -3,7 +3,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 1.10.4
 - name: mongodb
-  repository: https://charts.bitnami.com/bitnami
+  repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
   version: 10.30.12
-digest: sha256:97be1fb959d10d5f212ebf2aa978ef5e1eec57846ca0901408b0441cfd4fee9a
-generated: "2022-10-07T16:07:02.564772+03:00"
+digest: sha256:61fff10ddd99f0550a72e3f9bed9340c4efa9be5b5741592e347ccda9a14c6ed
+generated: "2024-04-08T13:44:39.772035+03:00"

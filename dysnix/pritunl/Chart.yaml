@@ -22,5 +22,5 @@ dependencies:
     version: 1.10.x
   - name: mongodb
     version: ~10.30.x
-    repository: https://charts.bitnami.com/bitnami
+    repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
     condition: mongodb.enabled
