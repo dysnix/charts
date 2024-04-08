@@ -206,6 +206,7 @@ while [ "${SYNC}" -gt 0 ] ; do
     fi
 done
 
+set -e
 # prepare geth datadir from tmp dirs
 mv "${STATE_TMP_DIR}" "${CHAINDATA_DIR}"
 rm -rf "${CHAINDATA_DIR}/ancient"

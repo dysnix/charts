@@ -124,9 +124,9 @@ bsc:
     # possible options (1.3.x+) are "leveldb" and "pebble"
     # use empty value for 1.2.x
     engine: ""
-  txlookuplimit: 0                        # WARNING: won't work on BSC >=1.3.x, node will crash if it's provided. use ".Values.history.transactions" instead
+  txlookuplimit: null                        # WARNING: won't work on BSC >=1.3.x, node will crash if it's provided. use ".Values.history.transactions" instead
   history:
-    transactions: null                    # BSC >=1.3.x only
+    transactions: 0                    # BSC >=1.3.x only
   pruneancient: false                     # WARNING: enabling this option is irreversible, ancient data will be permanently removed
   # extra arguments to pass to container
   extraArgs: []
