@@ -65,6 +65,9 @@ ingress:
   ## @param ingress.apiVersion Force Ingress API version (automatically detected if not set)
   ##
   apiVersion:
+  ## @param ingress.className Ingress class name
+  ##
+  className: ""
   ## @param ingress.hostname Default host for the ingress record
   ##
   hostname: pritunl.local
