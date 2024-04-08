@@ -5499,6 +5499,34 @@ entries:
   pritunl:
   - apiVersion: v2
     appVersion: "1.29"
+    created: "2024-04-08T20:52:35.438962784Z"
+    dependencies:
+    - name: common
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+      tags:
+      - bitnami-common
+      version: 1.10.x
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+      version: ~10.30.x
+    description: A Helm chart for Kubernetes
+    digest: 25dcdd79867949c3eb5b1dbd21b07784d4c6ff5bf7cf9033cd9680610e57ac66
+    home: https://pritunl.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    - email: vladstarrr@icloud.com
+      name: vladstarr
+    name: pritunl
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pritunl/pritunl
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pritunl-0.2.5/pritunl-0.2.5.tgz
+    version: 0.2.5
+  - apiVersion: v2
+    appVersion: "1.29"
     created: "2022-11-14T20:20:01.193326248Z"
     dependencies:
     - name: common
@@ -6555,4 +6583,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/servicemonitor-apps-0.1.0/servicemonitor-apps-0.1.0.tgz
     version: 0.1.0
-generated: "2024-03-04T10:44:57.53526777Z"
+generated: "2024-04-08T20:52:35.439345498Z"
