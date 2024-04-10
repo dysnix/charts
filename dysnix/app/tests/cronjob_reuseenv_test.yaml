@@ -1,0 +1,68 @@
+suite: cronjobs
+templates:
+  - cronjobs.yaml
+tests:
+  -
+    it: params inherited when reuseEnv enabled
+    values:
+      - ./values/cronjobs.yaml
+      - ./values/cronjobs-reuse.yaml
+    asserts:
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: TEST
+            value: OK
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: test
+  -
+    it: params not inherited when reuseEnv disabled
+    values:
+      - ./values/cronjobs.yaml
+      - ./values/cronjobs-reuse.yaml
+    set:
+      cronJobs:
+        default:
+          reuseEnv: false
+    asserts:
+      - isNull:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+      - isNull:
+          path: spec.jobTemplate.spec.template.spec.containers[0].envFrom
+  -
+    it: params can be overriden when reuseEnv enabled
+    values:
+      - ./values/cronjobs.yaml
+      - ./values/cronjobs-reuse.yaml
+    set:
+      cronJobs:
+        default:
+          env:
+            TEST_OVERRIDE: OK
+          envFrom:
+            - secretRef:
+                name: '{{ include "app.fullname" . }}'
+    asserts:
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: TEST_OVERRIDE
+            value: OK
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: RELEASE-NAME-app
+      - notContains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: TEST
+            value: OK
+      - notContains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: test

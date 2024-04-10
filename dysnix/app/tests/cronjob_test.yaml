@@ -1,0 +1,65 @@
+suite: cronjobs
+templates:
+  - cronjobs.yaml
+tests:
+  -
+    it: cronjob is created
+    values:
+      - ./values/cronjobs.yaml
+    asserts:
+      - isKind:
+          of: CronJob
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-app-default
+  -
+    it: cronjob can be disabled
+    values:
+      - ./values/cronjobs.yaml
+    set:
+      cronJobs:
+        default:
+          enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+  -
+    it: cronjob schedule is set
+    values:
+      - ./values/cronjobs.yaml
+    asserts:
+      - equal:
+          path: spec.schedule
+          value: "0 * * * *"
+  -
+    it: container name is expected
+    values:
+      - ./values/cronjobs.yaml
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].name
+          value: default
+  -
+    it: container image is set
+    values:
+      - ./values/cronjobs.yaml
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].image
+          value: docker.io/alpine:latest
+  -
+    it: container command is set
+    values:
+      - ./values/cronjobs.yaml
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command[0]
+          value: /app
+  -
+    it: container args are set
+    values:
+      - ./values/cronjobs.yaml
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].args[0]
+          value: run_checks
