@@ -1,0 +1,82 @@
+{{/* vim: set filetype=helm: */}}
+{{- define "app.resources.cronjob" -}}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: '{{ include "app.fullname" . }}-{{ ._include.name }}'
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- include "app.labels.component" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+spec:
+  schedule: {{ ._include.data.schedule | quote }}
+  {{- with ._include.data.concurrencyPolicy }}
+  concurrencyPolicy: {{ . }}
+  {{- end }}
+  {{- with ._include.data.failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ . }}
+  {{- end }}
+  {{- with ._include.data.successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ . }}
+  {{- end }}
+  jobTemplate:
+    metadata:
+      name: '{{ include "app.fullname" . }}-{{ ._include.name }}'
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+        {{- include "app.labels.component" . | nindent 8 }}
+        {{- if .Values.commonLabels }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with ._include.data.backoffLimit }}
+      backoffLimit: {{ . }}
+      {{- end }}
+      template:
+        metadata:
+          labels:
+            {{- include "common.labels.matchLabels" . | nindent 12 }}
+            {{- include "app.labels.component" . | nindent 12 }}
+        spec:
+          {{- include "app.imagePullSecrets" . | nindent 6 }}
+          containers:
+          - name: {{ ._include.name }}
+            {{- with ._include.data.command }}
+            command:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with ._include.data.args }}
+            args:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with coalesce ._include.data.image .Values.image }}
+            image: {{ include "common.images.image" (dict "imageRoot" . "global" $.Values.global) }}
+            imagePullPolicy: {{ .pullPolicy }}
+            {{- end }}
+            {{- include "app.cronjob.env" ( dict "context" ._include.data "global" .Values "root" $ ) | indent 12 }}
+            {{- with ._include.data.resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+          restartPolicy: {{ ._include.data.restartPolicy | default "OnFailure" }}
+          serviceAccountName: {{ include "app.serviceAccountName" . }}
+{{- end -}}
+
+{{- define "app.resources.cronjobs" -}}
+  {{- range $name, $data := .Values.cronJobs | default dict }}
+    {{- if $data.enabled }}
+    {{- include "app.resources.include" (dict "resource" "cronjob" "name" $name "data" $data "top" $) }}
+    {{- end }}
+  {{- end }}
+{{- end -}}
+
+{{/* Include the resource */}}
+{{- if eq "direct" (include "app.chart.mode" .) -}}
+  {{- range $_, $component := concat (list "") $.Values.app.components -}}
+    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
+    {{- include "app.cronjobs" (dict "component" $component "values" $values "top" $) -}}
+  {{- end -}}
+{{- end -}}

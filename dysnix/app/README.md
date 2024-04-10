@@ -311,7 +311,6 @@ containers:
 | `secrets`              | Creates application secrets (note the name is prefixed with the app name)                                              | `{}`         |
 | `templateChecksums`    | Specifies list of template files to add as an annotation checksum into the pod.                                        | `[]`         |
 
-
 ### Global parameters
 
 | Name                      | Description                                     | Value |
@@ -319,7 +318,6 @@ containers:
 | `global.imageRegistry`    | Global Docker image registry                    | `""`  |
 | `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`  |
 | `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `""`  |
-
 
 ### Common parameters
 
@@ -337,14 +335,13 @@ containers:
 | `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
 | `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["infinity"]`  |
 
-
 ### Main pod Parameters
 
 | Name                                              | Description                                                                                                                                                       | Value           |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |-----------------|
-| `image.registry`                                  | image registry                                                                                                                                                    | `""`            |
-| `image.repository`                                | image repository                                                                                                                                                  | `""`            |
-| `image.tag`                                       | image tag (immutable tags are recommended)                                                                                                                        | `""`            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| `image.registry`                                  | image registry                                                                                                                                                    | `docker.io`     |
+| `image.repository`                                | image repository                                                                                                                                                  | `alpine`        |
+| `image.tag`                                       | image tag (immutable tags are recommended)                                                                                                                        | `latest`        |
 | `image.digest`                                    | image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)                        | `""`            |
 | `image.pullPolicy`                                | image pull policy                                                                                                                                                 | `IfNotPresent`  |
 | `image.pullSecrets`                               | image pull secrets                                                                                                                                                | `[]`            |
@@ -400,22 +397,26 @@ containers:
 | `podAffinityPreset`                               | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                               | `""`            |
 | `podAntiAffinityPreset`                           | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                          | `soft`          |
 | `pdb.create`                                      | Enable/disable a Pod Disruption Budget creation                                                                                                                   | `false`         |
-| `pdb.minAvailable`                                | Minimum number/percentage of pods that should remain scheduled                                                                                                    | `null`          |
-| `pdb.maxUnavailable`                              | Maximum number/percentage of pods that may be made unavailable                                                                                                    | `null`          |
+| `pdb.minAvailable`                                | Minimum number/percentage of pods that should remain scheduled                                                                                                    | `nil`           |
+| `pdb.maxUnavailable`                              | Maximum number/percentage of pods that may be made unavailable                                                                                                    | `nil`           |
+| `pdb.unhealthyPodEvictionPolicy`                  | IfHealthyBudget/AlwaysAllow                                                                                                                                       | `nil`           |
+| `pdb.selector`                                    | extra selector for PDB                                                                                                                                            | `{}`            |
 | `autoscaling.enabled`                             | Enable autoscaling for %%MAIN_OBJECT_BLOCK%%                                                                                                                      | `false`         |
 | `autoscaling.minReplicas`                         | Minimum number of %%MAIN_OBJECT_BLOCK%% replicas                                                                                                                  | `""`            |
 | `autoscaling.maxReplicas`                         | Maximum number of %%MAIN_OBJECT_BLOCK%% replicas                                                                                                                  | `""`            |
 | `autoscaling.targetCPU`                           | Target CPU utilization percentage                                                                                                                                 | `""`            |
 | `autoscaling.targetMemory`                        | Target Memory utilization percentage                                                                                                                              | `""`            |
+| `autoscaling.behavior`                            | HPA behavior                                                                                                                                                      | `{}`            |
 | `nodeAffinityPreset.type`                         | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                         | `""`            |
 | `nodeAffinityPreset.key`                          | Node label key to match. Ignored if `affinity` is set                                                                                                             | `""`            |
 | `nodeAffinityPreset.values`                       | Node label values to match. Ignored if `affinity` is set                                                                                                          | `[]`            |
 | `affinity`                                        | Affinity for pods assignment                                                                                                                                      | `{}`            |
 | `nodeSelector`                                    | Node labels for pods assignment                                                                                                                                   | `{}`            |
 | `tolerations`                                     | Tolerations for pods assignment                                                                                                                                   | `[]`            |
-| `updateStrategy.type`                             | statefulset strategy type                                                                                                                                         | `RollingUpdate` |
+| `updateStrategy.type`                             | deployment strategy type                                                                                                                                          | `RollingUpdate` |
 | `dnsPolicy`                                       | Set DNS policy for the pod. Defaults to "ClusterFirst".                                                                                                           | `nil`           |
 | `hostNetwork`                                     | Host networking requested for this pod. Use the host's network namespace. If this option is set, the ports that will be used must be specified. Default to false. | `nil`           |
+| `automountServiceAccountToken`                    | Automount service account token for the pod. Defaults to "true"                                                                                                   | `nil`           |
 | `podManagementPolicy`                             | Statefulset Pod management policy, it needs to be Parallel to be able to complete the cluster join                                                                | `OrderedReady`  |
 | `priorityClassName`                               | pods' priorityClassName                                                                                                                                           | `""`            |
 | `topologySpreadConstraints`                       | Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template                                          | `[]`            |
@@ -430,7 +431,6 @@ containers:
 | `sidecars`                                        | Add additional sidecar containers to the pod(s)                                                                                                                   | `[]`            |
 | `extraInitContainers`                             | Add additional init containers to the pod(s) (go after .initContainers)                                                                                           | `[]`            |
 
-
 ### Traffic Exposure Parameters
 
 | Name                               | Description                                                                                                                      | Value                    |
@@ -442,6 +442,7 @@ containers:
 | `service.loadBalancerSourceRanges` | service Load Balancer sources                                                                                                    | `[]`                     |
 | `service.externalTrafficPolicy`    | service external traffic policy                                                                                                  | `Cluster`                |
 | `service.annotations`              | Additional custom annotations for service                                                                                        | `{}`                     |
+| `service.extraSelectors`           | Additional custom selectors for pods to match the service                                                                        | `{}`                     |
 | `service.extraPorts`               | Extra ports to expose in service (normally used with the `sidecars` value)                                                       | `[]`                     |
 | `service.sessionAffinity`          | Control where client requests go, to the same pod or round-robin                                                                 | `None`                   |
 | `service.sessionAffinityConfig`    | Additional settings for the sessionAffinity                                                                                      | `{}`                     |
@@ -465,7 +466,6 @@ containers:
 | `ingress.secrets`                  | Custom TLS certificates as secrets                                                                                               | `[]`                     |
 | `ingress.extraRules`               | Additional rules to be covered with this ingress record                                                                          | `[]`                     |
 
-
 ### Persistence Parameters
 
 | Name                        | Description                                                                                             | Value               |
@@ -483,7 +483,6 @@ containers:
 | `persistence.selector`      | Selector to match an existing Persistent Volume for WordPress data PVC                                  | `{}`                |
 | `persistence.dataSource`    | Custom PVC data source                                                                                  | `{}`                |
 
-
 ### Init Container Parameters
 
 | Name                                                   | Description                                              | Value                   |
@@ -498,11 +497,11 @@ containers:
 | `volumePermissions.resources.requests`                 | The requested resources for the init container           | `{}`                    |
 | `volumePermissions.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser          | `0`                     |
 
-
 ### Other Parameters
 
 | Name                                          | Description                                                                                                              | Value   |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `minReadySeconds`                             | minimum seconds for pod to become ready. 0 is the default k8s value                                                      | `0`     |
 | `rbac.create`                                 | Specifies whether RBAC resources should be created                                                                       | `false` |
 | `rbac.rules`                                  | Custom RBAC rules to set                                                                                                 | `[]`    |
 | `serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                     | `true`  |
@@ -524,6 +523,25 @@ containers:
 | `metrics.serviceMonitor.metricRelabelings`    | Specify additional relabeling of metrics                                                                                 | `[]`    |
 | `metrics.serviceMonitor.relabelings`          | Specify general relabeling                                                                                               | `[]`    |
 | `metrics.serviceMonitor.selector`             | Prometheus instance selector labels                                                                                      | `{}`    |
+
+### CronJobs parameters
+
+| Name                                 | Description                                                    | Value |
+| ------------------------------------ | -------------------------------------------------------------- | ----- |
+| `cronJobs`                           | A dictionary containing CronJobs                               | `{}`  |
+| `cronJobs.<name>`                    | CronJob configuration                                          | `{}`  |
+| `cronJobs.<name>.enabled`            | Whether this CronJob is enabled                                |       |
+| `cronJobs.<name>.schedule`           | CronJob schedule                                               |       |
+| `cronJobs.<name>.command`            | Override container command                                     |       |
+| `cronJobs.<name>.args`               | Override container args                                        |       |
+| `cronJobs.<name>.reuseEnv`           | Reuse params from `.Values` unless overriden by following      |       |
+| `cronJobs.<name>.env`                | Name Map of environment variables for the CronJob container    |       |
+| `cronJobs.<name>.envFrom`            | Configures of envFrom to include into the main container       |       |
+| `cronJobs.<name>.extraEnvVars`       | Array with extra environment variables to add to nodes         |       |
+| `cronJobs.<name>.extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars for nodes |       |
+| `cronJobs.<name>.extraEnvVarsSecret` | Name of existing Secret containing extra env vars for nodes    |       |
+| `cronJobs.<name>.image`              | Container image configuration                                  |       |
+| `cronJobs.<name>.resources`          | Container resources configuration                              |       |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,

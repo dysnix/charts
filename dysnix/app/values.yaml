@@ -218,9 +218,9 @@ diagnosticMode:
 ## @param image.debug Enable image debug mode
 ##
 image:
-  registry: ""
-  repository: ""
-  tag: ""
+  registry: docker.io
+  repository: alpine
+  tag: latest
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -397,6 +397,7 @@ pdb:
 ## @param autoscaling.maxReplicas Maximum number of %%MAIN_OBJECT_BLOCK%% replicas
 ## @param autoscaling.targetCPU Target CPU utilization percentage
 ## @param autoscaling.targetMemory Target Memory utilization percentage
+## @param autoscaling.behavior HPA behavior
 ##
 autoscaling:
   enabled: false
@@ -912,3 +913,56 @@ metrics:
     ##   prometheus: my-prometheus
     ##
     selector: {}
+
+## @section CronJobs parameters
+##
+
+## @param cronJobs [object] A dictionary containing CronJobs
+##
+cronJobs:
+  ## @param cronJobs.<name> [object] CronJob configuration
+  # example:
+    ## @extra cronJobs.<name>.enabled Whether this CronJob is enabled
+    ##
+    # enabled: false
+    ## @extra cronJobs.<name>.schedule CronJob schedule
+    ##
+    # schedule: "*/10 * * * *"
+    ## @extra cronJobs.<name>.command Override container command
+    ##
+    # command: ["/app"]
+    ## @extra cronJobs.<name>.args Override container args
+    ##
+    # args: ["update_datasets"]
+    ## @extra cronJobs.<name>.reuseEnv Reuse params from `.Values` unless overriden by following
+    ##
+    # reuseEnv: false
+    ## @extra cronJobs.<name>.env Name Map of environment variables for the CronJob container
+    # env: []
+    ## @extra cronJobs.<name>.envFrom Configures of envFrom to include into the main container
+    # envFrom: []
+    ## @extra cronJobs.<name>.extraEnvVars Array with extra environment variables to add to nodes
+    # extraEnvVars: []
+    ## @extra cronJobs.<name>.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for nodes
+    ##
+    # extraEnvVarsCM: ""
+    ## @extra cronJobs.<name>.extraEnvVarsSecret Name of existing Secret containing extra env vars for nodes
+    ##
+    # extraEnvVarsSecret: ""
+    ## @extra cronJobs.<name>.image Container image configuration
+    ##
+    # image:
+    #   registry: docker.io
+    #   repository: alpine
+    #   tag: cron
+    #   digest: ""
+    #   pullPolicy: ""
+    #   pullSecrets: []
+    ## @extra cronJobs.<name>.resources [object] Container resources configuration
+    ##
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 100Mi
+    #   limits:
+    #     memory: 200Mi
