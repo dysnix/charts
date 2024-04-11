@@ -207,6 +207,7 @@ spec:
         - --discovery.port={{ .Values.config.discovery.port }}
         {{- end }}
         - --nat={{ .Values.config.nat }}
+        - --state.scheme={{ .Values.config.state.scheme }}
         {{- with .Values.extraArgs }}
         {{- tpl (toYaml .) $ | nindent 8 }}
         {{- end }}

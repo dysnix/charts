@@ -257,6 +257,8 @@ config:
   authrpc:
     port: 8551
     vhosts: ["*"]
+  state:
+    scheme: hash      # "hash" is being deprecated soon, please use "path" for new installations
   cache: 0            # disable by default, let geth automatically set proper value https://blog.ethereum.org/2023/09/12/geth-v1-13-0
   syncmode: full      # can be "full" or "snap"
   gcmode: full        # possible values: full, archive
