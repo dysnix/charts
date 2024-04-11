@@ -61,7 +61,7 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: {{ .Values.config.datadir }}
+          mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
       {{- end }}
       {{- if .Values.init.genesis.enabled }}
       - name: init-genesis
@@ -76,7 +76,7 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: {{ .Values.config.datadir }}
+          mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
       {{- end }}
       {{- if .Values.initFromS3.enabled }}
       {{- with .Values.s3config }}
@@ -95,7 +95,7 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: {{ $.Values.config.datadir }}
+          mountPath: {{ $.Values.persistence.mountPath | default $.Values.config.datadir }}
       {{- end }}
       {{- end }}
       {{- if .Values.syncToS3.enabled }}
@@ -115,7 +115,7 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: {{ $.Values.config.datadir }}
+          mountPath: {{ $.Values.persistence.mountPath | default $.Values.config.datadir }}
       {{- end }}
       {{- with .Values.syncToS3.cronjob }}
       {{- if .enabled }}
@@ -248,7 +248,7 @@ spec:
         {{- end }}
         volumeMounts:
         - name: data
-          mountPath: {{ .Values.config.datadir }}
+          mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
         - name: secrets
           mountPath: /secrets
         - name: scripts

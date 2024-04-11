@@ -188,6 +188,7 @@ persistence:
   hostPath:
     path: /data/geth
     type: Directory            # by default you need to create directory yourself
+  mountPath: /root/.ethereum   # specified for compatibility reasons, value from .Values.config.datadir is used when empty
 
 affinity: {}
 
