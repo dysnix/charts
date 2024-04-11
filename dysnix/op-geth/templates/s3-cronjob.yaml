@@ -1,0 +1,71 @@
+{{- if .Values.syncToS3.cronjob.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "op-geth.fullname" . }}-sync-to-s3
+  labels:
+    {{- include "op-geth.labels" . | nindent 4 }}
+spec:
+  {{- with .Values.syncToS3.cronjob }}
+  schedule: "{{ .schedule }}"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    metadata:
+      name: {{ include "op-geth.fullname" $ }}-sync-to-s3
+    spec:
+      activeDeadlineSeconds: 60
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            {{- include "op-geth.labels" $ | nindent 12 }}
+        spec:
+          restartPolicy: OnFailure
+          {{- with .imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "op-geth.fullname" $ }}-s3-cronjob
+          {{- with .podSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: enable-sync-to-s3
+            image: "{{ .image.repository }}:{{ .image.tag }}"
+            imagePullPolicy: {{ .image.pullPolicy | quote }}
+            {{- with .securityContext }}
+            securityContext:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            command:
+            - /bin/sh
+            - /scripts/s3-cron.sh
+            - enable_sync
+            - 5s
+            volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            {{- with .resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+          volumes:
+          - name: scripts
+            configMap:
+              name: {{ include "op-geth.fullname" $ }}-scripts
+  {{- end }}
+{{- end }}

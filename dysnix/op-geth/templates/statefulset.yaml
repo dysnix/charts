@@ -14,6 +14,11 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/configmap-scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
+        {{- if or .Values.syncToS3.enabled .Values.initFromS3.enabled }}
+        checksum/s3-secret: {{ include (print $.Template.BasePath "/s3-secret.yaml") . | sha256sum }}
+        checksum/s3-configmap: {{ include (print $.Template.BasePath "/s3-configmap.yaml") . | sha256sum }}
+        {{- end }}
       labels:
         {{- include "op-geth.selectorLabels" . | nindent 8 }}
         {{- with .Values.podStatusLabels }}
@@ -56,7 +61,7 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: /root/.ethereum
+          mountPath: {{ .Values.config.datadir }}
       {{- end }}
       {{- if .Values.init.genesis.enabled }}
       - name: init-genesis
@@ -71,7 +76,62 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: /root/.ethereum
+          mountPath: {{ .Values.config.datadir }}
+      {{- end }}
+      {{- if .Values.initFromS3.enabled }}
+      {{- with .Values.s3config }}
+      - name: init-from-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        command:
+        - sh
+        - /scripts/init-from-s3.sh
+        envFrom:
+        - configMapRef:
+            name: {{ include "op-geth.fullname" $ }}-s3-config
+        - secretRef:
+            name: {{ include "op-geth.fullname" $ }}-s3-secret
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ $.Values.config.datadir }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.syncToS3.enabled }}
+      {{- with .Values.s3config }}
+      - name: sync-to-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        command:
+        - /bin/sh
+        - /scripts/sync-to-s3.sh
+        envFrom:
+        - configMapRef:
+            name: {{ include "op-geth.fullname" $ }}-s3-config
+        - secretRef:
+            name: {{ include "op-geth.fullname" $ }}-s3-secret
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ $.Values.config.datadir }}
+      {{- end }}
+      {{- with .Values.syncToS3.cronjob }}
+      {{- if .enabled }}
+      - name: disable-sync-to-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        command:
+        - /bin/sh
+        - /scripts/s3-cron.sh
+        - disable_sync
+        - 5s
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+      {{- end }}
+      {{- end }}
       {{- end }}
       {{- with .Values.extraInitContainers }}
         {{- tpl (toYaml . | nindent 6) $ }}
@@ -89,6 +149,7 @@ spec:
           {{- tpl (toYaml .) $ | nindent 10 }}
         {{- end }}
         args:
+        - --datadir={{ .Values.config.datadir }}
         {{- with .Values.config.network }}
         - --op-network={{ . }}
         {{- end }}
@@ -136,7 +197,7 @@ spec:
         {{- end }}
         {{- end }}
         {{- with .Values.config.vmodule }}
-        - --vmodule={{ join "," . }}
+        - --log.vmodule={{ join "," . }}
         {{- end }}
         {{- with .Values.config.bootnodes }}
         - --bootnodes={{ join "," . }}
@@ -186,7 +247,7 @@ spec:
         {{- end }}
         volumeMounts:
         - name: data
-          mountPath: /root/.ethereum
+          mountPath: {{ .Values.config.datadir }}
         - name: secrets
           mountPath: /secrets
         - name: scripts

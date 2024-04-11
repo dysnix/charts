@@ -239,6 +239,7 @@ readinessProbe:
 config:
   jwt: ""                                                   # REQUIRED for authentication with op-node
   network: op-mainnet                                       # equivalent to --op-network arg, can be an empty string if you are using custom genesis
+  datadir: /root/.ethereum/op-mainnet                       # chain data directory, "/op-mainnet" added for compatibility with old chart version
   rollup:
     halt: ""                                                # stall sync on incompatible protocol (i.e. hardforks), possible values: major, minor, patch, none
     disabletxpoolgossip: true                               # tx pool gossip not supported currently, so disable it
@@ -288,3 +289,56 @@ init:
       repository: alpine
       tag: 3.18
       pullPolicy: Always
+
+## S3 snapshot sync config
+s3config:
+  image:
+    repository: peakcom/s5cmd
+    tag: v2.2.2
+    pullPolicy: IfNotPresent
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    capabilities:
+      drop:
+      - ALL
+  # local storage config
+  local:
+    # datadir containing the state you want to upload (can be templated)
+    datadir: "{{ .Values.config.datadir }}/geth/chaindata"
+    # this file marks node as already initialized from snapshot
+    # should be placed outside of the datadir you are uploading
+    initializedFile: "{{ .Values.config.datadir }}/.initialized"
+  # remote storage config
+  remote:
+    # Assuming your S3 bucket name is `my-snapshot-bucket` and base directory name is Helm release name
+    # snapshot will be uploaded to {{ .baseUrl }}/upload directory
+    baseUrl: my-snapshot-bucket/{{ .Release.Name }}
+    # Any S3-compatible object storage service should be supported, but has only been tested with GCS.
+    # I.e. Amazon S3, MinIO, DigitalOcean Spaces, CloudFlare R2.
+    # endpointUrl: https://storage.googleapis.com
+    endpointUrl: ""
+    # How to create access key
+    # AWS S3 https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+    # GCS    https://cloud.google.com/storage/docs/authentication/managing-hmackeys#create
+    accessKeyId: REPLACEME
+    secretAccessKey: REPLACEME
+
+initFromS3:
+  # enable initContainer
+  enabled: false
+  # re-download snapshot from S3 on every pod start
+  force: false
+
+syncToS3:
+  # enable initContainer (won't enable actual sync)
+  enabled: false
+  # restart pod and trigger sync to S3 inside initContainer by schedule
+  cronjob:
+    enabled: false
+    image:
+      repository: dysnix/kubectl
+      tag: v1.27
+      pullPolicy: IfNotPresent
+    schedule: "0 2 * * *"
