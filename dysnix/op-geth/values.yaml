@@ -208,7 +208,7 @@ resources: {}
 # .startupProbe.exec.command can also be in a templated string format
 startupProbe:
   enabled: false
-  initialDelaySeconds: 5
+  initialDelaySeconds: 10
   periodSeconds: 5
   failureThreshold: 120960    # periodSeconds * failureThreshold = 7 days
   timeoutSeconds: 10
