@@ -23,4 +23,3 @@ data:
   s3-cron.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_s3-cron.tpl") . | nindent 4 }}
   {{- end }}
-å
