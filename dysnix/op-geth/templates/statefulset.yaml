@@ -151,7 +151,7 @@ spec:
         {{- end }}
         args:
         - --datadir={{ .Values.config.datadir }}
-        {{- with .Values.config.op-network }}
+        {{- with (.Values.config | get "op-network") }}
         - --op-network={{ . }}
         {{- end }}
         - --syncmode={{ .Values.config.syncmode }}
