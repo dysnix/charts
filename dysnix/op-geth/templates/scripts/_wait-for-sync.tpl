@@ -4,7 +4,7 @@
 # We assume that node is syncing from initial snapshot when:
 # (get_block_number == 0x0) OR (is_syncing == true)
 
-set -ex
+set -e
 
 HTTP_PORT="{{ .Values.config.http.port }}"
 
