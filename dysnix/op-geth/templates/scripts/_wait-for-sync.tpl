@@ -25,7 +25,7 @@ eth_syncing() {
     | grep -qv "false"
 }
 
-if ! get_block_number | grep -qE '^0x[0-9]+'; then
+if ! get_block_number | grep -qE '^0x[a-z0-9]+'; then
     echo "Error reading block number"; exit 1
 fi
 
