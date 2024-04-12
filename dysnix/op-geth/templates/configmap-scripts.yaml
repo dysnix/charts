@@ -9,8 +9,8 @@ data:
     {{- include (print $.Template.BasePath "/scripts/_readiness.tpl") . | nindent 4 }}
   liveness.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_liveness.tpl") . | nindent 4 }}
-  init-download.sh: |-
-    {{- include (print $.Template.BasePath "/scripts/_init-download.tpl") . | nindent 4 }}
+  wait-for-sync.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_wait-for-sync.tpl") . | nindent 4 }}
   init-genesis.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_init-genesis.tpl") . | nindent 4 }}
   {{- if or .Values.syncToS3.enabled .Values.initFromS3.enabled }}
@@ -23,3 +23,4 @@ data:
   s3-cron.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_s3-cron.tpl") . | nindent 4 }}
   {{- end }}
+å

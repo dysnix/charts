@@ -52,16 +52,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.init.download.enabled }}
-      - name: init-download
-        image: "{{ .Values.init.download.image.repository }}:{{ .Values.init.download.image.tag }}"
-        imagePullPolicy: {{ .Values.init.download.image.pullPolicy | quote }}
-        command: ["sh", "/scripts/init-download.sh"]
+      {{- if .Values.init.chownData.enabled }}
+      - name: chown-data
+        image: "{{ .Values.init.chownData.image.repository }}:{{ .Values.init.chownData.image.tag }}"
+        imagePullPolicy: {{ .Values.init.chownData.image.pullPolicy | quote }}
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        command: ["chown", "-R", "{{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }}", "/data"]
         volumeMounts:
-        - name: scripts
-          mountPath: /scripts
         - name: data
-          mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
+          mountPath: /data
       {{- end }}
       {{- if .Values.init.genesis.enabled }}
       - name: init-genesis
@@ -150,7 +151,7 @@ spec:
         {{- end }}
         args:
         - --datadir={{ .Values.config.datadir }}
-        {{- with .Values.config.network }}
+        {{- with .Values.config.op-network }}
         - --op-network={{ . }}
         {{- end }}
         - --syncmode={{ .Values.config.syncmode }}
@@ -245,6 +246,10 @@ spec:
         {{- if .Values.readinessProbe.enabled }}
         readinessProbe:
           {{- include "op-geth.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
+        {{- end }}
+        {{- if .Values.startupProbe.enabled }}
+        startupProbe:
+          {{- include "op-geth.healthcheck" (list $ .Values.startupProbe) | nindent 10 }}
         {{- end }}
         volumeMounts:
         - name: data
