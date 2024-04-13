@@ -7,7 +7,7 @@
 set -e
 
 AGE_THRESHOLD=$1
-STATE_FILE=${2:-"/root/.ethereum/saved_block_number.txt"}
+STATE_FILE=${2:-"{{ .Values.config.datadir }}/saved_block_number.txt"}
 HTTP_PORT="{{ .Values.config.http.port }}"
 
 if [ -z "${AGE_THRESHOLD}" ] || [ -z "${STATE_FILE}" ]; then
