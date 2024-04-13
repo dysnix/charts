@@ -258,6 +258,9 @@ spec:
           mountPath: /secrets
         - name: scripts
           mountPath: /scripts
+        {{- with .Values.extraVolumeMounts }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+        {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       {{- with .Values.sidecarContainers }}
@@ -275,6 +278,9 @@ spec:
         hostPath:
           path: {{ .Values.persistence.hostPath.path }}
           type: {{ .Values.persistence.hostPath.type }}
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+      {{- tpl (toYaml .) $ | nindent 6 }}
       {{- end }}
   {{- if eq .Values.persistence.type "pvc" }}
   volumeClaimTemplates:

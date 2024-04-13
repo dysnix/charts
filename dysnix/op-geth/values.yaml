@@ -98,6 +98,17 @@ sidecarContainers: []
   #       path: /healthz
   #       port: replica-mon
 
+# Extra volumeMounts for op-geth container, can be templated
+extraVolumeMounts: []
+  # - name: testvolume
+  #   mountPath: /test
+
+# Extra volumes, can be templated
+extraVolumes: []
+  # - name: testvolume
+  #   persistentVolumeClaim:
+  #     claimName: test-pvc
+
 ## Services config
 services:
   rpc:
