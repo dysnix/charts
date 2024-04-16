@@ -31,8 +31,8 @@ podLabels: {}
 podStatusLabels: {}
   # manualstatus: in-service
 
-podSecurityContext: {}
-  # fsGroup: 10001
+podSecurityContext:
+  fsGroup: 10001
 
 securityContext:
   capabilities:
@@ -40,9 +40,9 @@ securityContext:
     - ALL
   allowPrivilegeEscalation: false
   privileged: false
-  # runAsNonRoot: true
-  # runAsUser: 10001
-  # runAsGroup: 10001
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
   # readOnlyRootFilesystem: true
 
 ## By disabling we fix "Unknown config environment variable envvar=GETH_"
@@ -317,13 +317,6 @@ s3config:
     repository: peakcom/s5cmd
     tag: v2.2.2
     pullPolicy: IfNotPresent
-  securityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-    runAsNonRoot: true
-    capabilities:
-      drop:
-      - ALL
   # local storage config
   local:
     # datadir containing the state you want to upload (can be templated)
