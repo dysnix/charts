@@ -5318,6 +5318,27 @@ entries:
   op-geth:
   - apiVersion: v2
     appVersion: v1.101308.2
+    created: "2024-04-17T12:51:29.407474999Z"
+    description: Optimism op-geth execution-layer client Helm chart
+    digest: 6b5dce8459592b3910c5a1b8b077a72d87bc4905e654e6aa37b99f324c8346a2
+    keywords:
+    - geth
+    - optimism
+    - op-geth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: op-geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/op-geth-0.2.0/op-geth-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: v1.101308.2
     created: "2024-02-29T14:12:03.024817774Z"
     description: Optimism op-geth execution-layer client Helm chart
     digest: d9f5f82a3e022e4ef0707609b0feb14996f64969f432401d1088bbb4b203cbcc
@@ -6605,4 +6626,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/servicemonitor-apps-0.1.0/servicemonitor-apps-0.1.0.tgz
     version: 0.1.0
-generated: "2024-04-10T16:41:20.710548996Z"
+generated: "2024-04-17T12:51:29.407883428Z"
