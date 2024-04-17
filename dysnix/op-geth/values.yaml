@@ -194,9 +194,9 @@ persistence:
     storageClass: ""           # set to "-" if you want to manually create persistent volume
     annotations: {}
   hostPath:
-    path: /blockchain
-    type: DirectoryOrCreate    # automaticcaly create directory if it doesn't exist
-  mountPath: ""                # mount path for container fs, leave blank to use value from .Values.config.datadir
+    path: /blockchain/optimism  # assume /blockchain is your host volume mount point
+    type: DirectoryOrCreate     # automaticaly create "optimism" directory if it doesn't exist
+  mountPath: ""                 # mount path for container fs, leave blank to use value from .Values.config.datadir
 
 affinity: {}
 

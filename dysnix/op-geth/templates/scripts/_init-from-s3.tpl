@@ -6,7 +6,7 @@ set -e
 . /scripts/s3-env.sh
 
 process_inputs() {
-  # download even if already initialized
+  # download even if we are already initialized
   if [ "$FORCE_INIT" = "True" ]; then
     echo "Force init enabled, existing data will be deleted."
     rm -f "$INITIALIZED_FILE"
@@ -56,6 +56,7 @@ sync() {
     exit 0
   fi
   # s5cmd does not support "true" sync, it does not save object's timestamps
+  # so we cleanup local datadir on our own
   # https://github.com/peak/s5cmd/issues/532
   echo "Cleaning up local data..."
   rm -rf "${DATA_DIR}"
@@ -67,7 +68,7 @@ sync() {
   trap 'interrupt ${progress_pid}' INT TERM
   progress start
 
-  # perform remote snapshot download and remove local objects which don't exist in snapshot
+  # download remote snapshot to an empty datadir
   time "$S5CMD" --stat --log error sync "s3://${S3_DATA_DIR}/*" "${DATA_DIR}/"
   progress stop
 
