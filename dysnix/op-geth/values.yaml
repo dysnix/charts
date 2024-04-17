@@ -31,8 +31,8 @@ podLabels: {}
 podStatusLabels: {}
   # manualstatus: in-service
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 10001
 
 securityContext:
   capabilities:
@@ -40,10 +40,10 @@ securityContext:
     - ALL
   allowPrivilegeEscalation: false
   privileged: false
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-  # runAsGroup: 1000
 
 ## By disabling we fix "Unknown config environment variable envvar=GETH_"
 ## Enable if your workload depends on this functionality
@@ -98,6 +98,17 @@ sidecarContainers: []
   #       path: /healthz
   #       port: replica-mon
 
+# Extra volumeMounts for op-geth container, can be templated
+extraVolumeMounts: []
+  # - name: testvolume
+  #   mountPath: /test
+
+# Extra volumes, can be templated
+extraVolumes: []
+  # - name: testvolume
+  #   persistentVolumeClaim:
+  #     claimName: test-pvc
+
 ## Services config
 services:
   rpc:
@@ -116,21 +127,19 @@ services:
     port: 6060
     publishNotReadyAddresses: true
   p2p:
-    enabled: false      # enable if you want to use "snap" syncmode
+    enabled: true       # disable if you are not using "snap" syncmode
     type: NodePort
     loadBalancerIP: ""
     port: 30303
-    # it's better to set nodePort equal to .Values.config.port when the svc type is "NodePort"
-    # nodePort: 30303
+    # nodePort: 30303   # exposed port of the node, must be unique across multiple node deployments
     annotations: {}
     publishNotReadyAddresses: true
   p2pDiscovery:
-    enabled: false      # enable if you want to use "snap" syncmode
+    enabled: true       # disable if you are not using "snap" syncmode
     type: NodePort
     loadBalancerIP: ""
     port: 30301
-    # it's better to set nodePort equal to .Values.config.discovery.port when the svc type is "NodePort"
-    # nodePort: 30301
+    # nodePort: 30301   # exposed port of the node, must be unique across multiple node deployments
     annotations: {}
     publishNotReadyAddresses: true
 
@@ -178,16 +187,16 @@ serviceMonitor:
   # metricRelabelings: []
 
 persistence:
-  type: pvc
-  # type: hostPath
+  type: pvc                    # possible values are: "pvc", "hostPath"
   pvc:
-    size: 2048Gi                # starting point for full node
+    size: 2Ti                  # recommended disk size for op-mainnet full node
     accessMode: ReadWriteOnce
     storageClass: ""           # set to "-" if you want to manually create persistent volume
     annotations: {}
   hostPath:
-    path: /data/geth
-    type: Directory            # by default you need to create directory yourself
+    path: /blockchain/optimism  # assume /blockchain is your host volume mount point
+    type: DirectoryOrCreate     # automaticaly create "optimism" directory if it doesn't exist
+  mountPath: ""                 # mount path for container fs, leave blank to use value from .Values.config.datadir
 
 affinity: {}
 
@@ -206,6 +215,18 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
+
+# .startupProbe.exec.command can also be in a templated string format
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  failureThreshold: 120960    # periodSeconds * failureThreshold = 7 days
+  timeoutSeconds: 10
+  exec:
+    command:
+      - sh
+      - /scripts/wait-for-sync.sh
 
 # .livenessProbe.exec.command can also be in a templated string format
 livenessProbe:
@@ -238,11 +259,12 @@ readinessProbe:
 ## Main op-geth config
 config:
   jwt: ""                                                   # REQUIRED for authentication with op-node
-  network: op-mainnet                                       # equivalent to --op-network arg, can be an empty string if you are using custom genesis
+  op-network: op-mainnet                                    # must be an empty string if you are using custom genesis (f.e. when network is not in superchain-registry)
+  datadir: /data                                            # data directory
   rollup:
-    halt: ""                                                # stall sync on incompatible protocol (i.e. hardforks), possible values: major, minor, patch, none
+    halt: major                                             # halt node on version mismatch, possible values: "major", "minor", "patch", "none"
     disabletxpoolgossip: true                               # tx pool gossip not supported currently, so disable it
-    sequencerhttp: https://mainnet-sequencer.optimism.io/   # url of sequencer, depends on .Values.config.network
+    sequencerhttp: https://mainnet-sequencer.optimism.io/   # url of sequencer, depends on chosen network
   http:
     port: 8545
     vhosts: ["*"]
@@ -256,35 +278,81 @@ config:
   authrpc:
     port: 8551
     vhosts: ["*"]
-  cache: 0            # disable by default, let geth automatically set proper value https://blog.ethereum.org/2023/09/12/geth-v1-13-0
-  syncmode: full      # can be "full" or "snap"
-  gcmode: full        # possible values: full, archive
-  snapshot: true      # enable snapshot generation
-  verbosity: 3
-  maxpeers: 0         # increase if you want to use "snap" syncmode
-  nodiscover: true    # disable if you want to use "snap" syncmode
-  port: 30303
+  state:
+    scheme: path            # possible values are: "path", "hash". "hash" is going to be deprecated soon
+  cache: 0                  # disable by default, let geth automatically set proper value https://blog.ethereum.org/2023/09/12/geth-v1-13-0
+  syncmode: snap            # possible values are: "snap", "full"
+  gcmode: full              # possible values are: "full", "archive"
+  snapshot: true            # enable state snapshot generation
+  maxpeers: 50              # set to 0 if you don't use "snap" syncmode
+  nodiscover: false         # enable if you don't use "snap" syncmode
+  port: 30303               # TCP port for P2P communication
   discovery:
-    port: 30301
-  useHostPort: false    # effectively disables p2p k8s services
-  nat: "any"
-  bootnodes: []
-  vmodule: []
+    port: 30301             # UDP port for P2P discovery
+  useHostPort: false        # allocate hostPorts for P2P communication instead of K8S service
+  nat: "any"                # try to auto-detect node IP, refer to `geth --help` for other options
+  bootnodes: []             # built-in bootnodes are used when empty
+  verbosity: 3              # global log verbosity
+  vmodule: []               # per-module log verbosity
   # - rpc=5
   metrics:
     enabled: false
     expensive: false
 
-## initContainer for datadir snapshot download
-## archive will be extracted using tarpipe
+## initContainers configuration
 init:
-  genesis:
+  chownData:
     enabled: false
-    url: ""
-  download:
-    enabled: false
-    url: https://r2-snapshots.fastnode.io/op/op-10-02-2024-full.tar.lz4
     image:
       repository: alpine
       tag: 3.18
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
+  genesis:
+    enabled: false
+    url: ""
+
+## S3 snapshot sync config
+s3config:
+  image:
+    repository: peakcom/s5cmd
+    tag: v2.2.2
+    pullPolicy: IfNotPresent
+  # local storage config
+  local:
+    # datadir containing the state you want to upload (can be templated)
+    datadir: "{{ .Values.config.datadir }}/geth/chaindata"
+    # this file marks node as already initialized from snapshot
+    # should be placed outside of the datadir you are uploading
+    initializedFile: "{{ .Values.config.datadir }}/.initialized"
+  # remote storage config
+  remote:
+    # Assuming your S3 bucket name is `my-snapshot-bucket` and base directory name is Helm release name
+    # snapshot will be uploaded to {{ .baseUrl }}/upload directory
+    baseUrl: my-snapshot-bucket/{{ .Release.Name }}
+    # Any S3-compatible object storage service should be supported, but has only been tested with GCS.
+    # I.e. Amazon S3, MinIO, DigitalOcean Spaces, CloudFlare R2.
+    # endpointUrl: https://storage.googleapis.com
+    endpointUrl: ""
+    # How to create access key
+    # AWS S3 https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+    # GCS    https://cloud.google.com/storage/docs/authentication/managing-hmackeys#create
+    accessKeyId: REPLACEME
+    secretAccessKey: REPLACEME
+
+initFromS3:
+  # enable initContainer
+  enabled: false
+  # re-download snapshot from S3 on every pod start
+  force: false
+
+syncToS3:
+  # enable initContainer (won't enable actual sync)
+  enabled: false
+  # restart pod and trigger sync to S3 inside initContainer by schedule
+  cronjob:
+    enabled: false
+    image:
+      repository: dysnix/kubectl
+      tag: v1.27
+      pullPolicy: IfNotPresent
+    schedule: "0 2 * * *"
