@@ -42,7 +42,7 @@ spec:
             {{- include "app.labels.component" . | nindent 12 }}
         spec:
           {{- if ._include.data.hostAliases }}
-          hostAliases: {{- include "common.tplvalues.render" (dict "value" ._include.data.hostAliases "context" $) | nindent 10 }}
+          hostAliases: {{- include "common.tplvalues.render" (dict "value" ._include.data.hostAliases "context" $) | nindent 12 }}
           {{- end }}
           {{- if kindIs "bool" ._include.data.hostNetwork }}
           hostNetwork: {{ ._include.data.hostNetwork }}
@@ -51,13 +51,13 @@ spec:
           dnsPolicy: {{ ._include.data.dnsPolicy }}
           {{- end }}
           {{- if ._include.data.affinity }}
-          affinity: {{- include "common.tplvalues.render" (dict "value" ._include.data.affinity "context" $) | nindent 10 }}
+          affinity: {{- include "common.tplvalues.render" (dict "value" ._include.data.affinity "context" $) | nindent 12 }}
           {{- end }}
           {{- if ._include.data.nodeSelector }}
-          nodeSelector: {{- include "common.tplvalues.render" ( dict "value" ._include.data.nodeSelector "context" $) | nindent 10 }}
+          nodeSelector: {{- include "common.tplvalues.render" ( dict "value" ._include.data.nodeSelector "context" $) | nindent 12 }}
           {{- end }}
           {{- if ._include.data.tolerations }}
-          tolerations: {{- include "common.tplvalues.render" (dict "value" ._include.data.tolerations "context" $) | nindent 10 }}
+          tolerations: {{- include "common.tplvalues.render" (dict "value" ._include.data.tolerations "context" $) | nindent 12 }}
           {{- end }}
           {{- if ._include.data.priorityClassName }}
           priorityClassName: {{ ._include.data.priorityClassName | quote }}
@@ -66,10 +66,10 @@ spec:
           schedulerName: {{ ._include.data.schedulerName | quote }}
           {{- end }}
           {{- if ._include.data.topologySpreadConstraints }}
-          topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" ._include.data.topologySpreadConstraints "context" $) | nindent 10 }}
+          topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" ._include.data.topologySpreadConstraints "context" $) | nindent 12 }}
           {{- end }}
-          {{- if ._include.data.podSecurityContext.enabled }}
-          securityContext: {{- omit ._include.data.podSecurityContext "enabled" | toYaml | nindent 10 }}
+          {{- if ._include.data.podSecurityContext }}
+          securityContext: {{- toYaml ._include.data.podSecurityContext | nindent 12 }}
           {{- end }}
           {{- if ._include.data.terminationGracePeriodSeconds }}
           terminationGracePeriodSeconds: {{ ._include.data.terminationGracePeriodSeconds }}
@@ -89,10 +89,12 @@ spec:
             {{- end }}
             {{- with coalesce ._include.data.image .Values.image }}
             image: {{ include "common.images.image" (dict "imageRoot" . "global" $.Values.global) }}
+            {{- if .pullPolicy }}
             imagePullPolicy: {{ .pullPolicy }}
             {{- end }}
-            {{- if ._include.data.containerSecurityContext.enabled }}
-            securityContext: {{- omit ._include.data.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+            {{- end }}
+            {{- if ._include.data.containerSecurityContext }}
+            securityContext: {{- toYaml ._include.data.containerSecurityContext | nindent 14 }}
             {{- end }}
             {{- include "app.cronjob.env" ( dict "context" ._include.data "common" .Values "root" $ ) | indent 12 }}
             {{- with ._include.data.resources }}
