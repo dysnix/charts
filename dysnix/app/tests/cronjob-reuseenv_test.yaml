@@ -6,7 +6,7 @@ tests:
     it: params inherited when reuseEnv enabled
     values:
       - ./values/cronjobs.yaml
-      - ./values/cronjobs-reuse.yaml
+      - ./values/cronjobs-reuseenv.yaml
     asserts:
       - contains:
           path: spec.jobTemplate.spec.template.spec.containers[0].env
@@ -22,7 +22,7 @@ tests:
     it: params not inherited when reuseEnv disabled
     values:
       - ./values/cronjobs.yaml
-      - ./values/cronjobs-reuse.yaml
+      - ./values/cronjobs-reuseenv.yaml
     set:
       cronJobs:
         default:
@@ -36,7 +36,7 @@ tests:
     it: params can be overriden when reuseEnv enabled
     values:
       - ./values/cronjobs.yaml
-      - ./values/cronjobs-reuse.yaml
+      - ./values/cronjobs-reuseenv.yaml
     set:
       cronJobs:
         default:

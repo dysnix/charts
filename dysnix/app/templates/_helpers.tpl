@@ -132,14 +132,14 @@ When .reuseEnv is true, params will be reused from $global, unless overriden in 
 */}}
 {{- define "app.cronjob.env" -}}
 {{- $context := .context }}
-{{- $global := .global }}
+{{- $common := .common }}
 {{- $root := .root }}
 {{- $reuseEnv := $context.reuseEnv | default false }}
-{{- $env := ternary (coalesce $context.env $global.env) $context.env $reuseEnv }}
-{{- $envFrom := ternary (coalesce $context.envFrom $global.envFrom) $context.envFrom $reuseEnv }}
-{{- $extraEnvVars := ternary (coalesce $context.extraEnvVars $global.extraEnvVars) $context.extraEnvVars $reuseEnv }}
-{{- $extraEnvVarsCM := ternary (coalesce $context.extraEnvVarsCM $global.extraEnvVarsCM) $context.extraEnvVarsCM $reuseEnv }}
-{{- $extraEnvVarsSecret := ternary (coalesce $context.extraEnvVarsSecret $global.extraEnvVarsSecret) $context.extraEnvVarsSecret $reuseEnv }}
+{{- $env := ternary (coalesce $context.env $common.env) $context.env $reuseEnv }}
+{{- $envFrom := ternary (coalesce $context.envFrom $common.envFrom) $context.envFrom $reuseEnv }}
+{{- $extraEnvVars := ternary (coalesce $context.extraEnvVars $common.extraEnvVars) $context.extraEnvVars $reuseEnv }}
+{{- $extraEnvVarsCM := ternary (coalesce $context.extraEnvVarsCM $common.extraEnvVarsCM) $context.extraEnvVarsCM $reuseEnv }}
+{{- $extraEnvVarsSecret := ternary (coalesce $context.extraEnvVarsSecret $common.extraEnvVarsSecret) $context.extraEnvVarsSecret $reuseEnv }}
 env:
   {{- with $env }}
     {{- include "app.tplvalues.named-list" (dict "valueKey" "value" "value" . "toString" true "context" $root) | nindent 2 -}}

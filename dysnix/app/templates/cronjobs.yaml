@@ -41,7 +41,42 @@ spec:
             {{- include "common.labels.matchLabels" . | nindent 12 }}
             {{- include "app.labels.component" . | nindent 12 }}
         spec:
-          {{- include "app.imagePullSecrets" . | nindent 6 }}
+          {{- if ._include.data.hostAliases }}
+          hostAliases: {{- include "common.tplvalues.render" (dict "value" ._include.data.hostAliases "context" $) | nindent 10 }}
+          {{- end }}
+          {{- if kindIs "bool" ._include.data.hostNetwork }}
+          hostNetwork: {{ ._include.data.hostNetwork }}
+          {{- end }}
+          {{- if ._include.data.dnsPolicy }}
+          dnsPolicy: {{ ._include.data.dnsPolicy }}
+          {{- end }}
+          {{- if ._include.data.affinity }}
+          affinity: {{- include "common.tplvalues.render" (dict "value" ._include.data.affinity "context" $) | nindent 10 }}
+          {{- end }}
+          {{- if ._include.data.nodeSelector }}
+          nodeSelector: {{- include "common.tplvalues.render" ( dict "value" ._include.data.nodeSelector "context" $) | nindent 10 }}
+          {{- end }}
+          {{- if ._include.data.tolerations }}
+          tolerations: {{- include "common.tplvalues.render" (dict "value" ._include.data.tolerations "context" $) | nindent 10 }}
+          {{- end }}
+          {{- if ._include.data.priorityClassName }}
+          priorityClassName: {{ ._include.data.priorityClassName | quote }}
+          {{- end }}
+          {{- if ._include.data.schedulerName }}
+          schedulerName: {{ ._include.data.schedulerName | quote }}
+          {{- end }}
+          {{- if ._include.data.topologySpreadConstraints }}
+          topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" ._include.data.topologySpreadConstraints "context" $) | nindent 10 }}
+          {{- end }}
+          {{- if ._include.data.podSecurityContext.enabled }}
+          securityContext: {{- omit ._include.data.podSecurityContext "enabled" | toYaml | nindent 10 }}
+          {{- end }}
+          {{- if ._include.data.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ ._include.data.terminationGracePeriodSeconds }}
+          {{- end }}
+          restartPolicy: {{ ._include.data.restartPolicy | default "OnFailure" }}
+          serviceAccountName: {{ include "app.serviceAccountName" . }}
+          {{- include "app.imagePullSecrets" . | nindent 10 }}
           containers:
           - name: {{ ._include.name }}
             {{- with ._include.data.command }}
@@ -56,13 +91,22 @@ spec:
             image: {{ include "common.images.image" (dict "imageRoot" . "global" $.Values.global) }}
             imagePullPolicy: {{ .pullPolicy }}
             {{- end }}
-            {{- include "app.cronjob.env" ( dict "context" ._include.data "global" .Values "root" $ ) | indent 12 }}
+            {{- if ._include.data.containerSecurityContext.enabled }}
+            securityContext: {{- omit ._include.data.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+            {{- end }}
+            {{- include "app.cronjob.env" ( dict "context" ._include.data "common" .Values "root" $ ) | indent 12 }}
             {{- with ._include.data.resources }}
             resources:
               {{- toYaml . | nindent 14 }}
             {{- end }}
-          restartPolicy: {{ ._include.data.restartPolicy | default "OnFailure" }}
-          serviceAccountName: {{ include "app.serviceAccountName" . }}
+            {{- with ._include.data.volumeMounts }}
+            volumeMounts:
+            {{- include "app.tplvalues.named-list" (dict "value" . "context" $) | nindent 12 -}}
+            {{- end }}
+          {{- with ._include.data.volumes }}
+          volumes:
+          {{- include "app.tplvalues.named-list" (dict "value" . "context" $) | nindent 10 -}}
+          {{- end }}
 {{- end -}}
 
 {{- define "app.resources.cronjobs" -}}

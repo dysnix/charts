@@ -8,4 +8,9 @@ cronJobs:
       tag: latest
     command: ["/app"]
     args: ["run_checks"]
-    
+    nodeSelector:
+      node_role: test
+    volumes:
+      test:
+        emptyDir:
+          medium: Memory
