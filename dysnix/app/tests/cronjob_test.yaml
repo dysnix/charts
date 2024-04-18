@@ -68,10 +68,9 @@ tests:
     values:
       - ./values/cronjobs.yaml
     asserts:
-      - contains:
-          path: spec.jobTemplate.spec.template.spec.nodeSelector
-          content:
-            node_role: test
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.nodeSelector.node_role
+          value: test
   -
     it: volumes are rendered in pod template
     values:
@@ -80,6 +79,6 @@ tests:
       - contains:
           path: spec.jobTemplate.spec.template.spec.volumes
           content:
-            - name: test
-              emptyDir:
-                medium: Memory
+            name: test
+            emptyDir:
+              medium: Memory
