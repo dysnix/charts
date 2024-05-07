@@ -1,0 +1,36 @@
+{{- with .Values.services.metrics }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "solana.fullname" $ }}-metrics
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: metrics
+    {{- include "solana.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- if eq .type "LoadBalancer" }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  publishNotReadyAddresses: {{ .publishNotReadyAddresses }}
+  ports:
+    - port: {{ .port }}
+      targetPort: exporter
+      protocol: TCP
+      name: exporter
+  selector:
+    {{- include "solana.selectorLabels" $ | nindent 4 }}
+{{- end }}
+{{- end }}

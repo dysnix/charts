@@ -1,0 +1,14 @@
+identity:
+  validatorKeypair: "[83,14,17,234,154,118,131,15,148,222,164,240,217,177,178,62,27,15,138,43,9,91,110,197,8,2,78,43,207,188,61,233,43,161,169,18,238,213,255,243,237,121,111,151,144,122,230,225,113,224,121,179,4,232,179,183,82,60,135,13,4,52,66,199]"
+
+readinessProbe:
+  enabled: false
+
+startupProbe:
+  enabled: false
+
+gracefulShutdown:
+  options:
+    force: true
+    skip-health-check: true
+    skip-new-snapshot-check: true

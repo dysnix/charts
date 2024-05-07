@@ -1,0 +1,23 @@
+apiVersion: v2
+name: solana
+description: Solana blockchain node Helm chart
+type: application
+
+version: 0.1.19
+appVersion: "v1.17.32"
+
+keywords:
+  - solana
+  - crypto
+  - web3
+  - cryptocurrency
+  - blockchain
+
+sources:
+  - https://github.com/dysnix/charts
+  - https://github.com/dysnix/docker-solana
+  - https://github.com/solana-labs/solana
+
+maintainers:
+  - name: VladStarr
+    email: vlad.derigin@dysnix.com

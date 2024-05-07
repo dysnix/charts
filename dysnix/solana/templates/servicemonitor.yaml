@@ -1,0 +1,23 @@
+{{- if and .Values.services.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "solana.fullname" . }}
+  labels:
+    {{- include "solana.labels" . | nindent 4 }}
+spec:
+  jobLabel: app.kubernetes.io/instance
+  selector:
+    matchLabels:
+      service-type: metrics
+      {{- include "solana.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: exporter
+      path: /metrics
+      {{- with (omit .Values.metrics.serviceMonitor "enabled") }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+{{- end }}

@@ -1,0 +1,264 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "solana.fullname" . }}
+  labels:
+    {{- include "solana.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "solana.name" . }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "solana.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/scripts: {{ include (print $.Template.BasePath "/scripts.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "solana.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.gracefulShutdown.timeout }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "solana.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- /* for better p2p connectivity */}}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+        - name: sysctl
+          image: busybox:latest
+          securityContext:
+            privileged: true
+          command: ["sh", "-c"]
+          {{- /* as per solana validator requirements */}}
+          args:
+            - |
+              sysctl -w vm.max_map_count=1000000
+              sysctl -w net.core.rmem_default=134217728
+              sysctl -w net.core.rmem_max=134217728
+              sysctl -w net.core.wmem_default=134217728
+              sysctl -w net.core.wmem_max=134217728
+              sysctl -w fs.nr_open=1000000
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/scripts/start.sh"]
+          {{- /* proper handling of node restart */}}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - solana-validator
+                  - --ledger={{ .Values.solanaArgs.ledger }}
+                  - exit
+                  {{- range $k, $v := .Values.gracefulShutdown.options }}
+                    {{- if kindIs "float64" $v }}
+                  - --{{ $k }}={{ $v }}
+                    {{- else if kindIs "bool" $v }}
+                      {{- if $v }}
+                  - --{{ $k }}
+                      {{- end }}
+                    {{- else }}
+                  - --{{ $k }}={{ $v }}
+                    {{- end }}
+                  {{- end }}
+          env:
+            - name: RUST_LOG
+              value: {{ .Values.rustLog }}
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            {{- if .Values.metrics.enabled }}
+            - name: SOLANA_METRICS_CONFIG
+              {{- if eq .Values.metrics.target "influxdb" }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.metrics.influxdb.existingSecret.name }}
+                  key: {{ .Values.metrics.influxdb.existingSecret.key }}
+              {{- else if eq .Values.metrics.target "exporter" }}
+              value: "host=http://$(MY_POD_IP):9122,db=default,u=admin,p=test123"
+              {{- end }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ get .Values.solanaArgs "rpc-port" }}
+              protocol: TCP
+            - name: ws
+              containerPort: {{ get .Values.solanaArgs "rpc-port" | add 1 }}
+              protocol: TCP
+          {{- if .Values.startupProbe.enabled }}
+          {{- with (omit .Values.startupProbe "enabled") }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          {{- with (omit .Values.readinessProbe "enabled") }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          {{- with (omit .Values.livenessProbe "enabled") }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: ledger
+              mountPath: /data/ledger
+            - name: accounts
+              mountPath: /data/accounts
+            - name: scripts
+              mountPath: /scripts
+            - name: identity
+              mountPath: {{ .Values.identity.mountPath }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- if and .Values.metrics.enabled (eq .Values.metrics.target "exporter") }}
+        {{- with .Values.metrics.exporter }}
+        - name: exporter
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          imagePullPolicy: {{ .image.pullPolicy }}
+          args:
+            - --web.listen-address=$(MY_POD_IP):9122
+            - --udp.bind-address=$(MY_POD_IP):9123
+            - --web.telemetry-path=/metrics
+            - --timestamps
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          ports:
+            - name: exporter
+              containerPort: 9122
+              protocol: TCP
+            - name: udp
+              containerPort: 9123
+              protocol: UDP
+          resources:
+            {{- toYaml .resources | nindent 12 }}
+        {{- end }}
+        {{- end }}
+      volumes:
+      {{- with .Values.persistence }}
+        {{- if ne .ledger.type "pvc" }}
+        - name: ledger
+          {{- if eq .ledger.type "hostPath" }}
+          hostPath:
+            type: {{ .ledger.hostPath.type }}
+            path: {{ .ledger.hostPath.path }}
+          {{- else if eq .ledger.type "existingClaim" }}
+          persistentVolumeClaim:
+            claimName: {{ .ledger.existingClaim.name }}
+          {{- end }}
+        {{- end }}
+        {{- if ne .accounts.type "pvc" }}
+        - name: accounts
+          {{- if eq .accounts.type "hostPath" }}
+          hostPath:
+            type: {{ .accounts.hostPath.type }}
+            path: {{ .accounts.hostPath.path }}
+          {{- else if eq .accounts.type "existingClaim" }}
+          persistentVolumeClaim:
+            claimName: {{ .accounts.existingClaim.name }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+        - name: scripts
+          configMap:
+            name: {{ include "solana.fullname" . }}-scripts
+            defaultMode: 0755
+        - name: identity
+          secret:
+            defaultMode: 0600
+            {{- if .Values.identity.existingSecret }}
+            secretName: {{ .Values.identity.existingSecret }}
+            {{- else }}
+            secretName: {{ include "solana.fullname" . }}-identity
+            {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    {{- with .Values.persistence.ledger }}
+    {{- if eq .type "pvc" }}
+    - metadata:
+        name: ledger
+        labels:
+          {{- include "solana.selectorLabels" $ | nindent 8 }}
+        {{- with .pvc.annotations }}
+        annotations:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      spec:
+        accessModes:
+          - {{ .pvc.accessMode }}
+        {{- if .pvc.storageClass }}
+        {{- if eq .pvc.storageClass "-" }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .pvc.storageClass | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .pvc.size | quote }}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.persistence.accounts }}
+    {{- if eq .type "pvc" }}
+    - metadata:
+        name: accounts
+        labels:
+          {{- include "solana.selectorLabels" $ | nindent 8 }}
+        {{- with .pvc.annotations }}
+        annotations:
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      spec:
+        accessModes:
+          - {{ .pvc.accessMode }}
+        {{- if .pvc.storageClass }}
+        {{- if eq .pvc.storageClass "-" }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .pvc.storageClass | quote }}
+        {{- end }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .pvc.size | quote }}
+    {{- end }}
+    {{- end }}

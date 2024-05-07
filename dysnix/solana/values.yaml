@@ -1,0 +1,412 @@
+## @section Global parameters
+##
+
+## @param replicaCount Number of pods to deploy in the Stateful Set
+##
+replicaCount: 1
+
+## @param image.repository Solana image repository
+## @param image.tag [default: ""] Solana image tag
+## @param image.pullPolicy Solana image pull policy
+##
+image:
+  repository: ghcr.io/dysnix/docker-solana
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+## @param imagePullSecrets Solana image pull secrets
+imagePullSecrets: []
+
+## @param nameOverride String to partially override release name
+##
+nameOverride: ""
+## @param fullnameOverride String to fully override release name
+##
+fullnameOverride: ""
+
+## ServiceAccount configuration
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## @param serviceAccount.name The name of the ServiceAccount to use
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  name: ""
+  ## @param serviceAccount.automount Whether to auto mount the service account token
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#use-the-default-service-account-to-access-the-api-server
+  ##
+  automount: true
+  ## @param serviceAccount.annotations Additional custom annotations for the ServiceAccount
+  ##
+  annotations: {}
+
+## @param podLabels Extra labels for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+podLabels: {}
+## @param podAnnotations Annotations for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+podAnnotations: {}
+
+## @param podSecurityContext [object] Configure securityContext for entire pod
+## Example:
+## podSecurityContext:
+##   fsGroup: 2000
+podSecurityContext: {}
+
+## @param securityContext [object] Configure securityContext for Solana container
+## Example:
+## securityContext:
+##   capabilities:
+##     drop:
+##     - ALL
+##   readOnlyRootFilesystem: true
+##   runAsNonRoot: true
+##   runAsUser: 1000
+##
+securityContext: {}
+
+## @param resources Set container requests and limits for CPU or memory
+## Example:
+## resources:
+##   requests:
+##     cpu: 16
+##     memory: 384Gi
+##   limits:
+##     memory: 500Gi
+##
+resources: {}
+
+## @param livenessProbe [object] Solana container livenessProbe
+##
+livenessProbe:
+  enabled: false
+  failureThreshold: 10
+  periodSeconds: 30
+  timeoutSeconds: 5
+  tcpSocket:
+    port: http
+
+## http server starts only when all loading tasks are finished
+## this includes: ledger db loading, downloading/unpacking snapshot, etc.
+## @param startupProbe [object] Solana container startupProbe
+##
+startupProbe:
+  enabled: true
+  failureThreshold: 1440  # wait 2 hours for initial startup
+  periodSeconds: 5
+  timeoutSeconds: 2
+  tcpSocket:
+    port: http
+
+## @param readinessProbe [object] Solana container readinessProbe
+##
+readinessProbe:
+  enabled: true
+  timeoutSeconds: 3
+  failureThreshold: 2
+  successThreshold: 1
+  periodSeconds: 10
+  exec:
+    command:
+      - sh
+      - /scripts/health.sh
+  ## check if validator caught up with cluster
+  ## node is lagging behind if there is no zero-exit code after waiting 10s
+  ## exec:
+  ##   command:
+  ##     - sh
+  ##     - -c
+  ##     - exec solana catchup /secrets/validator-keypair.json http://$MY_POD_IP:8899
+
+## @param affinity Affinity for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+
+## @param nodeSelector Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+##
+nodeSelector: {}
+
+## @param tolerations Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+
+## @param volumes [array] Pod extra volumes
+## Example:
+## volumes:
+## - name: secret
+##   secret:
+##     secretName: solana-secret
+##
+volumes: []
+
+## @param volumeMounts [array] Container extra volumeMounts
+## Example:
+## volumeMounts:
+## - name: keypair
+##   mountPath: /secrets
+volumeMounts: []
+
+## Services configuration
+##
+services:
+  rpc:
+    ## @param services.rpc.enabled Enable Solana RPC service
+    ##
+    enabled: true
+    ## @param services.rpc.type Solana RPC service type
+    ##
+    type: ClusterIP
+    ## @param services.rpc.port Solana RPC service port (+1 for websocket)
+    ##
+    port: 8899
+    ## @param services.rpc.publishNotReadyAddresses Route trafic even when pod is not ready
+    ##
+    publishNotReadyAddresses: false
+  metrics:
+    ## @param services.metrics.enabled Enable Solana metrics service
+    ##
+    enabled: false
+    ## @param services.metrics.type Solana metrics service type
+    ##
+    type: ClusterIP
+    ## @param services.metrics.port Solana metrics service port
+    ##
+    port: 9122
+    ## @param services.metrics.publishNotReadyAddresses Route trafic even when pod is not ready
+    ##
+    publishNotReadyAddresses: true
+
+## Ingress configuration
+##
+ingress:
+  ## @param ingress.http [object] Ingress configuration for Solana RPC HTTP endpoint
+  ##
+  http:
+    enabled: false
+    className: ""
+    annotations: {}
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: solana.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: solana-tls
+    #    hosts:
+    #      - solana.local
+  ## @param ingress.ws [object] Ingress configuration for Solana RPC WebSocket endpoint
+  ##
+  ws:
+    enabled: false
+    className: ""
+    annotations: {}
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: solana.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: solana-tls
+    #    hosts:
+    #      - solana.local
+
+## Metrics configuration
+##
+metrics:
+  ## @param metrics.enabled Enable Solana node metrics collection
+  ##
+  enabled: false
+  ## @param metrics.target Where to push Solana metrics 
+  ## `exporter` - (default) push metrics to built-in influxdb-exporter for scraping via Prometheus
+  ## `influxdb` - push metrics to external InfluxDB instance
+  ##
+  target: exporter
+  ## @param metrics.exporter [object] influxdb-exporter configuration
+  ##
+  exporter:
+    image:
+      repository: prom/influxdb-exporter
+      tag: v0.11.5
+      pullPolicy: IfNotPresent
+    resources: {}
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # limits:
+      #   memory: 256Mi
+  serviceMonitor:
+    ## @param metrics.serviceMonitor.enabled Enable Prometheus ServiceMonitor
+    enabled: false
+    # interval: 10s
+    # scrapeTimeout: 2s
+    # honorLabels: true
+    # relabelings: []
+    # metricRelabelings: []
+  influxdb:
+    existingSecret:
+      ## @param metrics.influxdb.existingSecret.name Name of secret containing InfluxDB credentials
+      ##
+      name: solana-metrics-config
+      ## @param metrics.influxdb.existingSecret.key Key name inside the secret
+      ## 
+      key: config
+
+## @section Solana node configuration
+
+## @param solanaArgs [object] `solana-validator` arguments
+##
+solanaArgs:
+  identity: /secrets/validator-keypair.json
+  expected-genesis-hash: 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d
+  known-validator:
+    - 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2
+    - GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ
+    - DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ
+    - CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S
+  entrypoint:
+    - entrypoint.mainnet-beta.solana.com:8001
+    - entrypoint2.mainnet-beta.solana.com:8001
+    - entrypoint3.mainnet-beta.solana.com:8001
+    - entrypoint4.mainnet-beta.solana.com:8001
+    - entrypoint5.mainnet-beta.solana.com:8001
+  full-rpc-api: true
+  no-voting: true
+  no-os-network-limits-test: true
+  no-port-check: true
+  only-known-rpc: false             # it is hard to find a fresh snapshot from default known validators
+  log: "-"
+  ledger: /data/ledger
+  accounts: /data/accounts
+  rpc-port: 8899
+  rpc-bind-address: ${MY_POD_IP}
+  private-rpc: true
+  dynamic-port-range: 8000-8020
+  wal-recovery-mode: skip_any_corrupted_record
+  limit-ledger-size: true
+  health-check-slot-distance: 150
+  enable-extended-tx-metadata-storage: false
+  enable-rpc-transaction-history: false
+  rpc-pubsub-enable-block-subscription: false
+  maximum-local-snapshot-age: 1500                # re-download snapshot when our local is >1500 slots old
+  minimal-snapshot-download-speed: 104857600      # 100 MB/s
+  account-index: []                               # indexing for better rpc performance
+
+## Graceful shutdown options
+##
+gracefulShutdown:
+  ## @param gracefulShutdown.timeout Seconds to wait for graceful shutdown
+  ##
+  timeout: 120
+  ## @param gracefulShutdown.options [object] `solana-validator exit` arguments
+  ##
+  options:
+    ## @extra gracefulShutdown.options.force [default: false] Do not wait for restart-window, useful for non-validators
+    ##
+    force: false
+    ## @extra gracefulShutdown.options.skip-health-check [default: false] Skip health check before exit
+    ##
+    skip-health-check: false
+    ## @extra gracefulShutdown.options.skip-health-check [default: false] Skip check for a new snapshot before exit
+    ##
+    skip-new-snapshot-check: false
+    # max-delinquent-stake: 5
+    # min-idle-time: 10
+
+## @param rustLog Logging configuration
+##
+rustLog: solana=info,solana_metrics=warn
+
+## You need first to create a keypair JSON files
+## I.e. solana-keygen new --no-bip39-passphrase --silent && cat /root/.config/solana/id.json
+##
+identity:
+  ## @param identity.validatorKeypair Validator keypair string (required)
+  ##
+  validatorKeypair: ""
+  ## @param identity.voteKeypair Vote keypair string (required only for validator)
+  ##
+  voteKeypair: ""
+  ## @param identity.existingSecret Use existing secret with keypairs instead of specifying them above
+  ##
+  existingSecret: ""
+  ## @param identity.mountPath Keypair files mount path
+  ##
+  mountPath: /secrets
+
+persistence:
+  ## @section Solana ledger db persistence config
+  ##
+  ledger:
+    ## @param persistence.ledger.type Ledger persistence type
+    ## `pvc` - create PVC automatically
+    ## `existingClaim` - use already existing PVC
+    ## `hostPath` - use hostPath volume
+    ##
+    type: pvc
+    pvc:
+      ## @param persistence.ledger.pvc.annotations PVC volume annotations
+      ##
+      annotations: {}
+      ## @param persistence.ledger.pvc.accessMode PVC volume access mode
+      ##
+      accessMode: ReadWriteOnce
+      ## @param persistence.ledger.pvc.storageClass PVC volume storage class name
+      ##
+      storageClass: ""
+      ## @param persistence.ledger.pvc.size PVC volume size
+      ##
+      size: 2Ti
+    existingClaim:
+      ## @param persistence.ledger.existingClaim.name Existing PVC configuration
+      ##
+      name: solana-ledger-volume
+    hostPath:
+      ## @param persistence.ledger.hostPath.type hostPath volume type
+      ##
+      type: Directory
+      ## @param persistence.ledger.hostPath.path hostPath directory on host node
+      ##
+      path: /blockchain/solana-ledger
+  ## @section Solana accounts db persistence config
+  ##
+  accounts:
+    ## @param persistence.accounts.type Accounts persistence type
+    ## `pvc` - create PVC automatically
+    ## `existingClaim` - use already existing PVC
+    ## `hostPath` - use hostPath volume
+    ##
+    type: pvc
+    pvc:
+      ## @param persistence.accounts.pvc.annotations PVC volume annotations
+      ##
+      annotations: {}
+      ## @param persistence.accounts.pvc.accessMode PVC volume access mode
+      ##
+      accessMode: ReadWriteOnce
+      ## @param persistence.accounts.pvc.storageClass PVC volume storage class name
+      ##
+      storageClass: ""
+      ## @param persistence.accounts.pvc.size PVC volume size
+      ##
+      size: 2Ti
+    existingClaim:
+      ## @param persistence.accounts.existingClaim.name Existing PVC configuration
+      ##
+      name: solana-accounts-volume
+    hostPath:
+      ## @param persistence.accounts.hostPath.type hostPath volume type
+      ##
+      type: Directory
+      ## @param persistence.accounts.hostPath.path hostPath directory on host node
+      ##
+      path: /blockchain/solana-accounts
