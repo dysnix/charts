@@ -226,7 +226,7 @@ metrics:
   ## @param metrics.enabled Enable Solana node metrics collection
   ##
   enabled: false
-  ## @param metrics.target Where to push Solana metrics 
+  ## @param metrics.target Where to push Solana metrics
   ## `exporter` - (default) push metrics to built-in influxdb-exporter for scraping via Prometheus
   ## `influxdb` - push metrics to external InfluxDB instance
   ##
@@ -258,7 +258,7 @@ metrics:
       ##
       name: solana-metrics-config
       ## @param metrics.influxdb.existingSecret.key Key name inside the secret
-      ## 
+      ##
       key: config
 
 ## @section Solana node configuration
