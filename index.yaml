@@ -6626,4 +6626,28 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/servicemonitor-apps-0.1.0/servicemonitor-apps-0.1.0.tgz
     version: 0.1.0
-generated: "2024-04-17T12:51:29.407883428Z"
+  solana:
+  - apiVersion: v2
+    appVersion: v1.17.32
+    created: "2024-05-29T08:44:05.546942011Z"
+    description: Solana blockchain node Helm chart
+    digest: f229358db8e5a69870f5cd6d2d503b5fde30fc29aab57a641cfc06292843a96f
+    keywords:
+    - solana
+    - crypto
+    - web3
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: solana
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/dysnix/docker-solana
+    - https://github.com/solana-labs/solana
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
+    version: 0.1.25
+generated: "2024-05-29T08:44:05.547438594Z"
