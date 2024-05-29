@@ -1,10 +1,10 @@
 {{- if .Values.ingress.ws.enabled -}}
 {{- $fullName := include "solana.fullname" . -}}
-{{- $svcPort := add .Values.service.port 1 -}}
+{{- $svcPort := add .Values.services.rpc.port 1 -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-ws
   labels:
     {{- include "solana.labels" . | nindent 4 }}
     type: ws

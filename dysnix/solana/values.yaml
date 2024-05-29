@@ -57,6 +57,7 @@ podAnnotations: {}
 ## podSecurityContext:
 ##   fsGroup: 2000
 podSecurityContext: {}
+  # fsGroup: 2000
 
 ## @param securityContext [object] Configure securityContext for Solana container
 ## Example:
@@ -115,13 +116,6 @@ readinessProbe:
     command:
       - sh
       - /scripts/health.sh
-  ## check if validator caught up with cluster
-  ## node is lagging behind if there is no zero-exit code after waiting 10s
-  ## exec:
-  ##   command:
-  ##     - sh
-  ##     - -c
-  ##     - exec solana catchup /secrets/validator-keypair.json http://$MY_POD_IP:8899
 
 ## @param affinity Affinity for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
@@ -154,7 +148,7 @@ volumes: []
 ##   mountPath: /secrets
 volumeMounts: []
 
-## Services configuration
+## @section Services configuration
 ##
 services:
   rpc:
@@ -184,7 +178,7 @@ services:
     ##
     publishNotReadyAddresses: true
 
-## Ingress configuration
+## @section Ingress configuration
 ##
 ingress:
   ## @param ingress.http [object] Ingress configuration for Solana RPC HTTP endpoint
@@ -220,7 +214,7 @@ ingress:
     #    hosts:
     #      - solana.local
 
-## Metrics configuration
+## @section Metrics configuration
 ##
 metrics:
   ## @param metrics.enabled Enable Solana node metrics collection
@@ -310,13 +304,13 @@ gracefulShutdown:
   ## @param gracefulShutdown.options [object] `solana-validator exit` arguments
   ##
   options:
-    ## @extra gracefulShutdown.options.force [default: false] Do not wait for restart-window, useful for non-validators
+    ## @param gracefulShutdown.options.force [default: false] Do not wait for restart-window, useful for non-validators
     ##
     force: false
-    ## @extra gracefulShutdown.options.skip-health-check [default: false] Skip health check before exit
+    ## @param gracefulShutdown.options.skip-health-check [default: false] Skip health check before exit
     ##
     skip-health-check: false
-    ## @extra gracefulShutdown.options.skip-health-check [default: false] Skip check for a new snapshot before exit
+    ## @param gracefulShutdown.options.skip-health-check [default: false] Skip check for a new snapshot before exit
     ##
     skip-new-snapshot-check: false
     # max-delinquent-stake: 5
