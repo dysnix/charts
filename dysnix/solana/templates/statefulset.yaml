@@ -45,8 +45,8 @@ spec:
           args:
           - |
             sysctl -w vm.max_map_count=1000000
-            sysctl -w net.core.rmem_default=33554432
-            sysctl -w net.core.rmem_max=33554432
+            sysctl -w net.core.rmem_default=134217728
+            sysctl -w net.core.rmem_max=134217728
             sysctl -w net.core.wmem_default=134217728
             sysctl -w net.core.wmem_max=134217728
             sysctl -w fs.nr_open=1000000
