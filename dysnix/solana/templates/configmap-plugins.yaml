@@ -1,0 +1,13 @@
+{{- if .Values.plugins.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "solana.fullname" $ }}-plugins-config
+  labels:
+    {{- include "solana.labels" . | nindent 4 }}
+data:
+  {{- if and .Values.plugins.yellowstoneGrpc.enabled .Values.plugins.yellowstoneGrpc.config }}
+  yellowstone-grpc-config.json: |-
+    {{- .Values.plugins.yellowstoneGrpc.config | nindent 4 }}
+  {{- end }}
+{{- end }}

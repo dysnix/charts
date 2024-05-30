@@ -34,6 +34,9 @@ spec:
       targetPort: ws
       protocol: TCP
       name: ws
+    {{- with .extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   selector:
     {{- include "solana.selectorLabels" $ | nindent 4 }}
 {{- end }}

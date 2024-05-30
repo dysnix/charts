@@ -47,10 +47,18 @@ serviceAccount:
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
 podLabels: {}
+
 ## @param podAnnotations Annotations for pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations: {}
+
+## @param extraContainerPorts [array] Additional ports to expose on Solana container
+## Example:
+## - name: grpc
+##   protocol: TCP
+##   containerPort: 10000
+extraContainerPorts: []
 
 ## @param podSecurityContext [object] Configure securityContext for entire pod
 ## Example:
@@ -161,6 +169,14 @@ services:
     ## @param services.rpc.port Solana RPC service port (+1 for websocket)
     ##
     port: 8899
+    ## @param services.rpc.extraPorts Solana RPC service extra ports to expose
+    ## Example:
+    ## - name: grpc
+    ##   protocol: TCP
+    ##   port: 10000
+    ##   targetPort: grpc
+    ##
+    extraPorts: []
     ## @param services.rpc.publishNotReadyAddresses Route trafic even when pod is not ready
     ##
     publishNotReadyAddresses: false
@@ -319,6 +335,92 @@ gracefulShutdown:
 ## @param rustLog Logging configuration
 ##
 rustLog: solana=info,solana_metrics=warn
+
+plugins:
+  ## @param plugins.enabled Enable download of Geyser plugins
+  ##
+  enabled: false
+  yellowstoneGrpc:
+    ## @param plugins.yellowstoneGrpc.enabled Enable download of Yellowstone gRPC
+    ##
+    enabled: false
+    ## @param plugins.yellowstoneGrpc.version Yellowstone gRPC version
+    ##
+    version: v1.14.2+solana.1.17.33
+    ## @param plugins.yellowstoneGrpc.baseUrl URL from where the plugin is downloaded
+    ##
+    baseUrl: https://github.com/rpcpool/yellowstone-grpc/releases/download/
+    ## @param plugins.yellowstoneGrpc.listenIP Yellowstone gRPC listen IP address, without port
+    ## works by replacing LISTEN_IP string inside json file with the value provided
+    ## default: Pod IP address from K8s downward API
+    ##
+    listenIP: $(MY_POD_IP)
+    ## @param plugins.yellowstoneGrpc.config [string, default: look in values.yaml] Yellowstone gRPC config.json file
+    ##
+    config: |-
+      {
+          "libpath": "lib/libyellowstone_grpc_geyser.so",
+          "log": {
+              "level": "info"
+          },
+          "grpc": {
+              "address": "LISTEN_IP:10000",
+              "max_decoding_message_size": "4_194_304",
+              "snapshot_plugin_channel_capacity": null,
+              "snapshot_client_channel_capacity": "50_000_000",
+              "channel_capacity": "100_000",
+              "unary_concurrency_limit": 100,
+              "unary_disabled": false,
+              "filters": {
+                  "accounts": {
+                      "max": 1,
+                      "any": false,
+                      "account_max": 10,
+                      "account_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "owner_max": 10,
+                      "owner_reject": ["11111111111111111111111111111111"]
+                  },
+                  "slots": {
+                      "max": 1
+                  },
+                  "transactions": {
+                      "max": 1,
+                      "any": false,
+                      "account_include_max": 10,
+                      "account_include_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "account_exclude_max": 10,
+                      "account_required_max": 10
+                  },
+                  "transactions_status": {
+                      "max": 1,
+                      "any": false,
+                      "account_include_max": 10,
+                      "account_include_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "account_exclude_max": 10,
+                      "account_required_max": 10
+                  },
+                  "blocks": {
+                      "max": 1,
+                      "account_include_max": 10,
+                      "account_include_any": false,
+                      "account_include_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "include_transactions": true,
+                      "include_accounts" : false,
+                      "include_entries" : false
+                  },
+                  "blocks_meta": {
+                      "max": 1
+                  },
+                  "entry": {
+                      "max": 1
+                  }
+              }
+          },
+          "prometheus": {
+              "address": "LISTEN_IP:8999"
+          },
+          "block_fail_action": "log"
+      }
 
 ## You need first to create a keypair JSON files
 ## I.e. solana-keygen new --no-bip39-passphrase --silent && cat /root/.config/solana/id.json
