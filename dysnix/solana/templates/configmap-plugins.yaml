@@ -6,8 +6,8 @@ metadata:
   labels:
     {{- include "solana.labels" . | nindent 4 }}
 data:
-  {{- if and .Values.plugins.yellowstoneGrpc.enabled .Values.plugins.yellowstoneGrpc.config }}
+  {{- if and .Values.plugins.yellowstoneGRPC.enabled .Values.plugins.yellowstoneGRPC.config }}
   yellowstone-grpc-config.json: |-
-    {{- .Values.plugins.yellowstoneGrpc.config | nindent 4 }}
+    {{- .Values.plugins.yellowstoneGRPC.config | nindent 4 }}
   {{- end }}
 {{- end }}

@@ -63,15 +63,15 @@ spec:
             - name: PLUGINS_DIR
               value: /plugins
             - name: YELLOWSTONE_GRPC__ENABLED
-              value: {{ ternary "1" "0" .yellowstoneGrpc.enabled | quote }}
-            - name: YELLOWSTONE_GRPC__BASE_URL
-              value: {{ .yellowstoneGrpc.baseUrl }}
+              value: {{ ternary "1" "0" .yellowstoneGRPC.enabled | quote }}
+            - name: YELLOWSTONE_GRPC__DOWNLOAD_URL
+              value: {{ .yellowstoneGRPC.downloadURL }}
             - name: YELLOWSTONE_GRPC__VERSION
-              value: {{ .yellowstoneGrpc.version }}
+              value: {{ .yellowstoneGRPC.version }}
             - name: YELLOWSTONE_GRPC__CONFIG_PATH
               value: /config/yellowstone-grpc-config.json
             - name: YELLOWSTONE_GRPC__LISTEN_IP
-              value: {{ .yellowstoneGrpc.listenIP }}
+              value: {{ .yellowstoneGRPC.listenIP }}
           volumeMounts:
             - name: plugins
               mountPath: /plugins

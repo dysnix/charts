@@ -340,22 +340,22 @@ plugins:
   ## @param plugins.enabled Enable download of Geyser plugins
   ##
   enabled: false
-  yellowstoneGrpc:
-    ## @param plugins.yellowstoneGrpc.enabled Enable download of Yellowstone gRPC
+  yellowstoneGRPC:
+    ## @param plugins.yellowstoneGRPC.enabled Enable download of Yellowstone gRPC
     ##
     enabled: false
-    ## @param plugins.yellowstoneGrpc.version Yellowstone gRPC version
+    ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
     version: v1.14.2+solana.1.17.33
-    ## @param plugins.yellowstoneGrpc.baseUrl URL from where the plugin is downloaded
+    ## @param plugins.yellowstoneGRPC.downloadURL From where the plugin needs to be downloaded
     ##
-    baseUrl: https://github.com/rpcpool/yellowstone-grpc/releases/download/
-    ## @param plugins.yellowstoneGrpc.listenIP Yellowstone gRPC listen IP address, without port
+    downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
+    ## @param plugins.yellowstoneGRPC.listenIP Yellowstone gRPC listen IP address, without port
     ## works by replacing LISTEN_IP string inside json file with the value provided
     ## default: Pod IP address from K8s downward API
     ##
     listenIP: $(MY_POD_IP)
-    ## @param plugins.yellowstoneGrpc.config [string, default: look in values.yaml] Yellowstone gRPC config.json file
+    ## @param plugins.yellowstoneGRPC.config [string, default: look in values.yaml] Yellowstone gRPC config.json file
     ##
     config: |-
       {

@@ -78,11 +78,11 @@ A Helm chart to deploy Solana node inside Kubernetes cluster.
 | `gracefulShutdown.options.skip-health-check` | Skip check for a new snapshot before exit                          | `false`                                                          |
 | `rustLog`                                    | Logging configuration                                              | `solana=info,solana_metrics=warn`                                |
 | `plugins.enabled`                            | Enable download of Geyser plugins                                  | `false`                                                          |
-| `plugins.yellowstoneGrpc.enabled`            | Enable download of Yellowstone gRPC                                | `false`                                                          |
-| `plugins.yellowstoneGrpc.version`            | Yellowstone gRPC version                                           | `v1.14.2+solana.1.17.33`                                         |
-| `plugins.yellowstoneGrpc.baseUrl`            | URL from where the plugin is downloaded                            | `https://github.com/rpcpool/yellowstone-grpc/releases/download/` |
-| `plugins.yellowstoneGrpc.listenIP`           | Yellowstone gRPC listen IP address, without port                   | `$(MY_POD_IP)`                                                   |
-| `plugins.yellowstoneGrpc.config`             | Yellowstone gRPC config.json file                                  | `look in values.yaml`                                            |
+| `plugins.yellowstoneGRPC.enabled`            | Enable download of Yellowstone gRPC                                | `false`                                                          |
+| `plugins.yellowstoneGRPC.version`            | Yellowstone gRPC version                                           | `v1.14.2+solana.1.17.33`                                         |
+| `plugins.yellowstoneGRPC.baseUrl`            | URL from where the plugin is downloaded                            | `https://github.com/rpcpool/yellowstone-grpc/releases/download/` |
+| `plugins.yellowstoneGRPC.listenIP`           | Yellowstone gRPC listen IP address, without port                   | `$(MY_POD_IP)`                                                   |
+| `plugins.yellowstoneGRPC.config`             | Yellowstone gRPC config.json file                                  | `look in values.yaml`                                            |
 | `identity.validatorKeypair`                  | Validator keypair string (required)                                | `""`                                                             |
 | `identity.voteKeypair`                       | Vote keypair string (required only for validator)                  | `""`                                                             |
 | `identity.existingSecret`                    | Use existing secret with keypairs instead of specifying them above | `""`                                                             |
