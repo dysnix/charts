@@ -50,6 +50,37 @@ spec:
             sysctl -w net.core.wmem_default=134217728
             sysctl -w net.core.wmem_max=134217728
             sysctl -w fs.nr_open=1000000
+      {{- with .Values.plugins }}
+      {{- if .enabled }}
+        - name: download-plugins
+          image: busybox:latest
+          command: ["/scripts/download-plugins.sh"]
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: PLUGINS_DIR
+              value: /plugins
+            - name: YELLOWSTONE_GRPC__ENABLED
+              value: {{ ternary "1" "0" .yellowstoneGRPC.enabled | quote }}
+            - name: YELLOWSTONE_GRPC__DOWNLOAD_URL
+              value: {{ .yellowstoneGRPC.downloadURL }}
+            - name: YELLOWSTONE_GRPC__VERSION
+              value: {{ .yellowstoneGRPC.version }}
+            - name: YELLOWSTONE_GRPC__CONFIG_PATH
+              value: /config/yellowstone-grpc-config.json
+            - name: YELLOWSTONE_GRPC__LISTEN_IP
+              value: {{ .yellowstoneGRPC.listenIP }}
+          volumeMounts:
+            - name: plugins
+              mountPath: /plugins
+            - name: plugins-config
+              mountPath: /config
+            - name: scripts
+              mountPath: /scripts
+      {{- end }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -101,6 +132,9 @@ spec:
             - name: ws
               containerPort: {{ get .Values.solanaArgs "rpc-port" | add 1 }}
               protocol: TCP
+            {{- with .Values.extraContainerPorts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- if .Values.startupProbe.enabled }}
           {{- with (omit .Values.startupProbe "enabled") }}
           startupProbe:
@@ -130,6 +164,10 @@ spec:
               mountPath: /scripts
             - name: identity
               mountPath: {{ .Values.identity.mountPath }}
+            {{- if .Values.plugins.enabled }}
+            - name: plugins
+              mountPath: /plugins
+            {{- end }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -196,6 +234,13 @@ spec:
             {{- else }}
             secretName: {{ include "solana.fullname" . }}-identity
             {{- end }}
+        {{- if .Values.plugins.enabled }}
+        - name: plugins
+          emptyDir: {}
+        - name: plugins-config
+          configMap:
+            name: {{ include "solana.fullname" . }}-plugins-config
+        {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
