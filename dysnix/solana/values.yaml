@@ -79,8 +79,6 @@ podSecurityContext: {}
 ##
 securityContext: {}
 
-ulimitTuneEnabled: false
-
 ## @param resources Set container requests and limits for CPU or memory
 ## Example:
 ## resources:
@@ -312,6 +310,10 @@ solanaArgs:
   maximum-local-snapshot-age: 1500                # re-download snapshot when our local is >1500 slots old
   minimal-snapshot-download-speed: 104857600      # 100 MB/s
   account-index: []                               # indexing for better rpc performance
+
+## @param increaseLimitNOFILE Increase number of file descriptors for Solana process. Requires `CAP_SYS_RESOURCE`
+##
+increaseLimitNOFILE: false
 
 ## Graceful shutdown options
 ##

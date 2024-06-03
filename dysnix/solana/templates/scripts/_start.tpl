@@ -1,6 +1,8 @@
 #!/bin/sh
 
-{{ if .Values.ulimitTuneEnabled }}ulimit -n 1000000{{ end }}
+{{- if .Values.increaseLimitNOFILE }}
+ulimit -n 1000000
+{{- end }}
 exec solana-validator
     {{- range $arg, $val := .Values.solanaArgs }}
       {{- if and $arg $val }} \{{ end }}

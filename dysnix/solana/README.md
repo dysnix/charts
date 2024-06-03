@@ -13,7 +13,7 @@ securityContext:
     add:
     - SYS_RESOURCE
 
-ulimitTuneEnabled: true
+increaseLimitNOFILE: true
 ```
 
 ## Parameters
