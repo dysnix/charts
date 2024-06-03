@@ -79,6 +79,8 @@ podSecurityContext: {}
 ##
 securityContext: {}
 
+ulimitTuneEnabled: false
+
 ## @param resources Set container requests and limits for CPU or memory
 ## Example:
 ## resources:

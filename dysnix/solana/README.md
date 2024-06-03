@@ -2,6 +2,20 @@
 
 A Helm chart to deploy Solana node inside Kubernetes cluster.
 
+## UnableToSetOpenFileDescriptorLimit error
+
+This error means that containerd runtime has lower that 1,000,000 open files limit.
+To fix this, you can set inside values the following:
+
+```yaml
+securityContext:
+  capabilities:
+    add:
+    - SYS_RESOURCE
+
+ulimitTuneEnabled: true
+```
+
 ## Parameters
 
 ### Global parameters
