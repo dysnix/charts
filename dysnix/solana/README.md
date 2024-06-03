@@ -82,25 +82,26 @@ increaseLimitNOFILE: true
 
 ### Solana node configuration
 
-| Name                                         | Description                                                        | Value                                                            |
-| -------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| `solanaArgs`                                 | `solana-validator` arguments                                       | `{}`                                                             |
-| `gracefulShutdown.timeout`                   | Seconds to wait for graceful shutdown                              | `120`                                                            |
-| `gracefulShutdown.options`                   | `solana-validator exit` arguments                                  | `{}`                                                             |
-| `gracefulShutdown.options.force`             | Do not wait for restart-window, useful for non-validators          | `false`                                                          |
-| `gracefulShutdown.options.skip-health-check` | Skip health check before exit                                      | `false`                                                          |
-| `gracefulShutdown.options.skip-health-check` | Skip check for a new snapshot before exit                          | `false`                                                          |
-| `rustLog`                                    | Logging configuration                                              | `solana=info,solana_metrics=warn`                                |
-| `plugins.enabled`                            | Enable download of Geyser plugins                                  | `false`                                                          |
-| `plugins.yellowstoneGRPC.enabled`            | Enable download of Yellowstone gRPC                                | `false`                                                          |
-| `plugins.yellowstoneGRPC.version`            | Yellowstone gRPC version                                           | `v1.14.2+solana.1.17.33`                                         |
-| `plugins.yellowstoneGRPC.baseUrl`            | URL from where the plugin is downloaded                            | `https://github.com/rpcpool/yellowstone-grpc/releases/download/` |
-| `plugins.yellowstoneGRPC.listenIP`           | Yellowstone gRPC listen IP address, without port                   | `$(MY_POD_IP)`                                                   |
-| `plugins.yellowstoneGRPC.config`             | Yellowstone gRPC config.json file                                  | `look in values.yaml`                                            |
-| `identity.validatorKeypair`                  | Validator keypair string (required)                                | `""`                                                             |
-| `identity.voteKeypair`                       | Vote keypair string (required only for validator)                  | `""`                                                             |
-| `identity.existingSecret`                    | Use existing secret with keypairs instead of specifying them above | `""`                                                             |
-| `identity.mountPath`                         | Keypair files mount path                                           | `/secrets`                                                       |
+| Name                                         | Description                                                                         | Value                                                            |
+| -------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `solanaArgs`                                 | `solana-validator` arguments                                                        | `{}`                                                             |
+| `increaseLimitNOFILE`                        | Increase number of file descriptors for Solana process. Requires `CAP_SYS_RESOURCE` | `false`                                                          |
+| `gracefulShutdown.timeout`                   | Seconds to wait for graceful shutdown                                               | `120`                                                            |
+| `gracefulShutdown.options`                   | `solana-validator exit` arguments                                                   | `{}`                                                             |
+| `gracefulShutdown.options.force`             | Do not wait for restart-window, useful for non-validators                           | `false`                                                          |
+| `gracefulShutdown.options.skip-health-check` | Skip health check before exit                                                       | `false`                                                          |
+| `gracefulShutdown.options.skip-health-check` | Skip check for a new snapshot before exit                                           | `false`                                                          |
+| `rustLog`                                    | Logging configuration                                                               | `solana=info,solana_metrics=warn`                                |
+| `plugins.enabled`                            | Enable download of Geyser plugins                                                   | `false`                                                          |
+| `plugins.yellowstoneGRPC.enabled`            | Enable download of Yellowstone gRPC                                                 | `false`                                                          |
+| `plugins.yellowstoneGRPC.version`            | Yellowstone gRPC version                                                            | `v1.14.2+solana.1.17.33`                                         |
+| `plugins.yellowstoneGRPC.downloadURL`        | From where the plugin needs to be downloaded                                        | `https://github.com/rpcpool/yellowstone-grpc/releases/download/` |
+| `plugins.yellowstoneGRPC.listenIP`           | Yellowstone gRPC listen IP address, without port                                    | `$(MY_POD_IP)`                                                   |
+| `plugins.yellowstoneGRPC.config`             | Yellowstone gRPC config.json file                                                   | `look in values.yaml`                                            |
+| `identity.validatorKeypair`                  | Validator keypair string (required)                                                 | `""`                                                             |
+| `identity.voteKeypair`                       | Vote keypair string (required only for validator)                                   | `""`                                                             |
+| `identity.existingSecret`                    | Use existing secret with keypairs instead of specifying them above                  | `""`                                                             |
+| `identity.mountPath`                         | Keypair files mount path                                                            | `/secrets`                                                       |
 
 ### Solana ledger db persistence config
 
