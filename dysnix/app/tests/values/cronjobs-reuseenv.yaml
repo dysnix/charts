@@ -1,0 +1,10 @@
+env:
+  TEST: OK
+
+envFrom:
+  - configMapRef:
+      name: test
+
+cronJobs:
+  default:
+    reuseEnv: true

@@ -95,3 +95,7 @@ Usage
 {{- define "app.rbac" -}}
   {{- include "app.resources.include" (dict "resource" "rbac" | merge .) -}}
 {{- end -}}
+
+{{- define "app.cronjobs" -}}
+  {{- include "app.resources.include" (dict "resource" "cronjobs" | merge .) -}}
+{{- end -}}
