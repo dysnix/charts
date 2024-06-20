@@ -340,24 +340,30 @@ plugins:
   ## @param plugins.enabled Enable download of Geyser plugins
   ##
   enabled: false
-  grpc:
-    ports:
-    - name: grpc
-      containerPort: 10000
-      protocol: TCP
-    service_ports:
-    - name: grpc
-      protocol: TCP
-      port: 10000
-      targetPort: grpc
-
+  ## @param plugins.containerPorts [array] Extra container ports for added plugins
+  ## Example:
+  ## - name: grpc
+  ##   containerPort: 10000
+  ##   protocol: TCP
+  ##
+  containerPorts: []
+  ## @param plugins.servicePorts [array] Extra service ports for added plugins
+  ## Example:
+  ## - name: grpc
+  ##   protocol: TCP
+  ##   port: 10000
+  ##   targetPort: grpc
+  ##
+  servicePorts: []
+  ## Yellowstone gRPC plugin config
+  ##
   yellowstoneGRPC:
     ## @param plugins.yellowstoneGRPC.enabled Enable download of Yellowstone gRPC
     ##
     enabled: false
     ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
-    version: v1.14.2+solana.1.17.33
+    version:  v1.15.0+solana.1.17.33
     ## @param plugins.yellowstoneGRPC.downloadURL From where the plugin needs to be downloaded
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
@@ -383,6 +389,48 @@ plugins:
               "unary_concurrency_limit": 100,
               "unary_disabled": false,
               "filters": {
+                  "accounts": {
+                      "max": 1,
+                      "any": false,
+                      "account_max": 10,
+                      "account_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "owner_max": 10,
+                      "owner_reject": ["11111111111111111111111111111111"]
+                  },
+                  "slots": {
+                      "max": 1
+                  },
+                  "transactions": {
+                      "max": 1,
+                      "any": false,
+                      "account_include_max": 10,
+                      "account_include_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "account_exclude_max": 10,
+                      "account_required_max": 10
+                  },
+                  "transactions_status": {
+                      "max": 1,
+                      "any": false,
+                      "account_include_max": 10,
+                      "account_include_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "account_exclude_max": 10,
+                      "account_required_max": 10
+                  },
+                  "blocks": {
+                      "max": 1,
+                      "account_include_max": 10,
+                      "account_include_any": false,
+                      "account_include_reject": ["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"],
+                      "include_transactions": true,
+                      "include_accounts" : false,
+                      "include_entries" : false
+                  },
+                  "blocks_meta": {
+                      "max": 1
+                  },
+                  "entry": {
+                      "max": 1
+                  }
               }
           },
           "prometheus": {
@@ -390,6 +438,8 @@ plugins:
           },
           "block_fail_action": "log"
       }
+  ## Jito gRPC plugin config
+  ##
   jitoGRPC:
     ## @param plugins.jitoGRPC.enabled Enable download of Jito gRPC
     ##
@@ -410,7 +460,7 @@ plugins:
     config: |-
       {
         "libpath": "/lib/libgeyser_grpc_plugin_server.so",
-        "bind_address": "0.0.0.0:10000",
+        "bind_address": "LISTEN_IP:10000",
         "account_update_buffer_size": 100000,
         "slot_update_buffer_size": 100000,
         "block_update_buffer_size": 100000,
