@@ -376,7 +376,7 @@ plugins:
     enabled: false
     ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
-    version:  v1.15.0+solana.1.18.15
+    version: v1.15.0+solana.1.18.15
     ## @param plugins.yellowstoneGRPC.downloadURL From where the plugin needs to be downloaded
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
