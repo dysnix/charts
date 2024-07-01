@@ -4,7 +4,7 @@ description: Solana blockchain node Helm chart
 type: application
 
 version: 0.1.30
-appVersion: "v1.17.34"
+appVersion: "v1.18.15"
 
 keywords:
   - solana
