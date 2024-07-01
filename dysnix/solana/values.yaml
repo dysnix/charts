@@ -190,6 +190,14 @@ services:
     ## @param services.metrics.port Solana metrics service port
     ##
     port: 9122
+    ## @param services.metrics.extraPorts Solana metrics service extra ports to expose
+    ## Example:
+    ## - name: grpc-prom
+    ##   protocol: TCP
+    ##   port: 8999
+    ##   targetPort: grpc-prom
+    ##
+    extraPorts: []
     ## @param services.metrics.publishNotReadyAddresses Route trafic even when pod is not ready
     ##
     publishNotReadyAddresses: true
@@ -262,6 +270,11 @@ metrics:
     # honorLabels: true
     # relabelings: []
     # metricRelabelings: []
+    # extraEndpoints:
+    # - port: exporter
+    #   path: /metrics
+    #   interval: 10s
+    #   scrapeTimeout: 2s
   influxdb:
     existingSecret:
       ## @param metrics.influxdb.existingSecret.name Name of secret containing InfluxDB credentials

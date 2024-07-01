@@ -36,17 +36,18 @@ A Helm chart to deploy Solana node inside Kubernetes cluster.
 
 ### Services configuration
 
-| Name                                        | Description                                | Value       |
-| ------------------------------------------- | ------------------------------------------ | ----------- |
-| `services.rpc.enabled`                      | Enable Solana RPC service                  | `true`      |
-| `services.rpc.type`                         | Solana RPC service type                    | `ClusterIP` |
-| `services.rpc.port`                         | Solana RPC service port (+1 for websocket) | `8899`      |
-| `services.rpc.extraPorts`                   | Solana RPC service extra ports to expose   | `[]`        |
-| `services.rpc.publishNotReadyAddresses`     | Route trafic even when pod is not ready    | `false`     |
-| `services.metrics.enabled`                  | Enable Solana metrics service              | `false`     |
-| `services.metrics.type`                     | Solana metrics service type                | `ClusterIP` |
-| `services.metrics.port`                     | Solana metrics service port                | `9122`      |
-| `services.metrics.publishNotReadyAddresses` | Route trafic even when pod is not ready    | `true`      |
+| Name                                        | Description                                  | Value       |
+| ------------------------------------------- | -------------------------------------------- | ----------- |
+| `services.rpc.enabled`                      | Enable Solana RPC service                    | `true`      |
+| `services.rpc.type`                         | Solana RPC service type                      | `ClusterIP` |
+| `services.rpc.port`                         | Solana RPC service port (+1 for websocket)   | `8899`      |
+| `services.rpc.extraPorts`                   | Solana RPC service extra ports to expose     | `[]`        |
+| `services.rpc.publishNotReadyAddresses`     | Route trafic even when pod is not ready      | `false`     |
+| `services.metrics.enabled`                  | Enable Solana metrics service                | `false`     |
+| `services.metrics.type`                     | Solana metrics service type                  | `ClusterIP` |
+| `services.metrics.port`                     | Solana metrics service port                  | `9122`      |
+| `services.metrics.extraPorts`               | Solana metrics service extra ports to expose | `[]`        |
+| `services.metrics.publishNotReadyAddresses` | Route trafic even when pod is not ready      | `true`      |
 
 ### Ingress configuration
 
