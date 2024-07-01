@@ -311,6 +311,10 @@ solanaArgs:
   minimal-snapshot-download-speed: 104857600      # 100 MB/s
   account-index: []                               # indexing for better rpc performance
 
+## @param increaseLimitNOFILE Increase number of file descriptors for Solana process. Requires `CAP_SYS_RESOURCE`
+##
+increaseLimitNOFILE: false
+
 ## Graceful shutdown options
 ##
 gracefulShutdown:
