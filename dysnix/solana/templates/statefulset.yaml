@@ -139,7 +139,9 @@ spec:
               containerPort: {{ get .Values.solanaArgs "rpc-port" | add 1 }}
               protocol: TCP
             {{- if .Values.plugins.enabled }}
-            {{- toYaml .Values.plugins.containerPorts | nindent 12 }}
+            {{- with .Values.plugins.containerPorts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
             {{- end }}
             {{- with .Values.extraContainerPorts }}
             {{- toYaml . | nindent 12 }}

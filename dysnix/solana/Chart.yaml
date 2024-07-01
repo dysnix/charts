@@ -3,7 +3,7 @@ name: solana
 description: Solana blockchain node Helm chart
 type: application
 
-version: 0.1.31
+version: 0.1.32
 appVersion: "v1.18.15"
 
 keywords:
