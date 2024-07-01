@@ -35,7 +35,9 @@ spec:
       protocol: TCP
       name: ws
     {{- if $.Values.plugins.enabled }}
-    {{- toYaml $.Values.plugins.servicePorts | nindent 4 }}
+    {{- with $.Values.plugins.servicePorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
     {{- end }}
     {{- with .extraPorts }}
     {{- toYaml . | nindent 4 }}
