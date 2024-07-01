@@ -64,7 +64,7 @@ jobs:
         name: Create Kubernetes Cluster (kind)
         uses: helm/kind-action@v1.10.0
         with:
-          node_image: kindest/node:v1.29.5
+          node_image: kindest/node:v1.29.4
         if: steps.charts.outputs.testing == 'true'
       -
         name: Install Charts chart-testing
