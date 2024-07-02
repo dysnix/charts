@@ -30,6 +30,9 @@ spec:
       targetPort: exporter
       protocol: TCP
       name: exporter
+    {{- with .extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   selector:
     {{- include "solana.selectorLabels" $ | nindent 4 }}
 {{- end }}

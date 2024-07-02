@@ -4,7 +4,7 @@
 set -e
 
 YELLOWSTONE_GRPC__PLUGIN_DIR="$PLUGINS_DIR/yellowstone-grpc"
-JITO_GRPC_DIR="$PLUGINS_DIR/jito-grpc"
+JITO_GRPC__PLUGIN_DIR="$PLUGINS_DIR/jito-grpc"
 
 yellowstone_grpc_bootstrap() {
     echo "Yellowstone gRPC: Downloading plugin version ${YELLOWSTONE_GRPC__VERSION}.."
@@ -27,19 +27,15 @@ yellowstone_grpc_bootstrap() {
 }
 
 jito_grpc_bootstrap() {
-{{- if .Values.plugins.jitoGRPC.enabled }}
-{{- with .Values.plugins.jitoGRPC }}
-    mkdir -p "$JITO_GRPC_DIR"
+    mkdir -p "$JITO_GRPC__PLUGIN_DIR"
 
-    echo "Jito gRPC: Copying config file to ${YELLOWSTONE_GRPC__PLUGIN_DIR}.."
-    cp -L "$JITO_GRPC__CONFIG_PATH" "$JITO_GRPC_DIR/config.json"
+    echo "Jito gRPC: Copying config file to ${JITO_GRPC__PLUGIN_DIR}.."
+    cp -L "$JITO_GRPC__CONFIG_PATH" "$JITO_GRPC__PLUGIN_DIR/config.json"
 
-    echo "Jito gRPC: Changing listen IP address in config file to ${YELLOWSTONE_GRPC__LISTEN_IP}.."
-    sed -i "s/LISTEN_IP/${JITO_GRPC__LISTEN_IP}/g" "$JITO_GRPC_DIR/config.json"
+    echo "Jito gRPC: Changing listen IP address in config file to ${JITO_GRPC__LISTEN_IP}.."
+    sed -i "s/LISTEN_IP/${JITO_GRPC__LISTEN_IP}/g" "$JITO_GRPC__PLUGIN_DIR/config.json"
 
     echo "Jito gRPC: Bootstrap done!"
-{{- end }}
-{{- end }}
 }
 
 main() {

@@ -14,9 +14,12 @@ spec:
   endpoints:
     - port: exporter
       path: /metrics
-      {{- with (omit .Values.metrics.serviceMonitor "enabled") }}
+      {{- with (omit .Values.metrics.serviceMonitor "enabled" "extraEndpoints") }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
+    {{- with .Values.metrics.serviceMonitor.extraEndpoints }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace | quote }}

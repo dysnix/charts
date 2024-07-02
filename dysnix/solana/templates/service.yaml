@@ -35,8 +35,8 @@ spec:
       protocol: TCP
       name: ws
     {{- if $.Values.plugins.enabled }}
-    {{- if or $.Values.plugins.yellowstoneGRPC.enabled $.Values.plugins.jitoGRPC.enabled }}
-    {{- toYaml $.Values.plugins.grpc.service_ports | nindent 4 }}
+    {{- with $.Values.plugins.servicePorts }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
     {{- end }}
     {{- with .extraPorts }}
