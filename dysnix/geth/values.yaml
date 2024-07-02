@@ -225,7 +225,7 @@ config:
     txLookupLimit: 2350000
     transactionHistory: 2350000
     stateHistory: 90000
-    stateScheme: hash
+    stateScheme: path
     preimages: false
   node:
     ipc:

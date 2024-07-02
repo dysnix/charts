@@ -1,6 +1,8 @@
 {{- with .Values.config.eth -}}
 [Eth]
 SyncMode = {{ .syncMode | quote }}
+EthDiscoveryURLs = []
+SnapDiscoveryURLs = []
 NoPruning = {{ eq .gcMode "archive" | ternary true false }}
 NoPrefetch = false
 TxLookupLimit = {{ int .txLookupLimit }}
@@ -17,17 +19,17 @@ SnapshotCache = 102
 Preimages = {{ .preimages }}
 FilterLogCacheSize = 32
 EnablePreimageRecording = false
+VMTrace = ""
+VMTraceJsonConfig = ""
 RPCGasCap = 50000000
 RPCEVMTimeout = 5000000000
 RPCTxFeeCap = 1e+00
 {{- end }}
 
 [Eth.Miner]
-GasFloor = 0
 GasCeil = 30000000
 GasPrice = 1000000000
 Recommit = 2000000000
-NewPayloadTimeout = 2000000000
 
 [Eth.TxPool]
 Locals = []
@@ -44,7 +46,7 @@ Lifetime = 10800000000000
 
 [Eth.BlobPool]
 Datadir = "blobpool"
-Datacap = 10737418240
+Datacap = 2684354560
 PriceBump = 100
 
 [Eth.GPO]
