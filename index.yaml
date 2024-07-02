@@ -6628,6 +6628,29 @@ entries:
     version: 0.1.0
   solana:
   - apiVersion: v2
+    appVersion: v1.18.15
+    created: "2024-07-02T12:41:15.164692363Z"
+    description: Solana blockchain node Helm chart
+    digest: 792dbafa20b2e29497d7e10e55bab70912eb4ed4c97ed044362540222dbf8b04
+    keywords:
+    - solana
+    - crypto
+    - web3
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: solana
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/dysnix/docker-solana
+    - https://github.com/solana-labs/solana
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/solana-0.1.32/solana-0.1.32.tgz
+    version: 0.1.32
+  - apiVersion: v2
     appVersion: v1.17.34
     created: "2024-06-16T12:39:57.684867377Z"
     description: Solana blockchain node Helm chart
@@ -6719,4 +6742,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2024-06-16T12:39:57.685371436Z"
+generated: "2024-07-02T12:41:15.165117208Z"
