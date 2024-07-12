@@ -18,6 +18,9 @@ function get_local_block {
 
 # Retrieving latest block timestamp of a local bsc node
 function get_local_timestamp {
+   # TIMESTAMP_HEX=$(curl -s -X POST -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["latest", false],"id":1}' http://localhost:8575|jq -r .result.timestamp)
+   # bash-only
+   # print -v TIMESTAMP "%d" $TIMESTAMP_HEX
     geth --config=/config/config.toml --datadir={{ .Values.bsc.base_path }} attach $local_node_endpoint --exec "eth.getBlock(eth.blockNumber).timestamp"
 }
 
