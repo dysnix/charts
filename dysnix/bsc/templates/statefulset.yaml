@@ -252,6 +252,10 @@ spec:
         env:
           {{- toYaml .Values.metricsExtra.env | nindent 10 }}
         {{- end }}
+        {{- with .Values.metricsExtra.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: {{ .Values.metricsExtra.port }}
           name: {{ .Values.metricsExtra.portName }}

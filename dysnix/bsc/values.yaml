@@ -339,6 +339,16 @@ metricsExtra:
       value: "8575"
     - name: LISTENER_PORT
       value: "9369"
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 9369
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    successThreshold: 1
+    failureThreshold: 2
+
 
 prometheus:
   rules:
