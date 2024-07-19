@@ -1515,6 +1515,28 @@ entries:
     version: 0.0.1
   bsc:
   - apiVersion: v2
+    appVersion: 1.4.11
+    created: "2024-07-19T12:28:12.100573242Z"
+    description: Binance Smart Chain chart for Kubernetes
+    digest: 60c4bbf65cc34f222f2942951cdfba3e0109cbd6703f68be3ebae559a176c4b7
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    - email: ap@dysnix.com
+      name: apolegoshko
+    name: bsc
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bsc-0.6.45/bsc-0.6.45.tgz
+    version: 0.6.45
+  - apiVersion: v2
     appVersion: 1.4.10
     created: "2024-07-12T18:14:54.862918899Z"
     description: Binance Smart Chain chart for Kubernetes
@@ -6782,4 +6804,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2024-07-12T18:14:54.863468083Z"
+generated: "2024-07-19T12:28:12.101152396Z"
