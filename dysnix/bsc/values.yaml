@@ -153,6 +153,7 @@ bsc:
     baseUrlOverride: ""                   # "bucket/path/to/dir"
     fullResyncOnSrcUpdate: false
     maxUsedSpacePercent: 93               # percents
+    boostStateCopyWorkers: 800
   syncToGCS:
     enabled: false
     image: peakcom/s5cmd:v2.2.2

@@ -24,6 +24,13 @@ S_STATE_URL="/state_url"
 S_ANCIENT_URL="/ancient_url"
 S_STATS="/stats"
 MAX_USED_SPACE_PERCENT={{ .Values.bsc.initFromGCS.maxUsedSpacePercent }}
+S5CMD_STATE_OPTS=""
+S5CMD_ANCIENT_OPTS="--part-size 200 --concurrency 2"
+{{- if .Values.bsc.pruneancient }}
+# we expect the source snapshot to be pruned, thus we may increase workers from default 256 to speed things up
+# as ancient dir has less than 100 files with the size less than 10GB, we want to run full speed on state dir instead
+S5CMD_STATE_OPTS="--numworkers {{ .Values.bsc.initFromGCS.boostStateCopyWorkers }}"
+{{- end }}
 
 # allow container interrupt
 trap "{ exit 1; }" INT TERM
@@ -124,9 +131,9 @@ while [ "${SYNC}" -gt 0 ] ; do
     # sync from cloud to local disk, with removing existing [missing in the cloud] files
     # run multiple syncs in background
 
-    time ${S5CMD} sync --delete s3://${STATE_SRC}/* ${STATE_TMP_DIR}/ > cplist_state.txt &
+    time ${S5CMD} sync --delete ${S5CMD_STATE_OPTS} s3://${STATE_SRC}/* ${STATE_TMP_DIR}/ > cplist_state.txt &
     STATE_CP_PID=$!
-    time nice ${S5CMD} sync --delete --part-size 200 --concurrency 2 s3://${ANCIENT_SRC}/* ${ANCIENT_TMP_DIR}/ > cplist_ancient.txt &
+    time nice ${S5CMD} sync --delete ${S5CMD_ANCIENT_OPTS} s3://${ANCIENT_SRC}/* ${ANCIENT_TMP_DIR}/ > cplist_ancient.txt &
     ANCIENT_CP_PID=$!
 
     # wait for all syncs to complete
