@@ -31,4 +31,5 @@ affinity: {}
 
 localSsd:
   mkfsOpts: ""
+  raidOpts: ""
   mountPoint: /mnt/disks/raid0

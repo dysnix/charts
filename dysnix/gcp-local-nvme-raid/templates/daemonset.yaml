@@ -52,7 +52,7 @@ spec:
               device="/dev/${raid_id}"
               echo "Setting RAID array with Local SSDs on device ${device}"
               if ! grep -q "$raid_id" /proc/mdstat; then
-                echo "y" | mdadm --create "${device}" --level=0 --force --raid-devices=${#devices[@]} "${devices[@]}"
+                echo "y" | mdadm --create "${device}" --level=0 --force {{ .Values.localSsd.raidOpts }} --raid-devices=${#devices[@]} "${devices[@]}"
               fi
 
               if ! tune2fs -l "${device}" ; then
