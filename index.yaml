@@ -4054,6 +4054,25 @@ entries:
   gcp-local-nvme-raid:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2024-07-24T22:22:51.1790037Z"
+    description: Deamon installation which create raid with local nvme disk in gke
+      node
+    digest: f20b54a0f8a2f595976929f5a0eae295d9cd5cfcd4c0df3c247ea81e01f3a1c0
+    keywords:
+    - gke
+    - nvme
+    maintainers:
+    - email: anton.rubets@dysnix.com
+      name: plejik
+    name: gcp-local-nvme-raid
+    sources:
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/gcp-local-nvme-raid-0.1.1/gcp-local-nvme-raid-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2024-01-16T08:44:12.310637537Z"
     description: Deamon installation which create raid with local nvme disk in gke
       node
@@ -6826,4 +6845,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2024-07-19T13:42:33.016751252Z"
+generated: "2024-07-24T22:22:51.1795648Z"
