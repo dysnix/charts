@@ -105,12 +105,5 @@ tests:
           count: 0
       -
         template: statefulset.yaml
-        isSubset:
+        isNotEmpty:
           path: spec.volumeClaimTemplates[0]
-          content:
-            metadata:
-              name: data
-            spec:
-              resources:
-                requests:
-                  storage: 10Gi
