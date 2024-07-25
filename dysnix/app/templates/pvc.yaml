@@ -1,6 +1,6 @@
 {{/* vim: set filetype=helm: */}}
 {{- define "app.resources.pvc" -}}
-{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) (not (has .Values.persistence.type (list "sts" "statefulset"))) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

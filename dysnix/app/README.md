@@ -293,24 +293,25 @@ containers:
 
 ### App chart parameters
 
-| Name                   | Description                                                                                                            | Value        |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------ |
-| `app.name`             | Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart                           | `app`        |
-| `app.workload.enabled` | Specifies whether the default workload resource is generated (Deployment/StatefulSet etc)                              | `true`       |
-| `app.workload.type`    | Specifies type of the main workload resource                                                                           | `deployment` |
-| `app.components`       | Specifies list of components to enable used in direct mode (it respectively expects .Values.[component] to be present) | `[]`         |
-| `selector.matchLabels` | Specifies additional selector labels for the workload resources and services                                           | `{}`         |
-| `reuse`                | Enables reuse/merge of the upper-level component values (applicable for containers/initContainers)                     | `false`      |
-| `containers`           | Specify a map of additional pod containers                                                                             | `{}`         |
-| `initContainers`       | Specifies initContainers **(use, values map for order and data)**                                                      | `{}`         |
-| `env`                  | Name Map of environment variables for the main container                                                               | `{}`         |
-| `envFrom`              | Configures of envFrom to include into the main container                                                               | `[]`         |
-| `volumes`              | Specify volumes for the main pod                                                                                       | `{}`         |
-| `volumeMounts`         | Specify volumeMounts for the main container                                                                            | `{}`         |
-| `configMaps`           | Creates application сonfigMaps (note the name is prefixed with the app name)                                           | `{}`         |
-| `secrets`              | Creates application secrets (note the name is prefixed with the app name)                                              | `{}`         |
-| `templateChecksums`    | Specifies list of template files to add as an annotation checksum into the pod.                                        | `[]`         |
-
+| Name                                   | Description                                                                                                            | Value        |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `app.name`                             | Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart                           | `app`        |
+| `app.workload.enabled`                 | Specifies whether the default workload resource is generated (Deployment/StatefulSet etc)                              | `true`       |
+| `app.workload.type`                    | Specifies type of the main workload resource ("deployment" or "statefulset/sts")                                       | `deployment` |
+| `app.components`                       | Specifies list of components to enable used in direct mode (it respectively expects .Values.[component] to be present) | `[]`         |
+| `selector.matchLabels`                 | Specifies additional selector labels for the workload resources and services                                           | `{}`         |
+| `reuse`                                | Enables reuse/merge of the upper-level component values (applicable for containers/initContainers)                     | `false`      |
+| `enableServiceLinks`                   | Can be disabled to remove information about services from pod's environment variables                                  | `true`       |
+| `persistentVolumeClaimRetentionPolicy` | Describes the lifecycle of PVCs created from volumeClaimTemplates (only "statefulset" workload type)                   | `{}`         |
+| `containers`                           | Specify a map of additional pod containers                                                                             | `{}`         |
+| `initContainers`                       | Specifies initContainers **(use, values map for order and data)**                                                      | `{}`         |
+| `env`                                  | Name Map of environment variables for the main container                                                               | `{}`         |
+| `envFrom`                              | Configures of envFrom to include into the main container                                                               | `[]`         |
+| `volumes`                              | Specify volumes for the main pod                                                                                       | `{}`         |
+| `volumeMounts`                         | Specify volumeMounts for the main container                                                                            | `{}`         |
+| `configMaps`                           | Creates application сonfigMaps (note the name is prefixed with the app name)                                           | `{}`         |
+| `secrets`                              | Creates application secrets (note the name is prefixed with the app name)                                              | `{}`         |
+| `templateChecksums`                    | Specifies list of template files to add as an annotation checksum into the pod.                                        | `[]`         |
 
 ### Global parameters
 
@@ -319,7 +320,6 @@ containers:
 | `global.imageRegistry`    | Global Docker image registry                    | `""`  |
 | `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`  |
 | `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `""`  |
-
 
 ### Common parameters
 
@@ -337,11 +337,10 @@ containers:
 | `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
 | `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["infinity"]`  |
 
-
 ### Main pod Parameters
 
 | Name                                              | Description                                                                                                                                                       | Value           |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |-----------------|
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
 | `image.registry`                                  | image registry                                                                                                                                                    | `""`            |
 | `image.repository`                                | image repository                                                                                                                                                  | `""`            |
 | `image.tag`                                       | image tag (immutable tags are recommended)                                                                                                                        | `""`            |
@@ -400,22 +399,26 @@ containers:
 | `podAffinityPreset`                               | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                               | `""`            |
 | `podAntiAffinityPreset`                           | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                          | `soft`          |
 | `pdb.create`                                      | Enable/disable a Pod Disruption Budget creation                                                                                                                   | `false`         |
-| `pdb.minAvailable`                                | Minimum number/percentage of pods that should remain scheduled                                                                                                    | `null`          |
-| `pdb.maxUnavailable`                              | Maximum number/percentage of pods that may be made unavailable                                                                                                    | `null`          |
+| `pdb.minAvailable`                                | Minimum number/percentage of pods that should remain scheduled                                                                                                    | `nil`           |
+| `pdb.maxUnavailable`                              | Maximum number/percentage of pods that may be made unavailable                                                                                                    | `nil`           |
+| `pdb.unhealthyPodEvictionPolicy`                  | IfHealthyBudget/AlwaysAllow                                                                                                                                       | `nil`           |
+| `pdb.selector`                                    | extra selector for PDB                                                                                                                                            | `{}`            |
 | `autoscaling.enabled`                             | Enable autoscaling for %%MAIN_OBJECT_BLOCK%%                                                                                                                      | `false`         |
 | `autoscaling.minReplicas`                         | Minimum number of %%MAIN_OBJECT_BLOCK%% replicas                                                                                                                  | `""`            |
 | `autoscaling.maxReplicas`                         | Maximum number of %%MAIN_OBJECT_BLOCK%% replicas                                                                                                                  | `""`            |
 | `autoscaling.targetCPU`                           | Target CPU utilization percentage                                                                                                                                 | `""`            |
 | `autoscaling.targetMemory`                        | Target Memory utilization percentage                                                                                                                              | `""`            |
+| `autoscaling.behavior`                            | HPA behavior                                                                                                                                                      | `{}`            |
 | `nodeAffinityPreset.type`                         | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                         | `""`            |
 | `nodeAffinityPreset.key`                          | Node label key to match. Ignored if `affinity` is set                                                                                                             | `""`            |
 | `nodeAffinityPreset.values`                       | Node label values to match. Ignored if `affinity` is set                                                                                                          | `[]`            |
 | `affinity`                                        | Affinity for pods assignment                                                                                                                                      | `{}`            |
 | `nodeSelector`                                    | Node labels for pods assignment                                                                                                                                   | `{}`            |
 | `tolerations`                                     | Tolerations for pods assignment                                                                                                                                   | `[]`            |
-| `updateStrategy.type`                             | statefulset strategy type                                                                                                                                         | `RollingUpdate` |
+| `updateStrategy.type`                             | deployment strategy type                                                                                                                                          | `RollingUpdate` |
 | `dnsPolicy`                                       | Set DNS policy for the pod. Defaults to "ClusterFirst".                                                                                                           | `nil`           |
 | `hostNetwork`                                     | Host networking requested for this pod. Use the host's network namespace. If this option is set, the ports that will be used must be specified. Default to false. | `nil`           |
+| `automountServiceAccountToken`                    | Automount service account token for the pod. Defaults to "true"                                                                                                   | `nil`           |
 | `podManagementPolicy`                             | Statefulset Pod management policy, it needs to be Parallel to be able to complete the cluster join                                                                | `OrderedReady`  |
 | `priorityClassName`                               | pods' priorityClassName                                                                                                                                           | `""`            |
 | `topologySpreadConstraints`                       | Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template                                          | `[]`            |
@@ -430,7 +433,6 @@ containers:
 | `sidecars`                                        | Add additional sidecar containers to the pod(s)                                                                                                                   | `[]`            |
 | `extraInitContainers`                             | Add additional init containers to the pod(s) (go after .initContainers)                                                                                           | `[]`            |
 
-
 ### Traffic Exposure Parameters
 
 | Name                               | Description                                                                                                                      | Value                    |
@@ -442,6 +444,7 @@ containers:
 | `service.loadBalancerSourceRanges` | service Load Balancer sources                                                                                                    | `[]`                     |
 | `service.externalTrafficPolicy`    | service external traffic policy                                                                                                  | `Cluster`                |
 | `service.annotations`              | Additional custom annotations for service                                                                                        | `{}`                     |
+| `service.extraSelectors`           | Additional custom selectors for pods to match the service                                                                        | `{}`                     |
 | `service.extraPorts`               | Extra ports to expose in service (normally used with the `sidecars` value)                                                       | `[]`                     |
 | `service.sessionAffinity`          | Control where client requests go, to the same pod or round-robin                                                                 | `None`                   |
 | `service.sessionAffinityConfig`    | Additional settings for the sessionAffinity                                                                                      | `{}`                     |
@@ -465,12 +468,12 @@ containers:
 | `ingress.secrets`                  | Custom TLS certificates as secrets                                                                                               | `[]`                     |
 | `ingress.extraRules`               | Additional rules to be covered with this ingress record                                                                          | `[]`                     |
 
-
 ### Persistence Parameters
 
 | Name                        | Description                                                                                             | Value               |
 | --------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------- |
 | `persistence.enabled`       | Enable persistence using Persistent Volume Claims                                                       | `false`             |
+| `persistence.type`          | Create separate PVC when set to "pvc", or from volumeClaimTemplates if set to "sts"                     | `pvc`               |
 | `persistence.emptyDir`      | Enable emptyDir persistence instead of a PVC                                                            | `false`             |
 | `persistence.mountName`     | Persistent volume name                                                                                  | `data`              |
 | `persistence.mountPath`     | Path to mount the volume at                                                                             | `/data`             |
@@ -482,7 +485,6 @@ containers:
 | `persistence.existingClaim` | The name of an existing PVC to use for persistence                                                      | `""`                |
 | `persistence.selector`      | Selector to match an existing Persistent Volume for WordPress data PVC                                  | `{}`                |
 | `persistence.dataSource`    | Custom PVC data source                                                                                  | `{}`                |
-
 
 ### Init Container Parameters
 
@@ -498,11 +500,11 @@ containers:
 | `volumePermissions.resources.requests`                 | The requested resources for the init container           | `{}`                    |
 | `volumePermissions.containerSecurityContext.runAsUser` | Set init container's Security Context runAsUser          | `0`                     |
 
-
 ### Other Parameters
 
 | Name                                          | Description                                                                                                              | Value   |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `minReadySeconds`                             | minimum seconds for pod to become ready. 0 is the default k8s value                                                      | `0`     |
 | `rbac.create`                                 | Specifies whether RBAC resources should be created                                                                       | `false` |
 | `rbac.rules`                                  | Custom RBAC rules to set                                                                                                 | `[]`    |
 | `serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                     | `true`  |

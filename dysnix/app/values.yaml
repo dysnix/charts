@@ -9,7 +9,7 @@
 ##
 ## @param app.name Specifies the chart/application name (app.kubernetes.io/name), since this is a generic chart
 ## @param app.workload.enabled Specifies whether the default workload resource is generated (Deployment/StatefulSet etc)
-## @param app.workload.type Specifies type of the main workload resource
+## @param app.workload.type Specifies type of the main workload resource ("deployment" or "statefulset/sts")
 ##
 app:
   name: app
@@ -36,6 +36,14 @@ selector:
 ## @param reuse Enables reuse/merge of the upper-level component values (applicable for containers/initContainers)
 ##
 reuse: false
+
+## @param enableServiceLinks Can be disabled to remove information about services from pod's environment variables
+##
+enableServiceLinks: true
+
+## @param persistentVolumeClaimRetentionPolicy Describes the lifecycle of PVCs created from volumeClaimTemplates (only "statefulset" workload type)
+##
+persistentVolumeClaimRetentionPolicy: {}
 
 ## @param containers Specify a map of additional pod containers
 ##
@@ -397,6 +405,7 @@ pdb:
 ## @param autoscaling.maxReplicas Maximum number of %%MAIN_OBJECT_BLOCK%% replicas
 ## @param autoscaling.targetCPU Target CPU utilization percentage
 ## @param autoscaling.targetMemory Target Memory utilization percentage
+## @param autoscaling.behavior HPA behavior
 ##
 autoscaling:
   enabled: false
@@ -713,6 +722,9 @@ persistence:
   ## @param persistence.enabled Enable persistence using Persistent Volume Claims
   ##
   enabled: false
+  ## @param persistence.type Create separate PVC when set to "pvc", or from volumeClaimTemplates if set to "sts"
+  ##
+  type: pvc
   ## @param persistence.emptyDir Enable emptyDir persistence instead of a PVC
   ##
   emptyDir: false

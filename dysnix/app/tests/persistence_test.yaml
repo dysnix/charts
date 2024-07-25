@@ -2,6 +2,7 @@ suite: persistence
 templates:
   - pvc.yaml
   - deployment.yaml
+  - statefulset.yaml
 tests:
   -
     it: persistence enabled
@@ -89,3 +90,24 @@ tests:
         path: metadata.labels
         content:
           common: label
+  -
+    it: persistence enabled with app.workload.type "sts" and .persistence.type "sts"
+    values:
+      - ./values/persistence.yaml
+      - ./values/app.yaml
+    set:
+      app.workload.type: sts
+      persistence.type: sts
+    asserts:
+      -
+        template: pvc.yaml
+        hasDocuments:
+          count: 0
+      -
+        template: statefulset.yaml
+        contains:
+          path: spec.volumeClaimTemplates[0]
+          any: true
+          content:
+            name: data
+            emptyDir: {}

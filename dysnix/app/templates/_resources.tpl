@@ -52,6 +52,10 @@ Usage
   {{- include "app.resources.include" (dict "resource" "deployment" | merge .) -}}
 {{- end -}}
 
+{{- define "app.statefulset" -}}
+  {{- include "app.resources.include" (dict "resource" "statefulset" | merge .) -}}
+{{- end -}}
+
 {{- define "app.service-account" -}}
   {{- include "app.resources.include" (dict "resource" "service-account" | merge .) -}}
 {{- end -}}

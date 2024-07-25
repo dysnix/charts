@@ -1,10 +1,10 @@
 {{/* vim: set filetype=helm: */}}
 
-{{- define "app.resources.deployment" -}}
-{{- if and .Values.app.workload.enabled (eq .Values.app.workload.type "deployment") }}
+{{- define "app.resources.statefulset" -}}
+{{- if and .Values.app.workload.enabled (has .Values.app.workload.type (list "statefulset" "sts")) }}
 ---
-apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
-kind: Deployment
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
+kind: StatefulSet
 metadata:
   name: {{ template "common.names.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
@@ -18,13 +18,18 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  serviceName: {{ template "common.names.fullname" . }}
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   {{- if .Values.updateStrategy }}
-  strategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
+  updateStrategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
   {{- end }}
   minReadySeconds: {{ .Values.minReadySeconds }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  {{- with .Values.persistentVolumeClaimRetentionPolicy }}
+  persistentVolumeClaimRetentionPolicy: {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
@@ -202,7 +207,7 @@ spec:
           {{- include "common.tplvalues.render" (dict "value" .Values.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        {{- if .Values.persistence.enabled }}
+        {{- if and .Values.persistence.enabled (or (eq .Values.persistence.type "pvc") .Values.persistence.emptyDir) }}
         - name: {{ .Values.persistence.mountName }}
           {{- if .Values.persistence.emptyDir }}
           emptyDir: {}
@@ -217,6 +222,38 @@ spec:
         {{- if .Values.extraVolumes }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+  {{- if and .Values.persistence.enabled (has .Values.persistence.type (list "sts" "statefulset")) }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ .Values.persistence.mountName }}
+      labels:
+        {{- include "common.labels.matchLabels" . | nindent 8 }}
+        {{- include "app.labels.component" . | nindent 8 }}
+      {{- if or .Values.persistence.annotations .Values.commonAnnotations }}
+      annotations:
+        {{- if .Values.persistence.annotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.persistence.annotations "context" $ ) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.commonAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+    spec:
+      accessModes:
+      {{- range .Values.persistence.accessModes }}
+        - {{ . | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size | quote }}
+      {{- if .Values.persistence.selector }}
+      selector: {{- include "common.tplvalues.render" (dict "value" .Values.persistence.selector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.persistence.dataSource }}
+      dataSource: {{- include "common.tplvalues.render" (dict "value" .Values.persistence.dataSource "context" $) | nindent 8 }}
+      {{- end }}
+      {{- include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) | nindent 6 }}
+  {{- end }}
 {{- end }}
 {{- end -}}
 
@@ -224,6 +261,6 @@ spec:
 {{- if eq "direct" (include "app.chart.mode" .) -}}
   {{- range $_, $component := concat (list "") $.Values.app.components -}}
     {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
-    {{- include "app.deployment" (dict "component" $component "values" $values "top" $) -}}
+    {{- include "app.statefulset" (dict "component" $component "values" $values "top" $) -}}
   {{- end -}}
 {{- end -}}
