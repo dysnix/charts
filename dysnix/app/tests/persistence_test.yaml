@@ -105,9 +105,8 @@ tests:
           count: 0
       -
         template: statefulset.yaml
-        contains:
-          path: spec.volumeClaimTemplates
-          any: true
+        isSubset:
+          path: spec.volumeClaimTemplates[0]
           content:
             metadata:
               name: data
