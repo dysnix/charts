@@ -1,0 +1,16 @@
+cronJobs:
+  default:
+    enabled: true
+    schedule: "0 * * * *"
+    image:
+      registry: docker.io
+      repository: alpine
+      tag: latest
+    command: ["/app"]
+    args: ["run_checks"]
+    nodeSelector:
+      node_role: test
+    volumes:
+      test:
+        emptyDir:
+          medium: Memory

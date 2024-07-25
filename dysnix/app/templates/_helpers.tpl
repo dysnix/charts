@@ -125,3 +125,38 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{ $key }}: {{ ternary $value ($value | toString) (kindIs "string" $value) }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Render CronJob env parameters
+When .reuseEnv is true, params will be reused from $global, unless overriden in $context
+*/}}
+{{- define "app.cronjob.env" -}}
+{{- $context := .context }}
+{{- $common := .common }}
+{{- $root := .root }}
+{{- $reuseEnv := $context.reuseEnv | default false }}
+{{- $env := ternary (coalesce $context.env $common.env) $context.env $reuseEnv }}
+{{- $envFrom := ternary (coalesce $context.envFrom $common.envFrom) $context.envFrom $reuseEnv }}
+{{- $extraEnvVars := ternary (coalesce $context.extraEnvVars $common.extraEnvVars) $context.extraEnvVars $reuseEnv }}
+{{- $extraEnvVarsCM := ternary (coalesce $context.extraEnvVarsCM $common.extraEnvVarsCM) $context.extraEnvVarsCM $reuseEnv }}
+{{- $extraEnvVarsSecret := ternary (coalesce $context.extraEnvVarsSecret $common.extraEnvVarsSecret) $context.extraEnvVarsSecret $reuseEnv }}
+env:
+  {{- with $env }}
+    {{- include "app.tplvalues.named-list" (dict "valueKey" "value" "value" . "toString" true "context" $root) | nindent 2 -}}
+  {{- end }}
+  {{- if $extraEnvVars }}
+    {{- include "common.tplvalues.render" (dict "value" $extraEnvVars "context" $root) | nindent 2 }}
+  {{- end }}
+envFrom:
+  {{- with $envFrom }}
+    {{- include "common.tplvalues.render" (dict "value" . "context" $root) | nindent 2 }}
+  {{- end }}
+  {{- if $extraEnvVarsCM }}
+  - configMapRef:
+      name: {{ include "common.tplvalues.render" (dict "value" $extraEnvVarsCM "context" $root) }}
+  {{- end }}
+  {{- if $extraEnvVarsSecret }}
+  - secretRef:
+      name: {{ include "common.tplvalues.render" (dict "value" $extraEnvVarsSecret "context" $root) }}
+  {{- end }}
+{{- end -}}
