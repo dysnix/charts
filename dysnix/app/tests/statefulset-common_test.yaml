@@ -53,6 +53,8 @@ tests:
     it: selector matchLabels
     values:
       - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
     asserts:
       - isSubset:
           path: spec.selector.matchLabels
@@ -62,6 +64,8 @@ tests:
     it: statefulset labels
     values:
       - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
     asserts:
      - isSubset:
         path: metadata.labels

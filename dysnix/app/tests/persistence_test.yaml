@@ -106,8 +106,12 @@ tests:
       -
         template: statefulset.yaml
         contains:
-          path: spec.volumeClaimTemplates[0]
+          path: spec.volumeClaimTemplates
           any: true
           content:
-            name: data
-            emptyDir: {}
+            metadata:
+              name: data
+            spec:
+              resources:
+                requests:
+                  storage: 10Gi
