@@ -1,0 +1,78 @@
+suite: statefulset
+templates:
+  - statefulset.yaml
+tests:
+  -
+    it: chart naming
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-app-name
+  -
+    it: .namespaceOverride
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+      namespaceOverride: foo
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - equal:
+          path: metadata.namespace
+          value: foo
+  -
+    it: release name is equal to release+.app.name
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+    release:
+      name: foo
+    asserts:
+      - equal:
+          path: metadata.name
+          value: foo-app-name
+  -
+    it: image naming
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: foo/alpine:bar
+  -
+    it: selector matchLabels
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+    asserts:
+      - isSubset:
+          path: spec.selector.matchLabels
+          content:
+            tenant: foo
+  -
+    it: statefulset labels
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+    asserts:
+     - isSubset:
+        path: metadata.labels
+        content:
+          common: label
+     - isSubset:
+        path: spec.template.metadata.labels
+        content:
+          common: label
+          pod: label
