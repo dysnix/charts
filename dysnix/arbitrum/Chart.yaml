@@ -2,8 +2,8 @@ apiVersion: v2
 name: arbitrum
 description: Arbitrum nitro-node Helm Chart
 
-version: 0.1.0
-appVersion: v2.3.0-3e14543
+version: 0.1.1
+appVersion: v3.1.0-7d1d84c
 
 keywords:
   - rollup
