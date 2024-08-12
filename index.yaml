@@ -632,6 +632,26 @@ entries:
     version: 0.3.1
   arbitrum:
   - apiVersion: v2
+    appVersion: v3.1.0-7d1d84c
+    created: "2024-08-12T10:33:38.832104726Z"
+    description: Arbitrum nitro-node Helm Chart
+    digest: 063e40b7c7a1e78177bb3f15dfceecc3c1df0f257eecef21e068d5569bdaa737
+    keywords:
+    - rollup
+    - arbitrum
+    - nitro
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: arbitrum
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/arbitrum-0.1.1/arbitrum-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v2.3.0-3e14543
     created: "2024-03-04T10:44:57.534773712Z"
     description: Arbitrum nitro-node Helm Chart
@@ -6876,4 +6896,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2024-07-25T15:56:28.652505762Z"
+generated: "2024-08-12T10:33:38.832522164Z"
