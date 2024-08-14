@@ -1418,6 +1418,27 @@ entries:
     version: 0.2.0
   bor:
   - apiVersion: v2
+    appVersion: 1.3.7
+    created: "2024-08-14T07:46:18.39850852Z"
+    description: Polygon Bor execution layer node Helm chart
+    digest: b8de87bca5e521b9f833104e64b0c9227b62eaf2be2d35ae140ad5262ccd4c09
+    keywords:
+    - geth
+    - bor
+    - polygon
+    - matic
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: bor
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bor-0.0.8/bor-0.0.8.tgz
+    version: 0.0.8
+  - apiVersion: v2
     appVersion: 1.1.0
     created: "2024-02-26T15:21:29.251616231Z"
     description: Polygon Bor execution layer node Helm chart
@@ -6918,4 +6939,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2024-08-12T13:55:15.373480095Z"
+generated: "2024-08-14T07:46:18.398932427Z"
