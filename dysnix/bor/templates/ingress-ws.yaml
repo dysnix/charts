@@ -1,6 +1,6 @@
 {{- if and .Values.services.rpc.enabled .Values.ingress.ws.enabled -}}
 {{- $fullName := include "bor.fullname" . -}}
-{{- $svcPort := .Values.services.rpc.wsPort -}}
+{{- $svcPort := .Values.services.rpc.ws.port -}}
 {{- if and .Values.ingress.ws.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.ws.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.ws.annotations "kubernetes.io/ingress.class" .Values.ingress.ws.className}}
