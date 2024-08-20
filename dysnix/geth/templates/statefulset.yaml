@@ -192,11 +192,11 @@ spec:
         - name: scripts
           mountPath: /scripts
         {{- if .Values.livenessProbe.enabled }}
-        startupProbe:
+        livenessProbe:
           {{- include "geth.healthcheck" (list $ .Values.livenessProbe) | nindent 10 }}
         {{- end }}
         {{- if .Values.readinessProbe.enabled }}
-        startupProbe:
+        readinessProbe:
           {{- include "geth.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
         {{- end }}
         {{- if .Values.startupProbe.enabled }}
