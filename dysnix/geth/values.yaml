@@ -214,6 +214,18 @@ readinessProbe:
       - /scripts/readiness.sh
       - "60"
 
+# .startupProbe.exec.command can also be in a templated string format
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  failureThreshold: 120960    # periodSeconds * failureThreshold = 7 days
+  timeoutSeconds: 10
+  exec:
+    command:
+      - sh
+      - /scripts/wait-for-sync.sh
+
 ## Main Geth config
 config:
   ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
