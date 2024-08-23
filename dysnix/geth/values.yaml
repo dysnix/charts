@@ -49,6 +49,12 @@ enableServiceLinks: false
 
 ## Override geth container command (can be templated)
 command: []
+  # - sh
+  # - -c
+
+## Override geth container args (can be templated)
+argsOverride: []
+  # - sleep infinity
 
 ## Extra container arguments (can be templated)
 extraArgs: []
