@@ -170,9 +170,6 @@ spec:
         - --metrics
         - --metrics.addr=0.0.0.0
         - --metrics.port={{ .Values.config.metrics.port }}
-        {{- if .Values.config.metrics.expensive }}
-        - --metrics.expensive
-        {{- end }}
         {{- end }}
         {{- if .Values.config.pprof.enabled }}
         - --pprof
