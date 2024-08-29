@@ -135,8 +135,8 @@ spec:
                   if ! test -e $raid_dev ; then
                     echo "$devs" | xargs /sbin/mdadm --create $raid_dev --level=0 --raid-devices=$(echo "$devs" | wc -l)
                     sudo mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} -F $raid_dev
-                    new_dev=$raid_dev
                   fi
+                  new_dev=$raid_dev
                 else
                   if ! echo "$pvs" | grep volume_all_ssds ; then
                     echo "$devs" | xargs /sbin/pvcreate
@@ -153,7 +153,9 @@ spec:
                   new_dev=/dev/volume_all_ssds/logical_all_ssds
                 fi
 
-                if ! uuid=$(blkid -s UUID -o value $new_dev) ; then
+                uuid=$(blkid -s UUID -o value $new_dev)
+
+                if test -z "$uuid" ; then
                   mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} $new_dev
                   uuid=$(blkid -s UUID -o value $new_dev)
                 fi
@@ -168,7 +170,11 @@ spec:
                 if ! grep "$uuid" /etc/fstab ; then
                   echo "UUID=$uuid $mnt_dir ext4 $mnt_opts" >> /etc/fstab
                 fi
-                mount -U "$uuid" -t ext4 --target "$mnt_dir" --options "$mnt_opts"
+
+                if ! findmnt -n -a -l --nofsroot | grep "$mnt_dir" ; then
+                  mount -U "$uuid" -t ext4 --target "$mnt_dir" --options "$mnt_opts"
+                fi
+
                 chmod a+w "$mnt_dir"
       containers:
         - image: "quay.io/external_storage/local-volume-provisioner:v2.3.2"
