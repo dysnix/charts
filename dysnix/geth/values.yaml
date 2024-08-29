@@ -31,17 +31,19 @@ podLabels: {}
 podStatusLabels: {}
   # manualstatus: in-service
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 10001
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  allowPrivilegeEscalation: false
+  privileged: false
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-  # runAsGroup: 1000
 
 ## By disabling we fix "Unknown config environment variable envvar=GETH_"
 ## Enable if your workload depends on this functionality
@@ -79,6 +81,17 @@ sidecarContainers: []
   #   ports:
   #   - name: exporter
   #     containerPort: 9090
+
+## Extra volumeMounts for geth container, can be templated
+extraVolumeMounts: []
+  # - name: testvolume
+  #   mountPath: /test
+
+## Extra volumes, can be templated
+extraVolumes: []
+  # - name: testvolume
+  #   persistentVolumeClaim:
+  #     claimName: test-pvc
 
 ## Services config
 services:
@@ -156,6 +169,7 @@ ingress:
 persistence:
   type: pvc
   # type: hostPath
+  mountPath: ""                # don't forget to change .Values.config.datadir accordingly
   pvc:
     size: 900Gi                # starting point for snap-synced node as of 2023-09
     accessMode: ReadWriteOnce
@@ -230,12 +244,13 @@ startupProbe:
   exec:
     command:
       - sh
-      - /scripts/wait-for-sync.sh
+      - /scripts/startup.sh
 
 ## Main Geth config
 config:
   ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
   jwt: ""
+  datadir: /data
   eth:
     network: mainnet
     syncMode: snap
@@ -286,28 +301,45 @@ config:
     enabled: false
     port: 6061
 
+## initContainers configuration
+init:
+  chownData:
+    enabled: false
+    image:
+      repository: alpine
+      tag: 3.18
+      pullPolicy: IfNotPresent
+
 s3config:
   image:
     repository: peakcom/s5cmd
     tag: v2.2.2
     pullPolicy: IfNotPresent
-  # Any S3-compatible object storage service should be supported, but has only been tested with GCS.
-  # I.e. Amazon S3, MinIO, DigitalOcean Spaces, CloudFlare R2.
-  # endpointUrl: https://s3.amazonaws.com
-  endpointUrl: https://storage.googleapis.com
-  # Assuming your S3 bucket name is `my-snapshot-bucket` and base directory name is Helm release name
-  baseUrl: my-snapshot-bucket/{{ .Release.Name }}
-  # These are relative to baseUrl
-  chaindataUrl: /chaindata
-  ancientUrl: /ancient
-  # How to create access key
-  # AWS S3 https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
-  # GCS    https://cloud.google.com/storage/docs/authentication/managing-hmackeys#create
-  accessKeyId: REPLACEME
-  secretAccessKey: REPLACEME
-  # override local paths
-  # chaindataDir: /root/.ethereum/geth/chaindata
-  # ancientDir: /root/.ethereum/geth/chaindata/ancient
+  # local storage config
+  local:
+    # directory containing the state you want to upload (can be templated)
+    datadir: "{{ .Values.config.datadir }}/geth/chaindata"
+    # directory containing ancient data you want to upload (can be templated)
+    ancientDir: "{{ .Values.s3config.local.datadir }}/ancient"
+    # this file marks node as already initialized from snapshot
+    # should be placed outside of the datadir you are uploading
+    initializedFile: "{{ .Values.config.datadir }}/.initialized"
+  # remote storage config
+  remote:
+    # Any S3-compatible object storage service should be supported, but has only been tested with GCS.
+    # I.e. Amazon S3, MinIO, DigitalOcean Spaces, CloudFlare R2.
+    # endpointUrl: https://storage.googleapis.com
+    endpointUrl: ""
+    # Assuming your S3 bucket name is `my-snapshot-bucket` and base directory name is Helm release name
+    baseUrl: my-snapshot-bucket/{{ .Release.Name }}
+    # These are relative to baseUrl
+    dataUrl: /chaindata
+    ancientUrl: /ancient
+    # How to create access key
+    # AWS S3 https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+    # GCS    https://cloud.google.com/storage/docs/authentication/managing-hmackeys#create
+    accessKeyId: REPLACEME
+    secretAccessKey: REPLACEME
 
 initFromS3:
   # enable initContainer

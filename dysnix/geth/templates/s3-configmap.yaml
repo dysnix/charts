@@ -4,16 +4,12 @@ kind: ConfigMap
 metadata:
   name: {{ include "geth.fullname" . }}-s3-config
 data:
-  DATA_DIR: /root/.ethereum
+  DATA_DIR: {{ tpl .Values.s3config.local.datadir . | quote }}
+  ANCIENT_DIR: {{ tpl (tpl .Values.s3config.local.ancientDir .) . | quote }}
+  INITIALIZED_FILE: {{ tpl .Values.s3config.local.initializedFile . | quote }}
   SYNC_TO_S3: "False"
-  S3_BASE_URL: {{ tpl .Values.s3config.baseUrl . }}
-  S3_CHAINDATA_URL: {{ tpl .Values.s3config.chaindataUrl . }}
-  S3_ANCIENT_URL: {{ tpl .Values.s3config.ancientUrl . }}
+  S3_BASE_URL: {{ tpl .Values.s3config.remote.baseUrl . }}
+  S3_DATA_URL: {{ tpl .Values.s3config.remote.dataUrl . }}
+  S3_ANCIENT_URL: {{ tpl .Values.s3config.remote.ancientUrl . }}
   FORCE_INIT: {{ ternary "True" "False" .Values.initFromS3.force | quote }}
-  {{- with .Values.s3config.chaindataDir }}
-  CHAINDATA_DIR: {{ tpl . $ }}
-  {{- end }}
-  {{- with .Values.s3config.ancientDir }}
-  ANCIENT_DIR: {{ tpl . $ }}
-  {{- end }}
 {{- end }}

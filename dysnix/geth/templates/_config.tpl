@@ -59,7 +59,7 @@ IgnorePrice = 2
 
 {{ with .Values.config.node -}}
 [Node]
-DataDir = "/root/.ethereum"
+DataDir = "{{ $.Values.config.datadir }}"
 IPCPath = {{ .ipc.enabled | ternary .ipc.path "" | quote }}
 HTTPHost = {{ .http.enabled | ternary "0.0.0.0" "" | quote }}
 HTTPPort = {{ .http.port }}
