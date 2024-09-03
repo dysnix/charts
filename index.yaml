@@ -4337,6 +4337,24 @@ entries:
   geth:
   - apiVersion: v2
     appVersion: v1.14.8
+    created: "2024-09-03T14:30:10.527283943Z"
+    description: Go-ethereum blockchain node Helm Chart
+    digest: 36229c17799b6147e1e3d8e9ce770808c6618ddfce91add82c3975c8e21e89e5
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-1.1.0/geth-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
+    appVersion: v1.14.8
     created: "2024-08-23T10:19:17.99671145Z"
     description: Go-ethereum blockchain node Helm Chart
     digest: f0d3b4890f282fd882cf0c5801098d8e21de070844e652518cbe5955a47b75bc
@@ -6997,4 +7015,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2024-08-29T12:51:42.607292809Z"
+generated: "2024-09-03T14:30:10.527841984Z"
