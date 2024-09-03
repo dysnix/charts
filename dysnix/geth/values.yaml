@@ -307,7 +307,7 @@ init:
     enabled: false
     image:
       repository: alpine
-      tag: 3.18
+      tag: 3.20
       pullPolicy: IfNotPresent
 
 s3config:
@@ -355,6 +355,6 @@ syncToS3:
     enabled: false
     image:
       repository: dysnix/kubectl
-      tag: v1.27
+      tag: v1.30
       pullPolicy: IfNotPresent
     schedule: "0 2 * * *"
