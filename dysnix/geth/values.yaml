@@ -171,7 +171,7 @@ persistence:
   # type: hostPath
   mountPath: ""                # don't forget to change .Values.config.datadir accordingly
   pvc:
-    size: 900Gi                # starting point for snap-synced node as of 2023-09
+    size: 1200Gi               # starting point for snap-synced node as of 2024-09
     accessMode: ReadWriteOnce
     storageClass: ""           # set to "-" if you want to manually create persistent volume
     annotations: {}
@@ -282,7 +282,7 @@ config:
       useHostPort: false    # if set to true .Values.services.p2p will be disabled, and hostPort will be allocated instead
       port: 30303
       discoveryPort: 30301
-      nat: ""               # you may want to set it if you are running P2P via NodePort/LoadBalancer k8s svc
+      nat: ""               # set it when geth P2P endpoint is exposed via LoadBalancer k8s service
       maxPeers: 50
       noDiscovery: false
       bootstrapNodes: []
@@ -295,7 +295,6 @@ config:
   # - rpc=5
   metrics:
     enabled: false
-    expensive: false
     port: 6060
   pprof:
     enabled: false
