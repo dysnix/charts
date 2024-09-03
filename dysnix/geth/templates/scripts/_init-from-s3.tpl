@@ -58,9 +58,9 @@ sync() {
   # https://github.com/peak/s5cmd/issues/532
   echo "Cleaning up local data..."
   rm -rf "$ANCIENT_DIR"
-  rm -rf "$CHAINDATA_DIR"
+  rm -rf "$DATA_DIR"
   # recreate data directories
-  mkdir -p "$CHAINDATA_DIR"
+  mkdir -p "$DATA_DIR"
   mkdir -p "$ANCIENT_DIR"
 
   echo "Starting download data from S3..."
@@ -68,7 +68,7 @@ sync() {
 
   # perform remote snapshot download and remove local objects which don't exist in snapshot
   # run two jobs in parallel, one for chaindata, second for ancient data
-  time "$S5CMD" --stat sync $EXCLUDE_ANCIENT "s3://${CHAINDATA_URL}/*" "${CHAINDATA_DIR}/" >/dev/null &
+  time "$S5CMD" --stat sync $EXCLUDE_ANCIENT "s3://${DATA_URL}/*" "${DATA_DIR}/" >/dev/null &
   download_chaindata=$!
   time nice "$S5CMD" --stat sync --part-size 200 --concurrency 2 $EXCLUDE_CHAINDATA "s3://${ANCIENT_URL}/*" "${ANCIENT_DIR}/" >/dev/null &
   download_ancient=$!

@@ -49,11 +49,27 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
+      {{- if .Values.init.chownData.enabled }}
+      - name: chown-data
+        image: "{{ .Values.init.chownData.image.repository }}:{{ .Values.init.chownData.image.tag }}"
+        imagePullPolicy: {{ .Values.init.chownData.image.pullPolicy | quote }}
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        command: ["chown", "-R", "{{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }}", "/data"]
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      {{- end }}
       {{- if .Values.initFromS3.enabled }}
       {{- with .Values.s3config }}
       - name: init-from-s3
         image: "{{ .image.repository }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.pullPolicy | quote }}
+        {{- with $.Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
         - sh
         - /scripts/init-from-s3.sh
@@ -66,7 +82,7 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: /root/.ethereum
+          mountPath: {{ $.Values.persistence.mountPath | default $.Values.config.datadir }}
       {{- end }}
       {{- end }}
       {{- if .Values.syncToS3.enabled }}
@@ -74,6 +90,10 @@ spec:
       - name: sync-to-s3
         image: "{{ .image.repository }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.pullPolicy | quote }}
+        {{- with $.Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
         - /bin/sh
         - /scripts/sync-to-s3.sh
@@ -86,13 +106,17 @@ spec:
         - name: scripts
           mountPath: /scripts
         - name: data
-          mountPath: /root/.ethereum
+          mountPath: {{ $.Values.persistence.mountPath | default $.Values.config.datadir }}
       {{- end }}
       {{- with .Values.syncToS3.cronjob }}
       {{- if .enabled }}
       - name: disable-sync-to-s3
         image: "{{ .image.repository }}:{{ .image.tag }}"
         imagePullPolicy: {{ .image.pullPolicy | quote }}
+        {{- with $.Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
         - /bin/sh
         - /scripts/s3-cron.sh
@@ -127,6 +151,7 @@ spec:
           {{- tpl (toYaml .Values.argsOverride) $ | nindent 10 }}
         {{- else }}
         args:
+        - --datadir={{ .Values.config.datadir }}
         {{- with .Values.config.eth.network }}
         - --{{ . }}
         {{- end }}
@@ -191,7 +216,7 @@ spec:
         - name: config
           mountPath: /config
         - name: data
-          mountPath: /root/.ethereum
+          mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
         - name: secrets
           mountPath: /secrets
         - name: scripts
@@ -225,6 +250,9 @@ spec:
         hostPath:
           path: {{ .Values.persistence.hostPath.path }}
           type: {{ .Values.persistence.hostPath.type }}
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+      {{- tpl (toYaml .) $ | nindent 6 }}
       {{- end }}
   {{- if eq .Values.persistence.type "pvc" }}
   volumeClaimTemplates:
