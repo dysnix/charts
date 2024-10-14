@@ -6,10 +6,10 @@
 {{- end }}
 
 
-{{- define "ton.volumesTemplate" }}
-{{- with $.Values.persistance }}
+{{- define "ton.volumesTemplate" -}}
+{{- with $.Values.persistance -}}
   {{- if (and (hasKey . "data") (not (empty .data))) }}
-    {{- if eq .data.type "hostPath" }}
+    {{- if eq .data.type "hostPath" -}}
 - name: data
   hostPath:
     path: {{ required "persistance.data.path required" .data.path }}

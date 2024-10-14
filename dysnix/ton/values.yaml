@@ -27,7 +27,10 @@ serviceAccount:
 
 # -- set persistence info for data and archive
 persistance:
-  data: {}
+  data:
+    path: /data/chain
+    type: hostPath
+    perm: DirectoryOrCreate
     # type: hostPath  | existingClaim | pvc
     # hostPath: /data/chain
     # existingClaim: $name
@@ -35,7 +38,10 @@ persistance:
     # accessModes:
     #   - ReadWriteOnce
     # size: 10Gi
-  archive: {}
+  archive:
+    path: /data/archive
+    type: hostPath
+    perm: DirectoryOrCreate
     # type: hostPath | existingClaim | pvc
     # hostPath: /data/accounts
     # existingClaim: $name
