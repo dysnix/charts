@@ -162,32 +162,32 @@ nodecheck:
 
 # -- Api node probes
 apicheck:
-  readinessProbe:
-    enabled: true
-    timeoutSeconds: 10
-    failureThreshold: 2
-    successThreshold: 1
-    periodSeconds: 10
-    exec:
-      command:
-        - python3
-        - /scripts/health.py
-  livenessProbe:
-    enabled: true
-    timeoutSeconds: 3
-    failureThreshold: 2
-    successThreshold: 1
-    periodSeconds: 10
-    exec:
-      command:
-        - python3
-        - /scripts/health.py
-  startupProbe:
-    enabled: true
-    failureThreshold: 2880
-    periodSeconds: 30
-    timeoutSeconds: 1
-    exec:
-      command:
-        - python3
-        - /scripts/health.py
+  readinessProbe: {}
+    # enabled: true
+    # timeoutSeconds: 10
+    # failureThreshold: 2
+    # successThreshold: 1
+    # periodSeconds: 10
+    # exec:
+    #   command:
+    #     - python3
+    #     - /scripts/health.py
+  livenessProbe: {}
+    # enabled: true
+    # timeoutSeconds: 3
+    # failureThreshold: 2
+    # successThreshold: 1
+    # periodSeconds: 10
+    # exec:
+    #   command:
+    #     - python3
+    #     - /scripts/health.py
+  startupProbe: {}
+    # enabled: true
+    # failureThreshold: 2880
+    # periodSeconds: 30
+    # timeoutSeconds: 1
+    # exec:
+    #   command:
+    #     - python3
+    #     - /scripts/health.py
