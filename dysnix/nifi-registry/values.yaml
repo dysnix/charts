@@ -274,3 +274,8 @@ oidc:
   connectTimeout: "5 secs"
   # OIDC Read Timeout
   readTimeout: "5 secs"
+
+sts:
+  startupProbe:
+    enabled: true
+  hostAliases: []
