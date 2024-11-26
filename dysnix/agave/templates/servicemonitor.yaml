@@ -1,0 +1,26 @@
+{{- if and .Values.services.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "agave.fullname" . }}
+  labels:
+    {{- include "agave.labels" . | nindent 4 }}
+spec:
+  jobLabel: app.kubernetes.io/instance
+  selector:
+    matchLabels:
+      service-type: metrics
+      {{- include "agave.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: exporter
+      path: /metrics
+      {{- with (omit .Values.metrics.serviceMonitor "enabled" "extraEndpoints") }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+    {{- with .Values.metrics.serviceMonitor.extraEndpoints }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+{{- end }}

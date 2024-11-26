@@ -1,0 +1,17 @@
+{{- if .Values.plugins.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "agave.fullname" $ }}-plugins-config
+  labels:
+    {{- include "agave.labels" . | nindent 4 }}
+data:
+  {{- if .Values.plugins.yellowstoneGRPC.enabled }}
+  yellowstone-grpc-config.json: |-
+    {{- .Values.plugins.yellowstoneGRPC.config | nindent 4 }}
+  {{- end }}
+  {{- if .Values.plugins.jitoGRPC.enabled }}
+  jitogrpc-config.json: |-
+    {{- .Values.plugins.jitoGRPC.config | nindent 4 }}
+  {{- end }}
+{{- end }}

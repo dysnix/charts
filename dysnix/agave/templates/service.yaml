@@ -1,0 +1,48 @@
+{{- with .Values.services.rpc }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "agave.fullname" $ }}
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: rpc
+    {{- include "agave.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- if eq .type "LoadBalancer" }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  publishNotReadyAddresses: {{ .publishNotReadyAddresses }}
+  ports:
+    - port: {{ .port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ add .port 1 }}
+      targetPort: ws
+      protocol: TCP
+      name: ws
+    {{- if $.Values.plugins.enabled }}
+    {{- with $.Values.plugins.servicePorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- end }}
+    {{- with .extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- include "agave.selectorLabels" $ | nindent 4 }}
+{{- end }}
+{{- end }}
