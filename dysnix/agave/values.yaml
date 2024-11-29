@@ -1,0 +1,526 @@
+## @section Global parameters
+##
+
+## @param replicaCount Number of pods to deploy in the Stateful Set
+##
+replicaCount: 1
+
+## @param image.repository Agave image repository
+## @param image.tag [default: ""] Agave image tag
+## @param image.pullPolicy Agave image pull policy
+##
+image:
+  repository: ghcr.io/dysnix/docker-agave
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+## @param imagePullSecrets Agave image pull secrets
+imagePullSecrets: []
+
+## @param nameOverride String to partially override release name
+##
+nameOverride: ""
+## @param fullnameOverride String to fully override release name
+##
+fullnameOverride: ""
+
+## ServiceAccount configuration
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## @param serviceAccount.name The name of the ServiceAccount to use
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  name: ""
+  ## @param serviceAccount.automount Whether to auto mount the service account token
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#use-the-default-service-account-to-access-the-api-server
+  ##
+  automount: true
+  ## @param serviceAccount.annotations Additional custom annotations for the ServiceAccount
+  ##
+  annotations: {}
+
+## @param podLabels Extra labels for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+podLabels: {}
+
+## @param podAnnotations Annotations for pods
+## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+podAnnotations: {}
+
+## @param extraContainerPorts [array] Additional ports to expose on Agave container
+## Example:
+## - name: grpc
+##   protocol: TCP
+##   containerPort: 10000
+extraContainerPorts: []
+
+## @param podSecurityContext [object] Configure securityContext for entire pod
+## Example:
+## podSecurityContext:
+##   fsGroup: 2000
+podSecurityContext: {}
+  # fsGroup: 2000
+
+## @param securityContext [object] Configure securityContext for Agave container
+## Example:
+## securityContext:
+##   capabilities:
+##     drop:
+##     - ALL
+##   readOnlyRootFilesystem: true
+##   runAsNonRoot: true
+##   runAsUser: 1000
+##
+securityContext: {}
+
+## @param resources Set container requests and limits for CPU or memory
+## Example:
+## resources:
+##   requests:
+##     cpu: 16
+##     memory: 384Gi
+##   limits:
+##     memory: 500Gi
+##
+resources: {}
+
+## @param livenessProbe [object] Agave container livenessProbe
+##
+livenessProbe:
+  enabled: false
+  failureThreshold: 10
+  periodSeconds: 30
+  timeoutSeconds: 5
+  tcpSocket:
+    port: http
+
+## http server starts only when all loading tasks are finished
+## this includes: ledger db loading, downloading/unpacking snapshot, etc.
+## @param startupProbe [object] Agave container startupProbe
+##
+startupProbe:
+  enabled: true
+  failureThreshold: 1440  # wait 2 hours for initial startup
+  periodSeconds: 5
+  timeoutSeconds: 2
+  tcpSocket:
+    port: http
+
+## @param readinessProbe [object] Agave container readinessProbe
+##
+readinessProbe:
+  enabled: true
+  timeoutSeconds: 3
+  failureThreshold: 2
+  successThreshold: 1
+  periodSeconds: 10
+  exec:
+    command:
+      - sh
+      - /scripts/health.sh
+
+## @param affinity Affinity for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+
+## @param nodeSelector Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+##
+nodeSelector: {}
+
+## @param tolerations Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+
+## @param volumes [array] Pod extra volumes
+## Example:
+## volumes:
+## - name: secret
+##   secret:
+##     secretName: agave-secret
+##
+volumes: []
+
+## @param volumeMounts [array] Container extra volumeMounts
+## Example:
+## volumeMounts:
+## - name: keypair
+##   mountPath: /secrets
+volumeMounts: []
+
+## @section Services configuration
+##
+services:
+  rpc:
+    ## @param services.rpc.enabled Enable Agave RPC service
+    ##
+    enabled: true
+    ## @param services.rpc.type Agave RPC service type
+    ##
+    type: ClusterIP
+    ## @param services.rpc.port Agave RPC service port (+1 for websocket)
+    ##
+    port: 8899
+    ## @param services.rpc.extraPorts Agave RPC service extra ports to expose
+    ## Example:
+    ## - name: grpc
+    ##   protocol: TCP
+    ##   port: 10000
+    ##   targetPort: grpc
+    ##
+    extraPorts: []
+    ## @param services.rpc.publishNotReadyAddresses Route trafic even when pod is not ready
+    ##
+    publishNotReadyAddresses: false
+  metrics:
+    ## @param services.metrics.enabled Enable Agave metrics service
+    ##
+    enabled: false
+    ## @param services.metrics.type Agave metrics service type
+    ##
+    type: ClusterIP
+    ## @param services.metrics.port Agave metrics service port
+    ##
+    port: 9122
+    ## @param services.metrics.extraPorts Agave metrics service extra ports to expose
+    ## Example:
+    ## - name: grpc-prom
+    ##   protocol: TCP
+    ##   port: 8999
+    ##   targetPort: grpc-prom
+    ##
+    extraPorts: []
+    ## @param services.metrics.publishNotReadyAddresses Route trafic even when pod is not ready
+    ##
+    publishNotReadyAddresses: true
+
+## @section Ingress configuration
+##
+ingress:
+  ## @param ingress.http [object] Ingress configuration for Agave RPC HTTP endpoint
+  ##
+  http:
+    enabled: false
+    className: ""
+    annotations: {}
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: agave.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: agave-tls
+    #    hosts:
+    #      - agave.local
+  ## @param ingress.ws [object] Ingress configuration for Agave RPC WebSocket endpoint
+  ##
+  ws:
+    enabled: false
+    className: ""
+    annotations: {}
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: agave.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+    #  - secretName: agave-tls
+    #    hosts:
+    #      - agave.local
+
+## @section Metrics configuration
+##
+metrics:
+  ## @param metrics.enabled Enable Agave node metrics collection
+  ##
+  enabled: false
+  ## @param metrics.target Where to push Agave metrics
+  ## `exporter` - (default) push metrics to built-in influxdb-exporter for scraping via Prometheus
+  ## `influxdb` - push metrics to external InfluxDB instance
+  ##
+  target: exporter
+  ## @param metrics.exporter [object] influxdb-exporter configuration
+  ##
+  exporter:
+    image:
+      repository: prom/influxdb-exporter
+      tag: v0.11.5
+      pullPolicy: IfNotPresent
+    resources: {}
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # limits:
+      #   memory: 256Mi
+  serviceMonitor:
+    ## @param metrics.serviceMonitor.enabled Enable Prometheus ServiceMonitor
+    enabled: false
+    # interval: 10s
+    # scrapeTimeout: 2s
+    # honorLabels: true
+    # relabelings: []
+    # metricRelabelings: []
+    # extraEndpoints:
+    # - port: exporter
+    #   path: /metrics
+    #   interval: 10s
+    #   scrapeTimeout: 2s
+  influxdb:
+    existingSecret:
+      ## @param metrics.influxdb.existingSecret.name Name of secret containing InfluxDB credentials
+      ##
+      name: agave-metrics-config
+      ## @param metrics.influxdb.existingSecret.key Key name inside the secret
+      ##
+      key: config
+
+## @section Agave node configuration
+
+## @param agaveArgs [object] `agave-validator` arguments
+##
+agaveArgs:
+  identity: /secrets/validator-keypair.json
+  expected-genesis-hash: 4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY
+  known-validator:
+    - 5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on
+    - 7XSY3MrYnK8vq693Rju17bbPkCN3Z7KvvfvJx4kdrsSY
+    - Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN
+    - 9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv
+    - eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ
+    - dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs
+  entrypoint:
+    - entrypoint.testnet.solana.com:8001
+    - entrypoint2.testnet.solana.com:8001
+    - entrypoint3.testnet.solana.com:8001
+  full-rpc-api: true
+  no-voting: true                   # enable voting if you are running a validator
+  no-os-network-limits-test: true
+  no-port-check: true
+  only-known-rpc: false             # it is hard to find a fresh snapshot from default known validators
+  log: "-"
+  ledger: /data/ledger
+  accounts: /data/accounts
+  rpc-port: 8899
+  rpc-bind-address: ${MY_POD_IP}
+  private-rpc: true
+  dynamic-port-range: 8000-8020
+  wal-recovery-mode: skip_any_corrupted_record
+  limit-ledger-size: true
+  health-check-slot-distance: 150
+  enable-extended-tx-metadata-storage: false
+  enable-rpc-transaction-history: false
+  rpc-pubsub-enable-block-subscription: false
+  maximum-local-snapshot-age: 1500                # re-download snapshot when our local is >1500 slots old
+  minimal-snapshot-download-speed: 104857600      # 100 MB/s
+  account-index: []                               # indexing for better rpc performance
+
+## Graceful shutdown options
+##
+gracefulShutdown:
+  ## @param gracefulShutdown.timeout Seconds to wait for graceful shutdown
+  ##
+  timeout: 120
+  ## @param gracefulShutdown.options [object] `agave-validator exit` arguments
+  ##
+  options:
+    ## @param gracefulShutdown.options.force [default: false] Do not wait for restart-window, useful for non-validators
+    ##
+    force: false
+    ## @param gracefulShutdown.options.skip-health-check [default: false] Skip health check before exit
+    ##
+    skip-health-check: false
+    ## @param gracefulShutdown.options.skip-health-check [default: false] Skip check for a new snapshot before exit
+    ##
+    skip-new-snapshot-check: false
+    # max-delinquent-stake: 5
+    # min-idle-time: 10
+
+## @param rustLog Logging configuration
+##
+rustLog: agave=info,solana_metrics=warn
+
+plugins:
+  ## @param plugins.enabled Enable download of Geyser plugins
+  ##
+  enabled: false
+  ## @param plugins.containerPorts [array] Extra container ports for added plugins
+  ## Example:
+  ## - name: grpc
+  ##   containerPort: 10000
+  ##   protocol: TCP
+  ##
+  containerPorts: []
+  ## @param plugins.servicePorts [array] Extra service ports for added plugins
+  ## Example:
+  ## - name: grpc
+  ##   protocol: TCP
+  ##   port: 10000
+  ##   targetPort: grpc
+  ##
+  servicePorts: []
+  ## Yellowstone gRPC plugin config
+  ##
+  yellowstoneGRPC:
+    ## @param plugins.yellowstoneGRPC.enabled Enable download of Yellowstone gRPC
+    ##
+    enabled: false
+    ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
+    ##
+    version: v3.0.0+solana.2.0.17
+    ## @param plugins.yellowstoneGRPC.downloadURL From where the plugin needs to be downloaded
+    ##
+    downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
+    ## @param plugins.yellowstoneGRPC.listenIP Yellowstone gRPC listen IP address, without port
+    ## works by replacing LISTEN_IP string inside json file with the value provided
+    ## default: Pod IP address from K8s downward API
+    ##
+    listenIP: $(MY_POD_IP)
+    ## @param plugins.yellowstoneGRPC.config [string, default: look in values.yaml] Yellowstone gRPC config.json file
+    ##
+    config: |-
+      {
+          "libpath": "lib/libyellowstone_grpc_geyser.so",
+          "log": {
+              "level": "info"
+          },
+          "grpc": {
+              "address": "LISTEN_IP:10000",
+              "max_decoding_message_size": "4_194_304",
+              "snapshot_plugin_channel_capacity": null,
+              "snapshot_client_channel_capacity": "50_000_000",
+              "channel_capacity": "100_000",
+              "unary_concurrency_limit": 100,
+              "unary_disabled": false
+          },
+          "prometheus": {
+              "address": "LISTEN_IP:8999"
+          },
+          "block_fail_action": "log"
+      }
+  ## Jito gRPC plugin config
+  ##
+  jitoGRPC:
+    ## @param plugins.jitoGRPC.enabled Enable download of Jito gRPC
+    ##
+    enabled: false
+    ## @param plugins.jitoGRPC.version Jito gRPC version
+    ##
+    version: v1.17.20
+    ## @param plugins.jitoGRPC.downloadURL From where the plugin needs to be downloaded
+    ##
+    downloadURL: https://github.com/jito-foundation/geyser-grpc-plugin/releases/download/v2.0.51/libgeyser_grpc_plugin_server.so
+    ## @param plugins.jitoGRPC.listenIP Jito gRPC listen IP address, without port
+    ## works by replacing LISTEN_IP string inside json file with the value provided
+    ## default: Pod IP address from K8s downward API
+    ##
+    listenIP: $(MY_POD_IP)
+    ## @param plugins.jitoGRPC.config [string, default: look in values.yaml] Jito gRPC config.json file
+    ##
+    config: |-
+      {
+        "libpath": "/lib/libgeyser_grpc_plugin_server.so",
+        "bind_address": "LISTEN_IP:10000",
+        "account_update_buffer_size": 100000,
+        "slot_update_buffer_size": 100000,
+        "block_update_buffer_size": 100000,
+        "transaction_update_buffer_size": 100000,
+        "geyser_service_config": {
+          "heartbeat_interval_ms": 1000,
+          "subscriber_buffer_size": 1000000
+        }
+      }
+
+## You need first to create a keypair JSON files
+## I.e. agave-keygen new --no-bip39-passphrase --silent && cat /root/.config/agave/id.json
+##
+identity:
+  ## @param identity.validatorKeypair Validator keypair string (required)
+  ##
+  validatorKeypair: ""
+  ## @param identity.voteKeypair Vote keypair string (required only for validator)
+  ##
+  voteKeypair: ""
+  ## @param identity.existingSecret Use existing secret with keypairs instead of specifying them above
+  ##
+  existingSecret: ""
+  ## @param identity.mountPath Keypair files mount path
+  ##
+  mountPath: /secrets
+
+persistence:
+  ## @section Agave ledger db persistence config
+  ##
+  ledger:
+    ## @param persistence.ledger.type Ledger persistence type
+    ## `pvc` - create PVC automatically
+    ## `existingClaim` - use already existing PVC
+    ## `hostPath` - use hostPath volume
+    ##
+    type: pvc
+    pvc:
+      ## @param persistence.ledger.pvc.annotations PVC volume annotations
+      ##
+      annotations: {}
+      ## @param persistence.ledger.pvc.accessMode PVC volume access mode
+      ##
+      accessMode: ReadWriteOnce
+      ## @param persistence.ledger.pvc.storageClass PVC volume storage class name
+      ##
+      storageClass: ""
+      ## @param persistence.ledger.pvc.size PVC volume size
+      ##
+      size: 2Ti
+    existingClaim:
+      ## @param persistence.ledger.existingClaim.name Existing PVC configuration
+      ##
+      name: agave-ledger-volume
+    hostPath:
+      ## @param persistence.ledger.hostPath.type hostPath volume type
+      ##
+      type: Directory
+      ## @param persistence.ledger.hostPath.path hostPath directory on host node
+      ##
+      path: /blockchain/agave-ledger
+  ## @section Agave accounts db persistence config
+  ##
+  accounts:
+    ## @param persistence.accounts.type Accounts persistence type
+    ## `pvc` - create PVC automatically
+    ## `existingClaim` - use already existing PVC
+    ## `hostPath` - use hostPath volume
+    ##
+    type: pvc
+    pvc:
+      ## @param persistence.accounts.pvc.annotations PVC volume annotations
+      ##
+      annotations: {}
+      ## @param persistence.accounts.pvc.accessMode PVC volume access mode
+      ##
+      accessMode: ReadWriteOnce
+      ## @param persistence.accounts.pvc.storageClass PVC volume storage class name
+      ##
+      storageClass: ""
+      ## @param persistence.accounts.pvc.size PVC volume size
+      ##
+      size: 2Ti
+    existingClaim:
+      ## @param persistence.accounts.existingClaim.name Existing PVC configuration
+      ##
+      name: agave-accounts-volume
+    hostPath:
+      ## @param persistence.accounts.hostPath.type hostPath volume type
+      ##
+      type: Directory
+      ## @param persistence.accounts.hostPath.path hostPath directory on host node
+      ##
+      path: /blockchain/agave-accounts

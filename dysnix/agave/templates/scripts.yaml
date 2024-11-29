@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "agave.fullname" . }}-scripts
+  labels:
+    {{- include "agave.labels" . | nindent 4 }}
+data:
+  start.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_start.tpl") . | nindent 4 }}
+  health.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_health.tpl") . | nindent 4 }}
+  {{- if .Values.plugins.enabled }}
+  download-plugins.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_download-plugins.tpl") . | nindent 4 }}
+  {{- end }}
