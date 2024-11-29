@@ -290,18 +290,18 @@ metrics:
 ##
 agaveArgs:
   identity: /secrets/validator-keypair.json
-  expected-genesis-hash: 4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY
+  expected-genesis-hash: 5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d
   known-validator:
-    - 5D1fNXzvv5NjV1ysLjirC4WY92RNsVH18vjmcszZd8on
-    - 7XSY3MrYnK8vq693Rju17bbPkCN3Z7KvvfvJx4kdrsSY
-    - Ft5fbkqNa76vnsjYNwjDZUXoTWpP7VYm3mtsaQckQADN
-    - 9QxCLckBiJc783jnMvXZubK4wH86Eqqvashtrwvcsgkv
-    - eoKpUABi59aT4rR9HGS3LcMecfut9x7zJyodWWP43YQ
-    - dDzy5SR3AXdYWVqbDEkVFdvSPCtS9ihF5kJkHCtXoFs
+    - 7Np41oeYqPefeNQEHSv1UDhYrehxin3NStELsSKCT4K2
+    - GdnSyH3YtwcxFvQrVVJMm1JhTS4QVX7MFsX56uJLUfiZ
+    - DE1bawNcRJB9rVm3buyMVfr8mBEoyyu73NBovf2oXJsJ
+    - CakcnaRDHka2gXyfbEd2d3xsvkJkqsLw2akB3zsN1D2S
   entrypoint:
-    - entrypoint.testnet.solana.com:8001
-    - entrypoint2.testnet.solana.com:8001
-    - entrypoint3.testnet.solana.com:8001
+    - entrypoint.mainnet-beta.solana.com:8001
+    - entrypoint2.mainnet-beta.solana.com:8001
+    - entrypoint3.mainnet-beta.solana.com:8001
+    - entrypoint4.mainnet-beta.solana.com:8001
+    - entrypoint5.mainnet-beta.solana.com:8001
   full-rpc-api: true
   no-voting: true                   # enable voting if you are running a validator
   no-os-network-limits-test: true
@@ -347,7 +347,7 @@ gracefulShutdown:
 
 ## @param rustLog Logging configuration
 ##
-rustLog: agave=info,solana_metrics=warn
+rustLog: solana_metrics=warn,info
 
 plugins:
   ## @param plugins.enabled Enable download of Geyser plugins
