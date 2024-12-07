@@ -264,17 +264,48 @@ metrics:
       #   memory: 256Mi
   serviceMonitor:
     ## @param metrics.serviceMonitor.enabled Enable Prometheus ServiceMonitor
+    ## Example:
+    ## interval: 10s
+    ## scrapeTimeout: 2s
+    ## honorLabels: true
+    ## relabelings: []
+    ## metricRelabelings: []
+    ## extraEndpoints:
+    ## - port: exporter
+    ##   path: /metrics
+    ##   interval: 10s
+    ##   scrapeTimeout: 2s
+    ##
     enabled: false
-    # interval: 10s
-    # scrapeTimeout: 2s
-    # honorLabels: true
-    # relabelings: []
-    # metricRelabelings: []
-    # extraEndpoints:
-    # - port: exporter
-    #   path: /metrics
-    #   interval: 10s
-    #   scrapeTimeout: 2s
+  ## Custom PrometheusRule to be defined
+  ## ref: https://github.com/coreos/prometheus-operator#customresourcedefinitions
+  ##
+  prometheusRule:
+    ## @param metrics.prometheusRule.enabled Create a custom prometheusRule Resource for scraping metrics using PrometheusOperator
+    ##
+    enabled: false
+    ## @param metrics.prometheusRule.namespace The namespace in which the prometheusRule will be created
+    ##
+    namespace: ""
+    ## @param metrics.prometheusRule.additionalLabels Additional labels for the prometheusRule
+    ##
+    additionalLabels: {}
+    ## @param metrics.prometheusRule.rules [array] Prometheus rules
+    ##
+    rules:
+    - alert: AgaveSlotDiff
+      annotations:
+        summary: Agave node {{ "{{ $labels.namespace }}/{{ $labels.job }}" }} is falling behind the cluster.
+        description: |
+          Last processed slot of Agave node {{ "{{ $labels.namespace }}/{{ $labels.job }}" }} is {{ "{{ $value }}" }} slots behind the cluster slot.
+      expr: >-
+        (
+          shred_insert_is_full_slot{job="{{ template "agave.fullname" . }}", namespace="{{ .Release.Namespace }}"}
+          -
+          replay_slot_stats_slot{job="{{ template "agave.fullname" . }}", namespace="{{ .Release.Namespace }}"}
+        ) >= 25
+      labels:
+        severity: warning
   influxdb:
     existingSecret:
       ## @param metrics.influxdb.existingSecret.name Name of secret containing InfluxDB credentials

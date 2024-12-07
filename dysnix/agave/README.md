@@ -58,14 +58,18 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 
 ### Metrics configuration
 
-| Name                                   | Description                                    | Value                  |
-| -------------------------------------- | ---------------------------------------------- | ---------------------- |
-| `metrics.enabled`                      | Enable Agave node metrics collection           | `false`                |
-| `metrics.target`                       | Where to push Agave metrics                    | `exporter`             |
-| `metrics.exporter`                     | influxdb-exporter configuration                | `{}`                   |
-| `metrics.serviceMonitor.enabled`       | Enable Prometheus ServiceMonitor               | `false`                |
-| `metrics.influxdb.existingSecret.name` | Name of secret containing InfluxDB credentials | `agave-metrics-config` |
-| `metrics.influxdb.existingSecret.key`  | Key name inside the secret                     | `config`               |
+| Name                                      | Description                                                                           | Value                  |
+| ----------------------------------------- | ------------------------------------------------------------------------------------- | ---------------------- |
+| `metrics.enabled`                         | Enable Agave node metrics collection                                                  | `false`                |
+| `metrics.target`                          | Where to push Agave metrics                                                           | `exporter`             |
+| `metrics.exporter`                        | influxdb-exporter configuration                                                       | `{}`                   |
+| `metrics.serviceMonitor.enabled`          | Enable Prometheus ServiceMonitor                                                      | `false`                |
+| `metrics.prometheusRule.enabled`          | Create a custom prometheusRule Resource for scraping metrics using PrometheusOperator | `false`                |
+| `metrics.prometheusRule.namespace`        | The namespace in which the prometheusRule will be created                             | `""`                   |
+| `metrics.prometheusRule.additionalLabels` | Additional labels for the prometheusRule                                              | `{}`                   |
+| `metrics.prometheusRule.rules`            | Prometheus rules                                                                      | `[]`                   |
+| `metrics.influxdb.existingSecret.name`    | Name of secret containing InfluxDB credentials                                        | `agave-metrics-config` |
+| `metrics.influxdb.existingSecret.key`     | Key name inside the secret                                                            | `config`               |
 
 ### Agave node configuration
 
