@@ -8,10 +8,18 @@ metadata:
 data:
   {{- if .Values.plugins.yellowstoneGRPC.enabled }}
   yellowstone-grpc-config.json: |-
+    {{- if .Values.plugins.yellowstoneGRPC.config }}
     {{- .Values.plugins.yellowstoneGRPC.config | nindent 4 }}
+    {{- else }}
+    {{- toPrettyJson .Values.plugins.yellowstoneGRPC.configYaml | nindent 4 }}
+    {{- end }}
   {{- end }}
   {{- if .Values.plugins.jitoGRPC.enabled }}
   jitogrpc-config.json: |-
+    {{- if .Values.plugins.jitoGRPC.config }}
     {{- .Values.plugins.jitoGRPC.config | nindent 4 }}
+    {{- else }}
+    {{- toPrettyJson .Values.plugins.jitoGRPC.configYaml | nindent 4 }}
+    {{- end }}
   {{- end }}
 {{- end }}

@@ -9,6 +9,8 @@ data:
     {{- include (print $.Template.BasePath "/scripts/_start.tpl") . | nindent 4 }}
   health.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_health.tpl") . | nindent 4 }}
+  health.env: |-
+    SLOT_DIFF_THRESHOLD={{ .Values.readinessProbeSlotDiffThreshold }}
   {{- if .Values.plugins.enabled }}
   download-plugins.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_download-plugins.tpl") . | nindent 4 }}

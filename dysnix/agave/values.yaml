@@ -1,10 +1,6 @@
 ## @section Global parameters
 ##
 
-## @param replicaCount Number of pods to deploy in the Stateful Set
-##
-replicaCount: 1
-
 ## @param image.repository Agave image repository
 ## @param image.tag [default: ""] Agave image tag
 ## @param image.pullPolicy Agave image pull policy
@@ -125,6 +121,10 @@ readinessProbe:
       - sh
       - /scripts/health.sh
 
+## @param readinessProbeSlotDiffThreshold Agave node slot diff threshold for readinessProbe
+##
+readinessProbeSlotDiffThreshold: 150
+
 ## @param affinity Affinity for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ##
@@ -237,6 +237,36 @@ ingress:
     #  - secretName: agave-tls
     #    hosts:
     #      - agave.local
+  ## @param ingress.plugins [object] Ingress configuration for Agave plugins
+  ##
+  plugins:
+    yellowstoneGRPC:
+      enabled: false
+      className: ""
+      annotations: {}
+      hosts: []
+        # - host: agave-yellowstone.local
+        #   paths:
+        #     - path: /
+        #       servicePort: yellowstone
+      tls: []
+        # - secretName: agave-tls
+        #   hosts:
+        #     - agave-yellowstone.local
+    jitoGRPC:
+      enabled: false
+      className: ""
+      annotations: {}
+      hosts: []
+        # - host: agave-jito.local
+        #   paths:
+        #     - path: /
+        #       pathType: ImplementationSpecific
+        #       servicePort: jitogrpc
+      tls: []
+        # - secretName: agave-tls
+        #   hosts:
+        #     - agave-jito.local
 
 ## @section Metrics configuration
 ##
@@ -334,10 +364,10 @@ agaveArgs:
     - entrypoint4.mainnet-beta.solana.com:8001
     - entrypoint5.mainnet-beta.solana.com:8001
   full-rpc-api: true
-  no-voting: true                   # enable voting if you are running a validator
+  no-voting: true                                                   # enable voting if you are running a validator
   no-os-network-limits-test: true
   no-port-check: true
-  only-known-rpc: false             # it is hard to find a fresh snapshot from default known validators
+  only-known-rpc: false                                             # it is hard to download an up-to-date snapshot from default known validators
   log: "-"
   ledger: /data/ledger
   accounts: /data/accounts
@@ -347,14 +377,14 @@ agaveArgs:
   dynamic-port-range: 8000-8020
   wal-recovery-mode: skip_any_corrupted_record
   limit-ledger-size: true
-  health-check-slot-distance: 150
   enable-extended-tx-metadata-storage: false
   enable-rpc-transaction-history: false
   rpc-pubsub-enable-block-subscription: false
   maximum-local-snapshot-age: 1500                                  # re-download snapshot when our local is >1500 slots old
-  minimal-snapshot-download-speed: 104857600                        # 100 MB/s
-  account-index: []                                                 # indexing for better rpc performance
+  minimal-snapshot-download-speed: 31457280                         # 30 MB/s
+  account-index: []                                                 # secondary indexes for better rpc performance (spl-token-mint, program-id, spl-token-owner)
   # geyser-plugin-config: /plugins/yellowstone-grpc/config.json     # uncomment to load Yellowstone GRPC plugin
+  # snapshot-interval-slots: 0                                      # uncomment to disable snapshots creation
 
 ## Graceful shutdown options
 ##
@@ -365,13 +395,13 @@ gracefulShutdown:
   ## @param gracefulShutdown.options [object] `agave-validator exit` arguments
   ##
   options:
-    ## @param gracefulShutdown.options.force [default: false] Do not wait for restart-window, useful for non-validators
+    ## @param gracefulShutdown.options.force [default: false] Do not wait for restart window, useful for non-validators
     ##
     force: false
     ## @param gracefulShutdown.options.skip-health-check [default: false] Skip health check before exit
     ##
     skip-health-check: false
-    ## @param gracefulShutdown.options.skip-health-check [default: false] Skip check for a new snapshot before exit
+    ## @param gracefulShutdown.options.skip-new-snapshot-check [default: false] Skip check for a new snapshot before exit
     ##
     skip-new-snapshot-check: false
     # max-delinquent-stake: 5
@@ -379,7 +409,7 @@ gracefulShutdown:
 
 ## @param rustLog Logging configuration
 ##
-rustLog: solana_metrics=warn,info
+rustLog: solana_metrics=warn,agave_validator::bootstrap=debug,info
 
 plugins:
   ## @param plugins.enabled Enable download of Geyser plugins
@@ -408,8 +438,8 @@ plugins:
     enabled: false
     ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
-    version: v3.0.0+solana.2.0.17
-    ## @param plugins.yellowstoneGRPC.downloadURL From where the plugin needs to be downloaded
+    version: v3.2.2+solana.2.0.18
+    ## @param plugins.yellowstoneGRPC.downloadURL Yellowstone GRPC plugin download URL
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
     ## @param plugins.yellowstoneGRPC.listenIP Yellowstone gRPC listen IP address, without port
@@ -417,36 +447,35 @@ plugins:
     ## default: Pod IP address from K8s downward API
     ##
     listenIP: $(MY_POD_IP)
-    ## @param plugins.yellowstoneGRPC.config [string, default: look in values.yaml] Yellowstone gRPC config.json file
+    ## @param plugins.yellowstoneGRPC.configYaml [object, default: look in values.yaml] Yellowstone gRPC config file
     ## will be mounted at /plugins/yellowstone-grpc/config.json path
     ##
-    config: |-
-      {
-        "libpath": "lib/libyellowstone_grpc_geyser.so",
-        "log": {
-          "level": "info"
-        },
-        "grpc": {
-          "address": "LISTEN_IP:10000",
-          "compression": {
-            "accept": ["gzip", "zstd"],
-            "send": ["gzip", "zstd"]
-          },
-          "max_decoding_message_size": "4_194_304",
-          "snapshot_plugin_channel_capacity": null,
-          "snapshot_client_channel_capacity": "50_000_000",
-          "channel_capacity": "100_000",
-          "unary_concurrency_limit": 100,
-          "unary_disabled": false,
-          "x_token": "",
-          "filter_name_size_limit": 32,
-          "filter_names_size_limit": 1024,
-          "filter_names_cleanup_interval": "1s"
-        },
-        "prometheus": {
-          "address": "LISTEN_IP:8999"
-        }
-      }
+    configYaml:
+      libpath: lib/libyellowstone_grpc_geyser.so
+      log:
+        level: info
+      grpc:
+        address: LISTEN_IP:10000
+        compression:
+          accept: ["gzip", "zstd"]
+          send: ["gzip", "zstd"]
+        max_decoding_message_size: "4_194_304"
+        snapshot_plugin_channel_capacity: null
+        snapshot_client_channel_capacity: "50_000_000"
+        channel_capacity: "100_000"
+        unary_concurrency_limit: 100
+        unary_disabled: false
+        filter_name_size_limit: 32
+        filter_names_size_limit: 1024
+        filter_names_cleanup_interval: 1s
+      prometheus:
+        address: LISTEN_IP:8999
+    ## @param plugins.yellowstoneGRPC.config [string] Yellowstone gRPC config.json file
+    ## will be mounted at /plugins/yellowstone-grpc/config.json path
+    ## has higher priority over plugins.yellowstoneGRPC.configYaml
+    ##
+    config: ""
+
   ## Jito gRPC plugin config
   ##
   jitoGRPC:
@@ -455,30 +484,33 @@ plugins:
     enabled: false
     ## @param plugins.jitoGRPC.version Jito gRPC version
     ##
-    version: v1.17.20
-    ## @param plugins.jitoGRPC.downloadURL From where the plugin needs to be downloaded
+    version: v2.0.15
+    ## @param plugins.jitoGRPC.downloadURL Jito GRPC plugin download URL
     ##
-    downloadURL: https://github.com/jito-foundation/geyser-grpc-plugin/releases/download/v2.0.51/libgeyser_grpc_plugin_server.so
+    downloadURL: https://github.com/jito-foundation/geyser-grpc-plugin/releases/download/v2.0.15/libgeyser_grpc_plugin_server.so
     ## @param plugins.jitoGRPC.listenIP Jito gRPC listen IP address, without port
     ## works by replacing LISTEN_IP string inside json file with the value provided
     ## default: Pod IP address from K8s downward API
     ##
     listenIP: $(MY_POD_IP)
-    ## @param plugins.jitoGRPC.config [string, default: look in values.yaml] Jito gRPC config.json file
+    ## @param plugins.jitoGRPC.configYaml [object, default: look in values.yaml] Jito gRPC config file in YAML format
+    ## will be mounted at /plugins/jito-grpc/config.json path
     ##
-    config: |-
-      {
-        "libpath": "/lib/libgeyser_grpc_plugin_server.so",
-        "bind_address": "LISTEN_IP:10000",
-        "account_update_buffer_size": 100000,
-        "slot_update_buffer_size": 100000,
-        "block_update_buffer_size": 100000,
-        "transaction_update_buffer_size": 100000,
-        "geyser_service_config": {
-          "heartbeat_interval_ms": 1000,
-          "subscriber_buffer_size": 1000000
-        }
-      }
+    configYaml:
+      libpath: /lib/libgeyser_grpc_plugin_server.so
+      bind_address: LISTEN_IP:10000
+      account_update_buffer_size: 100000
+      slot_update_buffer_size: 100000
+      block_update_buffer_size: 100000
+      transaction_update_buffer_size: 100000
+      geyser_service_config:
+        heartbeat_interval_ms: 1000
+        subscriber_buffer_size: 1000000
+    ## @param plugins.jitoGRPC.config [string] Jito gRPC config.json file in raw format
+    ## will be mounted at /plugins/jito-grpc/config.json path
+    ## has higher priority over plugins.jitoGRPC.configYaml
+    ##
+    config: ""
 
 ## You need first to create a keypair JSON files
 ## I.e. agave-keygen new --no-bip39-passphrase --silent && cat /root/.config/agave/id.json
