@@ -6,8 +6,10 @@ metadata:
     {{- include "agave.labels" . | nindent 4 }}
 spec:
   serviceName: {{ include "agave.name" . }}
+  {{- with .Values.updateStrategy }}
   updateStrategy:
-    {{- toYaml .Values.updateStrategy | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "agave.selectorLabels" . | nindent 6 }}

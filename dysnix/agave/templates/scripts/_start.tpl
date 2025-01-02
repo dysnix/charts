@@ -2,7 +2,7 @@
 
 exec agave-validator
     {{- range $arg, $val := .Values.agaveArgs }}
-      {{- if and $arg $val }} \{{ end }}
+      {{- if and $arg (or $val (and (kindIs "float64" $val) (eq (int $val) 0))) }} \{{ end }}
       {{- if kindIs "float64" $val }}
     --{{ $arg }}={{ int $val }}
       {{- else if kindIs "bool" $val }}
