@@ -8,7 +8,6 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 
 | Name                              | Description                                          | Value                         |
 | --------------------------------- | ---------------------------------------------------- | ----------------------------- |
-| `replicaCount`                    | Number of pods to deploy in the Stateful Set         | `1`                           |
 | `image.repository`                | Agave image repository                               | `ghcr.io/dysnix/docker-agave` |
 | `image.tag`                       | Agave image tag                                      | `""`                          |
 | `image.pullPolicy`                | Agave image pull policy                              | `IfNotPresent`                |
@@ -34,6 +33,8 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `tolerations`                     | Tolerations for pod assignment                       | `[]`                          |
 | `volumes`                         | Pod extra volumes                                    | `[]`                          |
 | `volumeMounts`                    | Container extra volumeMounts                         | `[]`                          |
+| `extraInitContainers`             | Extra initContainers (can be templated)              | `[]`                          |
+| `sidecarContainers`               | Extra sidecar containers (can be templated)          | `[]`                          |
 
 ### Services configuration
 
@@ -80,7 +81,7 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `agaveArgs`                                        | `agave-validator` arguments                                        | `{}`                                                                                                              |
 | `gracefulShutdown.timeout`                         | Seconds to wait for graceful shutdown                              | `120`                                                                                                             |
 | `gracefulShutdown.options`                         | `agave-validator exit` arguments                                   | `{}`                                                                                                              |
-| `gracefulShutdown.options.force`                   | Do not wait for restart-window, useful for non-validators          | `false`                                                                                                           |
+| `gracefulShutdown.options.force`                   | Do not wait for restart window, useful for non-validators          | `false`                                                                                                           |
 | `gracefulShutdown.options.skip-health-check`       | Skip health check before exit                                      | `false`                                                                                                           |
 | `gracefulShutdown.options.skip-new-snapshot-check` | Skip check for a new snapshot before exit                          | `false`                                                                                                           |
 | `rustLog`                                          | Logging configuration                                              | `solana_metrics=warn,agave_validator::bootstrap=debug,info`                                                       |

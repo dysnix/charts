@@ -156,6 +156,23 @@ volumes: []
 ##   mountPath: /secrets
 volumeMounts: []
 
+## @param extraInitContainers [array] Extra initContainers (can be templated)
+## Example:
+## extraInitContainers:
+##   - name: download-snapshots
+##     image: c29r3/solana-snapshot-finder:latest
+##     args:
+##       - --snapshot_path
+##       - /data/ledger
+##     volumeMounts:
+##       - name: ledger
+##         mountPath: /data/ledger
+extraInitContainers: []
+
+## @param sidecarContainers [array] Extra sidecar containers (can be templated)
+##
+sidecarContainers: []
+
 ## @section Services configuration
 ##
 services:

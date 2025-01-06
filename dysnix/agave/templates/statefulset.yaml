@@ -89,7 +89,13 @@ spec:
               mountPath: /scripts
       {{- end }}
       {{- end }}
+      {{- with .Values.extraInitContainers }}
+        {{- tpl (toYaml . | nindent 8) $ }}
+      {{- end }}
       containers:
+      {{- with .Values.sidecarContainers }}
+        {{- tpl (toYaml . | nindent 8) $ }}
+      {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
