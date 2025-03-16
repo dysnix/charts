@@ -11,7 +11,7 @@ yellowstone_grpc_bootstrap() {
     mkdir -p "$YELLOWSTONE_GRPC__PLUGIN_DIR"
     wget -q "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/geyser.proto"
     wget -q "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/solana-storage.proto"
-    wget -qO- "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/yellowstone-grpc-geyser-release-x86_64-unknown-linux-gnu.tar.bz2" | tar jxvf -
+    wget -qO- "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/yellowstone-grpc-geyser-release22-x86_64-unknown-linux-gnu.tar.bz2" | tar jxvf -
 
     echo "Yellowstone gRPC: Copying proto and lib to ${YELLOWSTONE_GRPC__PLUGIN_DIR}.."
     cp -r /tmp/*.proto "$YELLOWSTONE_GRPC__PLUGIN_DIR/"
