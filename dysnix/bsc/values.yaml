@@ -281,8 +281,8 @@ service:
 
 logger:
   image:
-    repository: debian:stable-slim
-    tag: latest
+    repository: debian
+    tag: stable-slim
     pullPolicy: IfNotPresent
   resources:
     requests:
