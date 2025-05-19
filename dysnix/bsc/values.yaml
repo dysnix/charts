@@ -281,7 +281,7 @@ service:
 
 logger:
   image:
-    repository: krallin/ubuntu-tini
+    repository: debian/stable-slim
     tag: latest
     pullPolicy: IfNotPresent
   resources:
