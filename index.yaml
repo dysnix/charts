@@ -4391,6 +4391,28 @@ entries:
     version: 0.1.0
   gcp-local-ssd-raid:
   - apiVersion: v2
+    appVersion: 2.8.0
+    created: "2025-05-19T11:25:32.249821763Z"
+    description: A Helm chart for Kubernetes
+    digest: b7c65ed3aaa7e6dd38165d17d3ec39fa3d3fe1d9fe03237f3d51d454604913a4
+    keywords:
+    - gcp
+    - nvme
+    - ssd
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: ov@dysnix.com
+      name: voron
+    name: gcp-local-ssd-raid
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pingcap/tidb-operator/blob/master/manifests/gke/local-ssd-provision/local-ssd-provision.yaml
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/gcp-local-ssd-raid-0.1.7/gcp-local-ssd-raid-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2024-08-29T12:51:42.606852595Z"
     description: A Helm chart for Kubernetes
@@ -7266,4 +7288,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2025-03-16T10:07:46.617819042Z"
+generated: "2025-05-19T11:25:32.250305426Z"
