@@ -1,8 +1,8 @@
 apiVersion: v2
 name: gcp-local-ssd-raid
 description: A Helm chart for Kubernetes
-version: 0.1.6
-appVersion: "0.1.0"
+version: 0.1.7
+appVersion: "2.8.0"
 
 keywords:
   - gcp
@@ -17,6 +17,6 @@ maintainers:
   - name: daniel-yavorovich
     email: daniel@dysnix.com
   - name: voron
-    email: av@dysnix.com
+    email: ov@dysnix.com
 
 type: application

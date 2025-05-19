@@ -177,7 +177,7 @@ spec:
 
                 chmod a+w "$mnt_dir"
       containers:
-        - image: "quay.io/external_storage/local-volume-provisioner:v2.3.2"
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           name: provisioner
           securityContext:
             privileged: true
@@ -198,7 +198,7 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             - name: JOB_CONTAINER_IMAGE
-              value: "quay.io/external_storage/local-volume-provisioner:v2.3.2"
+              value: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           volumeMounts:
             - mountPath: /etc/provisioner/config
               name: provisioner-config
