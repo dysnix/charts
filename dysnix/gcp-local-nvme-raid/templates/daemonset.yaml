@@ -24,47 +24,55 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       hostPID: true
-      containers:
-        - name: {{ .Chart.Name }}
+      initContainers:
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          name: {{ .Chart.Name }}
+          command: ['/bin/sh', '-c', 'nsenter -t 1 -m -u -i -n -p -- bash -c "${STARTUP_SCRIPT}"']
+          env:
+            - name: STARTUP_SCRIPT
+              value: |
+                #!/usr/bin/env bash
+
+                set -o errexit
+                set -o nounset
+                set -o pipefail
+
+                devices=()
+                for ssd in /dev/disk/by-id/google-local-ssd-block*; do
+                  if [ -e "${ssd}" ]; then
+                    devices+=("${ssd}")
+                  fi
+                done
+
+                if [ "${#devices[@]}" -eq 0 ]; then
+                  echo "No Local NVMe SSD disks found."
+                  exit 0
+                fi
+
+                raid_id="md0"
+                device="/dev/${raid_id}"
+                if ! grep -q "$raid_id" /proc/mdstat; then
+                  echo "Setting RAID array with Local SSDs on device ${device}"
+                  echo "y" | mdadm --create "${device}" --level=0 --force {{ .Values.localSsd.raidOpts }} --raid-devices=${#devices[@]} "${devices[@]}"
+                fi
+
+                if ! tune2fs -l "${device}" ; then
+                  echo "Formatting '${device}'"
+                  mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} "${device}"
+                fi
+
+                mountpoint={{ .Values.localSsd.mountPoint }}
+                mkdir -p "${mountpoint}"
+                if ! findmnt -n -a -l --nofsroot | grep "$mountpoint" ; then
+                  echo "Mounting '${device}' at '${mountpoint}'"
+                  mount -o discard,defaults -t ext4 "${device}" "${mountpoint}"
+                fi
+                chmod a+w "${mountpoint}"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-          - name: STARTUP_SCRIPT
-            value: |
-              set -o errexit
-              set -o nounset
-              set -o pipefail
-
-              devices=()
-              for ssd in /dev/disk/by-id/google-local-ssd-block*; do
-                if [ -e "${ssd}" ]; then
-                  devices+=("${ssd}")
-                fi
-              done
-              if [ "${#devices[@]}" -eq 0 ]; then
-                echo "No Local NVMe SSD disks found."
-                exit 0
-              fi
-
-              raid_id="md0"
-              device="/dev/${raid_id}"
-              echo "Setting RAID array with Local SSDs on device ${device}"
-              if ! grep -q "$raid_id" /proc/mdstat; then
-                echo "y" | mdadm --create "${device}" --level=0 --force {{ .Values.localSsd.raidOpts }} --raid-devices=${#devices[@]} "${devices[@]}"
-              fi
-
-              if ! tune2fs -l "${device}" ; then
-                echo "Formatting '${device}'"
-                mkfs.ext4 {{ .Values.localSsd.mkfsOpts }} "${device}"
-              fi
-
-              mountpoint={{ .Values.localSsd.mountPoint }}
-              mkdir -p "${mountpoint}"
-              echo "Mounting '${device}' at '${mountpoint}'"
-              mount -o discard,defaults "${device}" "${mountpoint}"
-              chmod a+w "${mountpoint}"
+      containers:
+        - image: "k8s.gcr.io/pause:3.3"
+          name: pause
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

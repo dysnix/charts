@@ -3,10 +3,10 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: gcr.io/google-containers/startup-script
+  repository: ubuntu
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1"
+  tag: "24.04"
 
 imagePullSecrets: []
 nameOverride: ""

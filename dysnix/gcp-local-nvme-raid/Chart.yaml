@@ -4,7 +4,7 @@ description: Deamon installation which create raid with local nvme disk in gke n
 
 type: application
 
-version: 0.1.1
+version: 0.2.0
 
 appVersion: "1.16.0"
 
@@ -18,3 +18,5 @@ sources:
 maintainers:
   - name: plejik
     email: anton.rubets@dysnix.com
+  - name: voron
+    email: ov@dysnix.com
