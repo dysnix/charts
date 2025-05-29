@@ -459,7 +459,7 @@ spec:
             value: {{ .Values.bsc.generateConfig | quote }}
           - name: HOME
             value: "/tmp"
-        image: google/cloud-sdk:alpine
+        image: gcr.io/google.com/cloudsdktool/google-cloud-cli:alpine
         imagePullPolicy: IfNotPresent
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
