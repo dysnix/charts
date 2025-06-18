@@ -254,8 +254,8 @@ service:
 
 logger:
   image:
-    repository: debian
-    tag: stable-slim
+    repository: ghcr.io/dysnix/docker-tiny
+    tag: 0.0.1
     pullPolicy: IfNotPresent
   resources:
     requests:
