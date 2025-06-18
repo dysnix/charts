@@ -1,0 +1,32 @@
+{{ if .Values.externalLB }}
+## only use this if you want to expose
+## json services to a public ip
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-lb
+  labels:
+    chain: {{ .Values.bitcoind.chain }}
+{{ include "bitcoind.labels" . | indent 4 }}
+spec:
+  type: LoadBalancer
+  {{ if .Values.externalLBIP }}
+  loadBalancerIP: {{ .Values.externalLBIP }}
+  {{ end }}
+  {{- if .Values.externalLBSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range $val := .Values.externalLBSourceRanges }}
+    - {{ $val -}}
+    {{ end }}
+  {{ end }}
+  ports:
+    - name: {{ .Values.service.rpcPortName }}
+      port: {{ .Values.service.rpcPort }}
+      targetPort: {{ .Values.service.rpcPortName }}
+    - name: {{ .Values.service.p2pPortName }}
+      port: {{ .Values.service.p2pPort }}
+      targetPort: {{ .Values.service.p2pPortName }}
+  selector:
+    app.kubernetes.io/name: {{ include "bitcoind.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{ end }}

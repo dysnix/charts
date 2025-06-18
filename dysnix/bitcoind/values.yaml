@@ -1,0 +1,87 @@
+# Default values for bitcoind.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+terminationGracePeriodSeconds: 30
+image:
+  repository: ghcr.io/dysnix/docker-bitcoind
+  tag: 0.29.0
+  pullPolicy: IfNotPresent
+
+service:
+  rpcPortName: jsonrpc
+  rpcPort: 8332
+  p2pPort: 8333
+  p2pPortName: p2p
+
+externalLB: false
+externalLBIP: ""
+externalLBSourceRanges: {}
+#  - 203.0.113.2/32
+#  - 203.0.113.3/32
+
+p2pPublishNotReadyAddresses: true
+
+externalLBp2p: false
+internalLB: false
+internalLBIP: ""
+
+persistence:
+  enabled: true
+#  storageClass: "default"
+  accessMode: ReadWriteOnce
+  size: "500Gi"
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources:
+  requests:
+    cpu: "2800m"
+    memory: "2000Mi"
+  limits:
+    cpu: "3000m"
+    memory: "3000Mi"
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: "bitcoind"
+          topologyKey: failure-domain.beta.kubernetes.io/zone
+
+bitcoind:
+  base_path: "/data"
+  # you may need to override this with clones such as litecoin
+  configurationFileName: "bitcoin.conf"
+  cli_binary: "bitcoin-cli"
+  chain: "btc"
+  # how many seconds should liveness check wait for a new block. Increase with BCH
+  maxHealthyAge: 3600
+
+# Custom bitcoind configuration file used to override default bitcoind settings
+configurationFile:
+  rpcuser: "rpcuser"
+  rpcpassword: "rpcpassword"
+  rpcbind: "0.0.0.0"
+  rpcallowip: "::/0"
+  externalLBp2pIP: "198.51.100.1"
+  custom: |-
+    txindex=1
+    disablewallet=1
+
+zcash_fetch_params: false
+
+livenessProbe:
+  initialDelaySeconds: 600
+  periodSeconds: 600
+  timeoutSeconds: 500
+  successThreshold: 1
+  failureThreshold: 2

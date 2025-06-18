@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-scripts"
+data:
+  check_node_health.sh: |
+  {{- include (print $.Template.BasePath "/_check_node_health.sh") . | nindent 4 }}

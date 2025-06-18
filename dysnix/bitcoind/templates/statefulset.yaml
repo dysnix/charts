@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "bitcoind.fullname" . }}
+  labels:
+{{ include "bitcoind.labels" . | indent 4 }}
+spec:
+  serviceName: "{{ .Release.Name }}-service"
+  replicas: {{ .Values.replicaCount }} # by default is 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bitcoind.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "bitcoind.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret.yaml: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["bitcoind"]
+        args: ["-datadir={{ .Values.bitcoind.base_path }}"]
+        workingDir: "{{ .Values.bitcoind.base_path }}"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        ports:
+        - containerPort: {{ .Values.service.rpcPort }}
+          name: "{{ .Values.service.rpcPortName }}"
+          protocol: "TCP"
+        - containerPort: {{ .Values.service.p2pPort }}
+          name: "{{ .Values.service.p2pPortName }}"
+          protocol: "TCP"
+        volumeMounts:
+        - name: bitcoind-pvc
+          mountPath: {{ .Values.bitcoind.base_path }}
+        - name: scripts
+          mountPath: /scripts
+        livenessProbe:
+          exec:
+            command:
+              - /bin/bash
+              - /scripts/check_node_health.sh
+              - "{{ .Values.bitcoind.base_path }}"
+              - "{{ .Values.bitcoind.maxHealthyAge }}"
+              - last_synced_block.txt
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+        lifecycle:
+          preStop:
+            exec:
+              # we don't need to poll some resources, as we stop PID 1, just sleep after stop command to tell k8s - "shutdown is in process"
+              command:
+                - /bin/sh
+                - -c
+                - "{{ .Values.bitcoind.cli_binary }} -datadir={{ .Values.bitcoind.base_path }} stop; sleep {{ .Values.terminationGracePeriodSeconds }}"
+      initContainers:
+      {{- if .Values.configurationFile }}
+      # we keep this useless copy to be able to customize config at runtime, such as update rpc creds from other sources
+      - name: copy-bitcoind-config
+        image: busybox
+        command: ['sh', '-c', 'cp /config/{{ .Values.bitcoind.configurationFileName }} {{ .Values.bitcoind.base_path }}/{{ .Values.bitcoind.configurationFileName }}']
+        volumeMounts:
+        - name: bitcoind-config
+          mountPath: /config
+        - name: bitcoind-pvc
+          mountPath: {{ .Values.bitcoind.base_path }}
+      {{- end }}
+      {{- if .Values.zcash_fetch_params }}
+      - name: zcash-fetch-params
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ['zcash-fetch-params']
+        volumeMounts:
+          - name: bitcoind-pvc
+            mountPath: "/home/zcash"
+      {{- end }}
+      volumes:
+      {{- if .Values.configurationFile }}
+      - name: bitcoind-config
+        secret:
+          secretName: "{{ .Release.Name }}-config"
+      {{- end }}
+      - name: scripts
+        configMap:
+          name: "{{ .Release.Name }}-scripts"
+  volumeClaimTemplates:
+  - metadata:
+      name: bitcoind-pvc
+    spec:
+      accessModes:
+        - {{.Values.persistence.accessMode }}
+      {{- if .Values.persistence.storageClass }}
+      {{- if (eq "-" .Values.persistence.storageClass) }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: "{{ .Values.persistence.storageClass }}"
+      {{- end }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.size }}
+      volumeMode: Filesystem

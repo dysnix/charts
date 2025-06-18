@@ -1,0 +1,21 @@
+apiVersion: v1
+appVersion: 0.29.0
+description: Bitcoin is an innovative payment network and a new kind of money.
+engine: gotpl
+home: https://bitcoin.org/
+icon: https://bitcoin.org/img/icons/logotop.png
+keywords:
+- bitcoind
+- cryptocurrency
+- blockchain
+maintainers:
+- email: daniel@dysnix.com
+  name: daniel-yavorovich
+- email: ov@dysnix.com
+  name: voron
+name: bitcoind
+sources:
+- https://github.com/kubernetes/charts
+- https://github.com/dysnix/docker-bitcoind
+- https://github.com/kylemanna/docker-bitcoind
+version: 0.3.59
