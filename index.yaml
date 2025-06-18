@@ -1621,6 +1621,31 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/base-0.2.0/base-0.2.0.tgz
     version: 0.2.0
+  bitcoind:
+  - apiVersion: v1
+    appVersion: 0.29.0
+    created: "2025-06-18T15:45:54.942847082Z"
+    description: Bitcoin is an innovative payment network and a new kind of money.
+    digest: 1de7b805f078e049c2cefbc30dde5216abf3f7fe2660d5983b044fa5818d5fc4
+    home: https://bitcoin.org/
+    icon: https://bitcoin.org/img/icons/logotop.png
+    keywords:
+    - bitcoind
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: ov@dysnix.com
+      name: voron
+    name: bitcoind
+    sources:
+    - https://github.com/kubernetes/charts
+    - https://github.com/dysnix/docker-bitcoind
+    - https://github.com/kylemanna/docker-bitcoind
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bitcoind-0.3.59/bitcoind-0.3.59.tgz
+    version: 0.3.59
   bor:
   - apiVersion: v2
     appVersion: 1.3.7
@@ -1791,6 +1816,28 @@ entries:
     - https://github.com/dysnix/charts/releases/download/bor-0.0.1/bor-0.0.1.tgz
     version: 0.0.1
   bsc:
+  - apiVersion: v2
+    appVersion: 1.5.16
+    created: "2025-06-18T15:45:55.139604147Z"
+    description: Binance Smart Chain chart for Kubernetes
+    digest: 622134edf69783cee60b8d84606b06d2e38d359c975f2742fe392854b21fcb78
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    - email: ap@dysnix.com
+      name: apolegoshko
+    name: bsc
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bsc-0.6.52/bsc-0.6.52.tgz
+    version: 0.6.52
   - apiVersion: v2
     appVersion: 1.5.12
     created: "2025-05-29T06:12:41.881174559Z"
@@ -7397,4 +7444,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2025-05-29T06:21:50.762029722Z"
+generated: "2025-06-18T15:45:55.140136612Z"
