@@ -283,7 +283,14 @@ spec:
             - name: NIFI_REGISTRY_DB_USER
               value: {{ .Values.flowProvider.postgres.username }}
             - name: NIFI_REGISTRY_DB_PASS
+              {{- if .Values.flowProvider.postgres.passwordSecretName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.flowProvider.postgres.passwordSecretName }}
+                  key: {{ .Values.flowProvider.postgres.passwordSecretKey }}
+              {{- else }}
               value: {{ .Values.flowProvider.postgres.password }}
+              {{- end }}
           {{- end }}
           {{- if .Values.certManager.enabled }}
             - name: KEYSTORE_PATH
