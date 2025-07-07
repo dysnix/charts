@@ -3,7 +3,7 @@ appVersion: 0.29.0
 description: Bitcoin is an innovative payment network and a new kind of money.
 engine: gotpl
 home: https://bitcoin.org/
-icon: https://bitcoin.org/img/icons/logotop.png
+icon: https://bitcoin.org/img/icons/logotop.svg
 keywords:
 - bitcoind
 - cryptocurrency
@@ -18,4 +18,5 @@ sources:
 - https://github.com/kubernetes/charts
 - https://github.com/dysnix/docker-bitcoind
 - https://github.com/kylemanna/docker-bitcoind
-version: 0.3.59
+- https://github.com/jvstein/bitcoin-prometheus-exporter
+version: 0.4.0

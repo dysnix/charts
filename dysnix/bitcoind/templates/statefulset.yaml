@@ -104,6 +104,21 @@ spec:
           - name: bitcoind-pvc
             mountPath: "/home/zcash"
       {{- end }}
+      {{- if .Values.metrics.enabled }}
+      - name: metrics-exporter
+        image: "{{ .Values.metrics.image }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        restartPolicy: Always
+        env:
+        {{- range $env := .Values.metrics.env }}
+        - name: {{ $env.name }}
+          value: {{ $env.value | quote }}
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.metrics.port }}
+          name: metrics
+          protocol: "TCP"
+      {{- end }}
       volumes:
       {{- if .Values.configurationFile }}
       - name: bitcoind-config

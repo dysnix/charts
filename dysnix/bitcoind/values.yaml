@@ -85,3 +85,14 @@ livenessProbe:
   timeoutSeconds: 500
   successThreshold: 1
   failureThreshold: 2
+metrics:
+  enabled: false
+  port: 9332
+  image: jvstein/bitcoin-prometheus-exporter:v0.8.0
+  env:
+    - name: BITCOIN_RPC_HOST
+      value: "localhost"
+    - name: BITCOIN_RPC_USER
+      value: "rpcuser"
+    - name: BITCOIN_RPC_PASSWORD
+      value: "rpcpassword"
