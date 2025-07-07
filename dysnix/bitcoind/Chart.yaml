@@ -19,4 +19,4 @@ sources:
 - https://github.com/dysnix/docker-bitcoind
 - https://github.com/kylemanna/docker-bitcoind
 - https://github.com/jvstein/bitcoin-prometheus-exporter
-version: 0.4.1
+version: 0.4.2
