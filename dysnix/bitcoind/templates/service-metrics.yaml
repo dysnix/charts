@@ -1,0 +1,39 @@
+{{- with .Values.service.metrics }}
+{{- if .enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-metrics
+  {{- with .annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    service-type: metrics
+    {{- include "bitcoind.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  {{- if eq .type "LoadBalancer" }}
+  {{- with .loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
+  {{- end }}
+  {{- with .internalTrafficPolicy }}
+  internalTrafficPolicy: {{ . }}
+  {{- end }}
+  publishNotReadyAddresses: {{ .publishNotReadyAddresses }}
+  ports:
+    - port: {{ .port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics-exporter
+    {{- with .extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- include "bitcoind.selectorLabels" $ | nindent 4 }}
+{{- end }}
+{{- end }}

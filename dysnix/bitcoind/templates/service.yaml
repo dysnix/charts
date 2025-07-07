@@ -14,5 +14,4 @@ spec:
       port: {{ .Values.service.p2pPort }}
       targetPort: {{ .Values.service.p2pPortName }}
   selector:
-    app.kubernetes.io/name: {{ include "bitcoind.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "bitcoind.selectorLabels" $ | nindent 4 }}

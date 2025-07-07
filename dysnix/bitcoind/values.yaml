@@ -12,6 +12,12 @@ service:
   rpcPort: 8332
   p2pPort: 8333
   p2pPortName: p2p
+  metrics:
+    enabled: false
+    type: ClusterIP
+    port: 9122
+    extraPorts: []
+    publishNotReadyAddresses: true
 
 externalLB: false
 externalLBIP: ""
@@ -96,3 +102,15 @@ metrics:
       value: "rpcuser"
     - name: BITCOIN_RPC_PASSWORD
       value: "rpcpassword"
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    scrapeTimeout: 10s
+    honorLabels: true
+    metricRelabelings: []
+    relabelings: []
+    ## extraEndpoints:
+    ## - port: exporter
+    ##   path: /metrics
+    ##   interval: 10s
+    ##   scrapeTimeout: 2s
