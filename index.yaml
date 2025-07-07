@@ -1624,6 +1624,31 @@ entries:
   bitcoind:
   - apiVersion: v1
     appVersion: 0.29.0
+    created: "2025-07-07T14:07:46.249326994Z"
+    description: Bitcoin is an innovative payment network and a new kind of money.
+    digest: b634f03a465e5d52a60169320ad2309ba607a4904b6d83c8ea7f169a42de275a
+    home: https://bitcoin.org/
+    icon: https://bitcoin.org/img/icons/logotop.svg
+    keywords:
+    - bitcoind
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: ov@dysnix.com
+      name: voron
+    name: bitcoind
+    sources:
+    - https://github.com/kubernetes/charts
+    - https://github.com/dysnix/docker-bitcoind
+    - https://github.com/kylemanna/docker-bitcoind
+    - https://github.com/jvstein/bitcoin-prometheus-exporter
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bitcoind-0.4.1/bitcoind-0.4.1.tgz
+    version: 0.4.1
+  - apiVersion: v1
+    appVersion: 0.29.0
     created: "2025-07-07T09:59:26.169199506Z"
     description: Bitcoin is an innovative payment network and a new kind of money.
     digest: 87d1d8a82dde1de04e03f50a849dca8e07a8039d8ac991b7c3ce79fd30cbca62
@@ -7469,4 +7494,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2025-07-07T09:59:26.170067236Z"
+generated: "2025-07-07T14:07:46.249863555Z"
