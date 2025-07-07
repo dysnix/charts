@@ -87,7 +87,6 @@ spec:
       - name: metrics-exporter
         image: "{{ .Values.metrics.image }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        restartPolicy: Always
         env:
         {{- range $env := .Values.metrics.env }}
           - name: {{ $env.name }}
