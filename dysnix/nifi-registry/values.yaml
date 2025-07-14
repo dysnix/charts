@@ -52,6 +52,10 @@ service:
   type: ClusterIP
   port: 18080
 
+proxy:
+  enabled: false
+  webContextPath: ''
+
 ingress:
   enabled: false
   annotations: {}

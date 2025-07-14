@@ -95,6 +95,9 @@ spec:
               }
               echo >> ${NIFI_REGISTRY_HOME}/conf/nifi-registry.properties
 
+           {{- if .Values.proxy.enabled }}
+              prop_replace nifi.registry.web.proxy.context.path {{ .Values.proxy.webContextPath }}
+           {{ end }}
            {{- if .Values.certManager.enabled }}
               # Note opportunity here to inject additional trusted certs named ca.crt in other
               # subdirectories of /opt/nifi/nifi-current/tls/, using custom secrets and/or configmaps.
