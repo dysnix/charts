@@ -95,7 +95,6 @@ spec:
           - --maxpeers={{ .Values.bsc.maxpeers }}
           - --cache={{ .Values.bsc.cache.value }}
           - --snapshot={{ .Values.bsc.snapshot }}
-          - --persistdiff={{ .Values.bsc.persistdiff }}
           {{- if kindIs "float64" .Values.bsc.diffblock }}
           - --diffblock={{ int .Values.bsc.diffblock }}
           {{- end }}
