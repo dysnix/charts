@@ -1,9 +1,9 @@
 dependencies:
 - name: common
-  repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+  repository: oci://ghcr.io/dysnix/charts
   version: 1.10.4
 - name: mongodb
-  repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+  repository: oci://ghcr.io/dysnix/charts
   version: 10.30.12
-digest: sha256:99bc8dbb5e8c17a0db2c44a8ec4925a58b2676a77a43be5c5733ad5a1c69b228
-generated: "2024-04-08T23:39:30.320206+03:00"
+digest: sha256:5b2b34a6c027ae11bbe687c2134430fda7f7496d6ca9dbf124fecf70bdef0cc8
+generated: "2025-08-19T16:48:43.243155+03:00"

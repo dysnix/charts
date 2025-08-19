@@ -162,6 +162,11 @@ affinity: {}
 
 mongodb:
   enabled: true
+
+  image:
+    registry: ghcr.io
+    repository: dysnix/bitnami/mongodb
+
   auth:
     enabled: true
     username: pritunl
