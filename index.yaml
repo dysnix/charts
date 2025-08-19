@@ -6338,6 +6338,34 @@ entries:
   pritunl:
   - apiVersion: v2
     appVersion: "1.29"
+    created: "2025-08-19T14:05:48.978052999Z"
+    dependencies:
+    - name: common
+      repository: oci://ghcr.io/dysnix/charts
+      tags:
+      - bitnami-common
+      version: 1.10.4
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: oci://ghcr.io/dysnix/charts
+      version: 10.30.12
+    description: A Helm chart for Kubernetes
+    digest: 189015dd645bd4ad82d876f073f9c0d66d3137fdbbd40b3ba4a71fd84299e82c
+    home: https://pritunl.com/
+    maintainers:
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    - email: vladstarrr@icloud.com
+      name: vladstarr
+    name: pritunl
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/pritunl/pritunl
+    urls:
+    - https://github.com/dysnix/charts/releases/download/pritunl-0.2.7/pritunl-0.2.7.tgz
+    version: 0.2.7
+  - apiVersion: v2
+    appVersion: "1.29"
     created: "2025-01-13T10:55:55.80310338Z"
     dependencies:
     - name: common
@@ -7566,4 +7594,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2025-07-28T19:42:24.202579473Z"
+generated: "2025-08-19T14:05:48.978453559Z"
