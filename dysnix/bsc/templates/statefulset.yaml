@@ -95,9 +95,6 @@ spec:
           - --maxpeers={{ .Values.bsc.maxpeers }}
           - --cache={{ .Values.bsc.cache.value }}
           - --snapshot={{ .Values.bsc.snapshot }}
-          {{- if kindIs "float64" .Values.bsc.diffblock }}
-          - --diffblock={{ int .Values.bsc.diffblock }}
-          {{- end }}
           - --port={{ .Values.service.p2pPort0 }}
           {{- if .Values.bsc.allowUnprotectedTxs }}
           - --rpc.allow-unprotected-txs
