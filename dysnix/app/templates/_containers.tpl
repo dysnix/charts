@@ -95,7 +95,7 @@ volumeMounts:
   {{- range $_, $name := $order -}}
     {{- $container := get $values $name -}}
     {{- if $container -}}
-      {{- $container := merge $container (dict "name" $name) -}}
+      {{- $container := mustMergeOverwrite (dict "name" $name) $container -}}
 
       {{/* Reuse(merge) container values from the parent component */}}
       {{- if $container.reuse -}}
@@ -107,12 +107,12 @@ volumeMounts:
               effectively equal to the default value (from container-values.yaml)
             */}}
           {{- else -}}
-            {{- $container = merge $container (pick $.top._include.Values .) -}}
+            {{- $container = mustMergeOverwrite (pick $.top._include.Values .) $container -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
 
-      {{- $container = merge $container $containerDefaults -}}
+      {{- $container = mustMergeOverwrite $containerDefaults $container -}}
       {{- $containerYaml := include "app.resources.include" (dict "resource" "container" "initContainer" $.initContainers "values" $container "top" $.top) -}}
       {{- $containers = append $containers ($containerYaml | fromYaml) -}}
 
