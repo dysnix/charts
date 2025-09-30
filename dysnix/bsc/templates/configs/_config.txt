@@ -1,6 +1,5 @@
 [Eth]
 NetworkId = 56
-LightPeers = 100
 NoPruning = false
 NoPrefetch = false
 TrieTimeout = 150000000000

@@ -20,4 +20,5 @@ spec:
     matchLabels:
       app.kubernetes.io/name: {{ include "bsc.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
+      bsc/role: {{ .Values.bsc.role }}
 {{- end }}
