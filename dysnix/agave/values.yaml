@@ -391,7 +391,7 @@ agaveArgs:
   rpc-port: 8899
   rpc-bind-address: ${MY_POD_IP}
   private-rpc: true
-  dynamic-port-range: 8000-8020
+  dynamic-port-range: 8000-8025
   wal-recovery-mode: skip_any_corrupted_record
   limit-ledger-size: true
   enable-extended-tx-metadata-storage: false
@@ -402,6 +402,14 @@ agaveArgs:
   account-index: []                                                 # secondary indexes for better rpc performance (spl-token-mint, program-id, spl-token-owner)
   # geyser-plugin-config: /plugins/yellowstone-grpc/config.json     # uncomment to load Yellowstone GRPC plugin
   # snapshot-interval-slots: 0                                      # uncomment to disable snapshots creation
+
+adjustLimitMemLock:
+  ## @param adjustLimitMemLock.enabled Enable adjustment of memory lock limit for Agave container
+  ##
+  enabled: false
+  ## @param adjustLimitMemLock.limit Memory lock limit in kilobytes
+  ##
+  limit: 2000000000
 
 ## Graceful shutdown options
 ##
@@ -455,7 +463,7 @@ plugins:
     enabled: false
     ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
-    version: v5.0.1+solana.2.1.14
+    version: v10.0.1+solana.3.0.6
     ## @param plugins.yellowstoneGRPC.downloadURL Yellowstone GRPC plugin download URL
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
