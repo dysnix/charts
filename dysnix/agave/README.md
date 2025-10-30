@@ -91,7 +91,7 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `plugins.containerPorts`                           | Extra container ports for added plugins                            | `[]`                                                                                                              |
 | `plugins.servicePorts`                             | Extra service ports for added plugins                              | `[]`                                                                                                              |
 | `plugins.yellowstoneGRPC.enabled`                  | Enable download of Yellowstone gRPC                                | `false`                                                                                                           |
-| `plugins.yellowstoneGRPC.version`                  | Yellowstone gRPC version                                           | `v5.0.1+solana.2.1.14`                                                                                            |
+| `plugins.yellowstoneGRPC.version`                  | Yellowstone gRPC version                                           | `v10.0.1+solana.3.0.6`                                                                                            |
 | `plugins.yellowstoneGRPC.downloadURL`              | Yellowstone GRPC plugin download URL                               | `https://github.com/rpcpool/yellowstone-grpc/releases/download/`                                                  |
 | `plugins.yellowstoneGRPC.listenIP`                 | Yellowstone gRPC listen IP address, without port                   | `$(MY_POD_IP)`                                                                                                    |
 | `plugins.yellowstoneGRPC.configYaml`               | Yellowstone gRPC config file                                       | `look in values.yaml`                                                                                             |
@@ -132,3 +132,5 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `persistence.accounts.existingClaim.name` | Existing PVC configuration      | `agave-accounts-volume`      |
 | `persistence.accounts.hostPath.type`      | hostPath volume type            | `Directory`                  |
 | `persistence.accounts.hostPath.path`      | hostPath directory on host node | `/blockchain/agave-accounts` |
+| `persistence.accounts.emptyDir.medium`    | emptyDir volume medium          | `""`                         |
+| `persistence.accounts.emptyDir.sizeLimit` | emptyDir volume size limit      | `""`                         |

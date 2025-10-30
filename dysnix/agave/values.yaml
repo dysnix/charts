@@ -538,7 +538,7 @@ plugins:
     config: ""
 
 ## You need first to create a keypair JSON files
-## I.e. agave-keygen new --no-bip39-passphrase --silent && cat /root/.config/agave/id.json
+## I.e. docker run --rm --entrypoint=solana-keygen --platform=linux/amd64 ghcr.io/dysnix/docker-agave:v3.0.8 new --force --no-bip39-passphrase --silent --outfile /dev/stdout
 ##
 identity:
   ## @param identity.validatorKeypair Validator keypair string (required)
@@ -595,6 +595,7 @@ persistence:
     ## `pvc` - create PVC automatically
     ## `existingClaim` - use already existing PVC
     ## `hostPath` - use hostPath volume
+    ## `emptyDir` - use emptyDir volume
     ##
     type: pvc
     pvc:
@@ -621,3 +622,10 @@ persistence:
       ## @param persistence.accounts.hostPath.path hostPath directory on host node
       ##
       path: /blockchain/agave-accounts
+    emptyDir:
+      ## @param persistence.accounts.emptyDir.medium emptyDir volume medium
+      ##
+      medium: ""
+      ## @param persistence.accounts.emptyDir.sizeLimit emptyDir volume size limit
+      ##
+      sizeLimit: ""

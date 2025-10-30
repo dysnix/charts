@@ -242,6 +242,12 @@ spec:
           {{- else if eq .accounts.type "existingClaim" }}
           persistentVolumeClaim:
             claimName: {{ .accounts.existingClaim.name }}
+          {{- else if eq .accounts.type "emptyDir" }}
+          emptyDir:
+            medium: {{ .accounts.emptyDir.medium | quote }}
+            {{- with .accounts.emptyDir.sizeLimit }}
+            sizeLimit: {{ . }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}

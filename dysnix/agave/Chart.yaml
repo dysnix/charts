@@ -3,7 +3,7 @@ name: agave
 description: Agave (previously Solana) blockchain node Helm chart
 type: application
 
-version: 0.3.0
+version: 0.3.1
 appVersion: v3.0.8
 
 keywords:
