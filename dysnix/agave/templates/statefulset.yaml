@@ -42,6 +42,10 @@ spec:
           image: busybox:latest
           securityContext:
             privileged: true
+            capabilities:
+              add:
+                - CAP_SYS_ADMIN
+                - CAP_NET_ADMIN
           command: ["sh", "-c"]
           {{- /* as per agave validator requirements */}}
           args:
