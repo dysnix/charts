@@ -3,6 +3,32 @@ entries:
   agave:
   - apiVersion: v2
     appVersion: v3.0.8
+    created: "2025-10-30T19:28:07.070726874Z"
+    description: Agave (previously Solana) blockchain node Helm chart
+    digest: 91421e3c800a764dfd6cfb4f58a7af9864872342ff0a0c9f96cfc0f267df0072
+    keywords:
+    - agave
+    - solana
+    - anza-xyz
+    - crypto
+    - web3
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: agave
+    sources:
+    - https://github.com/dysnix/charts
+    - https://github.com/dysnix/docker-agave
+    - https://github.com/anza-xyz/agave
+    - https://github.com/solana-labs/solana
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/agave-0.3.1/agave-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: v3.0.8
     created: "2025-10-30T19:12:47.69746575Z"
     description: Agave (previously Solana) blockchain node Helm chart
     digest: ded4963ee311fabd365943ec45656e3225ef28a6ee01e3b45aa58e48c5e9a342
@@ -7695,4 +7721,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2025-10-30T19:12:47.697970474Z"
+generated: "2025-10-30T19:28:07.071198018Z"
