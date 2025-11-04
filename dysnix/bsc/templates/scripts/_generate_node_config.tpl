@@ -37,3 +37,10 @@ gsutil cp "${TRUSTED_NODES_SRC_URL}" "${TRUSTED_NODES}"
 cp "${SRC_DIR}/${CONFIG_NAME}" "${DST_DIR}/${CONFIG_NAME}"
 echo >> "${DST_DIR}/${CONFIG_NAME}"
 cat "${TRUSTED_NODES}" >> "${DST_DIR}/${CONFIG_NAME}"
+{{ if .Values.bsc.proxiedNodesSrcUrl }}
+PROXIED_NODES_SRC_URL={{ .Values.bsc.proxiedNodesSrcUrl }}
+PROXIED_NODES=proxied_nodes
+gsutil cp "${PROXIED_NODES_SRC_URL}" "${PROXIED_NODES}"
+echo >> "${DST_DIR}/${CONFIG_NAME}"
+cat "${PROXIED_NODES}" >> "${DST_DIR}/${CONFIG_NAME}"
+{{- end }}

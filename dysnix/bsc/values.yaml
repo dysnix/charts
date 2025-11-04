@@ -170,6 +170,7 @@ bsc:
   podRange: 192.168.0.0/20
   generateConfig: false
   trustedNodesSrcUrl: "gs://bucket/trusted_nodes"
+  proxiedNodesSrcUrl: ""
   nodekeysSrcUrl: "gs://bucket/nodekeys"
   nodekeysFileName: "nodekeys"
   getNodeKey: false
