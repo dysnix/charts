@@ -270,20 +270,19 @@ ingress:
         # - secretName: agave-tls
         #   hosts:
         #     - agave-yellowstone.local
-    jitoGRPC:
+    richat:
       enabled: false
       className: ""
       annotations: {}
       hosts: []
-        # - host: agave-jito.local
+        # - host: agave-richat.local
         #   paths:
         #     - path: /
-        #       pathType: ImplementationSpecific
-        #       servicePort: jitogrpc
+        #       servicePort: richat
       tls: []
         # - secretName: agave-tls
         #   hosts:
-        #     - agave-jito.local
+        #     - agave-richat.local
 
 ## @section Metrics configuration
 ##
@@ -362,6 +361,10 @@ metrics:
       ##
       key: config
 
+## @param hostNetwork Enable hostNetwork for Agave container
+##
+hostNetwork: true
+
 ## @section Agave node configuration
 
 ## @param agaveArgs [object] `agave-validator` arguments
@@ -401,6 +404,7 @@ agaveArgs:
   minimal-snapshot-download-speed: 31457280                         # 30 MB/s
   account-index: []                                                 # secondary indexes for better rpc performance (spl-token-mint, program-id, spl-token-owner)
   # geyser-plugin-config: /plugins/yellowstone-grpc/config.json     # uncomment to load Yellowstone GRPC plugin
+  # geyser-plugin-config: /plugins/richat/config.json               # uncomment to load Richat plugin
   # snapshot-interval-slots: 0                                      # uncomment to disable snapshots creation
 
 adjustLimitMemLock:
@@ -463,7 +467,7 @@ plugins:
     enabled: false
     ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
-    version: v10.0.1+solana.3.0.6
+    version: v11.0.1+solana.3.1.8
     ## @param plugins.yellowstoneGRPC.downloadURL Yellowstone GRPC plugin download URL
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
@@ -501,39 +505,50 @@ plugins:
     ##
     config: ""
 
-  ## Jito gRPC plugin config
+  ## Richat plugin config
   ##
-  jitoGRPC:
-    ## @param plugins.jitoGRPC.enabled Enable download of Jito gRPC
+  richat:
+    ## @param plugins.richat.enabled Enable download of Richat
     ##
     enabled: false
-    ## @param plugins.jitoGRPC.version Jito gRPC version
+    ## @param plugins.richat.downloadURL Richat download URL
     ##
-    version: v2.0.15
-    ## @param plugins.jitoGRPC.downloadURL Jito GRPC plugin download URL
-    ##
-    downloadURL: https://github.com/jito-foundation/geyser-grpc-plugin/releases/download/v2.0.15/libgeyser_grpc_plugin_server.so
-    ## @param plugins.jitoGRPC.listenIP Jito gRPC listen IP address, without port
+    downloadURL: https://pub-f70d2191aa5a466faa56be3f4d80638a.r2.dev/librichat_plugin_agave.so
+    ## @param plugins.richat.listenIP Richat listen IP address, without port
     ## works by replacing LISTEN_IP string inside json file with the value provided
     ## default: Pod IP address from K8s downward API
     ##
     listenIP: $(MY_POD_IP)
-    ## @param plugins.jitoGRPC.configYaml [object, default: look in values.yaml] Jito gRPC config file in YAML format
-    ## will be mounted at /plugins/jito-grpc/config.json path
+    ## @param plugins.richat.configYaml [object, default: look in values.yaml] Richat config file
+    ## will be mounted at /plugins/richat/config.json path
     ##
     configYaml:
-      libpath: /lib/libgeyser_grpc_plugin_server.so
-      bind_address: LISTEN_IP:10000
-      account_update_buffer_size: 100000
-      slot_update_buffer_size: 100000
-      block_update_buffer_size: 100000
-      transaction_update_buffer_size: 100000
-      geyser_service_config:
-        heartbeat_interval_ms: 1000
-        subscriber_buffer_size: 1000000
-    ## @param plugins.jitoGRPC.config [string] Jito gRPC config.json file in raw format
-    ## will be mounted at /plugins/jito-grpc/config.json path
-    ## has higher priority over plugins.jitoGRPC.configYaml
+      libpath: lib/librichat_plugin_agave.so
+      logs:
+        level: info
+      metrics:
+        endpoint: LISTEN_IP:10123
+      tokio:
+        worker_threads: null
+        affinity: null
+      channel:
+        encoder: raw
+        max_messages: "2_097_152"
+        max_bytes: "16_106_127_360"
+      quic:
+        endpoint: LISTEN_IP:10101
+        tls_config:
+          self_signed_alt_names:
+            - localhost
+        expected_rtt: 2
+        max_stream_bandwidth: 1250000000
+        max_idle_timeout: 30000
+        max_recv_streams: 16
+        max_request_size: 1024
+        x_tokens: []
+    ## @param plugins.richat.config [string] Richat config.json file
+    ## will be mounted at /plugins/richat/config.json path
+    ## has higher priority over plugins.richat.configYaml
     ##
     config: ""
 

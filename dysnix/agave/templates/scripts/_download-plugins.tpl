@@ -4,17 +4,14 @@
 set -e
 
 YELLOWSTONE_GRPC__PLUGIN_DIR="$PLUGINS_DIR/yellowstone-grpc"
-JITO_GRPC__PLUGIN_DIR="$PLUGINS_DIR/jito-grpc"
+RICHAT__PLUGIN_DIR="$PLUGINS_DIR/richat"
 
 yellowstone_grpc_bootstrap() {
     echo "Yellowstone gRPC: Downloading plugin version ${YELLOWSTONE_GRPC__VERSION}.."
     mkdir -p "$YELLOWSTONE_GRPC__PLUGIN_DIR"
-    wget -q "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/geyser.proto"
-    wget -q "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/solana-storage.proto"
     wget -qO- "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/yellowstone-grpc-geyser-release22-x86_64-unknown-linux-gnu.tar.bz2" | tar jxvf -
 
-    echo "Yellowstone gRPC: Copying proto and lib to ${YELLOWSTONE_GRPC__PLUGIN_DIR}.."
-    cp -r /tmp/*.proto "$YELLOWSTONE_GRPC__PLUGIN_DIR/"
+    echo "Yellowstone gRPC: Copying lib to ${YELLOWSTONE_GRPC__PLUGIN_DIR}.."
     cp -r /tmp/yellowstone-grpc-geyser-release/lib "$YELLOWSTONE_GRPC__PLUGIN_DIR/"
 
     echo "Yellowstone gRPC: Copying config file to ${YELLOWSTONE_GRPC__PLUGIN_DIR}.."
@@ -26,22 +23,24 @@ yellowstone_grpc_bootstrap() {
     echo "Yellowstone gRPC: Bootstrap done!"
 }
 
-jito_grpc_bootstrap() {
-    mkdir -p "$JITO_GRPC__PLUGIN_DIR"
+richat_bootstrap() {
+    echo "Richat: Downloading plugin version ${RICHAT__VERSION}.."
+    mkdir -p "$RICHAT__PLUGIN_DIR/lib"
+    wget -q "${RICHAT__DOWNLOAD_URL}" -O "$RICHAT__PLUGIN_DIR/lib/librichat_plugin_agave.so"
 
-    echo "Jito gRPC: Copying config file to ${JITO_GRPC__PLUGIN_DIR}.."
-    cp -L "$JITO_GRPC__CONFIG_PATH" "$JITO_GRPC__PLUGIN_DIR/config.json"
+    echo "Richat: Copying config file to ${RICHAT__PLUGIN_DIR}.."
+    cp -L "$RICHAT__CONFIG_PATH" "$RICHAT__PLUGIN_DIR/config.json"
 
-    echo "Jito gRPC: Changing listen IP address in config file to ${JITO_GRPC__LISTEN_IP}.."
-    sed -i "s/LISTEN_IP/${JITO_GRPC__LISTEN_IP}/g" "$JITO_GRPC__PLUGIN_DIR/config.json"
+    echo "Richat: Changing listen IP address in config file to ${RICHAT__LISTEN_IP}.."
+    sed -i "s/LISTEN_IP/${RICHAT__LISTEN_IP}/g" "$RICHAT__PLUGIN_DIR/config.json"
 
-    echo "Jito gRPC: Bootstrap done!"
+    echo "Richat: Bootstrap done!"
 }
 
 main() {
     cd /tmp
     if [ "$YELLOWSTONE_GRPC__ENABLED" = "1" ]; then yellowstone_grpc_bootstrap; fi
-    if [ "$JITO_GRPC__ENABLED" = "1" ]; then jito_grpc_bootstrap; fi
+    if [ "$RICHAT__ENABLED" = "1" ]; then richat_bootstrap; fi
 }
 
 main
