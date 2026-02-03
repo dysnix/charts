@@ -337,6 +337,10 @@ customStartupProbe: {}
 resources:
   limits: {}
   requests: {}
+## @param resizePolicy specifies container resize policies
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/#container-resize-policies
+##
+resizePolicy: {}
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ## @param podSecurityContext.enabled Enabled pods' Security Context
@@ -414,6 +418,27 @@ autoscaling:
   targetCPU: ""
   targetMemory: ""
   behavior: {}
+## Vertical Pod Autoscaler configuration
+## ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/vertical-pod-autoscale/
+## ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/docs/api.md
+## @param vpa.enabled Enable/disable Vertical Pod Autoscaler
+## @param vpa.annotations Additional annotations for the VPA resource
+## @param vpa.updatePolicy.updateMode VPA update mode. Allowed values: `Off`, `Initial`, `Recreate`, `InPlaceOrRecreate`
+## @param vpa.updatePolicy.minReplicas Minimum number of replicas that need to be alive for the updater to attempt pod eviction
+## @param vpa.updatePolicy.evictionRequirements Additional eviction requirements for the VPA updater
+## @param vpa.recommenders Custom VPA recommenders configuration
+## @param vpa.resourcePolicy.containerPolicies Per-container resource policies for VPA
+##
+vpa:
+  enabled: false
+  annotations: {}
+  updatePolicy:
+    updateMode: "InPlaceOrRecreate"  # Off, Initial, Recreate, InPlaceOrRecreate
+    minReplicas: 1
+    evictionRequirements: []
+  recommenders: []
+  resourcePolicy:
+    containerPolicies: []
 ## Node affinity preset
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
 ##

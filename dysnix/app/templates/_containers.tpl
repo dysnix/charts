@@ -44,6 +44,9 @@ envFrom:
 {{- if .Values.resources }}
 resources: {{- toYaml .Values.resources | nindent 12 }}
 {{- end }}
+{{- if .Values.resizePolicy }}
+resizePolicy: {{- toYaml .Values.resizePolicy | nindent 12 }}
+{{- end }}
 {{- with include "app.tplvalues.named-list" ( dict "value" .Values.containerPorts "valueKey" "containerPort" "context" $) }}
 ports:  {{ . | nindent 12 }}
 {{- end }}

@@ -99,3 +99,7 @@ Usage
 {{- define "app.rbac" -}}
   {{- include "app.resources.include" (dict "resource" "rbac" | merge .) -}}
 {{- end -}}
+
+{{- define "app.vpa" -}}
+  {{- include "app.resources.include" (dict "resource" "vpa" | merge .) -}}
+{{- end -}}
