@@ -80,10 +80,11 @@ proxysql_servers=
 (
   {{- if .Values.use_default_proxysql_servers }}
   {{- $nodeCount := .Values.proxysql_cluster.core.replicas | int }}
-  {{- $coreServiceName := printf "%s-core" (include "proxysql.fullname" .) }}
+  {{- $coreStatefulSetName :=  printf "%s-core" (include "proxysql.fullname" .) }}
+  {{- $coreServiceName :=  .Values.proxysql_cluster.core.service.name | default (printf "%s-core" (include "proxysql.fullname" .)) }}
   {{- range $index, $_ := until $nodeCount }}
   {
-    hostname={{ printf "proxysql-core-%d.%s" $index $coreServiceName | toJson }}
+    hostname={{ printf "%s-%d.%s" $coreStatefulSetName $index $coreServiceName | toJson }}
     port={{ $.Values.service.adminPort | toJson }}
     weight=100
   },
