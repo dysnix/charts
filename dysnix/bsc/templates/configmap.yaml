@@ -43,6 +43,8 @@ metadata:
 data:
   check_node_health.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_check_node_health.tpl") . | nindent 4 }}
+  check_node_liveness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_check_node_liveness.tpl") . | nindent 4 }}
   check_node_readiness.sh: |-
     {{- include (print $.Template.BasePath "/scripts/_check_node_readiness.tpl") . | nindent 4 }}
   get_nodekey.py: |-

@@ -181,9 +181,9 @@ spec:
         livenessProbe:
           exec:
             command:
-            - /bin/sh
+            - /bin/bash
             - -c
-            - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $LivenessProbeTimestampDistinct last_synced_block.txt
+            - source /env/env.txt && /bin/bash /scripts/check_node_liveness.sh $LivenessProbeCatchupMultiplier $LivenessProbeTimestampDistinct liveness_state.txt
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}

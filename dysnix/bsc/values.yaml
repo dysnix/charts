@@ -184,6 +184,7 @@ bsc:
   nodeKeys:
   readinessProbeTimestampDistinct: 300
   livenessProbeTimestampDistinct: 300
+  livenessProbeCatchupMultiplier: 3
   startupProbeTimestampDistinct: 300
   metrics:
     enabled: true

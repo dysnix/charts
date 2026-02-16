@@ -1,3 +1,4 @@
 ReadinessProbeTimestampDistinct={{ .Values.bsc.readinessProbeTimestampDistinct }}
 LivenessProbeTimestampDistinct={{ .Values.bsc.livenessProbeTimestampDistinct }}
+LivenessProbeCatchupMultiplier={{ .Values.bsc.livenessProbeCatchupMultiplier }}
 StartupProbeTimestampDistinct={{ .Values.bsc.startupProbeTimestampDistinct }}
