@@ -86,6 +86,11 @@ securityContext: {}
 ##
 resources: {}
 
+## @param resizePolicy specifies container resize policies
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/#container-resize-policies
+##
+resizePolicy: {}
+
 ## @param livenessProbe [object] Agave container livenessProbe
 ##
 livenessProbe:

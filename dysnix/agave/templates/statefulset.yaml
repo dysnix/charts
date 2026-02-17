@@ -200,6 +200,9 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
+          {{- if .Values.resizePolicy }}
+          resizePolicy: {{- toYaml .Values.resizePolicy | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
