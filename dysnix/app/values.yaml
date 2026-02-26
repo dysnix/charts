@@ -248,6 +248,7 @@ image:
   debug: false
 
 ## @param replicaCount Number of replicas to deploy
+## use negative values to omit replicas in the controller's spec
 ##
 replicaCount: 1
 ## @param containerPorts Specifies container ports

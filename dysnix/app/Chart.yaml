@@ -3,7 +3,7 @@ name: app
 description: Generic application Helm chart
 home: https://github.com/dysnix/charts/tree/main/dysnix/app
 icon: https://dysnix.com/images/logo.svg
-version: 0.99.20
+version: 0.99.21
 sources:
   - https://github.com/dysnix/charts
 keywords:

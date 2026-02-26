@@ -19,7 +19,7 @@ metadata:
   {{- end }}
 spec:
   serviceName: {{ template "common.names.fullname" . }}
-  {{- if not .Values.autoscaling.enabled }}
+  {{- if and (not .Values.autoscaling.enabled ) (ge (.Values.replicaCount|int) 0) }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   {{- if .Values.updateStrategy }}
