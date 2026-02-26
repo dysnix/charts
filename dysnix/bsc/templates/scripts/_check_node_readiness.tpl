@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set -ex
+set -e
 
 public_bsc_node=$3
 allowed_number_of_distinct_between_blocks=$2

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ex
+set -e
 
 usage() { echo "Usage: $0 <catchup_multiplier> <max_lag_in_seconds> <state_file>" 1>&2; exit 1; }
 
