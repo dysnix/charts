@@ -19,6 +19,9 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
+# Optional: If set, the proxysql pods will use the given priorityClassName.
+priorityClassName: ""
+
 podSecurityContext:
   runAsNonRoot: true
   fsGroup: 999
@@ -122,10 +125,9 @@ podLabels: {}
 ## Specify pod disruption budget
 ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
 ##
-podDisruptionBudget:
-  enabled: false
-  minAvailable: 1
-  # maxUnavailable: 1
+podDisruptionBudget: {}
+#  minAvailable: 0     # required count of pods to remain available, even without the evicted pod.
+#  maxUnavailable: 0   # Count of pods that may be unavailable after eviction.
 
 startupProbe:
   enabled: false
@@ -278,6 +280,13 @@ proxysql_cluster:
     # Restart ProxySQL if crashes
     exit_on_error: false
 
+    podDisruptionBudget: {}
+    #  minAvailable: 0     # required count of pods to remain available, even without the evicted pod.
+    #  maxUnavailable: 0   # Count of pods that may be unavailable after eviction.
+
+    # Optional: If set, the proxysql pods will use the given priorityClassName.
+    priorityClassName: ""
+
     statefullset:
       nodeSelector: {}
       tolerations: []
@@ -308,6 +317,13 @@ proxysql_cluster:
 
     # Restart ProxySQL if crashes
     exit_on_error: false
+
+    podDisruptionBudget: {}
+    #  minAvailable: 0     # required count of pods to remain available, even without the evicted pod.
+    #  maxUnavailable: 0   # Count of pods that may be unavailable after eviction.
+
+    # Optional: If set, the proxysql pods will use the given priorityClassName.
+    priorityClassName: ""
 
     daemonset:
       nodeSelector: {}
