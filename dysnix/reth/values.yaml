@@ -1,0 +1,262 @@
+image:
+  repository: ghcr.io/paradigmxyz/reth
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+updateStrategy:
+  type: RollingUpdate
+
+terminationGracePeriodSeconds: 300
+
+## Extra pod labels
+podLabels: {}
+  # environment: production
+
+## This labels mark Reth node as ready to serve the traffic.
+## Used as selector for RPC service together with `.Values.podLabels` and default labels.
+podStatusLabels: {}
+  # manualstatus: in-service
+
+podSecurityContext:
+  fsGroup: 10001
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  allowPrivilegeEscalation: false
+  privileged: false
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+
+## By disabling we fix potential env variable conflicts
+enableServiceLinks: false
+
+## Override reth container command (can be templated)
+command: []
+  # - sh
+  # - -c
+
+## Override reth container args (can be templated)
+argsOverride: []
+  # - sleep infinity
+
+## Extra container arguments (can be templated)
+extraArgs: []
+
+## Extra init containers, can be templated
+extraInitContainers: []
+
+## Sidecar containers, can be templated
+sidecarContainers: []
+
+## Extra volumeMounts for reth container, can be templated
+extraVolumeMounts: []
+
+## Extra volumes, can be templated
+extraVolumes: []
+
+## Extra env variables for reth container
+extraEnv: []
+
+## Services config
+services:
+  p2p:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 30303
+    # nodePort: 30303
+    annotations: {}
+    publishNotReadyAddresses: true
+  p2pDiscovery:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 30303
+    # nodePort: 30303
+    annotations: {}
+    publishNotReadyAddresses: true
+  rpc:
+    enabled: true
+    type: ClusterIP
+    httpPort: 8545
+    wsPort: 8546
+    annotations: {}
+  metrics:
+    enabled: false
+    type: ClusterIP
+    port: 9001
+    annotations: {}
+    publishNotReadyAddresses: true
+  authrpc:
+    enabled: true
+    type: ClusterIP
+    port: 8551
+    annotations: {}
+    publishNotReadyAddresses: true
+
+ingress:
+  http:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts: []
+    tls: []
+  ws:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts: []
+    tls: []
+
+persistence:
+  type: pvc
+  # type: hostPath
+  mountPath: ""
+  pvc:
+    size: 2Ti
+    accessMode: ReadWriteOnce
+    storageClass: ""           # set to "-" if you want to manually create persistent volume
+    annotations: {}
+  hostPath:
+    path: /data/reth
+    type: Directory            # by default you need to create directory yourself
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+resources: {}
+
+# Create Prometheus Operator serviceMonitor
+serviceMonitor:
+  enabled: false
+  # interval: 10s
+  # scrapeTimeout: 2s
+  # honorLabels: true
+  # relabelings: []
+  # metricRelabelings: []
+
+# .livenessProbe.exec.command can also be in a templated string format
+# Checks: block lag <= max_lag OR block time catching up >= multiplier x wall clock
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 120
+  periodSeconds: 60
+  successThreshold: 1
+  failureThreshold: 10
+  timeoutSeconds: 10
+  exec:
+    command:
+      - bash
+      - /scripts/liveness.sh
+      - "3"             # catchup_multiplier
+      - "300"           # max_lag_in_seconds
+      - liveness_state.txt
+
+# .readinessProbe.exec.command can also be in a templated string format
+# Checks: latest block timestamp is within max_seconds of current time
+readinessProbe:
+  enabled: false
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 2
+  timeoutSeconds: 5
+  exec:
+    command:
+      - bash
+      - /scripts/readiness.sh
+      - --timestamp-distinct
+      - "60"            # max_seconds
+
+# .startupProbe.exec.command can also be in a templated string format
+# Checks: new blocks are being imported within max_lag_in_seconds
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  failureThreshold: 120960    # periodSeconds * failureThreshold = 7 days
+  timeoutSeconds: 10
+  exec:
+    command:
+      - bash
+      - /scripts/startup.sh
+      - "300"           # max_lag_in_seconds
+      - last_synced_block.txt
+
+## Main Reth config
+config:
+  ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
+  jwt: ""
+  datadir: /data
+  ## Chain name: mainnet, holesky, sepolia, base-mainnet, op-mainnet, etc.
+  chain: mainnet
+  ## Sync mode: "full" (pruned), "minimal" (max pruning), "" (archive, no pruning)
+  syncMode: full
+  http:
+    enabled: true
+    port: 8545
+    addr: 0.0.0.0
+    api: ["eth", "net", "web3"]
+    corsdomain: ["*"]
+  authrpc:
+    port: 8551
+    addr: 0.0.0.0
+    jwtsecret: /secrets/jwt.hex
+  ws:
+    enabled: false
+    port: 8546
+    addr: 0.0.0.0
+    origins: ["*"]
+    api: ["eth", "net", "web3"]
+  p2p:
+    useHostPort: false     # if set to true .Values.services.p2p will be disabled, and hostPort will be allocated instead
+    port: 30303
+    discoveryPort: 30303   # set different from port to use separate discovery port
+    nat: ""                # set it when reth P2P endpoint is exposed via LoadBalancer k8s service
+    maxPeers: 50
+    noDiscovery: false
+    bootnodes: []
+    trustedPeers: []
+  metrics:
+    enabled: false
+    port: 9001
+  rpcCache:
+    maxBlocks: 0           # 0 = use reth default
+    maxReceipts: 0
+    maxHeaders: 0
+  log:
+    fileMaxFiles: 0        # 0 = disable file logging
+    fileDirectory: ""      # set to enable file logging (e.g. /data/logs)
+  ## OP Stack / rollup config (only rendered when non-empty)
+  rollup: {}
+    # sequencerHttp: "https://mainnet-sequencer.optimism.io/"
+    # disableTxPoolGossip: true
+    # halt: major
+
+## initContainers configuration
+init:
+  chownData:
+    enabled: false
+    image:
+      repository: alpine
+      tag: 3.20
+      pullPolicy: IfNotPresent

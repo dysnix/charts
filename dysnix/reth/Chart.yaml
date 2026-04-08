@@ -1,0 +1,19 @@
+apiVersion: v2
+name: reth
+description: Reth Ethereum execution client Helm Chart
+
+version: 0.0.1
+appVersion: v1.11.3
+
+keywords:
+  - reth
+  - cryptocurrency
+  - blockchain
+  - ethereum
+
+sources:
+  - https://github.com/dysnix/charts
+
+maintainers:
+  - email: services@dysnix.com
+    name: Dysnix
