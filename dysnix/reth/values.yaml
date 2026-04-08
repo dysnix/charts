@@ -154,6 +154,12 @@ serviceMonitor:
   # relabelings: []
   # metricRelabelings: []
 
+## Health check thresholds
+readinessProbeTimestampDistinct: 60     # max block age in seconds for readiness
+livenessProbeTimestampDistinct: 300     # max block lag in seconds for liveness
+livenessProbeCatchupMultiplier: 3       # block time must advance N x faster than wall clock during sync
+startupProbeTimestampDistinct: 300      # max time without new blocks for startup
+
 # .livenessProbe.exec.command can also be in a templated string format
 # Checks: block lag <= max_lag OR block time catching up >= multiplier x wall clock
 livenessProbe:
@@ -164,12 +170,12 @@ livenessProbe:
   failureThreshold: 10
   timeoutSeconds: 10
   exec:
-    command:
+    command: |
       - bash
       - /scripts/liveness.sh
-      - "3"             # catchup_multiplier
-      - "300"           # max_lag_in_seconds
-      - liveness_state.txt
+      - "{{ .Values.livenessProbeCatchupMultiplier }}"
+      - "{{ .Values.livenessProbeTimestampDistinct }}"
+      - {{ .Values.config.datadir }}/liveness_state.txt
 
 # .readinessProbe.exec.command can also be in a templated string format
 # Checks: latest block timestamp is within max_seconds of current time
@@ -181,11 +187,11 @@ readinessProbe:
   failureThreshold: 2
   timeoutSeconds: 5
   exec:
-    command:
+    command: |
       - bash
       - /scripts/readiness.sh
       - --timestamp-distinct
-      - "60"            # max_seconds
+      - "{{ .Values.readinessProbeTimestampDistinct }}"
 
 # .startupProbe.exec.command can also be in a templated string format
 # Checks: new blocks are being imported within max_lag_in_seconds
@@ -196,11 +202,11 @@ startupProbe:
   failureThreshold: 120960    # periodSeconds * failureThreshold = 7 days
   timeoutSeconds: 10
   exec:
-    command:
+    command: |
       - bash
       - /scripts/startup.sh
-      - "300"           # max_lag_in_seconds
-      - last_synced_block.txt
+      - "{{ .Values.startupProbeTimestampDistinct }}"
+      - {{ .Values.config.datadir }}/last_synced_block.txt
 
 ## Main Reth config
 config:
