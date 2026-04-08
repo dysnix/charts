@@ -7426,6 +7426,26 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/raw-v0.3.0/raw-v0.3.0.tgz
     version: v0.3.0
+  reth:
+  - apiVersion: v2
+    appVersion: v1.11.3
+    created: "2026-04-08T12:03:39.791555697Z"
+    description: Reth Ethereum execution client Helm Chart
+    digest: ded7248f841bfecefa970def5b840202d16f72f8f4326143bca62373e3077f9b
+    keywords:
+    - reth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: reth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/reth-0.0.1/reth-0.0.1.tgz
+    version: 0.0.1
   rpcfast-gateway:
   - apiVersion: v2
     appVersion: v0.2.0
@@ -7899,4 +7919,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-02-26T10:38:55.943290359Z"
+generated: "2026-04-08T12:03:39.792015929Z"
