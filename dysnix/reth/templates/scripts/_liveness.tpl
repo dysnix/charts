@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-# Node is alive when either:
-# 1. Latest block is within max_lag_in_seconds of current time (synced), or
-# 2. Block time is advancing at least catchup_multiplier times faster than wall clock (catching up)
+# Node is alive when any of:
+# 1. Node is actively syncing (pipeline sync), or
+# 2. Latest block is within max_lag_in_seconds of current time (synced), or
+# 3. Block time is advancing at least catchup_multiplier times faster than wall clock (catching up)
 
 usage() { echo "Usage: $0 <catchup_multiplier> <max_lag_in_seconds> <state_file>" 1>&2; exit 1; }
 
@@ -30,10 +31,21 @@ rpc_call() {
     } | sed -n '/^\r$/,$p' | tail -n +2
 }
 
+is_syncing() {
+    rpc_call '{"jsonrpc":"2.0","method":"eth_syncing","id":1}' \
+    | grep -qv '"result":false'
+}
+
 get_block_timestamp() {
     rpc_call '{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["latest", false],"id":1}' \
     | sed -r 's/.*"timestamp":"([^"]+)".*/\1/g'
 }
+
+# Condition 0: node is actively syncing (pipeline sync) — alive by definition
+if is_syncing; then
+    echo "Node is syncing (pipeline active) — alive"
+    exit 0
+fi
 
 block_timestamp=$(($(get_block_timestamp)))
 

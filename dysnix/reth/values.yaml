@@ -256,7 +256,7 @@ config:
   rollup: {}
     # sequencerHttp: "https://mainnet-sequencer.optimism.io/"
     # disableTxPoolGossip: true
-    # halt: major
+    # historicalRpc: "http://historical-node:8545"
 
 ## initContainers configuration
 init:

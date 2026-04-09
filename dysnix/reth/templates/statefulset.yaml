@@ -140,13 +140,13 @@ spec:
         {{- end }}
         {{- with .Values.config.rollup }}
         {{- with .sequencerHttp }}
-        - --rollup.sequencer-http={{ . }}
+        - --rollup.sequencer={{ . }}
         {{- end }}
         {{- if .disableTxPoolGossip }}
         - --rollup.disable-tx-pool-gossip
         {{- end }}
-        {{- with .halt }}
-        - --rollup.halt={{ . }}
+        {{- with .historicalRpc }}
+        - --rollup.historicalrpc={{ . }}
         {{- end }}
         {{- end }}
         {{- with .Values.extraArgs }}
