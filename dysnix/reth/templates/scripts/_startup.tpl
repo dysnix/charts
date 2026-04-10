@@ -29,21 +29,10 @@ rpc_call() {
     } | sed -n '/^\r$/,$p' | tail -n +2
 }
 
-is_syncing() {
-    rpc_call '{"jsonrpc":"2.0","method":"eth_syncing","id":1}' \
-    | grep -qv '"result":false'
-}
-
 get_block_number() {
     rpc_call '{"jsonrpc":"2.0","method":"eth_blockNumber","id":1}' \
     | sed -r 's/.*"result":"([^"]+)".*/\1/g'
 }
-
-# Node is actively syncing (pipeline) — alive, pass startup
-if is_syncing; then
-    echo "Node is syncing (pipeline active) — startup ok"
-    exit 0
-fi
 
 block_number=$(get_block_number)
 
