@@ -2113,6 +2113,28 @@ entries:
   bsc:
   - apiVersion: v2
     appVersion: 1.6.2
+    created: "2026-04-10T10:33:17.531234923Z"
+    description: Binance Smart Chain chart for Kubernetes
+    digest: ad51465b0c7ff41a111e31b4b373a990f290edd6ea315bb3455feba4e384f377
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: daniel@dysnix.com
+      name: daniel-yavorovich
+    - email: av@dysnix.com
+      name: voron
+    - email: ap@dysnix.com
+      name: apolegoshko
+    name: bsc
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/bsc-0.6.59/bsc-0.6.59.tgz
+    version: 0.6.59
+  - apiVersion: v2
+    appVersion: 1.6.2
     created: "2026-02-26T10:38:55.942692342Z"
     description: Binance Smart Chain chart for Kubernetes
     digest: 8bc28574f4acc631dbd98599feb08e78030e2afc55a2fd947ede32d314aa2b27
@@ -5147,6 +5169,24 @@ entries:
   geth:
   - apiVersion: v2
     appVersion: v1.14.8
+    created: "2026-04-10T10:33:17.763111642Z"
+    description: Go-ethereum blockchain node Helm Chart
+    digest: ab8ba79e341d9d13029550d6dbc4245bb7fb6b311769c74d775b7e9677a484b0
+    keywords:
+    - geth
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    name: geth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/geth-1.1.2/geth-1.1.2.tgz
+    version: 1.1.2
+  - apiVersion: v2
+    appVersion: v1.14.8
     created: "2024-09-03T14:35:24.882952659Z"
     description: Go-ethereum blockchain node Helm Chart
     digest: 9aa971aac07c14538626cd250891cb5273bcf42fc40517f93e451c1a28d6e6f2
@@ -7995,4 +8035,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-04-10T07:18:13.776901873Z"
+generated: "2026-04-10T10:33:17.763948279Z"
