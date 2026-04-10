@@ -251,6 +251,7 @@ config:
   ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
   jwt: ""
   datadir: /data
+  tmpdir: /tmp
   eth:
     network: mainnet
     syncMode: snap
