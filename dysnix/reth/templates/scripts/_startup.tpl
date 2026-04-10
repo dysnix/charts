@@ -52,14 +52,18 @@ if [ -z "${block_number}" ] || [ "${block_number}" = "null" ]; then
     exit 1
 fi
 
+# First observation after (re)start: record block number and fail.
+# This prevents a restart from immediately passing the startup probe.
 if [ ! -f "${last_synced_block_file}" ]; then
-    old_block_number=""
-else
-    old_block_number=$(cat "${last_synced_block_file}")
+    mkdir -p "$(dirname "${last_synced_block_file}")"
+    echo "${block_number}" > "${last_synced_block_file}"
+    echo "First observation after start, waiting for block advancement"
+    exit 1
 fi
 
+old_block_number=$(cat "${last_synced_block_file}")
+
 if [ "${block_number}" != "${old_block_number}" ]; then
-    mkdir -p "$(dirname "${last_synced_block_file}")"
     echo "${block_number}" > "${last_synced_block_file}"
 fi
 

@@ -175,7 +175,7 @@ livenessProbe:
       - /scripts/liveness.sh
       - "{{ .Values.livenessProbeCatchupMultiplier }}"
       - "{{ .Values.livenessProbeTimestampDistinct }}"
-      - {{ .Values.config.datadir }}/liveness_state.txt
+      - {{ .Values.config.tmpdir }}/liveness_state.txt
 
 # .readinessProbe.exec.command can also be in a templated string format
 # Checks: latest block timestamp is within max_seconds of current time
@@ -206,13 +206,14 @@ startupProbe:
       - bash
       - /scripts/startup.sh
       - "{{ .Values.startupProbeTimestampDistinct }}"
-      - {{ .Values.config.datadir }}/last_synced_block.txt
+      - {{ .Values.config.tmpdir }}/last_synced_block.txt
 
 ## Main Reth config
 config:
   ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
   jwt: ""
   datadir: /data
+  tmpdir: /tmp
   ## Chain name: mainnet, holesky, sepolia, base-mainnet, op-mainnet, etc.
   chain: mainnet
   ## Sync mode: "full" (pruned), "minimal" (max pruning), "" (archive, no pruning)
