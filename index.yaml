@@ -7429,6 +7429,25 @@ entries:
   reth:
   - apiVersion: v2
     appVersion: v1.11.3
+    created: "2026-04-10T06:48:51.363632401Z"
+    description: Reth Ethereum execution client Helm Chart
+    digest: b9797a8422ae3a4f6115d16551342783f584b20291da8e4dd0446e790e427adc
+    keywords:
+    - reth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: reth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/reth-0.0.4/reth-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: v1.11.3
     created: "2026-04-09T16:12:00.479431769Z"
     description: Reth Ethereum execution client Helm Chart
     digest: 83fb13f57b57bd1bc3924bccdb03440fc8b5a94f02b93c9911f2f04f1eebdd25
@@ -7957,4 +7976,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-04-09T16:12:00.479957437Z"
+generated: "2026-04-10T06:48:51.364167935Z"
