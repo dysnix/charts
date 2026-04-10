@@ -171,7 +171,7 @@ spec:
             command:
             - /bin/sh
             - -c
-            - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $StartupProbeTimestampDistinct last_synced_block.txt
+            - source /env/env.txt && /bin/sh /scripts/check_node_health.sh http://127.0.0.1:{{ .Values.service.rpcPort }} $StartupProbeTimestampDistinct {{ .Values.bsc.tmpdir }}/last_synced_block.txt
           initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.startupProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
@@ -183,7 +183,7 @@ spec:
             command:
             - /bin/bash
             - -c
-            - source /env/env.txt && /bin/bash /scripts/check_node_liveness.sh $LivenessProbeCatchupMultiplier $LivenessProbeTimestampDistinct liveness_state.txt
+            - source /env/env.txt && /bin/bash /scripts/check_node_liveness.sh $LivenessProbeCatchupMultiplier $LivenessProbeTimestampDistinct {{ .Values.bsc.tmpdir }}/liveness_state.txt
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}

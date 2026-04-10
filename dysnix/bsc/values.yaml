@@ -105,6 +105,7 @@ bsc:
   gcmode: "full"
   logLevel: "info"
   base_path: "/data"
+  tmpdir: /tmp
   rpcApi: ["eth", "net", "web3", "txpool"]
   rpcVhosts: ["*"]
   wsEnabled: false
