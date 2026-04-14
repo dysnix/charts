@@ -1,0 +1,36 @@
+{{- if or .Values.syncToS3.enabled .Values.rbac.extraRules }}
+{{- $fullName := include "reth.fullname" . }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $fullName }}
+  labels: {{ include "reth.labels" . | nindent 4 }}
+rules:
+  {{- if .Values.syncToS3.enabled }}
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    resourceNames:
+      - {{ $fullName }}-s3-config
+    verbs:
+      - get
+      - patch
+  {{- end }}
+  {{- with .Values.rbac.extraRules }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $fullName }}
+  labels: {{ include "reth.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "reth.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ $fullName }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

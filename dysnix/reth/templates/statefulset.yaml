@@ -15,6 +15,10 @@ spec:
     metadata:
       annotations:
         checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
+        {{- if or .Values.syncToS3.enabled .Values.initFromS3.enabled }}
+        checksum/s3-secret: {{ include (print $.Template.BasePath "/s3-secret.yaml") . | sha256sum }}
+        checksum/s3-configmap: {{ include (print $.Template.BasePath "/s3-configmap.yaml") . | sha256sum }}
+        {{- end }}
       labels:
         {{- include "reth.selectorLabels" . | nindent 8 }}
         {{- with .Values.podStatusLabels }}
@@ -23,6 +27,9 @@ spec:
     spec:
       enableServiceLinks: {{ .Values.enableServiceLinks }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if .Values.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.shareProcessNamespace }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -56,6 +63,90 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
+      {{- end }}
+      {{- if .Values.init.download.enabled }}
+      - name: reth-download
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command:
+        - sh
+        - /scripts/reth-download.sh
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
+      {{- end }}
+      {{- if .Values.initFromS3.enabled }}
+      {{- with .Values.s3config }}
+      - name: init-from-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        {{- with $.Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command:
+        - sh
+        - /scripts/init-from-s3.sh
+        envFrom:
+        - configMapRef:
+            name: {{ include "reth.fullname" $ }}-s3-config
+        - secretRef:
+            name: {{ include "reth.fullname" $ }}-s3-secret
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ $.Values.persistence.mountPath | default $.Values.config.datadir }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.syncToS3.enabled }}
+      {{- with .Values.s3config }}
+      - name: sync-to-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        {{- with $.Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command:
+        - /bin/sh
+        - /scripts/sync-to-s3.sh
+        envFrom:
+        - configMapRef:
+            name: {{ include "reth.fullname" $ }}-s3-config
+        - secretRef:
+            name: {{ include "reth.fullname" $ }}-s3-secret
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ $.Values.persistence.mountPath | default $.Values.config.datadir }}
+      {{- end }}
+      {{- with .Values.syncToS3.cronjob }}
+      {{- if .enabled }}
+      - name: disable-sync-to-s3
+        image: "{{ .image.repository }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy | quote }}
+        {{- with $.Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command:
+        - /bin/sh
+        - /scripts/s3-cron.sh
+        - disable_sync
+        - 5s
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+      {{- end }}
+      {{- end }}
       {{- end }}
       {{- with .Values.extraInitContainers }}
         {{- tpl (toYaml . | nindent 6) $ }}
@@ -208,6 +299,9 @@ spec:
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+        {{- if .Values.resizePolicy }}
+        resizePolicy: {{- toYaml .Values.resizePolicy | nindent 10 }}
+        {{- end }}
       volumes:
       - name: secrets
         secret:

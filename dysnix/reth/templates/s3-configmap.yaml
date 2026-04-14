@@ -1,0 +1,20 @@
+{{- if or .Values.initFromS3.enabled .Values.syncToS3.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "reth.fullname" . }}-s3-config
+data:
+  DB_DIR: {{ tpl (tpl .Values.s3config.local.dbDir .) . | quote }}
+  STATIC_FILES_DIR: {{ tpl (tpl .Values.s3config.local.staticFilesDir .) . | quote }}
+  INITIALIZED_FILE: {{ tpl .Values.s3config.local.initializedFile . | quote }}
+  SYNC_TO_S3: "False"
+  S3_BASE_URL: {{ tpl .Values.s3config.remote.baseUrl . }}
+  S3_DB_URL: {{ tpl .Values.s3config.remote.dbUrl . }}
+  S3_STATIC_FILES_URL: {{ tpl .Values.s3config.remote.staticFilesUrl . }}
+  INCLUDE_ROCKSDB: {{ ternary "True" "False" .Values.s3config.local.includeRocksdb | quote }}
+  {{- if .Values.s3config.local.includeRocksdb }}
+  ROCKSDB_DIR: {{ tpl (tpl .Values.s3config.local.rocksdbDir .) . | quote }}
+  S3_ROCKSDB_URL: {{ tpl .Values.s3config.remote.rocksdbUrl . }}
+  {{- end }}
+  FORCE_INIT: {{ ternary "True" "False" .Values.initFromS3.force | quote }}
+{{- end }}
