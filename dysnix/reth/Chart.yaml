@@ -2,7 +2,7 @@ apiVersion: v2
 name: reth
 description: Reth Ethereum execution client Helm Chart
 
-version: 0.0.6
+version: 0.0.7
 appVersion: v2.0.0
 
 keywords:
