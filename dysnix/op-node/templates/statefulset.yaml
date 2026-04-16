@@ -39,9 +39,23 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.initContainers }}
+      {{- if or .Values.init.chownData.enabled .Values.initContainers }}
       initContainers:
+      {{- if .Values.init.chownData.enabled }}
+      - name: chown-data
+        image: "{{ .Values.init.chownData.image.repository }}:{{ .Values.init.chownData.image.tag }}"
+        imagePullPolicy: {{ .Values.init.chownData.image.pullPolicy | quote }}
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        command: ["chown", "-R", "{{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }}", "{{ .Values.persistence.mountPath }}"]
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.persistence.mountPath }}
+      {{- end }}
+      {{- with .Values.initContainers }}
         {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
       {{- end }}
       containers:
       - name: op-node
@@ -67,6 +81,15 @@ spec:
         {{- end }}
         - --l2={{ .Values.config.l2.url }}
         - --l2.jwt-secret=/secrets/jwt.hex
+        {{- with .Values.config.l2.backupUnsafeSyncRpc }}
+        - --l2.backup-unsafe-sync-rpc={{ . }}
+        {{- end }}
+        {{- with .Values.config.safedb.path }}
+        - --safedb.path={{ . }}
+        {{- end }}
+        {{- if .Values.config.l1.dbCache }}
+        - --l1.db-cache
+        {{- end }}
         - --rpc.addr=0.0.0.0
         - --rpc.port={{ .Values.config.port }}
         - --network={{ .Values.config.network }}
@@ -136,6 +159,10 @@ spec:
         volumeMounts:
         - name: secrets
           mountPath: /secrets
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          mountPath: {{ .Values.persistence.mountPath }}
+        {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       {{- with .Values.sidecarContainers }}
@@ -145,3 +172,29 @@ spec:
       - name: secrets
         secret:
           secretName: {{ template "op-node.fullname" . }}
+      {{- if and .Values.persistence.enabled (eq .Values.persistence.type "hostPath") }}
+      - name: data
+        hostPath:
+          path: {{ .Values.persistence.hostPath.path }}
+          type: {{ .Values.persistence.hostPath.type }}
+      {{- end }}
+  {{- if and .Values.persistence.enabled (eq .Values.persistence.type "pvc") }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        {{- include "op-node.selectorLabels" . | nindent 8 }}
+      {{- with .Values.persistence.pvc.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      - {{ .Values.persistence.pvc.accessMode }}
+      {{- if and .Values.persistence.pvc.storageClass (ne .Values.persistence.pvc.storageClass "-") }}
+      storageClassName: {{ .Values.persistence.pvc.storageClass | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.pvc.size | quote }}
+  {{- end }}

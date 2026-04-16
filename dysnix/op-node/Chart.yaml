@@ -2,8 +2,8 @@ apiVersion: v2
 name: op-node
 description: Optimism op-node consensus-layer client Helm chart
 
-version: 0.1.1
-appVersion: v1.7.0
+version: 0.2.0
+appVersion: v1.16.12
 
 keywords:
   - rollup
@@ -19,3 +19,5 @@ sources:
 maintainers:
   - name: VladStarr
     email: vlad.derigin@dysnix.com
+  - name: Dysnix
+    email: services@dysnix.com

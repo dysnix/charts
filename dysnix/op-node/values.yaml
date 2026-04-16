@@ -41,6 +41,15 @@ command: []
 ## Extra op-node arguments (can be templated)
 extraArgs: []
 
+## initContainers configuration
+init:
+  chownData:
+    enabled: false
+    image:
+      repository: alpine
+      tag: "3"
+      pullPolicy: IfNotPresent
+
 ## Extra init containers, can be templated
 initContainers: []
 
@@ -129,6 +138,21 @@ readinessProbe:
 
 resources: {}
 
+## Persistence for safedb/L1 db cache
+persistence:
+  enabled: false
+  type: pvc
+  # type: hostPath
+  mountPath: /data
+  pvc:
+    size: 10Gi
+    accessMode: ReadWriteOnce
+    storageClass: ""           # set to "-" for manual PV
+    annotations: {}
+  hostPath:
+    path: /data/op-node
+    type: Directory            # by default you need to create directory yourself
+
 affinity: {}
 
 nodeSelector: {}
@@ -147,8 +171,12 @@ config:
     trustrpc: false                                       # enable if you trust L1 provider and want to fetch data from it faster
     rpckind: standard                                     # can be: alchemy, quicknode, infura, parity, nethermind, debug_geth, erigon, basic, any, standard
     beacon: https://ethereum-beacon-api.publicnode.com    # endpoint for L1 beacon node, used for retrieving EIP-4844 blob transactions
+    dbCache: false                                        # enable L1 db cache (requires persistence)
   l2:
     url: http://op-geth-authrpc:8551  # authrpc addr of op-geth L2 node, can also be ws://
+    backupUnsafeSyncRpc: ""                               # backup unsafe sync RPC endpoint (v1.16.12+)
+  safedb:
+    path: ""                                              # path to safe head database (requires persistence), e.g. /data/safedb
   rollup:
     config: ""                         # path to rollup config json
     loadProtocolVersions: true         # load superchain contract
