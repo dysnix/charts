@@ -228,7 +228,37 @@ startupProbe:
       - "{{ .Values.startupProbeTimestampDistinct }}"
       - {{ .Values.config.tmpdir }}/last_synced_block.txt
 
-## Main Reth config
+## reth.toml configuration (rendered into ConfigMap)
+## ref: https://reth.rs/run/configuration
+## Only non-default values need to be specified; reth uses sensible built-in defaults.
+configToml: {}
+  # stages:
+  #   headers:
+  #     downloader_max_concurrent_requests: 100
+  #   execution:
+  #     max_blocks: 500000
+  #     max_duration: '10m'
+  #   etl:
+  #     file_size: 524288000
+  # peers:
+  #   trusted_nodes: []
+  #   connect_trusted_nodes_only: false
+  #   connection_info:
+  #     max_outbound: 100
+  #     max_inbound: 30
+  # sessions:
+  #   session_command_buffer: 32
+  #   session_event_buffer: 260
+  # prune:
+  #   block_interval: 5
+  #   segments:
+  #     sender_recovery: { distance: 100000 }
+  #     transaction_lookup: "full"
+  #     receipts: { before: 1920000 }
+  #     account_history: { distance: 100000 }
+  #     storage_history: { distance: 100000 }
+
+## Main Reth config (CLI args)
 config:
   ## Use a utility like OpenSSL to create JWT via command: openssl rand -hex 32
   jwt: ""
@@ -261,6 +291,7 @@ config:
     nat: ""                # set it when reth P2P endpoint is exposed via LoadBalancer k8s service
     maxPeers: 50
     noDiscovery: false
+    nodeKey: ""            # hex-encoded secp256k1 private key for P2P identity; empty = auto-generated
     bootnodes: []
     trustedPeers: []
   metrics:

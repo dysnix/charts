@@ -14,6 +14,7 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
         {{- if or .Values.syncToS3.enabled .Values.initFromS3.enabled }}
         checksum/s3-secret: {{ include (print $.Template.BasePath "/s3-secret.yaml") . | sha256sum }}
@@ -52,6 +53,24 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
+      - name: init-config
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "cp /config-ro/reth.toml /config/reth.toml"]
+        volumeMounts:
+        - name: config-ro
+          mountPath: /config-ro
+        - name: config
+          mountPath: /config
+      {{- if .Values.config.p2p.nodeKey }}
+      - name: set-node-key
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "echo -n {{ .Values.config.p2p.nodeKey }} > {{ .Values.config.datadir }}/discovery-secret"]
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
+      {{- end }}
       {{- if .Values.init.chownData.enabled }}
       - name: chown-data
         image: "{{ .Values.init.chownData.image.repository }}:{{ .Values.init.chownData.image.tag }}"
@@ -172,6 +191,7 @@ spec:
         {{- else }}
         args:
         - node
+        - --config=/config/reth.toml
         - --datadir={{ .Values.config.datadir }}
         - --chain={{ .Values.config.chain }}
         {{- with .Values.config.syncMode }}
@@ -276,6 +296,8 @@ spec:
           {{- end }}
           protocol: UDP
         volumeMounts:
+        - name: config
+          mountPath: /config
         - name: data
           mountPath: {{ .Values.persistence.mountPath | default .Values.config.datadir }}
         - name: secrets
@@ -303,6 +325,11 @@ spec:
         resizePolicy: {{- toYaml .Values.resizePolicy | nindent 10 }}
         {{- end }}
       volumes:
+      - name: config
+        emptyDir: {}
+      - name: config-ro
+        configMap:
+          name: {{ template "reth.fullname" . }}-config
       - name: secrets
         secret:
           secretName: {{ template "reth.fullname" . }}
