@@ -171,7 +171,7 @@ config:
     trustrpc: false                                       # enable if you trust L1 provider and want to fetch data from it faster
     rpckind: standard                                     # can be: alchemy, quicknode, infura, parity, nethermind, debug_geth, erigon, basic, any, standard
     beacon: https://ethereum-beacon-api.publicnode.com    # endpoint for L1 beacon node, used for retrieving EIP-4844 blob transactions
-    dbCache: false                                        # enable L1 db cache (requires persistence)
+    cacheSize: ""                                         # override L1 cache size for blocks/receipts/transactions (default 900 in op-node)
   l2:
     url: http://op-geth-authrpc:8551  # authrpc addr of op-geth L2 node, can also be ws://
     backupUnsafeSyncRpc: ""                               # backup unsafe sync RPC endpoint (v1.16.12+)

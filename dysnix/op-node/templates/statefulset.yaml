@@ -87,8 +87,8 @@ spec:
         {{- with .Values.config.safedb.path }}
         - --safedb.path={{ . }}
         {{- end }}
-        {{- if .Values.config.l1.dbCache }}
-        - --l1.db-cache
+        {{- with .Values.config.l1.cacheSize }}
+        - --l1.cache-size={{ . }}
         {{- end }}
         - --rpc.addr=0.0.0.0
         - --rpc.port={{ .Values.config.port }}
