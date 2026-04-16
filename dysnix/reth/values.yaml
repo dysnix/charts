@@ -321,12 +321,12 @@ init:
   ## reth download: fetch chain data using reth's built-in download mechanism
   download:
     enabled: false
-    # enable nightly-only features: -y (non-interactive), --resumable
+    # enable v2 features: -y (non-interactive), --resumable
     # extraArgs can then include --minimal, --full, --archive, --with-*, etc.
-    nightly: false
+    v2: true
     # extra flags passed to `reth download`
-    # stable: --url, --storage.v2
-    # nightly: --minimal, --full, --archive, --with-txs, --with-receipts, etc.
+    # v1: --url, --storage.v2
+    # v2: --minimal, --full, --archive, --with-txs, --with-receipts, etc.
     extraArgs: []
       # - --minimal
 

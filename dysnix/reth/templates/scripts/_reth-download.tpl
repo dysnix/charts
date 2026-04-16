@@ -17,7 +17,7 @@ TERMINATED=false
 reth download \
   --datadir="$DATADIR" \
   --chain="$CHAIN" \
-{{- if .Values.init.download.nightly }}
+{{- if .Values.init.download.v2 }}
   -y --resumable \
 {{- end }}
 {{- with .Values.init.download.extraArgs }}
