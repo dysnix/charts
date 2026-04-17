@@ -166,6 +166,7 @@ config:
   port: 9545
   logLevel: INFO
   syncmode: ""                         # can be "execution-layer" if you are using "snap" syncmode on execution layer
+  syncmodeReqResp: true                # route unsafe payloads through CL path with real safe/finalized (required for op-reth on v1.16.12+)
   l1:
     url: https://1rpc.io/eth                              # eth L1 node rpc url, can also be ws://
     trustrpc: false                                       # enable if you trust L1 provider and want to fetch data from it faster

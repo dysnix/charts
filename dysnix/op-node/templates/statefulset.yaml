@@ -126,6 +126,9 @@ spec:
         {{- with .Values.config.syncmode }}
         - --syncmode={{ . }}
         {{- end }}
+        {{- if .Values.config.syncmodeReqResp }}
+        - --syncmode.req-resp=true
+        {{- end }}
         {{- with .Values.extraArgs }}
         {{- tpl (toYaml .) $ | nindent 8 }}
         {{- end }}
