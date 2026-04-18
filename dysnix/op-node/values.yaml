@@ -31,9 +31,9 @@ securityContext:
   allowPrivilegeEscalation: false
   privileged: false
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-  # runAsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
 
 ## Override op-node command (can be templated)
 command: []
@@ -44,7 +44,7 @@ extraArgs: []
 ## initContainers configuration
 init:
   chownData:
-    enabled: false
+    enabled: true
     image:
       repository: alpine
       tag: "3"

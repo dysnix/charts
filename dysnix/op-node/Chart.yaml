@@ -2,7 +2,7 @@ apiVersion: v2
 name: op-node
 description: Optimism op-node consensus-layer client Helm chart
 
-version: 0.2.3
+version: 0.2.4
 appVersion: v1.16.12
 
 keywords:
