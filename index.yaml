@@ -6607,6 +6607,29 @@ entries:
   op-node:
   - apiVersion: v2
     appVersion: v1.16.12
+    created: "2026-04-19T09:43:54.446887499Z"
+    description: Optimism op-node consensus-layer client Helm chart
+    digest: 3a2e405eed76819dd63b35aa701dc02538d7677ffb911dacea55d11152229ac7
+    keywords:
+    - rollup
+    - consensus
+    - optimism
+    - op-node
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: vlad.derigin@dysnix.com
+      name: VladStarr
+    - email: services@dysnix.com
+      name: Dysnix
+    name: op-node
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/op-node-0.2.6/op-node-0.2.6.tgz
+    version: 0.2.6
+  - apiVersion: v2
+    appVersion: v1.16.12
     created: "2026-04-19T00:18:01.863500371Z"
     description: Optimism op-node consensus-layer client Helm chart
     digest: 136dca90d654085685f33f5af3ed91ef735643ef646b07f27b89d87e7fe31b25
@@ -8188,4 +8211,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-04-19T00:18:01.864034513Z"
+generated: "2026-04-19T09:43:54.447497934Z"
