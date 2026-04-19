@@ -44,7 +44,7 @@ extraArgs: []
 ## initContainers configuration
 init:
   chownData:
-    enabled: true
+    enabled: false
     image:
       repository: alpine
       tag: "3"
