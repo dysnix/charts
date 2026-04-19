@@ -48,10 +48,10 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        command: ["chown", "-R", "{{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }}", "{{ .Values.persistence.mountPath }}"]
+        command: ["chown", "-R", "{{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }}", "{{ .Values.config.datadir }}"]
         volumeMounts:
         - name: data
-          mountPath: {{ .Values.persistence.mountPath }}
+          mountPath: {{ .Values.config.datadir }}
       {{- end }}
       {{- with .Values.initContainers }}
         {{- tpl (toYaml . | nindent 6) $ }}
@@ -61,6 +61,7 @@ spec:
       - name: op-node
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        workingDir: {{ .Values.config.datadir }}
         {{- with .Values.securityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -85,7 +86,7 @@ spec:
         - --l2.backup-unsafe-sync-rpc={{ . }}
         {{- end }}
         {{- with .Values.config.safedb.path }}
-        - --safedb.path={{ . }}
+        - --safedb.path={{ tpl . $ }}
         {{- end }}
         {{- with .Values.config.l1.cacheSize }}
         - --l1.cache-size={{ . }}
@@ -121,6 +122,15 @@ spec:
         - --p2p.listen.ip=0.0.0.0
         {{- with .Values.config.p2p.bootnodes }}
         - --p2p.bootnodes={{ join "," . }}
+        {{- end }}
+        {{- with .Values.config.p2p.privPath }}
+        - --p2p.priv.path={{ tpl . $ }}
+        {{- end }}
+        {{- with .Values.config.p2p.discoveryPath }}
+        - --p2p.discovery.path={{ tpl . $ }}
+        {{- end }}
+        {{- with .Values.config.p2p.peerstorePath }}
+        - --p2p.peerstore.path={{ tpl . $ }}
         {{- end }}
         - --log.level={{ .Values.config.logLevel }}
         {{- with .Values.config.syncmode }}
@@ -162,10 +172,8 @@ spec:
         volumeMounts:
         - name: secrets
           mountPath: /secrets
-        {{- if .Values.persistence.enabled }}
         - name: data
-          mountPath: {{ .Values.persistence.mountPath }}
-        {{- end }}
+          mountPath: {{ .Values.config.datadir }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       {{- with .Values.sidecarContainers }}
@@ -180,6 +188,9 @@ spec:
         hostPath:
           path: {{ .Values.persistence.hostPath.path }}
           type: {{ .Values.persistence.hostPath.type }}
+      {{- else if not .Values.persistence.enabled }}
+      - name: data
+        emptyDir: {}
       {{- end }}
   {{- if and .Values.persistence.enabled (eq .Values.persistence.type "pvc") }}
   volumeClaimTemplates:

@@ -21,8 +21,8 @@ updateStrategy:
 
 terminationGracePeriodSeconds: 300
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 10001
 
 securityContext:
   capabilities:
@@ -143,7 +143,6 @@ persistence:
   enabled: false
   type: pvc
   # type: hostPath
-  mountPath: /data
   pvc:
     size: 10Gi
     accessMode: ReadWriteOnce
@@ -161,6 +160,7 @@ tolerations: []
 
 ## Main op-node config
 config:
+  datadir: /data                       # base data directory
   jwt: ""                              # REQUIRED for communication with op-geth
   network: op-mainnet                  # which network to use
   port: 9545
@@ -177,7 +177,7 @@ config:
     url: http://op-geth-authrpc:8551  # authrpc addr of op-geth L2 node, can also be ws://
     backupUnsafeSyncRpc: ""                               # backup unsafe sync RPC endpoint (v1.16.12+)
   safedb:
-    path: ""                                              # path to safe head database (requires persistence), e.g. /data/safedb
+    path: ""                                              # path to safe head database (requires persistence), e.g. {{ .Values.config.datadir }}/safedb
   rollup:
     config: ""                         # path to rollup config json
     loadProtocolVersions: true         # load superchain contract
@@ -193,3 +193,6 @@ config:
     port: 9222
     useHostPort: false                 # use hostPort for p2p traffic instead of dedicated k8s svc
     bootnodes: []                      # override bootnodes
+    privPath: "{{ .Values.config.datadir }}/opnode_p2p_priv.txt"        # path for p2p private key
+    discoveryPath: "{{ .Values.config.datadir }}/opnode_discovery_db"   # path for p2p discovery database
+    peerstorePath: "{{ .Values.config.datadir }}/opnode_peerstore_db"   # path for p2p peerstore database
