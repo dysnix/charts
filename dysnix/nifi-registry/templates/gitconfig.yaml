@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ include "flowProvider.git.config.secretName" . }}
+  name: {{ .Values.flowProvider.git.config.secretName }}
   namespace: {{ .Release.Namespace }}
 type: Opaque
 data:
