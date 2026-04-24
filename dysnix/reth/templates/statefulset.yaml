@@ -224,6 +224,21 @@ spec:
         {{- if .Values.config.p2p.noDiscovery }}
         - --disable-discovery
         {{- end }}
+        {{- with .Values.config.p2p.discv5 }}
+        {{- if .enabled }}
+        - --enable-discv5-discovery
+        - --discovery.v5.port={{ .port }}
+        {{- with .addr }}
+        - --discovery.v5.addr={{ . }}
+        {{- end }}
+        {{- if .lookupInterval }}
+        - --discovery.v5.lookup-interval={{ .lookupInterval }}
+        {{- end }}
+        {{- if .disableV4 }}
+        - --disable-discv4-discovery
+        {{- end }}
+        {{- end }}
+        {{- end }}
         {{- with .Values.config.p2p.bootnodes }}
         - --bootnodes={{ join "," . }}
         {{- end }}
@@ -295,6 +310,14 @@ spec:
           hostPort: {{ .Values.config.p2p.discoveryPort }}
           {{- end }}
           protocol: UDP
+        {{- if .Values.config.p2p.discv5.enabled }}
+        - name: discv5-udp
+          containerPort: {{ .Values.config.p2p.discv5.port }}
+          {{- if .Values.config.p2p.useHostPort }}
+          hostPort: {{ .Values.config.p2p.discv5.port }}
+          {{- end }}
+          protocol: UDP
+        {{- end }}
         volumeMounts:
         - name: config
           mountPath: /config

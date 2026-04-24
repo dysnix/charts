@@ -36,6 +36,12 @@ spec:
       {{- with .nodePort }}
       nodePort: {{ . }}
       {{- end }}
+    {{- if $.Values.config.p2p.discv5.enabled }}
+    - name: discv5-udp
+      port: {{ $.Values.config.p2p.discv5.port }}
+      targetPort: discv5-udp
+      protocol: UDP
+    {{- end }}
   selector:
     {{- include "reth.selectorLabels" $ | nindent 4 }}
 {{- end }}

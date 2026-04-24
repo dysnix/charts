@@ -294,6 +294,12 @@ config:
     nodeKey: ""            # hex-encoded secp256k1 private key for P2P identity; empty = auto-generated
     bootnodes: []
     trustedPeers: []
+    discv5:
+      enabled: false
+      port: 9200           # UDP port for discv5 (reth default)
+      addr: ""             # optional; reth infers if empty
+      disableV4: false     # also pass --disable-discv4-discovery
+      lookupInterval: 0    # 0 = reth default (60s)
   metrics:
     enabled: false
     port: 9001
