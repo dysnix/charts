@@ -23,6 +23,10 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.sts.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "nifi-registry.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -30,23 +34,6 @@ spec:
       {{/* Need to restart pod when TLS certificate is updated */}}
       shareProcessNamespace: true
       {{- /* if .Values.certManager.enabled */}}{{ end }}
-      initContainers:
-        {{- if .Values.persistence.enabled }}
-        - name: take-data-dir-ownership
-          image: "{{ .Values.initContainers.alpine.image }}:{{ .Values.initContainers.alpine.tag }}"
-          command:
-            - chown
-            - -R
-            - 1000:1000
-            - /opt/nifi-registry/nifi-registry-current/database
-            - /opt/nifi-registry/nifi-registry-current/flow_storage
-          volumeMounts:
-            - name: "database"
-              mountPath: /opt/nifi-registry/nifi-registry-current/database
-            - name: "flow-storage"
-              mountPath: /opt/nifi-registry/nifi-registry-current/flow_storage
-              subPath: flow_storage
-        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -108,6 +95,9 @@ spec:
               }
               echo >> ${NIFI_REGISTRY_HOME}/conf/nifi-registry.properties
 
+           {{- if .Values.proxy.enabled }}
+              prop_replace nifi.registry.web.proxy.context.path {{ .Values.proxy.webContextPath }}
+           {{ end }}
            {{- if .Values.certManager.enabled }}
               # Note opportunity here to inject additional trusted certs named ca.crt in other
               # subdirectories of /opt/nifi/nifi-current/tls/, using custom secrets and/or configmaps.
