@@ -294,7 +294,7 @@ proxysql_cluster:
 
     service:
       # Override default core service name
-      name:
+      name: ""
 
   satellite:
     # Select the Kubernetes Resource type for the Satellite nodes,
@@ -334,7 +334,7 @@ proxysql_cluster:
 
     service:
       # Override default satellite service name
-      name:
+      name: ""
 
   # Cluster Init job
   #   Execute SQL operations/transactions to force proxysql
