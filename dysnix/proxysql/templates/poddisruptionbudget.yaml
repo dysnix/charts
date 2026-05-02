@@ -1,0 +1,48 @@
+---
+{{- if .Values.proxysql_cluster.satellite.enabled }}
+{{- if or .Values.proxysql_cluster.satellite.podDisruptionBudget .Values.podDisruptionBudget }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "proxysql.fullname" . }}-satellite
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
+  annotations:
+    helm.sh/hook-weight: "-10"
+    {{- if .Values.commonAnnotations }}
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "proxysql.satellite.selectorLabels" . | nindent 6 }}
+  {{-  toYaml (.Values.proxysql_cluster.satellite.podDisruptionBudget | default .Values.podDisruptionBudget) | nindent 2 }}
+{{- end }}
+{{- end }}
+---
+{{- if and .Values.proxysql_cluster.core.enabled .Values.proxysql_cluster.enabled }}
+{{- if or .Values.proxysql_cluster.core.podDisruptionBudget .Values.podDisruptionBudget }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "proxysql.fullname" . }}-core
+  labels:
+    {{- include "proxysql.labels" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- toYaml .Values.commonLabels | nindent 4 }}
+    {{- end }}
+  annotations:
+    helm.sh/hook-weight: "-10"
+    {{- if .Values.commonAnnotations }}
+    {{- toYaml .Values.commonAnnotations | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "proxysql.core.selectorLabels" . | nindent 6 }}
+  {{-  toYaml (.Values.proxysql_cluster.core.podDisruptionBudget | default .Values.podDisruptionBudget) | nindent 2 }}
+{{- end }}
+{{- end }}
