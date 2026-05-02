@@ -425,6 +425,10 @@ spec:
               mountPath: /opt/nifi-registry/nifi-registry-current/run
           resources:
 {{ toYaml .Values.certManager.resources | indent 12 }}
+          {{- with .Values.certManager.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         {{- /* if .Values.certManager.enabled */}}{{ end }}
       volumes:
       {{- if .Values.flowProvider.git.ssh.secretName }}
