@@ -122,3 +122,19 @@ mysql_replication_hostgroups=
   },
   {{- end }}
 )
+
+mysql_galera_hostgroups =
+(
+{{- range $i, $hg := .Values.mysqlGaleraHostgroups }}
+  {
+    writer_hostgroup={{ $hg.writer_hostgroup }}
+    backup_writer_hostgroup={{ $hg.backup_writer_hostgroup }}
+    reader_hostgroup={{ $hg.reader_hostgroup }}
+    offline_hostgroup={{ $hg.offline_hostgroup }}
+    max_writers={{ $hg.max_writers }}
+    writer_is_also_reader={{ $hg.writer_is_also_reader }}
+    max_transactions_behind={{ $hg.max_transactions_behind }}
+    active={{ $hg.active }}
+  }{{ if not (eq (add1 $i) (len $.Values.mysqlGaleraHostgroups)) }},{{ end }}
+{{- end }}
+)
