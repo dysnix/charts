@@ -447,6 +447,12 @@ spec:
           name: {{ template "nifi-registry.fullname" . }}-ssh-config
           defaultMode: 0444
       {{- /* if .Values.flowProvider.git.ssh.config */}}{{ end }}
+      {{- if .Values.flowProvider.git.config.enabled }}
+      - name: git-config
+        secret:
+          secretName: {{ .Values.flowProvider.git.config.secretName }}
+          defaultMode: 0444
+      {{- /* if .Values.flowProvider.git.config.enabled */}}{{ end }}
       {{- if .Values.security.authConf }}
       - name: auth-conf-configmap
         configMap:
