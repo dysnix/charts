@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ton.fullname" . }}
+  labels:
+    {{- include "ton.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "ton.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "ton.name" . }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        {{- include "ton.labels" . | nindent 8 }}
+    spec:
+      initContainers:
+      - name: config-initializer
+        image: "{{ .Values.image.tonnode.repository }}:{{ .Values.image.tonnode.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.tonnode.pullPolicy }}
+        command: ["/bin/bash", "/scripts/init.sh"]
+        env:
+        - name: TON_ROOT
+          value: {{ .Values.config.fullnode.root }}
+        - name: CONSOLE_PORT
+          value: {{ .Values.config.fullnode.console_port | quote }}
+        - name: LITESERVER_PORT
+          value: {{ .Values.config.fullnode.liteserver_port | quote }}
+        volumeMounts:
+        - name: data
+          mountPath: /var/ton-work/db
+        - name: scripts-volume
+          mountPath: "/scripts/init.sh"
+          subPath: init.sh
+      - name: config-generator
+        image: "python:3.11"
+        imagePullPolicy: {{ .Values.image.tonnode.pullPolicy }}
+        command: ["python3", "/scripts/config.py"]
+        env:
+        - name: TON_ROOT
+          value: {{ .Values.config.fullnode.root }}
+        - name: CONSOLE_PORT
+          value: {{ .Values.config.fullnode.console_port | quote }}
+        - name: LITESERVER_PORT
+          value: {{ .Values.config.fullnode.liteserver_port | quote }}
+        volumeMounts:
+        - name: data
+          mountPath: /var/ton-work/db
+        - name: scripts-volume
+          mountPath: /scripts/config.py
+          subPath: config.py
+      containers:
+      - name: ton-node
+        image: "{{ .Values.image.tonnode.repository }}:{{ .Values.image.tonnode.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.tonnode.pullPolicy }}
+        command: ["validator-engine", "-c", "/var/ton-work/db/config.json", "-C", "/var/ton-work/db/etc/global-config.json", "--db", "/var/ton-work/db/"]
+        env:
+         - name: TON_ROOT
+           value: {{ .Values.config.fullnode.root }}
+        ports:
+        - containerPort: {{ .Values.config.fullnode.console_port }}
+          hostPort: {{ .Values.config.fullnode.console_port }}
+          name: console
+          protocol: UDP
+        - containerPort: {{ .Values.config.fullnode.liteserver_port }}
+          hostPort: {{ .Values.config.fullnode.liteserver_port }}
+          name: liteserver
+          protocol: TCP
+        {{- if .Values.nodecheck.readinessProbe.enabled }}
+        {{- with (omit .Values.nodecheck.readinessProbe "enabled") }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.nodecheck.livenessProbe.enabled }}
+        {{- with (omit .Values.nodecheck.livenessProbe "enabled") }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.nodecheck.startupProbe.enabled }}
+        {{- with (omit .Values.nodecheck.startupProbe "enabled") }}
+        startupProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        volumeMounts:
+        {{- include "ton.volumeMountsTemplate" . | nindent 8 }}
+        - name: scripts-volume
+          mountPath: /scripts/health.sh
+          subPath: node_healthcheck.sh
+      #### API
+      - name: ton-api
+        image: toncenter/ton-http-api:v2.0.46
+        imagePullPolicy: {{ .Values.image.tonnode.pullPolicy }}
+        command: ["/bin/sh", "-c", "gunicorn -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8081 pyTON.main:app"]
+        ports:
+        - containerPort: {{ .Values.config.api.port }}
+          name: api
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: {{ include "ton.fullname" . }}-api-config
+        {{- if .Values.apicheck.readinessProbe.enabled }}
+        {{- with (omit .Values.apicheck.readinessProbe "enabled") }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.apicheck.livenessProbe.enabled }}
+        {{- with (omit .Values.apicheck.livenessProbe "enabled") }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.apicheck.startupProbe.enabled }}
+        {{- with (omit .Values.apicheck.startupProbe "enabled") }}
+        startupProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        volumeMounts:
+        {{- include "ton.volumeMountsTemplate" . | nindent 8 }}
+        - name: scripts-volume
+          mountPath: /scripts/health.py
+          subPath: api_healthcheck.py
+      volumes:
+      {{- include "ton.volumesTemplate" . | nindent 6 }}
+      - name: scripts-volume
+        configMap:
+          name: {{ include "ton.fullname" . }}-scripts
+  volumeClaimTemplates:
+  {{- include "ton.valoumeClainmTemplates" . | nindent 4 }}
