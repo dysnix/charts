@@ -95,10 +95,6 @@ spec:
         - --rpc.port={{ .Values.config.port }}
         - --network={{ .Values.config.network }}
         {{- with .Values.config.rollup }}
-        - --rollup.load-protocol-versions={{ .loadProtocolVersions }}
-        {{- with .halt }}
-        - --rollup.halt={{ . }}
-        {{- end }}
         {{- with .config }}
         - --rollup.config={{ . }}
         {{- end }}

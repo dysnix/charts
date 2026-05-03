@@ -180,8 +180,6 @@ config:
     path: ""                                              # path to safe head database (requires persistence), e.g. {{ .Values.config.datadir }}/safedb
   rollup:
     config: ""                         # path to rollup config json
-    loadProtocolVersions: true         # load superchain contract
-    halt: ""                           # possible values: major, minor, patch, none
   verifier:
     l1Confs: 0                         # number of L1 blocks to keep distance from the L1 head before deriving L2 data from
   metrics:
