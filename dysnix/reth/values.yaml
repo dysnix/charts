@@ -180,9 +180,9 @@ metricsExtra:
   enabled: false
   port: 8000
   portName: metricsextra
-  interval: 3s
+  interval: 30s
   path: /metrics
-  scrapeTimeout: 3s
+  scrapeTimeout: 15s
   args: []
   image:
     repository: ghcr.io/dysnix/block_lag_exporter
@@ -199,11 +199,11 @@ metricsExtra:
     - name: WS_URL
       value: "ws://127.0.0.1:8546"
     - name: WS_READ_TIMEOUT
-      value: "5"
+      value: "30"
     - name: LISTENER_PORT
       value: "8000"
     - name: HIST_BUCKETS
-      value: "0.1,0.2,0.3,0.4,0.6,0.8,1.0,1.6,2.5,+Inf"
+      value: "0.25,0.5,1.0,2,3,4,8,16,+Inf"
   livenessProbe:
     httpGet:
       path: /health
