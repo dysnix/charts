@@ -178,6 +178,29 @@ spec:
       {{- with .Values.sidecarContainers }}
         {{- tpl (toYaml . | nindent 6) $ }}
       {{- end }}
+      {{- if .Values.metricsExtra.enabled }}
+      - name: metrics-extra
+        image: "{{ .Values.metricsExtra.image.repository }}:{{ .Values.metricsExtra.image.tag }}"
+        imagePullPolicy: {{ .Values.metricsExtra.image.pullPolicy }}
+        {{- with .Values.metricsExtra.args }}
+        args:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.metricsExtra.env }}
+        env:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        ports:
+        - name: {{ .Values.metricsExtra.portName }}
+          containerPort: {{ .Values.metricsExtra.port }}
+          protocol: TCP
+        {{- with .Values.metricsExtra.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.metricsExtra.resources | nindent 10 }}
+      {{- end }}
       - name: reth
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}

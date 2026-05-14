@@ -1,5 +1,5 @@
+{{- if or .Values.services.metrics.enabled .Values.metricsExtra.enabled }}
 {{- with .Values.services.metrics }}
-{{- if .enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -29,9 +29,16 @@ spec:
   publishNotReadyAddresses: {{ . }}
   {{- end }}
   ports:
+    {{- if .enabled }}
     - name: metrics
       port: {{ .port }}
       targetPort: metrics
+    {{- end }}
+    {{- if $.Values.metricsExtra.enabled }}
+    - name: {{ $.Values.metricsExtra.portName }}
+      port: {{ $.Values.metricsExtra.port }}
+      targetPort: {{ $.Values.metricsExtra.portName }}
+    {{- end }}
   selector:
     {{- include "reth.selectorLabels" $ | nindent 4 }}
 {{- end }}

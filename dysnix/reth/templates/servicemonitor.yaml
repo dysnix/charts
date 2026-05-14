@@ -1,4 +1,4 @@
-{{- if and .Values.config.metrics.enabled .Values.serviceMonitor.enabled }}
+{{- if and .Values.serviceMonitor.enabled (or .Values.config.metrics.enabled .Values.metricsExtra.enabled) }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -11,11 +11,22 @@ spec:
       service-type: metrics
       {{- include "reth.labels" . | nindent 6 }}
   endpoints:
+    {{- if .Values.config.metrics.enabled }}
     - port: metrics
       path: /
       {{- with (omit .Values.serviceMonitor "enabled") }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
+    {{- end }}
+    {{- if .Values.metricsExtra.enabled }}
+    {{- with .Values.metricsExtra }}
+    - port: {{ .portName }}
+      path: {{ .path }}
+      interval: {{ .interval }}
+      scrapeTimeout: {{ .scrapeTimeout }}
+      honorLabels: true
+    {{- end }}
+    {{- end }}
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace | quote }}
