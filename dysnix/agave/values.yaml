@@ -76,7 +76,7 @@ podSecurityContext: {}
 securityContext:
   capabilities:
     add:
-      - SYS_NICE # agave 4.x requirement
+      - SYS_NICE   # agave 4.x requirement
 
 ## @param resources Set container requests and limits for CPU or memory
 ## Example:
@@ -110,7 +110,7 @@ livenessProbe:
 ##
 startupProbe:
   enabled: true
-  failureThreshold: 1440 # wait 2 hours for initial startup
+  failureThreshold: 1440   # wait 2 hours for initial startup
   periodSeconds: 5
   timeoutSeconds: 2
   tcpSocket:
