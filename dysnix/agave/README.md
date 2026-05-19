@@ -24,6 +24,7 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `podSecurityContext`              | Configure securityContext for entire pod             | `{}`                          |
 | `securityContext`                 | Configure securityContext for Agave container        | `{}`                          |
 | `resources`                       | Set container requests and limits for CPU or memory  | `{}`                          |
+| `resizePolicy`                    | specifies container resize policies                  | `{}`                          |
 | `livenessProbe`                   | Agave container livenessProbe                        | `{}`                          |
 | `startupProbe`                    | Agave container startupProbe                         | `{}`                          |
 | `readinessProbe`                  | Agave container readinessProbe                       | `{}`                          |
@@ -82,6 +83,9 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `agaveArgs`                                        | `agave-validator` arguments                                        | `{}`                                                                            |
 | `adjustLimitMemLock.enabled`                       | Enable adjustment of memory lock limit for Agave container         | `false`                                                                         |
 | `adjustLimitMemLock.limit`                         | Memory lock limit in kilobytes                                     | `2000000000`                                                                    |
+| `sysctl.image.repository`                          | Repository for the sysctl container image                          | `busybox`                                                                       |
+| `sysctl.image.tag`                                 | Tag for the sysctl container image                                 | `latest`                                                                        |
+| `sysctl.resources`                                 | Resources for the sysctl container                                 | `{}`                                                                            |
 | `gracefulShutdown.timeout`                         | Seconds to wait for graceful shutdown                              | `120`                                                                           |
 | `gracefulShutdown.options`                         | `agave-validator exit` arguments                                   | `{}`                                                                            |
 | `gracefulShutdown.options.force`                   | Do not wait for restart window, useful for non-validators          | `false`                                                                         |
@@ -89,10 +93,13 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `gracefulShutdown.options.skip-new-snapshot-check` | Skip check for a new snapshot before exit                          | `false`                                                                         |
 | `rustLog`                                          | Logging configuration                                              | `solana_metrics=warn,agave_validator::bootstrap=debug,info`                     |
 | `plugins.enabled`                                  | Enable download of Geyser plugins                                  | `false`                                                                         |
+| `plugins.image.repository`                         | Image repository for the download-plugins container                | `busybox`                                                                       |
+| `plugins.image.tag`                                | Image tag for the download-plugins container                       | `latest`                                                                        |
+| `plugins.resources`                                | Resources for the download-plugins container                       | `{}`                                                                            |
 | `plugins.containerPorts`                           | Extra container ports for added plugins                            | `[]`                                                                            |
 | `plugins.servicePorts`                             | Extra service ports for added plugins                              | `[]`                                                                            |
 | `plugins.yellowstoneGRPC.enabled`                  | Enable download of Yellowstone gRPC                                | `false`                                                                         |
-| `plugins.yellowstoneGRPC.version`                  | Yellowstone gRPC version                                           | `v11.0.1+solana.3.1.8`                                                          |
+| `plugins.yellowstoneGRPC.version`                  | Yellowstone gRPC version                                           | `v13.1.0+solana.4.0.0-rc.0`                                                     |
 | `plugins.yellowstoneGRPC.downloadURL`              | Yellowstone GRPC plugin download URL                               | `https://github.com/rpcpool/yellowstone-grpc/releases/download/`                |
 | `plugins.yellowstoneGRPC.listenIP`                 | Yellowstone gRPC listen IP address, without port                   | `$(MY_POD_IP)`                                                                  |
 | `plugins.yellowstoneGRPC.configYaml`               | Yellowstone gRPC config file                                       | `look in values.yaml`                                                           |
