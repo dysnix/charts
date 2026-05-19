@@ -8,11 +8,8 @@ RICHAT__PLUGIN_DIR="$PLUGINS_DIR/richat"
 
 yellowstone_grpc_bootstrap() {
     echo "Yellowstone gRPC: Downloading plugin version ${YELLOWSTONE_GRPC__VERSION}.."
-    mkdir -p "$YELLOWSTONE_GRPC__PLUGIN_DIR"
-    wget -qO- "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/yellowstone-grpc-geyser-release22-x86_64-unknown-linux-gnu.tar.bz2" | tar jxvf -
-
-    echo "Yellowstone gRPC: Copying lib to ${YELLOWSTONE_GRPC__PLUGIN_DIR}.."
-    cp -r /tmp/yellowstone-grpc-geyser-release/lib "$YELLOWSTONE_GRPC__PLUGIN_DIR/"
+    mkdir -p "$YELLOWSTONE_GRPC__PLUGIN_DIR/lib"
+    wget -q "${YELLOWSTONE_GRPC__DOWNLOAD_URL}/${YELLOWSTONE_GRPC__VERSION}/libyellowstone_grpc_geyser.so" -O "$YELLOWSTONE_GRPC__PLUGIN_DIR/lib/libyellowstone_grpc_geyser.so"
 
     echo "Yellowstone gRPC: Copying config file to ${YELLOWSTONE_GRPC__PLUGIN_DIR}.."
     cp -L "$YELLOWSTONE_GRPC__CONFIG_PATH" "$YELLOWSTONE_GRPC__PLUGIN_DIR/config.json"

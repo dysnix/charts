@@ -73,7 +73,10 @@ podSecurityContext: {}
 ##   runAsNonRoot: true
 ##   runAsUser: 1000
 ##
-securityContext: {}
+securityContext:
+  capabilities:
+    add:
+      - SYS_NICE   # agave 4.x requirement
 
 ## @param resources Set container requests and limits for CPU or memory
 ## Example:
@@ -107,7 +110,7 @@ livenessProbe:
 ##
 startupProbe:
   enabled: true
-  failureThreshold: 1440  # wait 2 hours for initial startup
+  failureThreshold: 1440   # wait 2 hours for initial startup
   periodSeconds: 5
   timeoutSeconds: 2
   tcpSocket:
@@ -344,19 +347,19 @@ metrics:
     ## @param metrics.prometheusRule.rules [array] Prometheus rules
     ##
     rules:
-    - alert: AgaveSlotDiff
-      annotations:
-        summary: Agave node {{ "{{ $labels.namespace }}/{{ $labels.job }}" }} is falling behind the cluster.
-        description: |
-          Last processed slot of Agave node {{ "{{ $labels.namespace }}/{{ $labels.job }}" }} is {{ "{{ $value }}" }} slots behind the cluster slot.
-      expr: >-
-        (
-          shred_insert_is_full_slot{job="{{ template "agave.fullname" . }}", namespace="{{ .Release.Namespace }}"}
-          -
-          replay_slot_stats_slot{job="{{ template "agave.fullname" . }}", namespace="{{ .Release.Namespace }}"}
-        ) >= 25
-      labels:
-        severity: warning
+      - alert: AgaveSlotDiff
+        annotations:
+          summary: Agave node {{ "{{ $labels.namespace }}/{{ $labels.job }}" }} is falling behind the cluster.
+          description: |
+            Last processed slot of Agave node {{ "{{ $labels.namespace }}/{{ $labels.job }}" }} is {{ "{{ $value }}" }} slots behind the cluster slot.
+        expr: >-
+          (
+            shred_insert_is_full_slot{job="{{ template "agave.fullname" . }}", namespace="{{ .Release.Namespace }}"}
+            -
+            replay_slot_stats_slot{job="{{ template "agave.fullname" . }}", namespace="{{ .Release.Namespace }}"}
+          ) >= 25
+        labels:
+          severity: warning
   influxdb:
     existingSecret:
       ## @param metrics.influxdb.existingSecret.name Name of secret containing InfluxDB credentials
@@ -389,10 +392,10 @@ agaveArgs:
     - entrypoint4.mainnet-beta.solana.com:8001
     - entrypoint5.mainnet-beta.solana.com:8001
   full-rpc-api: true
-  no-voting: true                                                   # enable voting if you are running a validator
+  no-voting: true
   no-os-network-limits-test: true
   no-port-check: true
-  only-known-rpc: false                                             # it is hard to download an up-to-date snapshot from default known validators
+  only-known-rpc: false
   log: "-"
   ledger: /data/ledger
   accounts: /data/accounts
@@ -405,12 +408,12 @@ agaveArgs:
   enable-extended-tx-metadata-storage: false
   enable-rpc-transaction-history: false
   rpc-pubsub-enable-block-subscription: false
-  maximum-local-snapshot-age: 1500                                  # re-download snapshot when our local is >1500 slots old
-  minimal-snapshot-download-speed: 31457280                         # 30 MB/s
-  account-index: []                                                 # secondary indexes for better rpc performance (spl-token-mint, program-id, spl-token-owner)
-  # geyser-plugin-config: /plugins/yellowstone-grpc/config.json     # uncomment to load Yellowstone GRPC plugin
-  # geyser-plugin-config: /plugins/richat/config.json               # uncomment to load Richat plugin
-  # snapshot-interval-slots: 0                                      # uncomment to disable snapshots creation
+  maximum-local-snapshot-age: 1500
+  minimal-snapshot-download-speed: 31457280
+  account-index: []
+  # geyser-plugin-config: /plugins/yellowstone-grpc/config.json
+  # geyser-plugin-config: /plugins/richat/config.json
+  # snapshot-interval-slots: 0
 
 adjustLimitMemLock:
   ## @param adjustLimitMemLock.enabled Enable adjustment of memory lock limit for Agave container
@@ -419,6 +422,25 @@ adjustLimitMemLock:
   ## @param adjustLimitMemLock.limit Memory lock limit in kilobytes
   ##
   limit: 2000000000
+
+sysctl:
+  image:
+    ## @param sysctl.image.repository Repository for the sysctl container image
+    ##
+    repository: busybox
+    ## @param sysctl.image.tag Tag for the sysctl container image
+    ##
+    tag: latest
+  ## @param sysctl.resources Resources for the sysctl container
+  ## Example:
+  ## requests:
+  ##   cpu: 100m
+  ##   memory: 256Mi
+  ## limits:
+  ##   cpu: 100m
+  ##   memory: 256Mi
+  ##
+  resources: {}
 
 ## Graceful shutdown options
 ##
@@ -449,6 +471,23 @@ plugins:
   ## @param plugins.enabled Enable download of Geyser plugins
   ##
   enabled: false
+  image:
+    ## @param plugins.image.repository Image repository for the download-plugins container
+    ##
+    repository: busybox
+    ## @param plugins.image.tag Image tag for the download-plugins container
+    ##
+    tag: latest
+  ## @param plugins.resources Resources for the download-plugins container
+  ## Example:
+  ## requests:
+  ##   cpu: 100m
+  ##   memory: 256Mi
+  ## limits:
+  ##   cpu: 100m
+  ##   memory: 256Mi
+  ##
+  resources: {}
   ## @param plugins.containerPorts [array] Extra container ports for added plugins
   ## Example:
   ## - name: grpc
@@ -472,7 +511,7 @@ plugins:
     enabled: false
     ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
-    version: v11.0.1+solana.3.1.8
+    version: v13.1.0+solana.4.0.0-rc.0
     ## @param plugins.yellowstoneGRPC.downloadURL Yellowstone GRPC plugin download URL
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/

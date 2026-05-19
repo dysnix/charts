@@ -32,8 +32,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "agave.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- /* for better p2p connectivity */}}
       {{- if .Values.hostNetwork }}
       hostNetwork: true
@@ -41,14 +43,18 @@ spec:
       {{- end }}
       initContainers:
         - name: sysctl
-          image: busybox:latest
+          image: "{{ .Values.sysctl.image.repository }}:{{ .Values.sysctl.image.tag }}"
           securityContext:
             privileged: true
             capabilities:
               add:
-                - CAP_SYS_ADMIN
-                - CAP_NET_ADMIN
+                - SYS_ADMIN
+                - NET_ADMIN
           command: ["sh", "-c"]
+          {{- with .Values.sysctl.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- /* as per agave validator requirements */}}
           args:
           - |
@@ -61,8 +67,12 @@ spec:
       {{- with .Values.plugins }}
       {{- if .enabled }}
         - name: download-plugins
-          image: busybox:latest
+          image: "{{ .image.repository }}:{{ .image.tag }}"
           command: ["/scripts/download-plugins.sh"]
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: MY_POD_IP
               valueFrom:
