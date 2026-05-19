@@ -392,10 +392,10 @@ agaveArgs:
     - entrypoint4.mainnet-beta.solana.com:8001
     - entrypoint5.mainnet-beta.solana.com:8001
   full-rpc-api: true
-  no-voting: true # enable voting if you are running a validator
+  no-voting: true
   no-os-network-limits-test: true
   no-port-check: true
-  only-known-rpc: false # it is hard to download an up-to-date snapshot from default known validators
+  only-known-rpc: false
   log: "-"
   ledger: /data/ledger
   accounts: /data/accounts
@@ -408,12 +408,12 @@ agaveArgs:
   enable-extended-tx-metadata-storage: false
   enable-rpc-transaction-history: false
   rpc-pubsub-enable-block-subscription: false
-  maximum-local-snapshot-age: 1500 # re-download snapshot when our local is >1500 slots old
-  minimal-snapshot-download-speed: 31457280 # 30 MB/s
-  account-index: [] # secondary indexes for better rpc performance (spl-token-mint, program-id, spl-token-owner)
-  # geyser-plugin-config: /plugins/yellowstone-grpc/config.json     # uncomment to load Yellowstone GRPC plugin
-  # geyser-plugin-config: /plugins/richat/config.json               # uncomment to load Richat plugin
-  # snapshot-interval-slots: 0                                      # uncomment to disable snapshots creation
+  maximum-local-snapshot-age: 1500
+  minimal-snapshot-download-speed: 31457280
+  account-index: []
+  # geyser-plugin-config: /plugins/yellowstone-grpc/config.json
+  # geyser-plugin-config: /plugins/richat/config.json
+  # snapshot-interval-slots: 0
 
 adjustLimitMemLock:
   ## @param adjustLimitMemLock.enabled Enable adjustment of memory lock limit for Agave container
