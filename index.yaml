@@ -8246,6 +8246,29 @@ entries:
     version: 0.1.0
   smokeping-prober:
   - apiVersion: v2
+    appVersion: v0.11.0
+    created: "2026-05-21T07:50:48.089319183Z"
+    description: Prometheus style smokeping exporter
+    digest: 199b4caf11bc5d660ef0f5b06c983a29197717a4f560fd97f108a8c829cbb755
+    home: https://github.com/SuperQ/smokeping_prober
+    keywords:
+    - monitoring
+    - prometheus
+    - smokeping
+    - icmp
+    - latency
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: smokeping-prober
+    sources:
+    - https://github.com/SuperQ/smokeping_prober
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/smokeping-prober-0.2.1/smokeping-prober-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
     appVersion: 0.11.0
     created: "2026-05-21T07:44:55.454663045Z"
     description: Prometheus style smokeping exporter
@@ -8407,4 +8430,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-05-21T07:44:55.455130055Z"
+generated: "2026-05-21T07:50:48.090054783Z"
