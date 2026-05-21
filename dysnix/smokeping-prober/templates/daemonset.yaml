@@ -33,7 +33,8 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ include "smokeping-prober.serviceAccountName" . }}
+      ## smokeping_prober has no Kubernetes API client — skip the SA token mount.
+      automountServiceAccountToken: false
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

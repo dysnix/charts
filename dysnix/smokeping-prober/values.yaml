@@ -134,11 +134,6 @@ hostNetwork: false
 
 dnsPolicy: ""
 
-serviceAccount:
-  create: true
-  name: ""
-  annotations: {}
-
 updateStrategy: {}
   # type: RollingUpdate
   # rollingUpdate:
