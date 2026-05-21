@@ -93,6 +93,15 @@ resources:
     cpu: "2"
     memory: 128Mi
 
+## Per-resource container resize policy (Kubernetes 1.27+ in-place resize).
+## Set `restartPolicy: NotRequired` so VPA `InPlaceOrRecreate` can resize without
+## restarting the pod. Default empty list = container restart required on resize.
+resizePolicy: []
+  # - resourceName: cpu
+  #   restartPolicy: NotRequired
+  # - resourceName: memory
+  #   restartPolicy: NotRequired
+
 ## CAP_NET_RAW is required to send ICMP packets without privileged mode.
 securityContext:
   capabilities:
