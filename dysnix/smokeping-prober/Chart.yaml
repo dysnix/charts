@@ -2,8 +2,8 @@ apiVersion: v2
 name: smokeping-prober
 description: Prometheus style smokeping exporter
 type: application
-version: 0.2.0
-appVersion: "0.11.0"
+version: 0.2.1
+appVersion: "v0.11.0"
 keywords:
   - monitoring
   - prometheus
