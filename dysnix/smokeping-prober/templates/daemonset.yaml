@@ -33,7 +33,11 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      ## smokeping_prober has no Kubernetes API client — skip the SA token mount.
+      ## smokeping_prober has no Kubernetes API client. Use the namespace
+      ## default SA explicitly (so Helm 3-way merge overwrites any prior
+      ## serviceAccountName set by older chart versions) and skip the token
+      ## mount.
+      serviceAccountName: default
       automountServiceAccountToken: false
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
