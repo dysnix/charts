@@ -8244,6 +8244,30 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/servicemonitor-apps-0.1.0/servicemonitor-apps-0.1.0.tgz
     version: 0.1.0
+  smokeping-prober:
+  - apiVersion: v2
+    appVersion: 0.11.0
+    created: "2026-05-21T07:26:08.374948897Z"
+    description: Prometheus style smokeping exporter
+    digest: 164ef54a564e870a273d267f9f32a547c23c622c06f6c37847f96505f5ff15a5
+    home: https://github.com/SuperQ/smokeping_prober
+    keywords:
+    - monitoring
+    - prometheus
+    - smokeping
+    - icmp
+    - latency
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: smokeping-prober
+    sources:
+    - https://github.com/SuperQ/smokeping_prober
+    - https://github.com/dysnix/charts
+    type: application
+    urls:
+    - https://github.com/dysnix/charts/releases/download/smokeping-prober-0.1.0/smokeping-prober-0.1.0.tgz
+    version: 0.1.0
   solana:
   - apiVersion: v2
     appVersion: v1.18.15
@@ -8360,4 +8384,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-05-19T12:40:57.796075418Z"
+generated: "2026-05-21T07:26:08.375680322Z"
