@@ -1,0 +1,11 @@
+serviceMonitor:
+  enabled: true
+
+config:
+  targets:
+    - hosts:
+        - 1.1.1.1
+        - 8.8.8.8
+        - 9.9.9.9
+      interval: 1s
+      network: ip4

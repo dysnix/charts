@@ -1,0 +1,19 @@
+apiVersion: v2
+name: smokeping-prober
+description: Prometheus style smokeping exporter
+type: application
+version: 0.1.0
+appVersion: "0.11.0"
+keywords:
+  - monitoring
+  - prometheus
+  - smokeping
+  - icmp
+  - latency
+home: https://github.com/SuperQ/smokeping_prober
+sources:
+  - https://github.com/SuperQ/smokeping_prober
+  - https://github.com/dysnix/charts
+maintainers:
+  - name: Dysnix
+    email: services@dysnix.com

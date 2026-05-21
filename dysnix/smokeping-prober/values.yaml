@@ -1,0 +1,136 @@
+# Default values for smokeping-prober.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: docker.io/superque/smokeping-prober
+  tag: ""  # defaults to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+## Smokeping prober configuration written to a ConfigMap and mounted into the
+## container at `configFile.mountPath`. The container is started with
+## `--config.file=<mountPath>`. See https://github.com/SuperQ/smokeping_prober
+## for the full schema.
+##
+## Example:
+## config:
+##   targets:
+##     - hosts:
+##         - 1.1.1.1
+##         - 8.8.8.8
+##       interval: 1s
+##       network: ip4
+##       protocol: icmp
+##       size: 56
+config:
+  targets:
+    - hosts:
+        - 1.1.1.1
+        - 8.8.8.8
+      interval: 1s
+
+configFile:
+  mountPath: /etc/smokeping_prober/config.yml
+
+## Extra CLI flags passed to smokeping_prober in addition to --config.file.
+extraArgs: []
+  # - --ping.interval=1s
+  # - --web.listen-address=:9374
+
+## Workload kind: DaemonSet (default, one pod per node) or Deployment.
+kind: DaemonSet
+
+## Only used when kind=Deployment.
+replicaCount: 1
+
+## Container port for the metrics endpoint. Must match --web.listen-address if
+## overridden via extraArgs.
+containerPort: 9374
+
+service:
+  type: ClusterIP
+  port: 9374
+  annotations: {}
+
+serviceMonitor:
+  enabled: false
+  interval: 5s
+  scrapeTimeout: 5s
+  path: /metrics
+  labels: {}
+  ## Drop per-pod labels so DaemonSet pod restarts don't create new metric
+  ## series. node_name / node_ip from relabelings identify the source instead.
+  relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_node_name]
+      targetLabel: node_name
+      action: replace
+    - sourceLabels: [__meta_kubernetes_pod_host_ip]
+      targetLabel: node_ip
+      action: replace
+  metricRelabelings:
+    - action: labeldrop
+      regex: "(instance|pod)"
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: metrics
+  initialDelaySeconds: 10
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe: {}
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 30Mi
+  limits:
+    cpu: "2"
+    memory: 128Mi
+
+## CAP_NET_RAW is required to send ICMP packets without privileged mode.
+securityContext:
+  capabilities:
+    add: ["CAP_NET_RAW"]
+
+podSecurityContext: {}
+
+env:
+  - name: GOMAXPROCS
+    value: "1"
+
+extraEnv: []
+
+podAnnotations: {}
+
+podLabels: {}
+
+nodeSelector: {}
+
+## Default tolerates everything so the DaemonSet probes from every node.
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+affinity: {}
+
+priorityClassName: ""
+
+hostNetwork: false
+
+dnsPolicy: ""
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+updateStrategy: {}
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   maxUnavailable: 1

@@ -1,0 +1,13 @@
+smokeping-prober installed as a {{ .Values.kind }}.
+
+Metrics service:
+  {{ include "smokeping-prober.fullname" . }}.{{ .Release.Namespace }}.svc:{{ .Values.service.port }}/metrics
+
+Config is loaded from ConfigMap {{ include "smokeping-prober.fullname" . }} at
+{{ .Values.configFile.mountPath }}. Edit `config.targets` in values.yaml to
+change the probe list; pods restart automatically via checksum annotation.
+
+{{- if not .Values.serviceMonitor.enabled }}
+
+Prometheus scraping: set `serviceMonitor.enabled: true` to create a ServiceMonitor.
+{{- end }}
