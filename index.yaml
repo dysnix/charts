@@ -1897,6 +1897,28 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/base-0.2.0/base-0.2.0.tgz
     version: 0.2.0
+  base-consensus:
+  - apiVersion: v2
+    appVersion: v1.1.1
+    created: "2026-06-19T08:47:41.87320017Z"
+    description: Base consensus-layer client Helm chart
+    digest: f9cd3ddfcd76197846002bf6ee0414e8bac19b4fe920e91a8c26510491f1cb01
+    keywords:
+    - rollup
+    - consensus
+    - base
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: base-consensus
+    sources:
+    - https://github.com/base/node
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/base-consensus-0.2.0/base-consensus-0.2.0.tgz
+    version: 0.2.0
   bitcoind:
   - apiVersion: v1
     appVersion: 0.29.0
@@ -8507,4 +8529,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-06-19T08:21:45.966859039Z"
+generated: "2026-06-19T08:47:41.874296759Z"
