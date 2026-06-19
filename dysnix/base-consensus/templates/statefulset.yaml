@@ -1,0 +1,229 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "base-consensus.fullname" . }}
+  labels:
+    {{- include "base-consensus.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ template "base-consensus.name" . }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "base-consensus.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-scripts: {{ include (print $.Template.BasePath "/configmap-scripts.yaml") . | sha256sum }}
+      labels:
+        {{- include "base-consensus.selectorLabels" . | nindent 8 }}
+    spec:
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "base-consensus.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.init.chownData.enabled .Values.initContainers }}
+      initContainers:
+      {{- if .Values.init.chownData.enabled }}
+      - name: chown-data
+        image: "{{ .Values.init.chownData.image.repository }}:{{ .Values.init.chownData.image.tag }}"
+        imagePullPolicy: {{ .Values.init.chownData.image.pullPolicy | quote }}
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        command: ["chown", "-R", "{{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }}", "{{ .Values.config.datadir }}"]
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.config.datadir }}
+      {{- end }}
+      {{- with .Values.initContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
+      {{- end }}
+      containers:
+      - name: consensus
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+        workingDir: {{ .Values.config.datadir }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.resizePolicy }}
+        resizePolicy:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.command }}
+        command:
+          {{- tpl (toYaml .Values.command) $ | nindent 10 }}
+        {{- else }}
+        command:
+        - /app/base-consensus
+        - {{ .Values.config.subcommand | default "node" }}
+        {{- end }}
+        {{- if .Values.argsOverride }}
+        args:
+          {{- tpl (toYaml .Values.argsOverride) $ | nindent 10 }}
+        {{- else }}
+        args:
+        - --chain={{ .Values.config.chain }}
+        {{- with .Values.config.mode }}
+        - --mode={{ . }}
+        {{- end }}
+        # Verbosity: 1=ERROR 2=WARN 3=INFO 4=DEBUG 5=TRACE (clap count). Default to 3 (INFO).
+        - {{ printf "-%s" (repeat (int .Values.config.logVerbosity) "v") }}
+        {{- with .Values.config.l1.ethRpc }}
+        - --l1-eth-rpc={{ . }}
+        {{- end }}
+        {{- with .Values.config.l1.beacon }}
+        - --l1-beacon={{ . }}
+        {{- end }}
+        {{- if .Values.config.l1.trustRpc }}
+        - --l1-trust-rpc
+        {{- end }}
+        {{- with .Values.config.l1.verifierConfs }}
+        - --l1.verifier-confs={{ . }}
+        {{- end }}
+        {{- with .Values.config.l2.engineRpc }}
+        - --l2-engine-rpc={{ . }}
+        {{- end }}
+        - --l2-engine-jwt-secret=/secrets/jwt.hex
+        {{- if .Values.config.l2.trustRpc }}
+        - --l2-trust-rpc
+        {{- end }}
+        {{- with .Values.config.safedb.path }}
+        - --safedb.path={{ tpl . $ }}
+        {{- end }}
+        {{- with .Values.config.checkpoint.path }}
+        - --checkpoint.path={{ tpl . $ }}
+        {{- end }}
+        {{- if .Values.config.rpc.disabled }}
+        - --rpc.disabled
+        {{- else }}
+        - --rpc.addr={{ .Values.config.rpc.addr }}
+        # `base-consensus node` exposes RPC port via the bare `--port` flag.
+        - --port={{ .Values.config.rpc.port }}
+        {{- end }}
+        {{- if .Values.config.metrics.enabled }}
+        - --metrics.enabled
+        - --metrics.addr={{ .Values.config.metrics.addr }}
+        - --metrics.port={{ .Values.config.metrics.port }}
+        {{- end }}
+        - --p2p.listen.ip={{ .Values.config.p2p.listenIp }}
+        - --p2p.listen.tcp={{ .Values.config.p2p.port }}
+        - --p2p.listen.udp={{ .Values.config.p2p.port }}
+        {{- with .Values.config.p2p.advertiseIp }}
+        - --p2p.advertise.ip={{ . }}
+        {{- end }}
+        {{- if .Values.config.p2p.noDiscovery }}
+        - --p2p.no-discovery
+        {{- end }}
+        {{- with .Values.config.p2p.bootnodes }}
+        - --p2p.bootnodes={{ join "," . }}
+        {{- end }}
+        {{- with .Values.config.p2p.privPath }}
+        - --p2p.priv.path={{ tpl . $ }}
+        {{- end }}
+        {{- with .Values.config.p2p.bootstore }}
+        - --p2p.bootstore={{ tpl . $ }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.extraArgs }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+        {{- end }}
+        ports:
+        {{- if not .Values.config.rpc.disabled }}
+        - name: rpc
+          containerPort: {{ .Values.config.rpc.port }}
+        {{- end }}
+        {{- if .Values.config.metrics.enabled }}
+        - name: metrics
+          containerPort: {{ .Values.config.metrics.port }}
+        {{- end }}
+        - name: p2p-tcp
+          containerPort: {{ .Values.config.p2p.port }}
+          protocol: TCP
+          {{- if .Values.config.p2p.useHostPort }}
+          hostPort: {{ .Values.config.p2p.port }}
+          {{- end }}
+        - name: p2p-udp
+          containerPort: {{ .Values.config.p2p.port }}
+          protocol: UDP
+          {{- if .Values.config.p2p.useHostPort }}
+          hostPort: {{ .Values.config.p2p.port }}
+          {{- end }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          {{- include "base-consensus.healthcheck" (list $ .Values.livenessProbe) | nindent 10 }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          {{- include "base-consensus.healthcheck" (list $ .Values.readinessProbe) | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+        - name: scripts
+          mountPath: /scripts
+        - name: data
+          mountPath: {{ .Values.config.datadir }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- with .Values.sidecarContainers }}
+        {{- tpl (toYaml . | nindent 6) $ }}
+      {{- end }}
+      volumes:
+      - name: secrets
+        secret:
+          secretName: {{ template "base-consensus.fullname" . }}
+      - name: scripts
+        configMap:
+          name: {{ template "base-consensus.fullname" . }}-scripts
+      {{- if and .Values.persistence.enabled (eq .Values.persistence.type "hostPath") }}
+      - name: data
+        hostPath:
+          path: {{ .Values.persistence.hostPath.path }}
+          type: {{ .Values.persistence.hostPath.type }}
+      {{- else if not .Values.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+      {{- end }}
+  {{- if and .Values.persistence.enabled (eq .Values.persistence.type "pvc") }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        {{- include "base-consensus.selectorLabels" . | nindent 8 }}
+      {{- with .Values.persistence.pvc.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      accessModes:
+      - {{ .Values.persistence.pvc.accessMode }}
+      {{- if and .Values.persistence.pvc.storageClass (ne .Values.persistence.pvc.storageClass "-") }}
+      storageClassName: {{ .Values.persistence.pvc.storageClass | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.pvc.size | quote }}
+  {{- end }}

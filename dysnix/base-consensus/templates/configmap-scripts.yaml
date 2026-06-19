@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "base-consensus.fullname" . }}-scripts
+  labels:
+    {{- include "base-consensus.labels" . | nindent 4 }}
+data:
+  liveness.sh: |-
+    {{- include (print $.Template.BasePath "/scripts/_liveness.tpl") . | nindent 4 }}

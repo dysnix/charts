@@ -1,0 +1,21 @@
+apiVersion: v2
+name: base-consensus
+description: Base consensus-layer client Helm chart
+
+version: 0.2.0
+appVersion: v1.1.1
+
+keywords:
+  - rollup
+  - consensus
+  - base
+  - cryptocurrency
+  - blockchain
+
+sources:
+  - https://github.com/base/node
+  - https://github.com/dysnix/charts
+
+maintainers:
+  - name: Dysnix
+    email: services@dysnix.com

@@ -1,0 +1,240 @@
+image:
+  repository: ghcr.io/base/node-reth
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+updateStrategy:
+  type: RollingUpdate
+
+terminationGracePeriodSeconds: 300
+
+podSecurityContext:
+  fsGroup: 10001
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  allowPrivilegeEscalation: false
+  privileged: false
+  # readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+
+## Override base-consensus container command (can be templated). Default in
+## statefulset is `["/app/base-consensus", "node"]` which runs the rollup node
+## subcommand. Set to e.g. `["/app/base-consensus", "follow"]` to run a follow
+## node and pair it with `argsOverride`.
+command: []
+
+## Replace the chart-rendered arg list verbatim (can be templated). When set,
+## the chart's --chain/--l1/--l2/--p2p/... block is skipped and only these are
+## passed. Useful for the `follow` subcommand or one-off debug runs.
+argsOverride: []
+
+## Extra arguments appended after the chart-rendered args (can be templated).
+extraArgs: []
+
+## initContainers configuration
+init:
+  chownData:
+    enabled: false
+    image:
+      repository: alpine
+      tag: "3"
+      pullPolicy: IfNotPresent
+
+## Extra init containers, can be templated
+initContainers: []
+
+## Sidecar containers, can be templated
+sidecarContainers: []
+
+## Services config
+services:
+  p2p:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 9222
+    # it's better to set nodePort equal to .Values.config.p2p.port when the svc type is "NodePort"
+    # nodePort: 9222
+    annotations: {}
+    publishNotReadyAddresses: true
+  p2pDiscovery:
+    enabled: true
+    type: NodePort
+    loadBalancerIP: ""
+    port: 9222
+    # nodePort: 9222
+    annotations: {}
+    publishNotReadyAddresses: true
+  rpc:
+    enabled: true
+    type: ClusterIP
+    port: 9545
+    annotations: {}
+  metrics:
+    enabled: true
+    type: ClusterIP
+    port: 9090
+    annotations: {}
+    publishNotReadyAddresses: true
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []
+
+# Create Prometheus Operator serviceMonitor
+serviceMonitor:
+  enabled: false
+  # interval: 10s
+  # scrapeTimeout: 2s
+  # honorLabels: true
+  # relabelings: []
+  # metricRelabelings: []
+
+## Liveness probe runs /scripts/liveness.sh which:
+##   1. checks /healthz on the RPC port (fast guard for half-dead HTTP),
+##   2. polls optimism_syncStatus.unsafe_l2.number and fails if the head
+##      hasn't advanced for the configured number of seconds (300 below).
+## See _liveness.tpl for the full failure-mode rationale.
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 120
+  periodSeconds: 60
+  failureThreshold: 3
+  timeoutSeconds: 10
+  exec:
+    command:
+      - bash
+      - /scripts/liveness.sh
+      - "300"
+
+readinessProbe:
+  enabled: false
+
+resources: {}
+
+## @param resizePolicy specifies container resize policies
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/resize-container-resources/#container-resize-policies
+resizePolicy: {}
+
+## Persistence for safedb / p2p databases
+persistence:
+  enabled: false
+  type: pvc
+  # type: hostPath
+  pvc:
+    size: 10Gi
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    annotations: {}
+  hostPath:
+    path: /data/base-consensus
+    type: Directory
+
+affinity: {}
+
+nodeSelector: {}
+
+tolerations:
+  - key: node.kubernetes.io/not-ready
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 3600
+  - key: node.kubernetes.io/unreachable
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 3600
+
+## Main base-consensus config
+##
+## CLI source of truth: bin/consensus/src/cli.rs in dysnix/base.
+## Args use clap subcommand `node` (default) or `follow`. Most flags map to
+## `BASE_NODE_*` env vars too.
+config:
+  ## Base data directory; mounted as `data` volume.
+  datadir: /data
+  ## Working dir set to datadir in statefulset.
+  jwt: ""                              # REQUIRED — shared with execution client
+  ## L2 chain id or name. 8453 = Base mainnet, 84532 = Base Sepolia.
+  ## CLI flag: --chain / -n
+  chain: "84532"
+  ## Subcommand to run (`node` or `follow`).
+  subcommand: node
+  ## Node mode (NodeMode enum: Validator, Sequencer). Empty = binary default (Validator).
+  mode: ""
+  ## Verbosity: 1=ERROR 2=WARN 3=INFO 4=DEBUG 5=TRACE (clap count form, rendered as -vvv).
+  logVerbosity: 3
+  l1:
+    ## CLI: --l1-eth-rpc (alias --l1)
+    ethRpc: ""
+    ## CLI: --l1-beacon (alias --l1.beacon)
+    beacon: ""
+    ## CLI: --l1-trust-rpc (alias --l1.trust-rpc)
+    trustRpc: false
+    ## CLI: --l1.verifier-confs. Empty = binary default (0).
+    verifierConfs: ""
+  l2:
+    ## CLI: --l2-engine-rpc (alias --l2). Engine API of the execution client.
+    engineRpc: ""
+    ## CLI: --l2-trust-rpc (alias --l2.trust-rpc)
+    trustRpc: false
+  ## CLI: --safedb.path  (path rendered with `tpl`).
+  safedb:
+    path: ""
+  ## CLI: --checkpoint.path  (path rendered with `tpl`).
+  ## Required on base-consensus >= 0.9.1 (node-reth >= 0.16.1) — the binary
+  ## defaults to ~/.base which is unwritable under runAsNonRoot. Defaulted
+  ## under datadir to mirror safedb so chownData.enabled covers it.
+  checkpoint:
+    path: '{{ .Values.config.datadir }}/checkpoint'
+  rpc:
+    ## CLI: --rpc.addr
+    addr: 0.0.0.0
+    ## CLI: --port  (yes, the bare `--port` is the RPC port for `base-consensus node`).
+    port: 9545
+    ## CLI: --rpc.disabled  — disables the JSON-RPC server entirely
+    disabled: false
+  metrics:
+    ## CLI: --metrics.enabled / env BASE_NODE_METRICS_ENABLED
+    enabled: true
+    ## CLI: --metrics.addr
+    addr: 0.0.0.0
+    ## CLI: --metrics.port  (default 9090)
+    port: 9090
+  p2p:
+    ## CLI: --p2p.listen.tcp / --p2p.listen.udp  (chart binds both to this value).
+    port: 9222
+    ## CLI: --p2p.listen.ip
+    listenIp: 0.0.0.0
+    ## Bind the container p2p port to the node's host port.
+    useHostPort: false
+    ## CLI: --p2p.no-discovery — disables Discv5.
+    noDiscovery: false
+    ## CLI: --p2p.advertise.ip (host or IP). Disables ENR auto-update when set.
+    advertiseIp: ""
+    ## CLI: --p2p.bootnodes (comma-joined when rendered)
+    bootnodes: []
+    ## CLI: --p2p.priv.path. Path is rendered with `tpl`.
+    privPath: "{{ .Values.config.datadir }}/p2p_priv.txt"
+    ## CLI: --p2p.bootstore  (directory persisting the discovered bootstrap set).
+    bootstore: "{{ .Values.config.datadir }}/bootstore"
