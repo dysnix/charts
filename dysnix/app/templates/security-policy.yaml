@@ -1,0 +1,43 @@
+{{/* vim: set filetype=helm: */}}
+{{- define "app.resources.securitypolicy" -}}
+{{- if and .Values.securityPolicy.enabled (not .Values.securityPolicy.targetRefs) (not .Values.httpRoute.enabled) }}
+{{- fail "securityPolicy requires httpRoute.enabled=true when securityPolicy.targetRefs is not set" }}
+{{- end }}
+{{- if .Values.securityPolicy.enabled }}
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: {{ include "app.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  targetRefs:
+    {{- if .Values.securityPolicy.targetRefs }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.securityPolicy.targetRefs "context" $) | nindent 4 }}
+    {{- else }}
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: {{ include "app.fullname" . }}
+    {{- end }}
+  {{- if .Values.securityPolicy.authorization }}
+  authorization:
+    {{- include "common.tplvalues.render" (dict "value" .Values.securityPolicy.authorization "context" $) | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end -}}
+
+{{- if eq "direct" (include "app.chart.mode" .) -}}
+  {{- range $_, $component := concat (list "") $.Values.app.components -}}
+    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
+    {{- include "app.securitypolicy" (dict "component" $component "values" $values "top" $) -}}
+  {{- end -}}
+{{- end -}}
