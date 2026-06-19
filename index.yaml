@@ -536,6 +536,37 @@ entries:
     version: 1.9.9
   app:
   - apiVersion: v2
+    created: "2026-06-19T08:21:45.96626132Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.2.2
+    description: Generic application Helm chart
+    digest: 4f2b9b5196dd157023a5bb057860e17567011a21e070ffd4cd6e46b32ebb97dc
+    home: https://github.com/dysnix/charts/tree/main/dysnix/app
+    icon: https://dysnix.com/images/logo.svg
+    keywords:
+    - common
+    - helper
+    - template
+    - function
+    - library
+    - bitnami
+    - dysnix
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    - email: dennybaa@gmail.com
+      name: dennybaa
+    name: app
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/app-0.99.22/app-0.99.22.tgz
+    version: 0.99.22
+  - apiVersion: v2
     created: "2026-02-26T09:35:06.676780025Z"
     dependencies:
     - name: common
@@ -8476,4 +8507,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-05-21T08:08:07.015366567Z"
+generated: "2026-06-19T08:21:45.966859039Z"
