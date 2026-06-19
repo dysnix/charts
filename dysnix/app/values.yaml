@@ -738,6 +738,77 @@ ingress:
   ##
   extraRules: []
 
+## HTTPRoute parameters (Gateway API)
+## ref: https://gateway-api.sigs.k8s.io/api-types/httproute/
+##
+httpRoute:
+  ## @param httpRoute.enabled Enable HTTPRoute record generation
+  ##
+  enabled: false
+  ## @param httpRoute.annotations Additional annotations for the HTTPRoute
+  ##
+  annotations: {}
+  ## @param httpRoute.parentRefs Parent gateway references
+  ## e.g:
+  ## parentRefs:
+  ##   - name: envoy-metallb
+  ##     namespace: envoy-ingress
+  ##     sectionName: https
+  ##
+  parentRefs: []
+  ## @param httpRoute.hostnames List of hostnames for the HTTPRoute
+  ## e.g:
+  ## hostnames:
+  ##   - app.example.com
+  ##
+  hostnames: []
+  ## @param httpRoute.servicePort Service port for the default backend rule (required when rules is not set)
+  ##
+  servicePort: ""
+  ## @param httpRoute.serviceName Override the backend service name. Defaults to the app's own service (app.fullname)
+  ##
+  serviceName: ""
+  ## @param httpRoute.rules Custom HTTPRoute rules. If empty, a default rule routing to the app service is generated
+  ## e.g:
+  ## rules:
+  ##   - matches:
+  ##       - path:
+  ##           type: PathPrefix
+  ##           value: /
+  ##     backendRefs:
+  ##       - name: my-service
+  ##         port: 8080
+  ##
+  rules: []
+
+## SecurityPolicy parameters (Envoy Gateway)
+## ref: https://gateway.envoyproxy.io/docs/api/extension_types/#securitypolicy
+##
+securityPolicy:
+  ## @param securityPolicy.enabled Enable SecurityPolicy generation. Requires httpRoute.enabled: true unless securityPolicy.targetRefs is set
+  ##
+  enabled: false
+  ## @param securityPolicy.targetRefs Custom target references. Defaults to the app's HTTPRoute
+  ## e.g:
+  ## targetRefs:
+  ##   - group: gateway.networking.k8s.io
+  ##     kind: HTTPRoute
+  ##     name: my-route
+  ##
+  targetRefs: []
+  ## @param securityPolicy.authorization Authorization configuration
+  ## e.g:
+  ## authorization:
+  ##   defaultAction: Deny
+  ##   rules:
+  ##     - name: allow-whitelist
+  ##       action: Allow
+  ##       principal:
+  ##         clientCIDRs:
+  ##           - "1.2.3.4/32"
+  ##
+  authorization: {}
+
 ## @section Persistence Parameters
 ##
 

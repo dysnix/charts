@@ -103,3 +103,11 @@ Usage
 {{- define "app.vpa" -}}
   {{- include "app.resources.include" (dict "resource" "vpa" | merge .) -}}
 {{- end -}}
+
+{{- define "app.httproute" -}}
+  {{- include "app.resources.include" (dict "resource" "httproute" | merge .) -}}
+{{- end -}}
+
+{{- define "app.securitypolicy" -}}
+  {{- include "app.resources.include" (dict "resource" "securitypolicy" | merge .) -}}
+{{- end -}}

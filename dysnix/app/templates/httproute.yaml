@@ -1,0 +1,62 @@
+{{/* vim: set filetype=helm: */}}
+{{- define "app.resources.httproute" -}}
+{{- if .Values.httpRoute.enabled }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "app.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.httpRoute.annotations .Values.commonAnnotations }}
+  annotations:
+    {{- if .Values.httpRoute.annotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.httpRoute.annotations "context" $) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  {{- if .Values.httpRoute.parentRefs }}
+  parentRefs:
+    {{- include "common.tplvalues.render" (dict "value" .Values.httpRoute.parentRefs "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if .Values.httpRoute.hostnames }}
+  hostnames:
+    {{- range .Values.httpRoute.hostnames }}
+    - {{ tpl . $ | quote }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- if .Values.httpRoute.rules }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.httpRoute.rules "context" $) | nindent 4 }}
+    {{- else }}
+    {{- $port := .Values.httpRoute.servicePort -}}
+    {{- if and (not $port) .Values.service.ports (eq (len (keys .Values.service.ports)) 1) }}
+      {{- $portName := keys .Values.service.ports | first -}}
+      {{- $port = get (get .Values.service.ports $portName) "port" }}
+    {{- else if and $port (kindIs "string" $port) (get .Values.service.ports $port) }}
+      {{- $port = get (get .Values.service.ports $port) "port" }}
+    {{- end }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ .Values.httpRoute.serviceName | default (include "app.fullname" .) }}
+          port: {{ required "httpRoute.servicePort is required when httpRoute.rules is not set" $port | int }}
+    {{- end }}
+{{- end }}
+{{- end -}}
+
+{{- if eq "direct" (include "app.chart.mode" .) -}}
+  {{- range $_, $component := concat (list "") $.Values.app.components -}}
+    {{- $values := ternary $.Values (get $.Values "component") (eq $component "") | default dict -}}
+    {{- include "app.httproute" (dict "component" $component "values" $values "top" $) -}}
+  {{- end -}}
+{{- end -}}
