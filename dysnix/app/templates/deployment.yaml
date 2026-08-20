@@ -34,7 +34,7 @@ spec:
       annotations:
         {{- include "app.template.checksums" $ | indent 8 }}
         {{- if .Values.podAnnotations }}
-          {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}      
+          {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}

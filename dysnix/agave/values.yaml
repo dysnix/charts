@@ -308,7 +308,7 @@ metrics:
   exporter:
     image:
       repository: prom/influxdb-exporter
-      tag: v0.11.5
+      tag: v0.12.1
       pullPolicy: IfNotPresent
     resources: {}
       # requests:
@@ -402,7 +402,7 @@ agaveArgs:
   rpc-port: 8899
   rpc-bind-address: ${MY_POD_IP}
   private-rpc: true
-  dynamic-port-range: 8000-8025
+  dynamic-port-range: 8000-8026
   wal-recovery-mode: skip_any_corrupted_record
   limit-ledger-size: true
   enable-extended-tx-metadata-storage: false
@@ -511,7 +511,7 @@ plugins:
     enabled: false
     ## @param plugins.yellowstoneGRPC.version Yellowstone gRPC version
     ##
-    version: v13.1.0+solana.4.0.0-rc.0
+    version: v15.1.2+solana.4.2.0
     ## @param plugins.yellowstoneGRPC.downloadURL Yellowstone GRPC plugin download URL
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
@@ -528,7 +528,7 @@ plugins:
       log:
         level: info
       grpc:
-        address: LISTEN_IP:10000
+        listen: ["LISTEN_IP:10000"]
         compression:
           accept: ["gzip", "zstd"]
           send: ["gzip", "zstd"]
@@ -542,7 +542,7 @@ plugins:
         filter_names_size_limit: 1024
         filter_names_cleanup_interval: 1s
       prometheus:
-        address: LISTEN_IP:8999
+        listen: ["LISTEN_IP:8999"]
     ## @param plugins.yellowstoneGRPC.config [string] Yellowstone gRPC config.json file
     ## will be mounted at /plugins/yellowstone-grpc/config.json path
     ## has higher priority over plugins.yellowstoneGRPC.configYaml
