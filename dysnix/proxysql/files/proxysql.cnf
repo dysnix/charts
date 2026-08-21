@@ -122,3 +122,17 @@ mysql_replication_hostgroups=
   },
   {{- end }}
 )
+
+mysql_galera_hostgroups =
+(
+    {
+      writer_hostgroup=1
+      backup_writer_hostgroup=2
+      reader_hostgroup=3
+      offline_hostgroup=4
+      max_writers=1
+      writer_is_also_reader=1
+      max_transactions_behind=100
+      active=1
+    }
+)
