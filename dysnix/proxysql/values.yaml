@@ -243,6 +243,15 @@ mysql_query_rules:
   #   destination_hostgroup: 0
   #   apply: 1
 
+mysqlGaleraHostgroups:
+  # - writer_hostgroup: 10
+  #   backup_writer_hostgroup: 15
+  #   reader_hostgroup: 20
+  #   offline_hostgroup: 9001
+  #   max_writers: 1
+  #   writer_is_also_reader: 1
+  #   max_transactions_behind: 100
+  #   active: 1
 
 ## If enabled, generate automagically a list of proxysql servers based on the
 #    the number statefullset 'proxysql-core' replicas (default 3).
