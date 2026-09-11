@@ -51,8 +51,8 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.enableServiceLinks }}
-      enableServiceLinks: {{ . }}
+      {{- if or (kindIs "bool" .Values.enableServiceLinks) .Values.enableServiceLinks }}
+      enableServiceLinks: {{ .Values.enableServiceLinks }}
       {{- end }}
       serviceAccountName: {{ template "app.serviceAccountName" . }}
       {{- if kindIs "bool" .Values.automountServiceAccountToken }}
