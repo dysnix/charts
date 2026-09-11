@@ -76,3 +76,35 @@ tests:
         content:
           common: label
           pod: label
+  -
+    it: .enableServiceLinks defaults to true
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+    asserts:
+      - equal:
+          path: spec.template.spec.enableServiceLinks
+          value: true
+  -
+    it: .enableServiceLinks false is rendered
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+      enableServiceLinks: false
+    asserts:
+      - equal:
+          path: spec.template.spec.enableServiceLinks
+          value: false
+  -
+    it: .enableServiceLinks quoted "false" still renders false
+    values:
+      - ./values/common.yaml
+    set:
+      app.workload.type: statefulset
+      enableServiceLinks: "false"
+    asserts:
+      - equal:
+          path: spec.template.spec.enableServiceLinks
+          value: false
