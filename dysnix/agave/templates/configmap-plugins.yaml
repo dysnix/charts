@@ -14,12 +14,4 @@ data:
     {{- toPrettyJson .Values.plugins.yellowstoneGRPC.configYaml | nindent 4 }}
     {{- end }}
   {{- end }}
-  {{- if .Values.plugins.richat.enabled }}
-  richat-config.json: |-
-    {{- if .Values.plugins.richat.config }}
-    {{- .Values.plugins.richat.config | nindent 4 }}
-    {{- else }}
-    {{- toPrettyJson .Values.plugins.richat.configYaml | nindent 4 }}
-    {{- end }}
-  {{- end }}
 {{- end }}

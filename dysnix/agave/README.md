@@ -93,8 +93,8 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `gracefulShutdown.options.skip-new-snapshot-check` | Skip check for a new snapshot before exit                          | `false`                                                                         |
 | `rustLog`                                          | Logging configuration                                              | `solana_metrics=warn,agave_validator::bootstrap=debug,info`                     |
 | `plugins.enabled`                                  | Enable download of Geyser plugins                                  | `false`                                                                         |
-| `plugins.image.repository`                         | Image repository for the download-plugins container                | `busybox`                                                                       |
-| `plugins.image.tag`                                | Image tag for the download-plugins container                       | `latest`                                                                        |
+| `plugins.image.repository`                         | Image repository for the download-plugins container                | `python`                                                                       |
+| `plugins.image.tag`                                | Image tag for the download-plugins container                       | `3.13-alpine`                                                                        |
 | `plugins.resources`                                | Resources for the download-plugins container                       | `{}`                                                                            |
 | `plugins.containerPorts`                           | Extra container ports for added plugins                            | `[]`                                                                            |
 | `plugins.servicePorts`                             | Extra service ports for added plugins                              | `[]`                                                                            |
@@ -104,11 +104,6 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `plugins.yellowstoneGRPC.listenIP`                 | Yellowstone gRPC listen IP address, without port                   | `$(MY_POD_IP)`                                                                  |
 | `plugins.yellowstoneGRPC.configYaml`               | Yellowstone gRPC config file                                       | `look in values.yaml`                                                           |
 | `plugins.yellowstoneGRPC.config`                   | Yellowstone gRPC config.json file                                  | `""`                                                                            |
-| `plugins.richat.enabled`                           | Enable download of Richat                                          | `false`                                                                         |
-| `plugins.richat.downloadURL`                       | Richat download URL                                                | `https://pub-f70d2191aa5a466faa56be3f4d80638a.r2.dev/librichat_plugin_agave.so` |
-| `plugins.richat.listenIP`                          | Richat listen IP address, without port                             | `$(MY_POD_IP)`                                                                  |
-| `plugins.richat.configYaml`                        | Richat config file                                                 | `look in values.yaml`                                                           |
-| `plugins.richat.config`                            | Richat config.json file                                            | `""`                                                                            |
 | `identity.validatorKeypair`                        | Validator keypair string (required)                                | `""`                                                                            |
 | `identity.voteKeypair`                             | Vote keypair string (required only for validator)                  | `""`                                                                            |
 | `identity.existingSecret`                          | Use existing secret with keypairs instead of specifying them above | `""`                                                                            |
@@ -141,3 +136,74 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `persistence.accounts.hostPath.path`      | hostPath directory on host node | `/blockchain/agave-accounts` |
 | `persistence.accounts.emptyDir.medium`    | emptyDir volume medium          | `""`                         |
 | `persistence.accounts.emptyDir.sizeLimit` | emptyDir volume size limit      | `""`                         |
+
+### Yellowstone plugin sources (0.7.0)
+
+The initContainer uses `python:3.13-alpine`; custom `plugins.image` overrides must
+provide Python 3.9 or newer. Richat support has been removed; remove old
+`plugins.richat` and `ingress.plugins.richat` values before upgrading.
+
+Source precedence is `localFile`, then `github.repository`, then the existing
+public `downloadURL` plus `version`. All sources install atomically at
+`/plugins/yellowstone-grpc/lib/libyellowstone_grpc_geyser.so`; configuration is
+refreshed even when the installed library is unchanged.
+
+| Parameter | Description | Default |
+|---|---|---|
+| `plugins.volumeMounts` | Extra initContainer mounts referencing top-level `volumes` | `[]` |
+| `plugins.yellowstoneGRPC.localFile` | Path to a mounted prebuilt library | `""` |
+| `plugins.yellowstoneGRPC.sha256` | Optional expected SHA256 (64 hex characters) | `""` |
+| `plugins.yellowstoneGRPC.github.repository` | Private release repository (`owner/repo`) | `""` |
+| `plugins.yellowstoneGRPC.github.tokenSecret.name` | Existing Secret containing a GitHub token | `""` |
+| `plugins.yellowstoneGRPC.github.tokenSecret.key` | Key in that Secret | `token` |
+
+For private releases, create a Secret in the workload namespace containing a
+fine-grained GitHub token with **Contents: read** for the repository. Reference
+that Secret; do not put the token in Helm values:
+
+```yaml
+plugins:
+  enabled: true
+  yellowstoneGRPC:
+    enabled: true
+    version: YOUR_INTERNAL_RELEASE_TAG
+    github:
+      repository: dysnix/yellowstone-grpc
+      tokenSecret:
+        name: yellowstone-github
+        key: token
+```
+
+The release must contain `libyellowstone_grpc_geyser.so` and `SHA256SUMS` in
+standard `sha256sum` format. The downloader authenticates GitHub API requests,
+strips authorization on asset redirects, and verifies the binary before replacing
+an existing library. Failed downloads or checksum mismatches leave it intact.
+
+To use a prebuilt library from an existing PVC instead of downloading:
+
+```yaml
+volumes:
+  - name: prebuilt-yellowstone
+    persistentVolumeClaim:
+      claimName: prebuilt-yellowstone
+plugins:
+  enabled: true
+  volumeMounts:
+    - name: prebuilt-yellowstone
+      mountPath: /prebuilt
+      readOnly: true
+  yellowstoneGRPC:
+    enabled: true
+    localFile: /prebuilt/libyellowstone_grpc_geyser.so
+```
+
+A hostPath or another native volume source can be supplied in `volumes` as well.
+Local mode needs no GitHub Secret, even when a repository is configured.
+
+Caching hashes the **installed destination file**, without a separate cache
+volume. An explicit `sha256` match skips all network requests/copying. Otherwise,
+GitHub mode fetches release metadata and `SHA256SUMS`, skipping the binary when
+its installed hash matches; local mode compares against the source file hash.
+Public URL mode without an explicit checksum downloads each time. `/plugins`
+remains an `emptyDir`: files survive initContainer retries, but not Pod deletion.
+The mounted source PVC supplies prebuilt libraries; it is not a download cache.

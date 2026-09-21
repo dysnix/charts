@@ -68,7 +68,7 @@ spec:
       {{- if .enabled }}
         - name: download-plugins
           image: "{{ .image.repository }}:{{ .image.tag }}"
-          command: ["/scripts/download-plugins.sh"]
+          command: ["python3", "/scripts/download-plugins.py"]
           {{- with .resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -91,16 +91,26 @@ spec:
               value: /config/yellowstone-grpc-config.json
             - name: YELLOWSTONE_GRPC__LISTEN_IP
               value: {{ .yellowstoneGRPC.listenIP }}
-            # richat
-            - name: RICHAT__ENABLED
-              value: {{ ternary "1" "0" .richat.enabled | quote }}
-            - name: RICHAT__DOWNLOAD_URL
-              value: {{ .richat.downloadURL }}
-            - name: RICHAT__CONFIG_PATH
-              value: /config/richat-config.json
-            - name: RICHAT__LISTEN_IP
-              value: {{ .richat.listenIP }}
+            {{- if and .yellowstoneGRPC.enabled .yellowstoneGRPC.github.repository (not .yellowstoneGRPC.localFile) }}
+            {{- if not (regexMatch "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" .yellowstoneGRPC.github.repository) }}
+            {{- fail "plugins.yellowstoneGRPC.github.repository must be owner/repository" }}
+            {{- end }}
+            - name: YELLOWSTONE_GRPC__GITHUB_REPOSITORY
+              value: {{ .yellowstoneGRPC.github.repository | quote }}
+            - name: YELLOWSTONE_GRPC__GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "plugins.yellowstoneGRPC.github.tokenSecret.name is required for GitHub downloads" .yellowstoneGRPC.github.tokenSecret.name | quote }}
+                  key: {{ required "plugins.yellowstoneGRPC.github.tokenSecret.key is required for GitHub downloads" .yellowstoneGRPC.github.tokenSecret.key | quote }}
+            {{- end }}
+            - name: YELLOWSTONE_GRPC__LOCAL_FILE
+              value: {{ .yellowstoneGRPC.localFile | quote }}
+            - name: YELLOWSTONE_GRPC__SHA256
+              value: {{ .yellowstoneGRPC.sha256 | quote }}
           volumeMounts:
+            {{- with .volumeMounts }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+            {{- end }}
             - name: plugins
               mountPath: /plugins
             - name: plugins-config
