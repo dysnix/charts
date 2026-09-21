@@ -173,6 +173,13 @@ spec:
               {{- end }}
               {{- end }}
             {{- end }}
+            {{- with .Values.env }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+            {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- tpl (toYaml .) $ | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ get .Values.agaveArgs "rpc-port" }}

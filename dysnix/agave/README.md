@@ -20,6 +20,8 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `serviceAccount.annotations`      | Additional custom annotations for the ServiceAccount | `{}`                          |
 | `podLabels`                       | Extra labels for pods                                | `{}`                          |
 | `podAnnotations`                  | Annotations for pods                                 | `{}`                          |
+| `env` | Additional environment variables for the main Agave container; supports valueFrom and Helm templates | `[]` |
+| `envFrom` | Secret or ConfigMap environment sources for the main Agave container; supports Helm templates | `[]` |
 | `extraContainerPorts`             | Additional ports to expose on Agave container        | `[]`                          |
 | `podSecurityContext`              | Configure securityContext for entire pod             | `{}`                          |
 | `securityContext`                 | Configure securityContext for Agave container        | `{}`                          |

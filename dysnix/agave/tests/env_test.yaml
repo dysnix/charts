@@ -1,0 +1,70 @@
+suite: Agave container environment
+templates:
+  - statefulset.yaml
+  - scripts.yaml
+tests:
+  - it: preserves the default environment without envFrom
+    asserts:
+      - template: statefulset.yaml
+        equal:
+          path: spec.template.spec.containers[0].env[0].name
+          value: RUST_LOG
+      - template: statefulset.yaml
+        equal:
+          path: spec.template.spec.containers[0].env[1].name
+          value: MY_POD_IP
+      - template: statefulset.yaml
+        isNull:
+          path: spec.template.spec.containers[0].envFrom
+  - it: renders custom values and sources only in the main container
+    set:
+      plugins.enabled: true
+      env:
+        - name: CUSTOM_LITERAL
+          value: '{{ .Release.Name }}'
+        - name: RPCFAST_GATEWAY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: gateway-token
+              key: token
+      envFrom:
+        - secretRef:
+            name: '{{ .Release.Name }}-env'
+        - configMapRef:
+            name: agave-env
+    asserts:
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: CUSTOM_LITERAL
+            value: RELEASE-NAME
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: RPCFAST_GATEWAY_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gateway-token
+                key: token
+      - template: statefulset.yaml
+        equal:
+          path: spec.template.spec.containers[0].envFrom
+          value:
+            - secretRef:
+                name: RELEASE-NAME-env
+            - configMapRef:
+                name: agave-env
+      - template: statefulset.yaml
+        notContains:
+          path: spec.template.spec.initContainers[1].env
+          content:
+            name: RPCFAST_GATEWAY_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: gateway-token
+                key: token
+      - template: statefulset.yaml
+        isNull:
+          path: spec.template.spec.initContainers[1].envFrom

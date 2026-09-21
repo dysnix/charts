@@ -49,6 +49,14 @@ podLabels: {}
 ##
 podAnnotations: {}
 
+## @param env [array] Additional environment variables for the main Agave container; supports valueFrom and Helm templates
+##
+env: []
+
+## @param envFrom [array] Secret or ConfigMap environment sources for the main Agave container; supports Helm templates
+##
+envFrom: []
+
 ## @param extraContainerPorts [array] Additional ports to expose on Agave container
 ## Example:
 ## - name: grpc
