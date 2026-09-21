@@ -1,0 +1,98 @@
+suite: Yellowstone plugin bootstrap
+templates:
+  - statefulset.yaml
+  - scripts.yaml
+tests:
+  - it: uses Python and the existing destination volume
+    set:
+      plugins.enabled: true
+      plugins.yellowstoneGRPC.enabled: true
+      identity.existingSecret: validator
+    asserts:
+      - template: statefulset.yaml
+        equal:
+          path: spec.template.spec.initContainers[1].image
+          value: python:3.13-alpine
+      - template: statefulset.yaml
+        equal:
+          path: spec.template.spec.initContainers[1].command
+          value: [python3, /scripts/download-plugins.py]
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.volumes
+          content:
+            name: plugins
+            emptyDir: {}
+  - it: injects a Secret reference for private GitHub releases
+    set:
+      plugins.enabled: true
+      plugins.yellowstoneGRPC.enabled: true
+      identity.existingSecret: validator
+      plugins.yellowstoneGRPC.github.repository: dysnix/yellowstone-grpc
+      plugins.yellowstoneGRPC.github.tokenSecret.name: github-token
+    asserts:
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.initContainers[1].env
+          content:
+            name: YELLOWSTONE_GRPC__GITHUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: github-token
+                key: token
+  - it: rejects missing GitHub credentials
+    set:
+      plugins.enabled: true
+      plugins.yellowstoneGRPC.enabled: true
+      identity.existingSecret: validator
+      plugins.yellowstoneGRPC.github.repository: dysnix/yellowstone-grpc
+    asserts:
+      - template: statefulset.yaml
+        failedTemplate:
+          errorMessage: plugins.yellowstoneGRPC.github.tokenSecret.name is required for GitHub downloads
+  - it: rejects invalid repositories
+    set:
+      plugins.enabled: true
+      plugins.yellowstoneGRPC.enabled: true
+      identity.existingSecret: validator
+      plugins.yellowstoneGRPC.github.repository: https://github.com/dysnix/repo
+    asserts:
+      - template: statefulset.yaml
+        failedTemplate:
+          errorMessage: plugins.yellowstoneGRPC.github.repository must be owner/repository
+  - it: mounts a local source without requiring GitHub credentials
+    set:
+      plugins.enabled: true
+      plugins.yellowstoneGRPC.enabled: true
+      identity.existingSecret: validator
+      plugins.yellowstoneGRPC.github.repository: dysnix/yellowstone-grpc
+      plugins.yellowstoneGRPC.localFile: /prebuilt/plugin.so
+      plugins.volumeMounts:
+        - name: prebuilt
+          mountPath: /prebuilt
+          readOnly: true
+      volumes:
+        - name: prebuilt
+          persistentVolumeClaim:
+            claimName: prebuilt
+    asserts:
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.initContainers[1].volumeMounts
+          content:
+            name: prebuilt
+            mountPath: /prebuilt
+            readOnly: true
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.volumes
+          content:
+            name: prebuilt
+            persistentVolumeClaim:
+              claimName: prebuilt
+      - template: statefulset.yaml
+        contains:
+          path: spec.template.spec.initContainers[1].env
+          content:
+            name: YELLOWSTONE_GRPC__LOCAL_FILE
+            value: /prebuilt/plugin.so

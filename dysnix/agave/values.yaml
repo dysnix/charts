@@ -278,20 +278,6 @@ ingress:
         # - secretName: agave-tls
         #   hosts:
         #     - agave-yellowstone.local
-    richat:
-      enabled: false
-      className: ""
-      annotations: {}
-      hosts: []
-        # - host: agave-richat.local
-        #   paths:
-        #     - path: /
-        #       servicePort: richat
-      tls: []
-        # - secretName: agave-tls
-        #   hosts:
-        #     - agave-richat.local
-
 ## @section Metrics configuration
 ##
 metrics:
@@ -412,7 +398,6 @@ agaveArgs:
   minimal-snapshot-download-speed: 31457280
   account-index: []
   # geyser-plugin-config: /plugins/yellowstone-grpc/config.json
-  # geyser-plugin-config: /plugins/richat/config.json
   # snapshot-interval-slots: 0
 
 adjustLimitMemLock:
@@ -474,10 +459,10 @@ plugins:
   image:
     ## @param plugins.image.repository Image repository for the download-plugins container
     ##
-    repository: busybox
+    repository: python
     ## @param plugins.image.tag Image tag for the download-plugins container
     ##
-    tag: latest
+    tag: 3.13-alpine
   ## @param plugins.resources Resources for the download-plugins container
   ## Example:
   ## requests:
@@ -488,6 +473,9 @@ plugins:
   ##   memory: 256Mi
   ##
   resources: {}
+  ## @param plugins.volumeMounts [array] Additional mounts for download-plugins, referencing top-level volumes (e.g. read-only local plugin files)
+  ##
+  volumeMounts: []
   ## @param plugins.containerPorts [array] Extra container ports for added plugins
   ## Example:
   ## - name: grpc
@@ -515,6 +503,23 @@ plugins:
     ## @param plugins.yellowstoneGRPC.downloadURL Yellowstone GRPC plugin download URL
     ##
     downloadURL: https://github.com/rpcpool/yellowstone-grpc/releases/download/
+    github:
+      ## @param plugins.yellowstoneGRPC.github.repository GitHub owner/repository; enables authenticated API downloads instead of downloadURL. Local files take precedence
+      ##
+      repository: ""
+      tokenSecret:
+        ## @param plugins.yellowstoneGRPC.github.tokenSecret.name Existing Secret containing a GitHub token with Contents: read for this repository
+        ##
+        name: ""
+        ## @param plugins.yellowstoneGRPC.github.tokenSecret.key Token key in the existing Secret
+        ##
+        key: token
+    ## @param plugins.yellowstoneGRPC.localFile Mounted plugin file path; takes precedence over remote sources
+    ##
+    localFile: ""
+    ## @param plugins.yellowstoneGRPC.sha256 Optional expected SHA256; matching installed files skip download/copy
+    ##
+    sha256: ""
     ## @param plugins.yellowstoneGRPC.listenIP Yellowstone gRPC listen IP address, without port
     ## works by replacing LISTEN_IP string inside json file with the value provided
     ## default: Pod IP address from K8s downward API
@@ -547,53 +552,6 @@ plugins:
     ## @param plugins.yellowstoneGRPC.config [string] Yellowstone gRPC config.json file
     ## will be mounted at /plugins/yellowstone-grpc/config.json path
     ## has higher priority over plugins.yellowstoneGRPC.configYaml
-    ##
-    config: ""
-
-  ## Richat plugin config
-  ##
-  richat:
-    ## @param plugins.richat.enabled Enable download of Richat
-    ##
-    enabled: false
-    ## @param plugins.richat.downloadURL Richat download URL
-    ##
-    downloadURL: https://pub-f70d2191aa5a466faa56be3f4d80638a.r2.dev/librichat_plugin_agave.so
-    ## @param plugins.richat.listenIP Richat listen IP address, without port
-    ## works by replacing LISTEN_IP string inside json file with the value provided
-    ## default: Pod IP address from K8s downward API
-    ##
-    listenIP: $(MY_POD_IP)
-    ## @param plugins.richat.configYaml [object, default: look in values.yaml] Richat config file
-    ## will be mounted at /plugins/richat/config.json path
-    ##
-    configYaml:
-      libpath: lib/librichat_plugin_agave.so
-      logs:
-        level: info
-      metrics:
-        endpoint: LISTEN_IP:10123
-      tokio:
-        worker_threads: null
-        affinity: null
-      channel:
-        encoder: raw
-        max_messages: "2_097_152"
-        max_bytes: "16_106_127_360"
-      quic:
-        endpoint: LISTEN_IP:10101
-        tls_config:
-          self_signed_alt_names:
-            - localhost
-        expected_rtt: 2
-        max_stream_bandwidth: 1250000000
-        max_idle_timeout: 30000
-        max_recv_streams: 16
-        max_request_size: 1024
-        x_tokens: []
-    ## @param plugins.richat.config [string] Richat config.json file
-    ## will be mounted at /plugins/richat/config.json path
-    ## has higher priority over plugins.richat.configYaml
     ##
     config: ""
 
