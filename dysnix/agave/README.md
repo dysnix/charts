@@ -6,36 +6,38 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 
 ### Global parameters
 
-| Name                              | Description                                          | Value                         |
-| --------------------------------- | ---------------------------------------------------- | ----------------------------- |
-| `image.repository`                | Agave image repository                               | `ghcr.io/dysnix/docker-agave` |
-| `image.tag`                       | Agave image tag                                      | `""`                          |
-| `image.pullPolicy`                | Agave image pull policy                              | `IfNotPresent`                |
-| `imagePullSecrets`                | Agave image pull secrets                             | `[]`                          |
-| `nameOverride`                    | String to partially override release name            | `""`                          |
-| `fullnameOverride`                | String to fully override release name                | `""`                          |
-| `serviceAccount.create`           | Specifies whether a ServiceAccount should be created | `true`                        |
-| `serviceAccount.name`             | The name of the ServiceAccount to use                | `""`                          |
-| `serviceAccount.automount`        | Whether to auto mount the service account token      | `true`                        |
-| `serviceAccount.annotations`      | Additional custom annotations for the ServiceAccount | `{}`                          |
-| `podLabels`                       | Extra labels for pods                                | `{}`                          |
-| `podAnnotations`                  | Annotations for pods                                 | `{}`                          |
-| `extraContainerPorts`             | Additional ports to expose on Agave container        | `[]`                          |
-| `podSecurityContext`              | Configure securityContext for entire pod             | `{}`                          |
-| `securityContext`                 | Configure securityContext for Agave container        | `{}`                          |
-| `resources`                       | Set container requests and limits for CPU or memory  | `{}`                          |
-| `resizePolicy`                    | specifies container resize policies                  | `{}`                          |
-| `livenessProbe`                   | Agave container livenessProbe                        | `{}`                          |
-| `startupProbe`                    | Agave container startupProbe                         | `{}`                          |
-| `readinessProbe`                  | Agave container readinessProbe                       | `{}`                          |
-| `readinessProbeSlotDiffThreshold` | Agave node slot diff threshold for readinessProbe    | `150`                         |
-| `affinity`                        | Affinity for pod assignment                          | `{}`                          |
-| `nodeSelector`                    | Node labels for pod assignment                       | `{}`                          |
-| `tolerations`                     | Tolerations for pod assignment                       | `[]`                          |
-| `volumes`                         | Pod extra volumes                                    | `[]`                          |
-| `volumeMounts`                    | Container extra volumeMounts                         | `[]`                          |
-| `extraInitContainers`             | Extra initContainers (can be templated)              | `[]`                          |
-| `sidecarContainers`               | Extra sidecar containers (can be templated)          | `[]`                          |
+| Name                              | Description                                                                                          | Value                         |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `image.repository`                | Agave image repository                                                                               | `ghcr.io/dysnix/docker-agave` |
+| `image.tag`                       | Agave image tag                                                                                      | `""`                          |
+| `image.pullPolicy`                | Agave image pull policy                                                                              | `IfNotPresent`                |
+| `imagePullSecrets`                | Agave image pull secrets                                                                             | `[]`                          |
+| `nameOverride`                    | String to partially override release name                                                            | `""`                          |
+| `fullnameOverride`                | String to fully override release name                                                                | `""`                          |
+| `serviceAccount.create`           | Specifies whether a ServiceAccount should be created                                                 | `true`                        |
+| `serviceAccount.name`             | The name of the ServiceAccount to use                                                                | `""`                          |
+| `serviceAccount.automount`        | Whether to auto mount the service account token                                                      | `true`                        |
+| `serviceAccount.annotations`      | Additional custom annotations for the ServiceAccount                                                 | `{}`                          |
+| `podLabels`                       | Extra labels for pods                                                                                | `{}`                          |
+| `podAnnotations`                  | Annotations for pods                                                                                 | `{}`                          |
+| `env`                             | Additional environment variables for the main Agave container; supports valueFrom and Helm templates | `[]`                          |
+| `envFrom`                         | Secret or ConfigMap environment sources for the main Agave container; supports Helm templates        | `[]`                          |
+| `extraContainerPorts`             | Additional ports to expose on Agave container                                                        | `[]`                          |
+| `podSecurityContext`              | Configure securityContext for entire pod                                                             | `{}`                          |
+| `securityContext`                 | Configure securityContext for Agave container                                                        | `{}`                          |
+| `resources`                       | Set container requests and limits for CPU or memory                                                  | `{}`                          |
+| `resizePolicy`                    | specifies container resize policies                                                                  | `{}`                          |
+| `livenessProbe`                   | Agave container livenessProbe                                                                        | `{}`                          |
+| `startupProbe`                    | Agave container startupProbe                                                                         | `{}`                          |
+| `readinessProbe`                  | Agave container readinessProbe                                                                       | `{}`                          |
+| `readinessProbeSlotDiffThreshold` | Agave node slot diff threshold for readinessProbe                                                    | `150`                         |
+| `affinity`                        | Affinity for pod assignment                                                                          | `{}`                          |
+| `nodeSelector`                    | Node labels for pod assignment                                                                       | `{}`                          |
+| `tolerations`                     | Tolerations for pod assignment                                                                       | `[]`                          |
+| `volumes`                         | Pod extra volumes                                                                                    | `[]`                          |
+| `volumeMounts`                    | Container extra volumeMounts                                                                         | `[]`                          |
+| `extraInitContainers`             | Extra initContainers (can be templated)                                                              | `[]`                          |
+| `sidecarContainers`               | Extra sidecar containers (can be templated)                                                          | `[]`                          |
 
 ### Services configuration
 
@@ -78,36 +80,42 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 
 ### Agave node configuration
 
-| Name                                               | Description                                                        | Value                                                                           |
-| -------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `agaveArgs`                                        | `agave-validator` arguments                                        | `{}`                                                                            |
-| `adjustLimitMemLock.enabled`                       | Enable adjustment of memory lock limit for Agave container         | `false`                                                                         |
-| `adjustLimitMemLock.limit`                         | Memory lock limit in kilobytes                                     | `2000000000`                                                                    |
-| `sysctl.image.repository`                          | Repository for the sysctl container image                          | `busybox`                                                                       |
-| `sysctl.image.tag`                                 | Tag for the sysctl container image                                 | `latest`                                                                        |
-| `sysctl.resources`                                 | Resources for the sysctl container                                 | `{}`                                                                            |
-| `gracefulShutdown.timeout`                         | Seconds to wait for graceful shutdown                              | `120`                                                                           |
-| `gracefulShutdown.options`                         | `agave-validator exit` arguments                                   | `{}`                                                                            |
-| `gracefulShutdown.options.force`                   | Do not wait for restart window, useful for non-validators          | `false`                                                                         |
-| `gracefulShutdown.options.skip-health-check`       | Skip health check before exit                                      | `false`                                                                         |
-| `gracefulShutdown.options.skip-new-snapshot-check` | Skip check for a new snapshot before exit                          | `false`                                                                         |
-| `rustLog`                                          | Logging configuration                                              | `solana_metrics=warn,agave_validator::bootstrap=debug,info`                     |
-| `plugins.enabled`                                  | Enable download of Geyser plugins                                  | `false`                                                                         |
-| `plugins.image.repository`                         | Image repository for the download-plugins container                | `python`                                                                       |
-| `plugins.image.tag`                                | Image tag for the download-plugins container                       | `3.13-alpine`                                                                        |
-| `plugins.resources`                                | Resources for the download-plugins container                       | `{}`                                                                            |
-| `plugins.containerPorts`                           | Extra container ports for added plugins                            | `[]`                                                                            |
-| `plugins.servicePorts`                             | Extra service ports for added plugins                              | `[]`                                                                            |
-| `plugins.yellowstoneGRPC.enabled`                  | Enable download of Yellowstone gRPC                                | `false`                                                                         |
-| `plugins.yellowstoneGRPC.version`                  | Yellowstone gRPC version                                           | `v13.1.0+solana.4.0.0-rc.0`                                                     |
-| `plugins.yellowstoneGRPC.downloadURL`              | Yellowstone GRPC plugin download URL                               | `https://github.com/rpcpool/yellowstone-grpc/releases/download/`                |
-| `plugins.yellowstoneGRPC.listenIP`                 | Yellowstone gRPC listen IP address, without port                   | `$(MY_POD_IP)`                                                                  |
-| `plugins.yellowstoneGRPC.configYaml`               | Yellowstone gRPC config file                                       | `look in values.yaml`                                                           |
-| `plugins.yellowstoneGRPC.config`                   | Yellowstone gRPC config.json file                                  | `""`                                                                            |
-| `identity.validatorKeypair`                        | Validator keypair string (required)                                | `""`                                                                            |
-| `identity.voteKeypair`                             | Vote keypair string (required only for validator)                  | `""`                                                                            |
-| `identity.existingSecret`                          | Use existing secret with keypairs instead of specifying them above | `""`                                                                            |
-| `identity.mountPath`                               | Keypair files mount path                                           | `/secrets`                                                                      |
+| Name                                               | Description                                                                                                      | Value                                                            |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `agaveArgs`                                        | `agave-validator` arguments                                                                                      | `{}`                                                             |
+| `adjustLimitMemLock.enabled`                       | Enable adjustment of memory lock limit for Agave container                                                       | `false`                                                          |
+| `adjustLimitMemLock.limit`                         | Memory lock limit in kilobytes                                                                                   | `2000000000`                                                     |
+| `sysctl.image.repository`                          | Repository for the sysctl container image                                                                        | `busybox`                                                        |
+| `sysctl.image.tag`                                 | Tag for the sysctl container image                                                                               | `latest`                                                         |
+| `sysctl.resources`                                 | Resources for the sysctl container                                                                               | `{}`                                                             |
+| `gracefulShutdown.timeout`                         | Seconds to wait for graceful shutdown                                                                            | `120`                                                            |
+| `gracefulShutdown.options`                         | `agave-validator exit` arguments                                                                                 | `{}`                                                             |
+| `gracefulShutdown.options.force`                   | Do not wait for restart window, useful for non-validators                                                        | `false`                                                          |
+| `gracefulShutdown.options.skip-health-check`       | Skip health check before exit                                                                                    | `false`                                                          |
+| `gracefulShutdown.options.skip-new-snapshot-check` | Skip check for a new snapshot before exit                                                                        | `false`                                                          |
+| `rustLog`                                          | Logging configuration                                                                                            | `solana_metrics=warn,agave_validator::bootstrap=debug,info`      |
+| `plugins.enabled`                                  | Enable download of Geyser plugins                                                                                | `false`                                                          |
+| `plugins.image.repository`                         | Image repository for the download-plugins container                                                              | `python`                                                         |
+| `plugins.image.tag`                                | Image tag for the download-plugins container                                                                     | `3.13-alpine`                                                    |
+| `plugins.resources`                                | Resources for the download-plugins container                                                                     | `{}`                                                             |
+| `plugins.volumeMounts`                             | Additional mounts for download-plugins, referencing top-level volumes (e.g. read-only local plugin files)        | `[]`                                                             |
+| `plugins.containerPorts`                           | Extra container ports for added plugins                                                                          | `[]`                                                             |
+| `plugins.servicePorts`                             | Extra service ports for added plugins                                                                            | `[]`                                                             |
+| `plugins.yellowstoneGRPC.enabled`                  | Enable download of Yellowstone gRPC                                                                              | `false`                                                          |
+| `plugins.yellowstoneGRPC.version`                  | Yellowstone gRPC version                                                                                         | `v15.1.2+solana.4.2.0`                                           |
+| `plugins.yellowstoneGRPC.downloadURL`              | Yellowstone GRPC plugin download URL                                                                             | `https://github.com/rpcpool/yellowstone-grpc/releases/download/` |
+| `plugins.yellowstoneGRPC.github.repository`        | GitHub owner/repository; enables authenticated API downloads instead of downloadURL. Local files take precedence | `""`                                                             |
+| `plugins.yellowstoneGRPC.github.tokenSecret.name`  | Existing Secret containing a GitHub token with Contents: read for this repository                                | `""`                                                             |
+| `plugins.yellowstoneGRPC.github.tokenSecret.key`   | Token key in the existing Secret                                                                                 | `token`                                                          |
+| `plugins.yellowstoneGRPC.localFile`                | Mounted plugin file path; takes precedence over remote sources                                                   | `""`                                                             |
+| `plugins.yellowstoneGRPC.sha256`                   | Optional expected SHA256; matching installed files skip download/copy                                            | `""`                                                             |
+| `plugins.yellowstoneGRPC.listenIP`                 | Yellowstone gRPC listen IP address, without port                                                                 | `$(MY_POD_IP)`                                                   |
+| `plugins.yellowstoneGRPC.configYaml`               | Yellowstone gRPC config file                                                                                     | `look in values.yaml`                                            |
+| `plugins.yellowstoneGRPC.config`                   | Yellowstone gRPC config.json file                                                                                | `""`                                                             |
+| `identity.validatorKeypair`                        | Validator keypair string (required)                                                                              | `""`                                                             |
+| `identity.voteKeypair`                             | Vote keypair string (required only for validator)                                                                | `""`                                                             |
+| `identity.existingSecret`                          | Use existing secret with keypairs instead of specifying them above                                               | `""`                                                             |
+| `identity.mountPath`                               | Keypair files mount path                                                                                         | `/secrets`                                                       |
 
 ### Agave ledger db persistence config
 
@@ -136,26 +144,6 @@ A Helm chart to deploy Agave node inside Kubernetes cluster.
 | `persistence.accounts.hostPath.path`      | hostPath directory on host node | `/blockchain/agave-accounts` |
 | `persistence.accounts.emptyDir.medium`    | emptyDir volume medium          | `""`                         |
 | `persistence.accounts.emptyDir.sizeLimit` | emptyDir volume size limit      | `""`                         |
-
-### Yellowstone plugin sources (0.7.0)
-
-The initContainer uses `python:3.13-alpine`; custom `plugins.image` overrides must
-provide Python 3.9 or newer. Richat support has been removed; remove old
-`plugins.richat` and `ingress.plugins.richat` values before upgrading.
-
-Source precedence is `localFile`, then `github.repository`, then the existing
-public `downloadURL` plus `version`. All sources install atomically at
-`/plugins/yellowstone-grpc/lib/libyellowstone_grpc_geyser.so`; configuration is
-refreshed even when the installed library is unchanged.
-
-| Parameter | Description | Default |
-|---|---|---|
-| `plugins.volumeMounts` | Extra initContainer mounts referencing top-level `volumes` | `[]` |
-| `plugins.yellowstoneGRPC.localFile` | Path to a mounted prebuilt library | `""` |
-| `plugins.yellowstoneGRPC.sha256` | Optional expected SHA256 (64 hex characters) | `""` |
-| `plugins.yellowstoneGRPC.github.repository` | Private release repository (`owner/repo`) | `""` |
-| `plugins.yellowstoneGRPC.github.tokenSecret.name` | Existing Secret containing a GitHub token | `""` |
-| `plugins.yellowstoneGRPC.github.tokenSecret.key` | Key in that Secret | `token` |
 
 For private releases, create a Secret in the workload namespace containing a
 fine-grained GitHub token with **Contents: read** for the repository. Reference
