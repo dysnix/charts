@@ -22,6 +22,28 @@ check_ret(){
                 exit "${exit_code}"
         fi
 }
+{{- if .Values.cronjobs.sync.useEviction }}
+
+# how long to retry a refused eviction, seconds. Empty means a plain pod delete
+EVICTION_TIMEOUT="${3}"
+
+# the Eviction API respects PDBs, it's refused while the budget has no disruptions left
+evict_pod(){
+        deadline=$(( $(date +%s) + EVICTION_TIMEOUT ))
+        while true;do
+                # the pod could have been restarted by someone else since the last attempt
+                if ${KUBECTL} wait --timeout=5s --for=condition=Ready pod "${POD_NAME}" >/dev/null \
+                        && [ -z "$(${KUBECTL} get -o jsonpath='{.metadata.deletionTimestamp}' pod "${POD_NAME}")" ] \
+                        && echo '{"apiVersion":"policy/v1","kind":"Eviction","metadata":{"name":"'"${POD_NAME}"'","namespace":"{{ .Release.Namespace }}"}}' \
+                        | ${KUBECTL} create --raw "/api/v1/namespaces/{{ .Release.Namespace }}/pods/${POD_NAME}/eviction" -f - >/dev/null;then
+                        return 0
+                fi
+                [ "$(date +%s)" -lt "${deadline}" ] || return 1
+                echo "$(date -Iseconds) Cannot evict pod ${POD_NAME} yet, retrying in 60s ..."
+                sleep 60
+        done
+}
+{{- end }}
 
 # input data checking
 [ "${MODE}" = "prune" ] || [ "${MODE}" = "sync" ]
@@ -61,9 +83,23 @@ if [ "${DELETION_TIMESTAMP}" = "" ];then
      check_ret 1 "$(date -Iseconds) Mode value \"${MODE}\" is incorrect, abort"
      ;;
   esac
+{{- if .Values.cronjobs.sync.useEviction }}
+  # evict first: the pod takes much longer to stop than the patch below, and if we give up the configmap stays untouched
+  if [ -n "${EVICTION_TIMEOUT}" ];then
+    echo "$(date -Iseconds) Evicting pod ${POD_NAME}, retrying for ${EVICTION_TIMEOUT}s ..."
+    evict_pod
+    check_ret $? "$(date -Iseconds) Fatal: cannot evict pod ${POD_NAME}, nothing changed, abort"
+  fi
+{{- end }}
   ${KUBECTL} patch configmap "${CONFIGMAP_NAME}"  --type merge --patch ${PATCH_DATA}
   ret=$?
   check_ret "${ret}" "$(date -Iseconds) Fatal: cannot patch configmap ${CONFIGMAP_NAME}, abort"
+{{- if .Values.cronjobs.sync.useEviction }}
+  if [ -n "${EVICTION_TIMEOUT}" ];then
+    echo "$(date -Iseconds) Pod ${POD_NAME} evicted successfully, exiting. Check pod logs after respawn."
+    exit 0
+  fi
+{{- end }}
 
   echo "$(date -Iseconds) Deleting pod ${POD_NAME} to trigger action inside init container ..."
   # delete the pod to trigger action inside init container
