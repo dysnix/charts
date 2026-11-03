@@ -375,6 +375,10 @@ updatePodDeletionCost:
 cronjobs:
   sync:
     enabled: false
+    # restart the pod via the Eviction API instead of a plain delete, so PodDisruptionBudgets are respected
+    useEviction: false
+    # how long to retry while the eviction is refused, then the job fails and this sync is skipped
+    evictionTimeoutSeconds: 7200
     image: dysnix/kubectl:v1.24
     resources:
       requests:
