@@ -1,6 +1,6 @@
 {{- if and .Values.proxysql_cluster.enabled .Values.proxysql_cluster.job.enabled .Values.proxysql_cluster.core.enabled }}
 ---
-{{- $coreServiceName := printf "%s-core.%s.svc" (include "proxysql.fullname" .) .Release.Namespace }}
+{{- $coreServiceName := printf "%s-core.%s.svc.cluster.local" (include "proxysql.fullname" .) .Release.Namespace }}
 {{- $coreServiceAdminPort := (.Values.proxysql_cluster.healthcheck.psql_host_port | default .Values.service.adminPort) }}
 apiVersion: batch/v1
 kind: Job
