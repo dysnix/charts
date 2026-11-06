@@ -2030,6 +2030,27 @@ entries:
     version: 0.2.0
   base-consensus:
   - apiVersion: v2
+    appVersion: v1.5.4
+    created: "2026-11-06T08:01:31.316045889Z"
+    description: Base consensus-layer client Helm chart
+    digest: a4da4797fc9d6d174b09701b7194a60efebb0c0e4c6f729ba0c2f2e38e49c47d
+    keywords:
+    - rollup
+    - consensus
+    - base
+    - cryptocurrency
+    - blockchain
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: base-consensus
+    sources:
+    - https://github.com/base/node
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/base-consensus-0.2.1/base-consensus-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
     appVersion: v1.1.1
     created: "2026-06-19T08:47:41.87320017Z"
     description: Base consensus-layer client Helm chart
@@ -7864,6 +7885,25 @@ entries:
   reth:
   - apiVersion: v2
     appVersion: v2.2.0
+    created: "2026-11-06T08:01:31.459852769Z"
+    description: Reth Ethereum execution client Helm Chart
+    digest: a3bc47fe041f495ff9287e8f20bebe7435b23f9764c489411c890e3a4c6cb984
+    keywords:
+    - reth
+    - cryptocurrency
+    - blockchain
+    - ethereum
+    maintainers:
+    - email: services@dysnix.com
+      name: Dysnix
+    name: reth
+    sources:
+    - https://github.com/dysnix/charts
+    urls:
+    - https://github.com/dysnix/charts/releases/download/reth-0.0.12/reth-0.0.12.tgz
+    version: 0.0.12
+  - apiVersion: v2
+    appVersion: v2.2.0
     created: "2026-05-14T04:10:22.592375767Z"
     description: Reth Ethereum execution client Helm Chart
     digest: c6352df1eefcde94ef28f8282085057039b9a5c386fbaa76d0cd230824737de8
@@ -8660,4 +8700,4 @@ entries:
     urls:
     - https://github.com/dysnix/charts/releases/download/solana-0.1.25/solana-0.1.25.tgz
     version: 0.1.25
-generated: "2026-09-21T23:00:13.954155778Z"
+generated: "2026-11-06T08:01:31.460496782Z"
