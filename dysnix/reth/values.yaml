@@ -186,7 +186,7 @@ metricsExtra:
   args: []
   image:
     repository: ghcr.io/dysnix/block_lag_exporter
-    tag: v0.3.2
+    tag: v0.3.3
     pullPolicy: IfNotPresent
   resources:
     requests:
