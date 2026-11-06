@@ -2,8 +2,8 @@ apiVersion: v2
 name: base-consensus
 description: Base consensus-layer client Helm chart
 
-version: 0.2.0
-appVersion: v1.1.1
+version: 0.2.1
+appVersion: v1.5.4
 
 keywords:
   - rollup
