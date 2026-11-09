@@ -12,7 +12,7 @@ spec:
     metadata:
       name: "{{ .Release.Name }}-sync"
     spec:
-      activeDeadlineSeconds: 60
+      activeDeadlineSeconds: {{ if .Values.cronjobs.sync.useEviction }}{{ add (int .Values.cronjobs.sync.evictionTimeoutSeconds) 300 }}{{ else }}60{{ end }}
       backoffLimit: 0
       template:
         metadata:
@@ -26,6 +26,9 @@ spec:
                 - /scripts/cron.sh
                 - sync
                 - 5s
+                {{- if .Values.cronjobs.sync.useEviction }}
+                - "{{ int .Values.cronjobs.sync.evictionTimeoutSeconds }}"
+                {{- end }}
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               envFrom:
                 - configMapRef:

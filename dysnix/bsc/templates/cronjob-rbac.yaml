@@ -23,6 +23,13 @@ rules:
       - list
       - watch
       - delete
+  {{- if .Values.cronjobs.sync.useEviction }}
+  - apiGroups: [""]
+    resources:
+      - pods/eviction
+    verbs:
+      - create
+  {{- end }}
   - apiGroups: [""]
     resources:
       - configmaps
