@@ -1,0 +1,24 @@
+apiVersion: v2
+name: tokenbridge
+description: The POA TokenBridge allows users to transfer assets between two chains in the Ethereum ecosystem.
+version: "0.1.1"
+appVersion: "v3.0.0"
+
+keywords:
+  - cryptocurrency
+  - blockchain
+
+sources:
+  - https://github.com/dysnix/charts
+
+maintainers:
+  - name: daniel-yavorovich
+    email: daniel@dysnix.com
+
+dependencies:
+  - name: rabbitmq
+    version: "8.24.2"
+    repository: "https://charts.bitnami.com/bitnami"
+  - name: redis
+    version: "15.5.4"
+    repository: "https://charts.bitnami.com/bitnami"
