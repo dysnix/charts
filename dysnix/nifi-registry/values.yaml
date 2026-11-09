@@ -257,6 +257,16 @@ certManager:
   # c.f. https://github.com/cert-manager/cert-manager/issues/2478#issuecomment-1095545529
   certDuration: 2160h
   caDuration: 87660h
+  # Security context for the cert-manager sidecar container
+  # Set these values to comply with PodSecurity policies (e.g., "restricted")
+  securityContext: {}
+    # allowPrivilegeEscalation: false
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # runAsNonRoot: true
+    # seccompProfile:
+    #   type: RuntimeDefault
 
 # oidc support
 oidc:
